@@ -4,31 +4,33 @@
 
 @layer base {
   :root {
-    --background: 30 60% 98%; /* #FDFBF8 */
-    --foreground: 20 14% 4%;
+    --background-start-hsl: 39 56% 95%;
+    --background-end-hsl: 180 15% 80%;
+    --background: var(--background-start-hsl);
+    --foreground: 15 25% 25%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 15 25% 25%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 27 80% 26%; /* amber-900 */
+    --popover-foreground: 15 25% 25%;
+    --primary: 15 55% 25%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 26 83% 31%; /* amber-800 */
-    --accent-foreground: 0 0% 98%;
+    --accent: 35 78% 53%;
+    --accent-foreground: 15 25% 25%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
-    --ring: 27 80% 26%;
+    --ring: 35 78% 53%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
  
   .dark {
@@ -38,19 +40,19 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 6% 10%;
     --popover-foreground: 0 0% 98%;
-    --primary: 27 80% 36%;
+    --primary: 15 55% 35%;
     --primary-foreground: 0 0% 98%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 0 0% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 26 83% 41%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 35 78% 63%;
+    --accent-foreground: 15 25% 15%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 27 80% 36%;
+    --ring: 35 78% 63%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -66,4 +68,41 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.wavy-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background:
+        radial-gradient(ellipse at 50% 0%, hsl(var(--background-start-hsl)) 50%, transparent 80%),
+        radial-gradient(ellipse at 50% 100%, hsl(var(--background-end-hsl)) 40%, transparent 80%);
+    overflow: hidden;
+}
+
+.wavy-background::before {
+    content: '';
+    position: absolute;
+    top: 45%;
+    left: -50%;
+    right: -50%;
+    height: 300px;
+    background: radial-gradient(50% 100% at 50% 100%, white, transparent);
+    transform: translateY(-50%) rotate(4deg);
+    opacity: 0.4;
+}
+
+.wavy-background::after {
+    content: '';
+    position: absolute;
+    bottom: 50%;
+    left: -50%;
+    right: -50%;
+    height: 300px;
+    background: radial-gradient(50% 100% at 50% 0%, hsl(var(--background-end-hsl)), transparent);
+    transform: translateY(50%) rotate(-3deg);
+    opacity: 0.5;
 }

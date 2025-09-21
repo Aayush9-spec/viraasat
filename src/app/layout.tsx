@@ -26,75 +26,60 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans antialiased text-gray-800">
-        <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200/80">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-4">
-              <div className="flex items-center space-x-8">
-                <ViraasatLogo />
-                <div className="hidden md:flex items-center space-x-7">
-                  <a href="#products" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">Shop</a>
-                  <a href="#mission" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">Our Mission</a>
-                  <a href="#" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">Journal</a>
+      <body className="font-sans antialiased text-foreground">
+        <div className="relative min-h-screen">
+          <div className="wavy-background"></div>
+          <nav className="sticky top-0 z-50 bg-transparent">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center py-4">
+                <div className="flex items-center space-x-8">
+                  <ViraasatLogo />
                 </div>
-              </div>
-              <div className="flex items-center space-x-5">
-                <a href="#" className="text-gray-600 hover:text-primary transition-colors">
-                  <Search className="h-5 w-5" />
-                </a>
-                <a href="#" className="text-gray-600 hover:text-primary transition-colors">
-                  <ShoppingCart className="h-5 w-5" />
-                </a>
-                <Button asChild className="hidden sm:inline-block bg-accent text-accent-foreground hover:bg-accent/90">
-                  <Link href="/dashboard">Login</Link>
-                </Button>
+                <div className="hidden md:flex items-center space-x-7">
+                  <a href="#" className="text-sm font-medium text-foreground hover:text-primary transition-colors">Atome</a>
+                  <a href="#" className="text-sm font-medium text-foreground hover:text-primary transition-colors">Lenat</a>
+                  <a href="#" className="text-sm font-medium text-foreground hover:text-primary transition-colors">Abrorult</a>
+                  <a href="#" className="text-sm font-medium text-foreground hover:text-primary transition-colors">Crengers</a>
+                   <a href="#" className="text-sm font-medium text-foreground hover:text-primary transition-colors">Oacties</a>
+                  <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-full px-5">
+                    <Link href="/dashboard">Lowe</Link>
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        </nav>
+          </nav>
 
-        {children}
+          <main className="relative z-10">
+            {children}
+          </main>
+        </div>
 
-        <footer className="bg-slate-800 text-gray-300 py-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-8">
+        <footer className="bg-transparent text-foreground py-16">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-8 items-center">
                     <div>
-                        <h3 className="font-heading text-2xl font-semibold text-white mb-4">Viraasat</h3>
-                        <p className="text-sm leading-relaxed">Celebrating and empowering India's rich heritage of artisan communities.</p>
+                        <h3 className="font-heading text-xl font-semibold text-primary mb-2">Hand hanmfor Indian Artians</h3>
+                        <p className="text-sm leading-relaxed">Cmopis ar ioylkas torastie no ece srdbdandi casst</p>
                     </div>
                     <div>
-                        <h3 className="font-semibold text-white mb-4">Information</h3>
-                        <ul className="space-y-2 text-sm">
-                            <li><a href="#" className="hover:text-amber-300 hover:underline">Shop All</a></li>
-                            <li><a href="#" className="hover:text-amber-300 hover:underline">Our Story</a></li>
-                            <li><a href="#" className="hover:text-amber-300 hover:underline">Journal</a></li>
-                            <li><a href="#" className="hover:text-amber-300 hover:underline">Contact</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 className="font-semibold text-white mb-4">Support</h3>
-                        <ul className="space-y-2 text-sm">
-                            <li><a href="#" className="hover:text-amber-300 hover:underline">FAQs</a></li>
-                            <li><a href="#" className="hover:text-amber-300 hover:underline">Shipping & Returns</a></li>
-                            <li><a href="#" className="hover:text-amber-300 hover:underline">Privacy Policy</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 className="font-semibold text-white mb-4">Stay Connected</h3>
-                        <p className="text-sm mb-3">Receive updates on new arrivals and special offers.</p>
-                        <form className="flex flex-col space-y-2">
-                            <input type="email" placeholder="Enter your email" className="p-2 text-sm bg-slate-700 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 text-white placeholder-gray-400" />
-                            <button type="submit" className="bg-amber-600 text-white text-sm font-semibold py-2 rounded-md hover:bg-amber-700 transition-colors">Subscribe</button>
+                        <h3 className="font-semibold text-primary mb-2">Subscripion</h3>
+                        <p className="text-sm mb-3">You: withard orr scen</p>
+                        <form className="flex items-center space-x-2">
+                            <input type="email" placeholder="Enter your email" className="p-2 text-sm bg-white/50 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-foreground placeholder-muted-foreground w-full" />
+                            <Button type="submit" className="bg-accent text-accent-foreground text-sm font-semibold py-2 rounded-md hover:bg-accent/90 px-4">MOW</Button>
                         </form>
-                        <div className="flex space-x-4 mt-6 text-xl">
-                            <a href="#" className="hover:text-amber-300"><Instagram /></a>
-                            <a href="#" className="hover:text-amber-300"><Facebook /></a>
-                            <a href="#" className="hover:text-amber-300"><Twitter /></a>
-                        </div>
                     </div>
-                </div>
-                <div className="text-center text-xs text-gray-400 border-t border-slate-700 pt-8 mt-8">
-                    <p>&copy; 2024 Viraasat. All rights reserved. A tribute to handmade elegance.</p>
+                    <div className="flex items-center justify-center md:justify-end space-x-4 text-xl">
+                      <div className="flex items-center space-x-2">
+                        <a href="#" className="hover:text-accent"><Instagram /></a>
+                        <a href="#" className="hover:text-accent"><Facebook /></a>
+                        <a href="#" className="hover:text-accent"><Twitter /></a>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <a href="#" className="hover:text-accent"><Search /></a>
+                        <a href="#" className="hover:text-accent"><ShoppingCart /></a>
+                      </div>
+                    </div>
                 </div>
             </div>
         </footer>
