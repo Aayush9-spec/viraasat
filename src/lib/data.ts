@@ -247,7 +247,7 @@ export const products: Product[] = [
     currency: 'INR',
     stock: 22,
     category: 'Jewelry',
-    images: ['https://picsum.photos/seed/prod11-1/600/600'],
+    images: ['https://images.unsplash.com/photo-1663170808179-06942aa40a56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzaWx2ZXIlMjBqaHVta2ElMjBlYXJyaW5nc3xlbnwwfHx8fDE3NTg0NDQ0ODN8MA&ixlib=rb-4.1.0&q=80&w=1080'],
     isActive: true,
     status: 'active',
     createdAt: '2023-10-15T10:00:00Z',
