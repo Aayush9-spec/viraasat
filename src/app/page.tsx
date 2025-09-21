@@ -108,7 +108,7 @@ export default function Marketplace() {
             <div className="flex flex-col lg:flex-row items-center justify-center gap-8">
               <div className="hidden lg:block">
                 <Image
-                  src="https://picsum.photos/seed/sub1/400/300"
+                  src="https://images.unsplash.com/photo-1563837738662-c86ef2ba99f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhcnRpc2FufGVufDB8fHx8MTc1ODQ0NjA4OHww&ixlib=rb-4.1.0&q=80&w=1080"
                   alt="Artisan workshop"
                   width={400}
                   height={300}
