@@ -17,8 +17,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Roboto', 'sans-serif'],
-        serif: ['serif'],
+        sans: ['Inter', 'sans-serif'],
+        heading: ['Cormorant Garamond', 'serif'],
       },
       colors: {
         background: 'hsl(var(--background))',

@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-
 import type { Product } from '@/lib/types';
 
 interface ProductCardProps {
@@ -8,23 +7,23 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-
   return (
-    <div className="group relative overflow-hidden rounded-lg">
-      <Link href={`/product/${product.id}`}>
-        <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden bg-gray-200">
-          <Image
-            src={product.images[0]}
-            alt={product.name}
-            fill
-            className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
-            data-ai-hint="product image"
-          />
-        </div>
-        <div className="absolute inset-x-0 bottom-0 bg-black/50 p-4 text-center">
-            <h3 className="text-lg font-semibold text-white">{product.name}</h3>
-        </div>
-      </Link>
-    </div>
+    <Link href={`/product/${product.id}`} className="group block bg-white rounded-lg overflow-hidden border border-gray-200 transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl">
+      <div className="w-full aspect-w-1 aspect-h-1 overflow-hidden">
+        <Image
+          src={product.images[0]}
+          alt={product.name}
+          width={400}
+          height={400}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          data-ai-hint="product image"
+        />
+      </div>
+      <div className="p-4 text-center">
+        <h3 className="text-base font-medium text-gray-900">{product.name}</h3>
+        <p className="mt-1 text-sm text-gray-500">{product.category}</p>
+        <p className="mt-2 text-lg font-semibold text-primary">${product.price.toFixed(2)}</p>
+      </div>
+    </Link>
   );
 }
