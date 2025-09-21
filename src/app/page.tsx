@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
+import Link from 'next/link';
 
 export default function Marketplace() {
   const { t } = useTranslation();
@@ -92,13 +93,18 @@ export default function Marketplace() {
         <section id="product-grid" className="py-16 bg-gradient-to-b from-orange-50/50 to-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-              {products.map((product) => (
+              {products.slice(0, 8).map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
                   variant="grid"
                 />
               ))}
+            </div>
+            <div className="text-center mt-12">
+              <Button asChild size="lg">
+                <Link href="/shop">Shop All Products</Link>
+              </Button>
             </div>
           </div>
         </section>

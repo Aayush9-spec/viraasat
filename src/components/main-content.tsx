@@ -25,8 +25,8 @@ export function MainContent({ children }: { children: React.ReactNode }) {
               <div className="flex items-center space-x-8">
                 <ViraasatLogo />
                 <div className="hidden md:flex items-center space-x-7">
-                  <a href="#products" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.shop')}</a>
-                  <a href="#mission" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.mission')}</a>
+                  <Link href="/shop" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.shop')}</Link>
+                  <a href="/#mission" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.mission')}</a>
                   <a href="#" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.journal')}</a>
                 </div>
               </div>
