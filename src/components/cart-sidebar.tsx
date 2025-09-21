@@ -78,7 +78,7 @@ export default function CartSidebar() {
                   <h3 className="font-semibold text-lg mb-4">You might also like</h3>
                   <div className="grid grid-cols-3 gap-4">
                     {recommendedProducts.map(p => (
-                       <Link href={`/product/${p.id}`} key={p.id}>
+                       <Link href={`/product/${p.id}`} key={p.id} onClick={() => setCartOpen(false)}>
                          <Image src={p.images[0]} alt={p.name} width={100} height={100} className="rounded-md object-cover aspect-square" />
                        </Link>
                     ))}
@@ -88,7 +88,9 @@ export default function CartSidebar() {
                 <span>Subtotal</span>
                 <span>₹{total.toFixed(2)}</span>
               </div>
-              <Button size="lg" className="w-full">Proceed to Checkout</Button>
+              <Button size="lg" className="w-full" asChild>
+                <Link href="/checkout" onClick={() => setCartOpen(false)}>Proceed to Checkout</Link>
+              </Button>
             </div>
           </>
         ) : (
