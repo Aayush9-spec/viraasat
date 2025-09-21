@@ -4,6 +4,7 @@ export type Product = {
   name: string;
   category: string;
   description: string; // Enhanced Description
+  tagline: string;
   originalDescription?: string;
   price: number;
   currency: string;
