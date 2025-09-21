@@ -33,7 +33,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                 <a href="#" className="text-gray-600 hover:text-amber-800 transition-colors">
                   <ShoppingCart className="h-5 w-5" />
                 </a>
-                <Button asChild className="hidden sm:inline-block bg-amber-800 text-white hover:bg-amber-900 transition-colors rounded-md">
+                <Button asChild className="hidden sm:inline-block text-white rounded-md transition-all ease-out duration-300 bg-gradient-to-r from-amber-400 to-orange-500 hover:shadow-lg hover:shadow-orange-500/30 hover:[background-position:15%]">
                   <Link href="/dashboard">{t('nav.login')}</Link>
                 </Button>
               </div>
