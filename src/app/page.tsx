@@ -15,9 +15,7 @@ export default function Marketplace() {
             Viraasat
           </h1>
           <p className="text-base text-foreground mt-4 max-w-xl mx-auto">
-            The tas Our Vediam abi, markettace, for denes, the Inn skerding
-            iniler you intll's gu s reele aity tor snet the and ond thad the
-            imiens.
+            Our marketplace is a celebration of craftsmanship, a bridge between tradition and today. Discover unique, handcrafted goods and the stories of the artisans who make them.
           </p>
         </div>
       </header>
