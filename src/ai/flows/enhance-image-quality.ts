@@ -2,7 +2,7 @@
 
 /**
  * @fileOverview AI flow to enhance the quality of an image using Genkit and
- *   the googleai/gemini-2.5-flash model.
+ *   the googleai/gemini-pro-vision model.
  *
  * - enhanceImageQuality - A function that enhances the quality of an image.
  * - EnhanceImageQualityInput - The input type for the enhanceImageQuality
