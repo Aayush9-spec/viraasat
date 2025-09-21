@@ -32,7 +32,7 @@ export default function ProductCard({ product, variant = 'mission' }: ProductCar
       <div className={cn("p-4 text-center", isGrid && "p-4")}>
         <h3 className={cn("font-medium text-gray-900", isGrid ? "text-base" : "text-sm")}>{product.name}</h3>
         <p className="mt-1 text-sm text-gray-500">{product.category}</p>
-        <p className="mt-2 text-lg font-semibold text-amber-900">${product.price.toFixed(2)}</p>
+        <p className="mt-2 text-lg font-semibold text-amber-900">₹{product.price.toFixed(2)}</p>
       </div>
     </Link>
   );

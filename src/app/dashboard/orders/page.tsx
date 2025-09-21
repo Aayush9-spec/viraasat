@@ -49,7 +49,7 @@ export default function OrdersPage() {
               <TableRow key={order.id}>
                 <TableCell className="font-medium">{order.id}</TableCell>
                 <TableCell>{format(new Date(order.orderDate), 'PPP')}</TableCell>
-                <TableCell className="text-right">${order.totalAmount.toFixed(2)}</TableCell>
+                <TableCell className="text-right">₹{order.totalAmount.toFixed(2)}</TableCell>
                 <TableCell>
                   <Badge 
                     variant={

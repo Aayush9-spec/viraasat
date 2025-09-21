@@ -75,7 +75,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
             <p className="text-lg">{product.description}</p>
             
-            <div className="text-4xl font-bold text-primary">${product.price.toFixed(2)}</div>
+            <div className="text-4xl font-bold text-primary">₹{product.price.toFixed(2)}</div>
             
             <Button size="lg" className="bg-accent hover:bg-accent/90">
               Add to Cart

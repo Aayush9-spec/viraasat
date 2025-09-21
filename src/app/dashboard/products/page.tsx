@@ -89,7 +89,7 @@ export default function ProductsPage() {
                   </Badge>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  ${product.price.toFixed(2)}
+                  ₹{product.price.toFixed(2)}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
