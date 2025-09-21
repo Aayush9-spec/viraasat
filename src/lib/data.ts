@@ -95,7 +95,7 @@ export const products: Product[] = [
     category: 'Textiles',
     stock: 5,
     images: [
-      'https://picsum.photos/seed/prod2-1/600/600',
+      'https://images.unsplash.com/photo-1562869929-bda0650edb1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxM3x8dGFwZXN0cnl8ZW58MHx8fHwxNzU4NDQzNTA2fDA&ixlib=rb-4.1.0&q=80&w=1080',
       'https://picsum.photos/seed/prod2-2/600/600',
     ],
     shippingInfo: 'Made to order. Ships within 1-2 weeks.',

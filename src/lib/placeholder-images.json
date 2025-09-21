@@ -3,7 +3,7 @@
     { "id": "prod1-1", "description": "Side view of azure ceramic vase", "imageUrl": "https://images.unsplash.com/photo-1597696929736-6d13bed8e6a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwdmFzZXxlbnwwfHx8fDE3NTg0NDM0ODJ8MA&ixlib=rb-4.1.0&q=80&w=1080", "imageHint": "ceramic vase" },
     { "id": "prod1-2", "description": "Top view of azure ceramic vase", "imageUrl": "https://picsum.photos/seed/prod1-2/600/600", "imageHint": "ceramic vase" },
     { "id": "prod1-3", "description": "Lifestyle shot of azure ceramic vase", "imageUrl": "https://picsum.photos/seed/prod1-3/600/600", "imageHint": "vase flowers" },
-    { "id": "prod2-1", "description": "Full view of sunset tapestry", "imageUrl": "https://picsum.photos/seed/prod2-1/600/600", "imageHint": "woven tapestry" },
+    { "id": "prod2-1", "description": "Full view of sunset tapestry", "imageUrl": "https://images.unsplash.com/photo-1562869929-bda0650edb1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxM3x8dGFwZXN0cnl8ZW58MHx8fHwxNzU4NDQzNTA2fDA&ixlib=rb-4.1.0&q=80&w=1080", "imageHint": "woven tapestry" },
     { "id": "prod2-2", "description": "Close-up of sunset tapestry texture", "imageUrl": "https://picsum.photos/seed/prod2-2/600/600", "imageHint": "fabric texture" },
     { "id": "prod3-1", "description": "Earthenware mug set", "imageUrl": "https://picsum.photos/seed/prod3-1/600/600", "imageHint": "coffee mug" },
     { "id": "prod4-1", "description": "Geometric print scarf", "imageUrl": "https://picsum.photos/seed/prod4-1/600/600", "imageHint": "patterned scarf" },
