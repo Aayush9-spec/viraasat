@@ -108,3 +108,12 @@
 .hero-section {
   background-color: #FDFBF8;
 }
+
+.embla-slide-inner {
+  transform: scale(0.8) rotateY(-10deg);
+  transition: transform 0.5s ease;
+}
+
+.embla__slide--selected .embla-slide-inner {
+  transform: scale(1) rotateY(0);
+}

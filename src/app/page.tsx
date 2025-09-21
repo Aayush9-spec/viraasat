@@ -2,11 +2,28 @@
 import ProductCard from '@/components/product-card';
 import { products } from '@/lib/data';
 import { useTranslation } from '@/hooks/use-translation';
+import useEmblaCarousel from 'embla-carousel-react';
+import { useCallback } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function Marketplace() {
   const { t } = useTranslation();
   const missionProducts = products.slice(0, 8);
-  const gridProducts = products.slice(8, 12);
+  const gridProducts = products.slice(0, 12);
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: 'center',
+    containScroll: 'trimSnaps',
+  });
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
 
   return (
     <div>
@@ -28,12 +45,41 @@ export default function Marketplace() {
         </div>
       </header>
 
-      <section id="mission" className="py-16 bg-white">
+      <section id="mission" className="py-16 bg-white relative">
         <div className="max-w-4xl mx-auto px-4 text-center">
            <h2 className="text-4xl font-heading font-semibold text-amber-900 mb-4">{t('home.mission.title')}</h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
+            <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
               {t('home.mission.description')}
             </p>
+        </div>
+        <div className="relative mt-12">
+            <div className="overflow-hidden" ref={emblaRef} style={{ perspective: '1000px' }}>
+                <div className="flex">
+                    {missionProducts.map((product) => (
+                    <div key={product.id} className="relative flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_45%] lg:flex-[0_0_33.33%] min-w-0 pl-4">
+                       <div className="embla-slide-inner">
+                         <ProductCard product={product} variant="mission" />
+                       </div>
+                    </div>
+                    ))}
+                </div>
+            </div>
+             <Button
+              variant="outline"
+              size="icon"
+              className="absolute top-1/2 left-4 -translate-y-1/2 rounded-full h-10 w-10 z-10 hidden md:flex"
+              onClick={scrollPrev}
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute top-1/2 right-4 -translate-y-1/2 rounded-full h-10 w-10 z-10 hidden md:flex"
+              onClick={scrollNext}
+            >
+              <ChevronRight className="h-6 w-6" />
+            </Button>
         </div>
       </section>
 
