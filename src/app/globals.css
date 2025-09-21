@@ -106,3 +106,23 @@
     transform: translateY(50%) rotate(-3deg);
     opacity: 0.5;
 }
+
+@layer utilities {
+  .breathing-gradient {
+    background: linear-gradient(-45deg, #fff7ed, #fffbeb, #fde8e8, #faf8f3);
+    background-size: 400% 400%;
+    animation: breathing-gradient 15s ease infinite;
+  }
+}
+
+@keyframes breathing-gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
