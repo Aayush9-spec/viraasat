@@ -98,7 +98,7 @@ export default function CartSidebar() {
             <p className="text-lg font-semibold">Your cart is empty</p>
             <p className="text-muted-foreground mt-1">Find something special to add.</p>
             <Button asChild className="mt-4" onClick={() => setCartOpen(false)}>
-              <Link href="/">Continue Shopping</Link>
+              <Link href="/shop">Continue Shopping</Link>
             </Button>
           </div>
         )}

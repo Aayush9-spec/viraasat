@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { GooglePayLogo, PaytmLogo, PhonePeLogo } from '@/components/payment-icons';
 import { QrCode } from 'lucide-react';
+import Link from 'next/link';
 
 export default function CheckoutPage() {
     const { cartItems, getCartTotal } = useCart();
@@ -25,7 +26,7 @@ export default function CheckoutPage() {
                 <h1 className="text-2xl font-semibold mb-4">Your cart is empty.</h1>
                 <p className="text-muted-foreground mb-8">Add items to your cart to proceed to checkout.</p>
                 <Button asChild>
-                    <a href="/">Continue Shopping</a>
+                    <Link href="/shop">Continue Shopping</Link>
                 </Button>
             </div>
         );
