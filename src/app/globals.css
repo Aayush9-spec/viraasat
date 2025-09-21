@@ -70,42 +70,20 @@
   }
 }
 
-.wavy-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
-    background:
-        radial-gradient(ellipse at 50% 0%, hsl(var(--background-start-hsl)) 50%, transparent 80%),
-        radial-gradient(ellipse at 50% 100%, hsl(var(--background-end-hsl)) 40%, transparent 80%);
-    overflow: hidden;
+.parallax-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background-color: #FAF8F3;
+  background-image:
+    radial-gradient(circle at top left, rgba(189, 147, 83, 0.05), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(212, 175, 128, 0.05), transparent 35%);
+  background-size: 100% 100%;
 }
 
-.wavy-background::before {
-    content: '';
-    position: absolute;
-    top: 45%;
-    left: -50%;
-    right: -50%;
-    height: 300px;
-    background: radial-gradient(50% 100% at 50% 100%, white, transparent);
-    transform: translateY(-50%) rotate(4deg);
-    opacity: 0.4;
-}
-
-.wavy-background::after {
-    content: '';
-    position: absolute;
-    bottom: 50%;
-    left: -50%;
-    right: -50%;
-    height: 300px;
-    background: radial-gradient(50% 100% at 50% 0%, hsl(var(--background-end-hsl)), transparent);
-    transform: translateY(50%) rotate(-3deg);
-    opacity: 0.5;
-}
 
 @layer utilities {
   .breathing-gradient {
