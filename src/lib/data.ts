@@ -69,7 +69,7 @@ export const products: Product[] = [
     category: 'Home Decor',
     stock: 15,
     images: [
-      'https://picsum.photos/seed/prod1-1/600/600',
+      'https://images.unsplash.com/photo-1597696929736-6d13bed8e6a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwdmFzZXxlbnwwfHx8fDE3NTg0NDM0ODJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
       'https://picsum.photos/seed/prod1-2/600/600',
       'https://picsum.photos/seed/prod1-3/600/600',
     ],
