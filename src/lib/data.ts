@@ -151,7 +151,7 @@ export const products: Product[] = [
     currency: 'INR',
     stock: 0,
     category: 'Gardening',
-    images: ['https://picsum.photos/seed/prod5-1/600/600'],
+    images: ['https://images.unsplash.com/photo-1728463098232-4ab2f94f53f2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxOXx8dGVycmFjb3R0YSUyMHBsYW50ZXJ8ZW58MHx8fHwxNzU4NDQ0MjcxfDA&ixlib=rb-4.1.0&q=80&w=1080'],
     isActive: false,
     status: 'archived', // Legacy
     createdAt: '2023-08-10T11:45:00Z',
@@ -191,8 +191,8 @@ export const products: Product[] = [
   },
   {
     id: 'prod-8',
-    artisanId: 'artisan-1',
     name: 'Ceramic Tea Set',
+    artisanId: 'artisan-1',
     description: 'A complete tea set for two, including a teapot, two cups, and a serving tray. Finished with a delicate crackle glaze.',
     tagline: 'For moments of shared tranquility.',
     price: 6800,
@@ -382,5 +382,6 @@ export const categories: string[] = [
   'Painting',
 ];
 
+    
     
     
