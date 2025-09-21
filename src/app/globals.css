@@ -4,33 +4,31 @@
 
 @layer base {
   :root {
-    --background-start-hsl: 39 56% 95%;
-    --background-end-hsl: 180 15% 80%;
-    --background: 30 50% 98%; /* #FDFBF8 */
-    --foreground: 24 9.8% 10%; /* gray-800 */
+    --background: 180 15% 98%; /* Light Gray #F0F0F0 */
+    --foreground: 24 9.8% 10%;
     --card: 0 0% 100%;
     --card-foreground: 24 9.8% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 24 9.8% 10%;
-    --primary: 35 78% 30%; /* amber-900 */
+    --primary: 180 100% 25%; /* Teal #008080 */
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 40 80% 60%; /* amber-500 for rings/focus */
+    --accent: 16 95% 60%; /* Coral #FF7F50 */
     --accent-foreground: 24 9.8% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%; /* gray-200 */
+    --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
-    --ring: 40 80% 60%;
+    --ring: 180 100% 25%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem; /* rounded-lg */
+    --radius: 0.5rem;
   }
  
   .dark {
@@ -40,19 +38,19 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 6% 10%;
     --popover-foreground: 0 0% 98%;
-    --primary: 35 78% 40%;
+    --primary: 180 100% 35%;
     --primary-foreground: 0 0% 98%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 0 0% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 40 80% 70%;
+    --accent: 16 95% 70%;
     --accent-foreground: 24 9.8% 10%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 40 80% 70%;
+    --ring: 180 100% 35%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -70,24 +68,9 @@
   }
 }
 
-.parallax-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: -1;
-  background-color: #FAF8F3;
-  background-image:
-    radial-gradient(circle at top left, rgba(189, 147, 83, 0.05), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(212, 175, 128, 0.05), transparent 35%);
-  background-size: 100% 100%;
-}
-
-
 @layer utilities {
   .breathing-gradient {
-    background: linear-gradient(-45deg, #fff7ed, #fffbeb, #fde8e8, #faf8f3);
+    background: linear-gradient(-45deg, hsl(var(--primary) / 0.1), hsl(var(--accent) / 0.1), hsl(var(--background)), hsl(var(--secondary)));
     background-size: 400% 400%;
     animation: breathing-gradient 15s ease infinite;
   }
@@ -106,7 +89,11 @@
 }
 
 .hero-section {
-  background-color: #FDFBF8;
+  background-color: transparent;
+}
+
+.embla__slide {
+  min-width: 0;
 }
 
 .embla-slide-inner {
@@ -116,4 +103,54 @@
 
 .embla__slide--selected .embla-slide-inner {
   transform: scale(1) rotateY(0);
+}
+
+.parallax-viewport {
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  perspective: 1px;
+}
+
+.hero-parallax-group {
+  height: 100vh;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.hero-parallax-layer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.hero-bg-layer {
+  background-image: url('https://images.unsplash.com/photo-1534447677768-64483a0a71d3?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  transform: translateZ(-1px) scale(2);
+  z-index: 1;
+}
+
+.hero-overlay-layer {
+  background-color: hsl(var(--primary) / 0.5);
+  z-index: 2;
+  transform: translateZ(0);
+}
+
+.hero-content-layer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transform: translateZ(0);
+  z-index: 3;
+}
+
+.content-container {
+  position: relative;
+  z-index: 5;
 }
