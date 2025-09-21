@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { Facebook, Instagram, Search, ShoppingCart, Twitter } from "lucide-react";
 import { Toaster } from "./ui/toaster";
+import VoiceSearch from "./voice-search";
 
 export function MainContent({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
@@ -25,12 +26,10 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                   <a href="#" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.journal')}</a>
                 </div>
               </div>
-              <div className="flex items-center space-x-5">
+              <div className="flex items-center space-x-2 md:space-x-5">
+                <VoiceSearch />
                 <LanguageSwitcher />
-                <a href="#" className="text-gray-600 hover:text-amber-800 transition-colors">
-                  <Search className="h-5 w-5" />
-                </a>
-                <a href="#" className="text-gray-600 hover:text-amber-800 transition-colors">
+                <a href="#" className="text-gray-600 hover:text-amber-800 transition-colors hidden sm:inline-flex">
                   <ShoppingCart className="h-5 w-5" />
                 </a>
                 <Button asChild className="hidden sm:inline-block text-white rounded-md transition-all ease-out duration-300 bg-gradient-to-r from-amber-400 to-orange-500 hover:shadow-lg hover:shadow-orange-500/30 hover:[background-position:15%]">
