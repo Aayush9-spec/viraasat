@@ -42,7 +42,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                     )}
                  </Button>
                 <Button asChild className="hidden sm:inline-block text-white rounded-md transition-all ease-out duration-300 bg-gradient-to-r from-amber-400 to-orange-500 hover:shadow-lg hover:shadow-orange-500/30 hover:[background-position:15%]">
-                  <Link href="/dashboard">{t('nav.login')}</Link>
+                  <Link href="/login">{t('nav.login')}</Link>
                 </Button>
               </div>
             </div>

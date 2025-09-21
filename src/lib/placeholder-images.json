@@ -9,6 +9,8 @@
     { "id": "prod4-1", "description": "Geometric print scarf", "imageUrl": "https://picsum.photos/seed/prod4-1/600/600", "imageHint": "patterned scarf" },
     { "id": "prod5-1", "description": "Terracotta planter", "imageUrl": "https://picsum.photos/seed/prod5-1/600/600", "imageHint": "plant pot" },
     { "id": "artisan1", "description": "Profile picture of Riya Sharma", "imageUrl": "https://picsum.photos/seed/artisan1/100/100", "imageHint": "woman portrait" },
-    { "id": "artisan2", "description": "Profile picture of Aarav Patel", "imageUrl": "https://picsum.photos/seed/artisan2/100/100", "imageHint": "man portrait" }
+    { "id": "artisan2", "description": "Profile picture of Aarav Patel", "imageUrl": "https://picsum.photos/seed/artisan2/100/100", "imageHint": "man portrait" },
+    { "id": "login-customer", "description": "A person enjoying a handcrafted item in a lovely home", "imageUrl": "https://picsum.photos/seed/login-customer/800/1000", "imageHint": "lifestyle product" },
+    { "id": "login-artisan", "description": "An artisan at work", "imageUrl": "https://picsum.photos/seed/login-artisan/800/1000", "imageHint": "artisan working" }
   ]
 }
