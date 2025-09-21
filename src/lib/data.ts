@@ -119,7 +119,7 @@ export const products: Product[] = [
     currency: 'INR',
     stock: 25,
     category: 'Kitchenware',
-    images: ['https://picsum.photos/seed/prod3-1/600/600'],
+    images: ['https://images.unsplash.com/photo-1708368952731-db40e6a86d21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNHx8ZWFydGhlbndhcmUlMjBtdWclMjBzZXR8ZW58MHx8fHwxNzU4NDQzOTM0fDA&ixlib=rb-4.1.0&q=80&w=1080'],
     isActive: true,
     status: 'active', // Legacy
     createdAt: '2023-07-01T09:00:00Z',
@@ -382,4 +382,5 @@ export const categories: string[] = [
   'Painting',
 ];
 
+    
     

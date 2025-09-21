@@ -5,7 +5,7 @@
     { "id": "prod1-3", "description": "Lifestyle shot of azure ceramic vase", "imageUrl": "https://picsum.photos/seed/prod1-3/600/600", "imageHint": "vase flowers" },
     { "id": "prod2-1", "description": "Full view of sunset tapestry", "imageUrl": "https://images.unsplash.com/photo-1562869929-bda0650edb1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxM3x8dGFwZXN0cnl8ZW58MHx8fHwxNzU4NDQzNTA2fDA&ixlib=rb-4.1.0&q=80&w=1080", "imageHint": "woven tapestry" },
     { "id": "prod2-2", "description": "Close-up of sunset tapestry texture", "imageUrl": "https://picsum.photos/seed/prod2-2/600/600", "imageHint": "fabric texture" },
-    { "id": "prod3-1", "description": "Earthenware mug set", "imageUrl": "https://picsum.photos/seed/prod3-1/600/600", "imageHint": "coffee mug" },
+    { "id": "prod3-1", "description": "Earthenware mug set", "imageUrl": "https://images.unsplash.com/photo-1708368952731-db40e6a86d21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNHx8ZWFydGhlbndhcmUlMjBtdWclMjBzZXR8ZW58MHx8fHwxNzU4NDQzOTM0fDA&ixlib=rb-4.1.0&q=80&w=1080", "imageHint": "coffee mug" },
     { "id": "prod4-1", "description": "Geometric print scarf", "imageUrl": "https://picsum.photos/seed/prod4-1/600/600", "imageHint": "patterned scarf" },
     { "id": "prod5-1", "description": "Terracotta planter", "imageUrl": "https://picsum.photos/seed/prod5-1/600/600", "imageHint": "plant pot" },
     { "id": "prod8-1", "description": "Ceramic tea set", "imageUrl": "https://images.unsplash.com/photo-1721373489867-b95a7b3fe16c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwdGVhJTIwc2V0fGVufDB8fHx8MTc1ODQ0Mzc5MHww&ixlib=rb-4.1.0&q=80&w=1080", "imageHint": "ceramic tea set" },
