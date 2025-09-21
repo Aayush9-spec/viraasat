@@ -6,6 +6,8 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { Input } from '@/components/ui/input';
 
 export default function Marketplace() {
   const { t } = useTranslation();
@@ -56,7 +58,7 @@ export default function Marketplace() {
             <div className="overflow-hidden" ref={emblaRef} style={{ perspective: '1000px' }}>
                 <div className="flex">
                     {missionProducts.map((product) => (
-                    <div key={product.id} className="relative flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_45%] lg:flex-[0_0_33.33%] min-w-0 pl-4">
+                    <div key={product.id} className="embla__slide relative flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_45%] lg:flex-[0_0_33.33%] min-w-0 pl-4">
                        <div className="embla-slide-inner">
                          <ProductCard product={product} variant="mission" />
                        </div>
@@ -93,6 +95,45 @@ export default function Marketplace() {
                 variant="grid"
               />
             ))}
+          </div>
+        </div>
+      </section>
+      
+      <section className="py-20 bg-gradient-to-t from-teal-50/50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-8">
+            <div className="hidden lg:block">
+              <Image
+                src="https://picsum.photos/seed/sub1/400/300"
+                alt="Artisan workshop"
+                width={400}
+                height={300}
+                className="rounded-lg shadow-lg"
+                data-ai-hint="artisan workshop"
+              />
+            </div>
+            <div className="text-center max-w-lg">
+              <h3 className="font-heading text-3xl font-semibold text-gray-800">Hand-picked for Indian Artisans</h3>
+              <p className="mt-2 text-gray-600">Quality goods from passionate creators.</p>
+              <div className="mt-8">
+                <h4 className="font-semibold text-gray-700">Subscription</h4>
+                <p className="mt-1 text-sm text-gray-500">Stay updated with our latest collections.</p>
+                <form className="mt-4 flex flex-col sm:flex-row gap-2 justify-center">
+                  <Input type="email" placeholder="Your email..." className="max-w-xs" />
+                  <Button type="submit" className="bg-amber-500 hover:bg-amber-600 text-white">Subscribe</Button>
+                </form>
+              </div>
+            </div>
+            <div className="hidden lg:block">
+              <Image
+                src="https://picsum.photos/seed/sub2/400/300"
+                alt="Green plant"
+                width={400}
+                height={300}
+                className="rounded-lg shadow-lg"
+                data-ai-hint="nature plant"
+              />
+            </div>
           </div>
         </div>
       </section>

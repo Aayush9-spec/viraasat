@@ -46,47 +46,17 @@ export function MainContent({ children }: { children: React.ReactNode }) {
         </main>
       </div>
 
-      <footer className="bg-slate-800 text-gray-300 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-8">
-            <div>
-              <h3 className="font-heading text-2xl font-semibold text-white mb-4">{t('footer.about.title')}</h3>
-              <p className="text-sm leading-relaxed">{t('footer.about.description')}</p>
+      <footer className="bg-white py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div className="flex items-center justify-center h-10 w-10 bg-gray-900 text-white font-bold rounded-full text-lg">
+                V
             </div>
-            <div>
-              <h3 className="font-semibold text-white mb-4">{t('footer.information.title')}</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-amber-300 hover:underline">{t('footer.information.shop')}</a></li>
-                <li><a href="#" className="hover:text-amber-300 hover:underline">{t('footer.information.story')}</a></li>
-                <li><a href="#" className="hover:text-amber-300 hover:underline">{t('footer.information.journal')}</a></li>
-                <li><a href="#" className="hover:text-amber-300 hover:underline">{t('footer.information.contact')}</a></li>
-              </ul>
+            <div className="flex space-x-6 text-gray-500">
+                <a href="#" className="hover:text-gray-900"><Twitter className="h-5 w-5" /></a>
+                <a href="#" className="hover:text-gray-900"><Facebook className="h-5 w-5" /></a>
+                <a href="#" className="hover:text-gray-900"><Instagram className="h-5 w-5" /></a>
+                <a href="#" className="hover:text-gray-900"><ShoppingCart className="h-5 w-5" /></a>
             </div>
-            <div>
-              <h3 className="font-semibold text-white mb-4">{t('footer.support.title')}</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-amber-300 hover:underline">{t('footer.support.faq')}</a></li>
-                <li><a href="#" className="hover:text-amber-300 hover:underline">{t('footer.support.shipping')}</a></li>
-                <li><a href="#" className="hover:text-amber-300 hover:underline">{t('footer.support.privacy')}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-white mb-4">{t('footer.connect.title')}</h3>
-              <p className="text-sm mb-3">{t('footer.connect.description')}</p>
-              <form className="flex flex-col space-y-2">
-                <input type="email" placeholder={t('footer.connect.placeholder')} className="p-2 text-sm bg-slate-700 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 text-white placeholder-gray-400" />
-                <Button type="submit" className="bg-amber-600 text-white text-sm font-semibold py-2 rounded-md hover:bg-amber-700 transition-colors">{t('footer.connect.subscribe')}</Button>
-              </form>
-              <div className="flex space-x-4 mt-6 text-xl">
-                <a href="#" className="hover:text-amber-300"><Instagram /></a>
-                <a href="#" className="hover:text-amber-300"><Facebook /></a>
-                <a href="#" className="hover:text-amber-300"><Twitter /></a>
-              </div>
-            </div>
-          </div>
-          <div className="text-center text-xs text-gray-400 border-t border-slate-700 pt-8 mt-8">
-            <p>{t('footer.copyright')}</p>
-          </div>
         </div>
       </footer>
       <Toaster />
