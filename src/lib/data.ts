@@ -263,7 +263,7 @@ export const products: Product[] = [
     currency: 'INR',
     stock: 7,
     category: 'Textiles',
-    images: ['https://picsum.photos/seed/prod12-1/600/600'],
+    images: ['https://images.unsplash.com/photo-1700530501759-189d3dbfe2d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YmxvY2slMjBwcmludGVkJTIwcXVpbHR8ZW58MHx8fHwxNzU4NDQ1ODIwfDA&ixlib=rb-4.1.0&q=80&w=1080'],
     isActive: true,
     status: 'active',
     createdAt: '2023-10-18T14:30:00Z',
@@ -385,3 +385,4 @@ export const categories: string[] = [
     
     
     
+
