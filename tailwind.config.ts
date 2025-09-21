@@ -18,8 +18,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Roboto', 'sans-serif'],
-        headline: ['Roboto', 'sans-serif'],
-        code: ['monospace'],
+        serif: ['serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -90,6 +89,10 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      aspectRatio: {
+        'h-1': '1',
+        'w-1': '1',
+      }
     },
   },
   plugins: [require('tailwindcss-animate')],

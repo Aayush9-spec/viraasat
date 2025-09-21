@@ -1,48 +1,30 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+
 import type { Product } from '@/lib/types';
-import { artisans } from '@/lib/data';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const artisan = artisans.find((a) => a.id === product.artisanId);
 
   return (
-    <Card className="flex flex-col overflow-hidden transition-all hover:shadow-lg">
+    <div className="group relative overflow-hidden rounded-lg">
       <Link href={`/product/${product.id}`}>
-        <CardHeader className="p-0">
-          <div className="aspect-square relative">
-            <Image
-              src={product.images[0]}
-              alt={product.name}
-              fill
-              className="object-cover"
-              data-ai-hint="product image"
-            />
-          </div>
-        </CardHeader>
-        <CardContent className="p-4 flex-grow">
-          <CardTitle className="text-lg mb-1 leading-tight">{product.name}</CardTitle>
-          <p className="text-sm text-muted-foreground">by {artisan?.shopName}</p>
-        </CardContent>
+        <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden bg-gray-200">
+          <Image
+            src={product.images[0]}
+            alt={product.name}
+            fill
+            className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+            data-ai-hint="product image"
+          />
+        </div>
+        <div className="absolute inset-x-0 bottom-0 bg-black/50 p-4 text-center">
+            <h3 className="text-lg font-semibold text-white">{product.name}</h3>
+        </div>
       </Link>
-      <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        <p className="font-semibold text-lg">${product.price.toFixed(2)}</p>
-        <Button asChild size="sm" variant="outline">
-          <Link href={`/product/${product.id}`}>View Details</Link>
-        </Button>
-      </CardFooter>
-    </Card>
+    </div>
   );
 }
