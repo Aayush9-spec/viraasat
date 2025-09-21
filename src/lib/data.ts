@@ -183,7 +183,7 @@ export const products: Product[] = [
     currency: 'INR',
     category: 'Textiles',
     stock: 20,
-    images: ['https://picsum.photos/seed/prod7-1/600/600'],
+    images: ['https://images.unsplash.com/photo-1689413182146-14b0a9b972b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxN3x8ZW1icm9pZGVyZWQlMjBjdXNoaW9ufGVufDB8fHx8MTc1ODQ0NDc3Mnww&ixlib=rb-4.1.0&q=80&w=1080'],
     isActive: true,
     status: 'active',
     createdAt: '2023-09-15T14:30:00Z',
@@ -336,7 +336,7 @@ export const orders: Order[] = [
     id: 'ord-004',
     buyerId: 'user-123',
     artisanId: 'artisan-2',
-    items: [{ productId: 'prod-7', productName: 'Embroidered Cushion Cover', quantity: 2, unitPrice: 3200, itemImageUrl: 'https://picsum.photos/seed/prod7-1/600/600' }],
+    items: [{ productId: 'prod-7', productName: 'Embroidered Cushion Cover', quantity: 2, unitPrice: 3200, itemImageUrl: 'https://images.unsplash.com/photo-1689413182146-14b0a9b972b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxN3x8ZW1icm9pZGVyZWQlMjBjdXNoaW9ufGVufDB8fHx8MTc1ODQ0NDc3Mnww&ixlib=rb-4.1.0&q=80&w=1080' }],
     totalAmount: 6400,
     shippingAddress: {
         fullName: "Alice Johnson",
