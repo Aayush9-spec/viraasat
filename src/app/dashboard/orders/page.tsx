@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select"
 import { orders } from "@/lib/data"
 import { Badge } from "@/components/ui/badge"
+import { format } from "date-fns"
 
 export default function OrdersPage() {
   return (
@@ -47,14 +48,14 @@ export default function OrdersPage() {
             {orders.map((order) => (
               <TableRow key={order.id}>
                 <TableCell className="font-medium">{order.id}</TableCell>
-                <TableCell>{order.orderDate}</TableCell>
+                <TableCell>{format(new Date(order.orderDate), 'PPP')}</TableCell>
                 <TableCell className="text-right">${order.totalAmount.toFixed(2)}</TableCell>
                 <TableCell>
                   <Badge 
                     variant={
                       order.status === 'Delivered' ? 'default' :
                       order.status === 'Shipped' ? 'outline' :
-                      order.status === 'Pending' ? 'secondary' :
+                      order.status === 'Pending' || order.status === 'Processing' ? 'secondary' :
                       'destructive'
                     }
                   >
@@ -68,6 +69,7 @@ export default function OrdersPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Pending">Pending</SelectItem>
+                      <SelectItem value="Processing">Processing</SelectItem>
                       <SelectItem value="Shipped">Shipped</SelectItem>
                       <SelectItem value="Delivered">Delivered</SelectItem>
                       <SelectItem value="Cancelled">Cancelled</SelectItem>

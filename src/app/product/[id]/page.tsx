@@ -101,33 +101,33 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               </Card>
             )}
 
-            {(product.features || product.styleTags || product.useCases) && (
+            {(product.aiInsights) && (
               <Card>
                 <CardHeader>
                   <CardTitle>AI Generated Insights</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {product.features && (
+                  {product.aiInsights.keyFeatures && (
                     <div>
                       <h3 className="font-semibold mb-2">Features</h3>
                       <div className="flex flex-wrap gap-2">
-                        {product.features.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                        {product.aiInsights.keyFeatures.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                       </div>
                     </div>
                   )}
-                  {product.styleTags && (
+                  {product.aiInsights.styleTags && (
                     <div>
                       <h3 className="font-semibold mb-2">Style Tags</h3>
                       <div className="flex flex-wrap gap-2">
-                        {product.styleTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                        {product.aiInsights.styleTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                       </div>
                     </div>
                   )}
-                  {product.useCases && (
+                  {product.aiInsights.useCases && (
                     <div>
                       <h3 className="font-semibold mb-2">Use Cases</h3>
                       <div className="flex flex-wrap gap-2">
-                        {product.useCases.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                        {product.aiInsights.useCases.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                       </div>
                     </div>
                   )}

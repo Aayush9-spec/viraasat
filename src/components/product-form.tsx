@@ -53,11 +53,11 @@ interface ProductFormProps {
 export function ProductForm({ product }: ProductFormProps) {
   const { toast } = useToast();
   const [images, setImages] = useState<string[]>(product?.images || []);
-  const [features, setFeatures] = useState<string[]>(product?.features || []);
+  const [features, setFeatures] = useState<string[]>(product?.aiInsights?.keyFeatures || []);
   const [styleTags, setStyleTags] = useState<string[]>(
-    product?.styleTags || []
+    product?.aiInsights?.styleTags || []
   );
-  const [useCases, setUseCases] = useState<string[]>(product?.useCases || []);
+  const [useCases, setUseCases] = useState<string[]>(product?.aiInsights?.useCases || []);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const form = useForm<z.infer<typeof productSchema>>({
