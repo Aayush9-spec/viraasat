@@ -167,7 +167,7 @@ export const products: Product[] = [
     currency: 'INR',
     category: 'Kitchenware',
     stock: 12,
-    images: ['https://picsum.photos/seed/prod6-1/600/600'],
+    images: ['https://images.unsplash.com/photo-1648889095175-1757165415e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxN3x8Z2xhemVkJTIwc291cCUyMGJvd2xzfGVufDB8fHx8MTc1ODQ0NTAzNHww&ixlib=rb-4.1.0&q=80&w=1080'],
     isActive: true,
     status: 'active',
     createdAt: '2023-09-01T10:00:00Z',
