@@ -8,9 +8,12 @@
     { "id": "prod3-1", "description": "Earthenware mug set", "imageUrl": "https://picsum.photos/seed/prod3-1/600/600", "imageHint": "coffee mug" },
     { "id": "prod4-1", "description": "Geometric print scarf", "imageUrl": "https://picsum.photos/seed/prod4-1/600/600", "imageHint": "patterned scarf" },
     { "id": "prod5-1", "description": "Terracotta planter", "imageUrl": "https://picsum.photos/seed/prod5-1/600/600", "imageHint": "plant pot" },
+    { "id": "prod8-1", "description": "Ceramic tea set", "imageUrl": "https://images.unsplash.com/photo-1721373489867-b95a7b3fe16c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwdGVhJTIwc2V0fGVufDB8fHx8MTc1ODQ0Mzc5MHww&ixlib=rb-4.1.0&q=80&w=1080", "imageHint": "ceramic tea set" },
     { "id": "artisan1", "description": "Profile picture of Riya Sharma", "imageUrl": "https://picsum.photos/seed/artisan1/100/100", "imageHint": "woman portrait" },
     { "id": "artisan2", "description": "Profile picture of Aarav Patel", "imageUrl": "https://picsum.photos/seed/artisan2/100/100", "imageHint": "man portrait" },
     { "id": "login-customer", "description": "A person enjoying a handcrafted item in a lovely home", "imageUrl": "https://picsum.photos/seed/login-customer/800/1000", "imageHint": "lifestyle product" },
     { "id": "login-artisan", "description": "An artisan at work", "imageUrl": "https://picsum.photos/seed/login-artisan/800/1000", "imageHint": "artisan working" }
   ]
 }
+
+    
