@@ -1,10 +1,10 @@
 import { UserNav } from "@/components/user-nav"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { Menu, Package2 } from "lucide-react"
+import { Menu } from "lucide-react"
 import { DashboardNav } from "./dashboard-nav"
-import Link from "next/link"
 import { ViraasatLogo } from "./viraasat-logo"
+import Link from 'next/link';
 
 interface DashboardHeaderProps {
     title: string;
@@ -21,8 +21,12 @@ export function DashboardHeader({ title }: DashboardHeaderProps) {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col">
-            <ViraasatLogo />
-            <DashboardNav />
+            <nav className="grid gap-2 text-lg font-medium">
+              <Link href="#" className="flex items-center gap-2 text-lg font-semibold mb-4">
+                <ViraasatLogo />
+              </Link>
+              <DashboardNav />
+            </nav>
         </SheetContent>
       </Sheet>
       <div className="w-full flex-1">

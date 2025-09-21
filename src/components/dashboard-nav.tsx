@@ -1,9 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Package, ShoppingCart, UserCircle, LayoutDashboard } from 'lucide-react';
+import { Package, ShoppingCart, UserCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from './ui/button';
 
 const navItems = [
   { href: '/dashboard/products', label: 'Products', icon: Package },
