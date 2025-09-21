@@ -18,12 +18,14 @@ import { Separator } from '@/components/ui/separator';
 import { ViraasatLogo } from '@/components/viraasat-logo';
 import { useCart } from '@/context/cart-context';
 import { useToast } from '@/hooks/use-toast';
+import { use } from 'react';
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const { addItem } = useCart();
   const { toast } = useToast();
+  const resolvedParams = use(Promise.resolve(params));
 
-  const product = products.find((p) => p.id === params.id);
+  const product = products.find((p) => p.id === resolvedParams.id);
   if (!product) {
     notFound();
   }
