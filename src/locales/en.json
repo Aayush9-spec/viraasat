@@ -1,0 +1,44 @@
+{
+  "nav": {
+    "shop": "Shop",
+    "mission": "Our Mission",
+    "journal": "Journal",
+    "login": "Login"
+  },
+  "home": {
+    "hero": {
+      "subtitle": "Explore Our Collection",
+      "description": "Discover authentic Indian handicrafts, each one a unique piece of art, telling a story of tradition and skill."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "Viraasat is a tribute to the soul of India's artisan communities. We provide a platform for talented craftspeople to share their ancestral skills and handmade treasures with the world. By purchasing from our artisans, you're helping preserve a legacy and empower a community."
+    }
+  },
+  "footer": {
+    "about": {
+      "title": "Viraasat",
+      "description": "Celebrating and empowering India's rich heritage of artisan communities."
+    },
+    "information": {
+      "title": "Information",
+      "shop": "Shop All",
+      "story": "Our Story",
+      "journal": "Journal",
+      "contact": "Contact"
+    },
+    "support": {
+      "title": "Support",
+      "faq": "FAQs",
+      "shipping": "Shipping & Returns",
+      "privacy": "Privacy Policy"
+    },
+    "connect": {
+      "title": "Stay Connected",
+      "description": "Receive updates on new arrivals and special offers.",
+      "subscribe": "Subscribe",
+      "placeholder": "Enter your email"
+    },
+    "copyright": "© 2024 Viraasat. All rights reserved. A tribute to handmade elegance."
+  }
+}
