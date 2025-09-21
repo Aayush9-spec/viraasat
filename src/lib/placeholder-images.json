@@ -1,3 +1,14 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    { "id": "prod1-1", "description": "Side view of azure ceramic vase", "imageUrl": "https://picsum.photos/seed/prod1-1/600/600", "imageHint": "ceramic vase" },
+    { "id": "prod1-2", "description": "Top view of azure ceramic vase", "imageUrl": "https://picsum.photos/seed/prod1-2/600/600", "imageHint": "ceramic vase" },
+    { "id": "prod1-3", "description": "Lifestyle shot of azure ceramic vase", "imageUrl": "https://picsum.photos/seed/prod1-3/600/600", "imageHint": "vase flowers" },
+    { "id": "prod2-1", "description": "Full view of sunset tapestry", "imageUrl": "https://picsum.photos/seed/prod2-1/600/600", "imageHint": "woven tapestry" },
+    { "id": "prod2-2", "description": "Close-up of sunset tapestry texture", "imageUrl": "https://picsum.photos/seed/prod2-2/600/600", "imageHint": "fabric texture" },
+    { "id": "prod3-1", "description": "Earthenware mug set", "imageUrl": "https://picsum.photos/seed/prod3-1/600/600", "imageHint": "coffee mug" },
+    { "id": "prod4-1", "description": "Geometric print scarf", "imageUrl": "https://picsum.photos/seed/prod4-1/600/600", "imageHint": "patterned scarf" },
+    { "id": "prod5-1", "description": "Terracotta planter", "imageUrl": "https://picsum.photos/seed/prod5-1/600/600", "imageHint": "plant pot" },
+    { "id": "artisan1", "description": "Profile picture of Riya Sharma", "imageUrl": "https://picsum.photos/seed/artisan1/100/100", "imageHint": "woman portrait" },
+    { "id": "artisan2", "description": "Profile picture of Aarav Patel", "imageUrl": "https://picsum.photos/seed/artisan2/100/100", "imageHint": "man portrait" }
+  ]
 }
