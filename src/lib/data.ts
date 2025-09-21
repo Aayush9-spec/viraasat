@@ -135,7 +135,7 @@ export const products: Product[] = [
     currency: 'INR',
     stock: 50,
     category: 'Accessories',
-    images: ['https://picsum.photos/seed/prod4-1/600/600'],
+    images: ['https://images.unsplash.com/photo-1609803384370-0e73ef8d424f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxnZW9tZXRyaWMlMjBwcmludCUyMHNjYXJmfGVufDB8fHx8MTc1ODQ0NDA2M3ww&ixlib=rb-4.1.0&q=80&w=1080'],
     isActive: true,
     status: 'active', // Legacy
     createdAt: '2023-07-20T18:00:00Z',
