@@ -215,7 +215,7 @@ export const products: Product[] = [
     currency: 'INR',
     stock: 30,
     category: 'Home Decor',
-    images: ['https://picsum.photos/seed/prod9-1/600/600'],
+    images: ['https://images.unsplash.com/photo-1614623171216-7755e8650e8e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxoYW5kJTIwcGFpbnRlZCUyMHdvb2RlbiUyMGJveHxlbnwwfHx8fDE3NTg0NDUxNTl8MA&ixlib=rb-4.1.0&q=80&w=1080'],
     isActive: true,
     status: 'active',
     createdAt: '2023-10-10T18:00:00Z',
