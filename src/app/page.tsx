@@ -130,7 +130,7 @@ export default function Marketplace() {
               </div>
               <div className="hidden lg:block">
                 <Image
-                  src="https://images.unsplash.com/photo-1672302255324-28009cc288b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxsb2NhbCUyMGFydGlzYW5zfGVufDB8fHx8MTc1ODQ0NTg1NXww&ixlib=rb-4.1.0&q=80&w=1080"
+                  src="https://images.unsplash.com/photo-1521799022345-481a897e45ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhcnRpc2FufGVufDB8fHx8MTc1ODQ0NjA4OHww&ixlib=rb-4.1.0&q=80&w=1080"
                   alt="Local artisans at work"
                   width={400}
                   height={300}
