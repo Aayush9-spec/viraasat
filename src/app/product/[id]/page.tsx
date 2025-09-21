@@ -1,3 +1,5 @@
+'use client';
+
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { products, artisans } from '@/lib/data';
@@ -14,13 +16,26 @@ import {
 } from '@/components/ui/carousel';
 import { Separator } from '@/components/ui/separator';
 import { ViraasatLogo } from '@/components/viraasat-logo';
+import { useCart } from '@/context/cart-context';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
+  const { addItem } = useCart();
+  const { toast } = useToast();
+
   const product = products.find((p) => p.id === params.id);
   if (!product) {
     notFound();
   }
   const artisan = artisans.find((a) => a.id === product.artisanId);
+
+  const handleAddToCart = () => {
+    addItem(product);
+    toast({
+      title: 'Added to Cart',
+      description: `${product.name} is now in your cart.`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -77,7 +92,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             
             <div className="text-4xl font-bold text-primary">₹{product.price.toFixed(2)}</div>
             
-            <Button size="lg" className="bg-accent hover:bg-accent/90">
+            <Button size="lg" className="bg-accent hover:bg-accent/90" onClick={handleAddToCart}>
               Add to Cart
             </Button>
             

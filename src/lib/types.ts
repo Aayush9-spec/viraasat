@@ -76,6 +76,7 @@ export type User = {
     id: string; // User ID
     email: string;
     role: 'artisan' | 'buyer';
+    cart: Product[];
     createdAt: string;
     lastLogin: string;
 }

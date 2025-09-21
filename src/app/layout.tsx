@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { LanguageProvider } from '@/context/language-context';
 import LanguageSwitcher from '@/components/language-switcher';
 import { MainContent } from '@/components/main-content';
+import { CartProvider } from '@/context/cart-context';
 
 export const metadata: Metadata = {
   title: 'Viraasat AI',
@@ -31,9 +32,11 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased text-foreground">
         <LanguageProvider>
-          <MainContent>
-            {children}
-          </MainContent>
+          <CartProvider>
+            <MainContent>
+              {children}
+            </MainContent>
+          </CartProvider>
         </LanguageProvider>
       </body>
     </html>
