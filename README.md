@@ -1,148 +1,179 @@
-🌟 Introduction
+🌟 Viraasat – The AI-Driven Marketplace for Local Artisans
 
-**Viraasat** is an innovative, AI-powered digital marketplace meticulously crafted to bridge the gap between talented local artisans and a global audience. The name "Viraasat," meaning 'heritage' or 'legacy,' perfectly encapsulates our mission: to preserve traditional crafts by empowering artisans in the digital age and making their unique stories and products accessible worldwide.
+Preserve the heritage. Empower the artisans. Inspire the world.
 
-This web application leverages the robust capabilities of **Firebase** and cutting-edge **Google AI services** to provide a seamless, intelligent, and deeply personal e-commerce experience for both creators and consumers.
+Viraasat is an innovative, AI-powered digital marketplace that bridges the gap between India’s traditional artisans and a global audience. The word Viraasat means heritage, perfectly aligning with our mission:
 
-## ✨ The Problem Viraasat Solves
+To digitally empower craftsmanship and ensure every artisan’s legacy reaches the world 🌍
 
-Local artisans, despite their exceptional skill and unique handcrafted products, often face significant hurdles in the digital landscape:
-*   **Poor Digital Presentation:** Lack of professional photography skills or equipment results in subpar product images and generic descriptions.
-*   **Limited Reach:** Traditional physical markets restrict their customer base to local geographies.
-*   **Technical Barriers:** Navigating complex e-commerce platforms can be overwhelming.
-*   **Lost Stories:** The rich narratives behind their craft, which add immense value, often go untold online.
-*   **Buyer Trust & Discovery:** Consumers struggle to find authentic handcrafted goods and desire more transparency about product origins and creation.
+With the combined power of Firebase and Google AI services, Viraasat transforms handcrafted products into professionally showcased treasures — complete with enhanced visuals, compelling storytelling, and intelligent product insights.
 
-## 💡 Our Solution: An AI-Driven Marketplace
+🚨 The Problem
 
-Viraasat tackles these challenges head-on by offering a dual-sided platform:
+Despite extraordinary skill, artisans face:
 
-### 1. For Artisans: Empowering Creation with AI 🎨
-Our intuitive Artisan Dashboard (`/artisan-dashboard`) transforms the daunting task of online selling into an effortless, empowering experience. Artisans can manage their products, share their stories, and process orders with ease, supported by bespoke AI tools:
+Challenge	Impact
+Poor digital content (bad photos, weak descriptions)	Products fail to attract buyers
+Limited local market reach	Low income potential
+Lack of e-commerce knowledge	Difficult onboarding
+Stories behind crafts remain untold	Lost heritage value
+Low buyer trust & product discovery issues	Hesitation in purchasing
 
-*   **📸 AI-Powered Image Enhancement:**
-    *   Upload smartphone photos, and our AI (powered by **Google Cloud Vision API**) intelligently enhances quality, corrects colors, brightens dim shots, and can even remove/optimize backgrounds for a professional, studio-shot look.
-    *   *Imagine transforming a blurry, poorly lit photo into a vibrant, sharp image with a clean backdrop – all automatically!*
-*   **🎤 Voice-to-Text & AI Description Refinement:**
-    *   Artisans simply **speak** about their product's inspiration, materials, or process.
-    *   **Google Cloud Speech-to-Text API** transcribes their words.
-    *   A custom **Google AI Platform / Vertex AI NLP model** then refines this raw text, correcting grammar, enhancing vocabulary, and transforming it into an eloquent, engaging, and SEO-friendly product description, perfect for attracting buyers.
-*   **📜 Dedicated Storytelling:** A rich space for artisans to share their personal journey, techniques, and cultural heritage, fostering a deeper connection with buyers.
-*   **🛒 Streamlined Product & Order Management:** Easy-to-use forms for adding/editing products, setting prices, managing stock, and tracking incoming orders.
+🧩 Result: Their priceless craftsmanship remains undervalued and unseen.
 
-### 2. For Buyers: Discovering Authenticity with Intelligence 🛍️
-The Buyer Marketplace (`/marketplace`) offers a visually rich and intelligent e-commerce experience designed for discovering unique, handcrafted treasures:
+✅ Our Solution: AI-First Empowerment
+🎨 For Artisans – Effortless Selling
 
-*   **🔍 Intuitive Product Discovery:** Powerful search, category filters, and the ability to browse individual artisan shops make finding the perfect item a delight. All products are displayed with their AI-enhanced images and refined descriptions.
-*   **🧠 AI Product Analyzer:** A unique feature on every product detail page. Our AI (leveraging **Google AI Platform / Vertex AI**) analyzes the product's data to provide instant, clear insights:
-    *   **Key Features Highlight:** Automatically extracts and lists essential characteristics (e.g., "Hand-painted," "Sustainable Materials," "Unique Design").
-    *   **Style & Aesthetic Tags:** Suggests stylistic attributes (e.g., "Boho Chic," "Minimalist," "Traditional Indian").
-    *   **Potential Use Cases:** Offers creative suggestions on how the product can be used or styled.
-    *   *This empowers buyers to make highly informed decisions and truly appreciate the artistry.*
-*   **🤝 Connect with Artisans:** Buyers can easily access and read the full, captivating stories behind each product and its creator.
-*   **💳 Seamless Shopping Experience:** Standard e-commerce features including a shopping cart, secure checkout, and order history management.
+📍 /artisan-dashboard — First-of-its-kind AI-assisted selling workspace:
 
-## 🚀 Unique Selling Proposition (USP)
+Feature	Powered By	Benefit
+AI Image Enhancement	Google Cloud Vision API	Studio-quality visuals from mobile photos
+Voice-to-Text Product Input	Speech-to-Text API	Easy listing for non-technical users
+AI-Refined Descriptions	Vertex AI NLP Model	SEO-ready, rich, emotional storytelling
+Storytelling Portal	Firestore + UI	Captures heritage + personal journey
+Order & Inventory Management	Firebase	Complete business control
 
-Viraasat's core USP lies in its **dual-focused, AI-driven empowerment for local artisans combined with an intelligent, trust-building buying experience for consumers.**
+🪄 Turns raw artisan content → polished, professional digital storefronts!
 
-Unlike generic marketplaces, Viraasat doesn't just list products; it actively **equips artisans with the digital capabilities they need to thrive** through accessible AI tools that transform raw content into professional-grade assets. For buyers, we go beyond simple transactions, offering **AI-driven insights and fostering deep connections to the artisans' stories**, creating an unparalleled shopping journey that celebrates authenticity and heritage.
+🛍️ For Buyers – Experience Authenticity
 
-## 🛠️ Technology Stack
+📍 /marketplace — Browse globally, discover personally
 
-Viraasat is built on a robust, scalable, and secure foundation utilizing Google's powerful ecosystem:
+✨ Smart discovery with:
 
-*   **Frontend:** `[Your Chosen Framework, e.g., React.js]` (or Vue.js/Angular) for a dynamic and responsive user interface.
-*   **Backend & Database:** **Firebase**
-    *   `Firebase Authentication`: Secure user management.
-    *   `Firestore`: Flexible NoSQL database for all application data.
-    *   `Firebase Storage`: Scalable storage for product images and audio recordings.
-*   **AI / Machine Learning:** **Google Cloud AI Services**
-    *   `Google Cloud Vision API`: For intelligent image analysis, enhancement, and background optimization.
-    *   `Google Cloud Speech-to-Text API`: For accurate transcription of artisan voice descriptions.
-    *   `Google AI Platform / Vertex AI`: For deploying custom Natural Language Processing (NLP) models used in description refinement and product analysis.
-    *   `Cloud Functions for Firebase`: Serverless functions to orchestrate AI workflows and backend logic (e.g., triggering image/audio processing on upload).
-*   **Language:** `JavaScript / TypeScript` (for both Frontend & Cloud Functions) - ensuring a unified and efficient development experience.
+✅ AI Product Analyzer:
 
-## 🗺️ Project Structure
+Key feature extraction
+
+Style & aesthetic tagging
+
+Suggested use cases
+
+Authenticity cues
+
+✅ Visual storytelling → Meet the creator behind the craft
+✅ Secure cart, checkout & order history
+✅ Trust + transparency in every purchase
+
+Not just ecommerce — a cultural experience 💫
+
+🌟 Unique Selling Proposition (USP)
+
+✔ Empowers artisans with accessible AI (not just tools, real transformation)
+✔ Helps buyers discover authentic handcrafts with intelligent insights
+✔ Preserves heritage through digital storytelling 📜
+✔ Dual-focused benefits → sellers + buyers both win 🎯
+
+🌍 Viraasat is where culture meets technology.
+
+🛠️ Tech Stack
+Layer	Technology
+Frontend	React.js (or Vue/Angular — customizable)
+Backend & DB	Firebase Authentication, Firestore, Storage
+AI / ML Integrations	Google Cloud Vision API, Speech-to-Text API, Vertex AI
+Serverless Logic	Firebase Cloud Functions
+Language	JavaScript / TypeScript
+🗂️ Project Structure
 viraasat_/
-├── public/ # Static assets
-├── src/ # Frontend source code (React/Vue/Angular)
-│ ├── assets/
-│ ├── components/
-│ ├── pages/
-│ ├── App.js/ts
-│ └── index.js/ts
-├── firebase/ # Firebase Cloud Functions & other backend logic
-│ ├── functions/
-│ │ ├── index.js/ts # Cloud Functions definitions
-│ │ └── package.json
-│ ├── firestore.rules # Firestore security rules
-│ └── storage.rules # Firebase Storage security rules
-├── .env # Environment variables
-├── package.json # Frontend dependencies
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── pages/
+│   ├── App.tsx / js
+│   └── index.tsx / js
+├── firebase/
+│   ├── functions/
+│   │   ├── index.ts / js
+│   │   └── package.json
+│   ├── firestore.rules
+│   └── storage.rules
+├── .env
+├── package.json
 └── README.md
-## 🚀 Getting Started (Local Development)
 
-To run Viraasat locally, follow these steps:
+⚙️ Getting Started (Developer Guide)
+🔹 1️⃣ Clone the Repo
+git clone https://github.com/Aayush9-spec/viraasat_.git
+cd viraasat_
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/Aayush9-spec/viraasat_.git
-    cd viraasat_
-    ```
-2.  **Set up Firebase Project:**
-    *   Create a new Firebase project in the Google Cloud Console.
-    *   Enable Firebase Authentication (Email/Password), Firestore, and Firebase Storage.
-    *   Upgrade to the Blaze plan (pay-as-you-go) to enable Cloud Functions and Google Cloud AI APIs.
-    *   Enable `Cloud Vision API`, `Cloud Speech-to-Text API`, and `Vertex AI API` in your Google Cloud Project.
-3.  **Configure Environment Variables:**
-    *   Create a `.env` file in the root directory.
-    *   Add your Firebase project configuration details (API Key, Auth Domain, Project ID, etc.).
-    ```
-    REACT_APP_FIREBASE_API_KEY=your_api_key
-    REACT_APP_FIREBASE_AUTH_DOMAIN=your_auth_domain
-    REACT_APP_FIREBASE_PROJECT_ID=your_project_id
-    # ...other Firebase config details
-    ```
-4.  **Install Dependencies:**
-    ```bash
-    # For the frontend
-    npm install
-    # For Cloud Functions
-    cd firebase/functions
-    npm install
-    cd ../..
-    ```
-5.  **Deploy Firebase Cloud Functions:**
-    *   Make sure you are logged into Firebase CLI: `firebase login`
-    *   Set your Firebase project: `firebase use --add YOUR_PROJECT_ID`
-    *   Deploy functions: `firebase deploy --only functions`
-6.  **Run the Frontend:**
-    ```bash
-    npm start
-    ```
-    The application should now be running locally, typically at `http://localhost:3000`.
+🔹 2️⃣ Setup Firebase Project
 
-## 🤝 Contributing
+Enable ✅:
 
-We welcome contributions to Viraasat! Whether you want to improve code, suggest features, or report bugs, please feel free to:
-1.  Fork the repository.
-2.  Create a new branch (`git checkout -b feature/your-feature-name`).
-3.  Make your changes.
-4.  Commit your changes (`git commit -m 'feat: Add new feature X'`).
-5.  Push to the branch (`git push origin feature/your-feature-name`).
-6.  Open a Pull Request.
+Authentication (Email/Password)
 
-Please ensure your code adheres to our coding standards and includes appropriate tests.
+Firestore + Credit-based Blaze Plan
 
-## 📄 License
+Firebase Storage
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Cloud Functions
 
-## 🙏 Acknowledgements
+Enable APIs:
 
-*   Google Firebase
-*   Google Cloud AI Platform / Vertex AI
-*   `[Mention any specific libraries/tools you found particularly helpful]`
-*   The GenAI Hackathon organizers!
+Vision API
+
+Speech-to-Text API
+
+Vertex AI API
+
+🔹 3️⃣ Create Environment Variables
+
+.env:
+
+REACT_APP_FIREBASE_API_KEY=your_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_auth_domain
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+# Add all required firebase config fields
+
+🔹 4️⃣ Install Dependencies
+npm install
+cd firebase/functions
+npm install
+cd ../..
+
+🔹 5️⃣ Deploy Functions
+firebase login
+firebase use --add <PROJECT_ID>
+firebase deploy --only functions
+
+🔹 6️⃣ Run Frontend
+npm start
+
+
+👉 Opens at: http://localhost:3000
+
+🤝 Contributing Guide
+
+We ❤️ contributions!
+
+1️⃣ Fork → 2️⃣ Branch → 3️⃣ Code → 4️⃣ Commit → 5️⃣ PR
+
+Commit format:
+
+feat: add voice input support
+fix: image enhancement timeout
+docs: improved project setup instructions
+
+📄 License
+
+Licensed under the MIT License
+See: LICENSE
+
+🙏 Acknowledgements
+
+Special thanks to:
+
+Google Firebase
+
+Google Cloud AI / Vertex AI
+
+Open-source libraries that support Viraasat’s vision
+
+GenAI Hackathon organizers — inspiring innovation 🎯
+
+🧵 Closing Note
+
+Handcrafted stories deserve a global audience.
+With Viraasat, we’re not building just a marketplace —
+we’re preserving a legacy. 🌍✨
