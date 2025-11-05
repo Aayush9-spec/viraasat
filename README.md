@@ -170,7 +170,6 @@ Google Cloud AI / Vertex AI
 
 Open-source libraries that support Viraasat’s vision
 
-GenAI Hackathon organizers — inspiring innovation 🎯
 
 🧵 Closing Note
 
