@@ -1,4 +1,4 @@
-# **App Name**: Viraasat AI
+# **App Name**: Viraasat 
 
 ## Core Features:
 
