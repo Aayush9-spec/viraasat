@@ -73,6 +73,8 @@ Backend & DB	Firebase Authentication, Firestore, Storage
 AI / ML Integrations	Google Cloud Vision API, Speech-to-Text API, Vertex AI
 Serverless Logic	Firebase Cloud Functions
 Language	JavaScript / TypeScript
+
+
 🗂️ Project Structure
 viraasat_/
 ├── public/
