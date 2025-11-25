@@ -14,7 +14,7 @@ export default function LoginPage() {
                 <ViraasatLogo />
             </div>
             <div className="space-y-2 text-center lg:text-left">
-                <h1 className="text-3xl font-bold">Welcome to Viraasat </h1>
+                <h1 className="text-3xl font-bold">Welcome to Viraasat</h1>
                 <p className="text-balance text-muted-foreground">
                 Choose your path to begin.
                 </p>
