@@ -1,4 +1,4 @@
-🌟 Viraasat – The AI-Driven Marketplace for Local Artisans
+Viraasat – The AI-Driven Marketplace for Local Artisans
 
 Preserve the heritage. Empower the artisans. Inspire the world.
 
@@ -8,7 +8,7 @@ To digitally empower craftsmanship and ensure every artisan’s legacy reaches t
 
 With the combined power of Firebase and Google AI services, Viraasat transforms handcrafted products into professionally showcased treasures — complete with enhanced visuals, compelling storytelling, and intelligent product insights.
 
-🚨 The Problem
+The Problem
 
 Despite extraordinary skill, artisans face:
 
@@ -19,12 +19,12 @@ Lack of e-commerce knowledge	Difficult onboarding
 Stories behind crafts remain untold	Lost heritage value
 Low buyer trust & product discovery issues	Hesitation in purchasing
 
-🧩 Result: Their priceless craftsmanship remains undervalued and unseen.
+Result: Their priceless craftsmanship remains undervalued and unseen.
 
-✅ Our Solution: AI-First Empowerment
-🎨 For Artisans – Effortless Selling
+Our Solution: AI-First Empowerment
+For Artisans – Effortless Selling
 
-📍 /artisan-dashboard — First-of-its-kind AI-assisted selling workspace:
+/artisan-dashboard — First-of-its-kind AI-assisted selling workspace:
 
 Feature	Powered By	Benefit
 AI Image Enhancement	Google Cloud Vision API	Studio-quality visuals from mobile photos
@@ -33,15 +33,15 @@ AI-Refined Descriptions	Vertex AI NLP Model	SEO-ready, rich, emotional storytell
 Storytelling Portal	Firestore + UI	Captures heritage + personal journey
 Order & Inventory Management	Firebase	Complete business control
 
-🪄 Turns raw artisan content → polished, professional digital storefronts!
+Turns raw artisan content → polished, professional digital storefronts!
 
-🛍️ For Buyers – Experience Authenticity
+For Buyers – Experience Authenticity
 
-📍 /marketplace — Browse globally, discover personally
+/marketplace — Browse globally, discover personally
 
-✨ Smart discovery with:
+Smart discovery with:
 
-✅ AI Product Analyzer:
+AI Product Analyzer:
 
 Key feature extraction
 
