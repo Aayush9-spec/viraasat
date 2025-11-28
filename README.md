@@ -1,25 +1,25 @@
-Viraasat – The AI-Driven Marketplace for Local Artisans
+* Viraasat – The AI-Driven Marketplace for Local Artisans
 
 Preserve the heritage. Empower the artisans. Inspire the world.
 
 Viraasat is an innovative, AI-powered digital marketplace that bridges the gap between India’s traditional artisans and a global audience. The word Viraasat means heritage, perfectly aligning with our mission:
 
-To digitally empower craftsmanship and ensure every artisan’s legacy reaches the world 🌍
+To digitally empower craftsmanship and ensure every artisan’s legacy reaches the world 
 
 With the combined power of Firebase and Google AI services, Viraasat transforms handcrafted products into professionally showcased treasures — complete with enhanced visuals, compelling storytelling, and intelligent product insights.
 
-The Problem
+* The Problem
 
 Despite extraordinary skill, artisans face:
 
-Challenge	Impact
+* Challenge	Impact
 Poor digital content (bad photos, weak descriptions)	Products fail to attract buyers
 Limited local market reach	Low income potential
 Lack of e-commerce knowledge	Difficult onboarding
 Stories behind crafts remain untold	Lost heritage value
 Low buyer trust & product discovery issues	Hesitation in purchasing
 
-Result: Their priceless craftsmanship remains undervalued and unseen.
+* Result: Their priceless craftsmanship remains undervalued and unseen.
 
 Our Solution: AI-First Empowerment
 For Artisans – Effortless Selling
@@ -41,7 +41,7 @@ For Buyers – Experience Authenticity
 
 Smart discovery with:
 
-AI Product Analyzer:
+* AI Product Analyzer:
 
 Key feature extraction
 
