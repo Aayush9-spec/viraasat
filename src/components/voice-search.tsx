@@ -18,8 +18,8 @@ export default function VoiceSearch() {
     e.preventDefault();
     if (!searchQuery) return;
     toast({
-        title: 'Searching...',
-        description: `Looking for products matching: ${searchQuery}`,
+      title: 'Searching...',
+      description: `Looking for products matching: ${searchQuery}`,
     });
     // Implement actual search logic here
   };
@@ -60,9 +60,9 @@ export default function VoiceSearch() {
       try {
         const result = await searchWithVoice({ audioDataUri: base64Audio });
         setSearchQuery(result.transcription);
-        toast({ 
-            title: 'Voice query processed!', 
-            description: `Search for: "${result.searchQuery}" of color "${result.color}" in category "${result.category}"`
+        toast({
+          title: 'Voice query processed!',
+          description: `Search for: "${result.searchQuery}" of color "${result.color}" in category "${result.category}"`
         });
       } catch (error) {
         console.error('Voice search error:', error);
@@ -84,7 +84,7 @@ export default function VoiceSearch() {
   };
 
   return (
-    <form onSubmit={handleSearch} className="relative w-full max-w-sm flex items-center">
+    <form onSubmit={handleSearch} className="relative w-[140px] sm:w-full sm:max-w-sm flex items-center">
       <Input
         type="search"
         placeholder="Search for products..."
@@ -109,8 +109,8 @@ export default function VoiceSearch() {
           <span className="sr-only">{isRecording ? 'Stop recording' : 'Start voice search'}</span>
         </Button>
         <Button type="submit" size="icon" variant="ghost" className="h-8 w-8">
-            <Search className="h-4 w-4" />
-            <span className="sr-only">Search</span>
+          <Search className="h-4 w-4" />
+          <span className="sr-only">Search</span>
         </Button>
       </div>
     </form>

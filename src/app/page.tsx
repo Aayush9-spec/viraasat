@@ -36,17 +36,17 @@ export default function Marketplace() {
 
         <div className="hero-parallax-layer hero-content-layer max-w-4xl mx-auto px-4">
           <p className="text-lg text-amber-100 mb-2">{t('home.hero.subtitle')}</p>
-          <h1 className="font-heading text-7xl md:text-9xl font-semibold text-white">
+          <h1 className="font-heading text-5xl sm:text-7xl md:text-9xl font-semibold text-white">
             Viraasat
           </h1>
           <p className="text-base text-amber-50 mt-4 max-w-xl mx-auto">
             {t('home.hero.description')}
           </p>
         </div>
-        
+
         <div className="absolute bottom-0 left-0 right-0 z-20">
           <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-            <path d="M1440 120H0V26.2205C159.549 34.9398 325.753 38.6479 495.733 36.837C778.361 33.722 1056.49 14.8687 1440 0V120Z" fill="hsl(var(--background))"/>
+            <path d="M1440 120H0V26.2205C159.549 34.9398 325.753 38.6479 495.733 36.837C778.361 33.722 1056.49 14.8687 1440 0V120Z" fill="hsl(var(--background))" />
           </svg>
         </div>
       </header>
@@ -55,38 +55,38 @@ export default function Marketplace() {
         <section id="mission" className="py-16 relative">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-4xl font-heading font-semibold text-amber-900 mb-4">{t('home.mission.title')}</h2>
-              <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
-                {t('home.mission.description')}
-              </p>
+            <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
+              {t('home.mission.description')}
+            </p>
           </div>
           <div className="relative mt-12">
-              <div className="overflow-hidden" ref={emblaRef} style={{ perspective: '1000px' }}>
-                  <div className="flex">
-                      {missionProducts.map((product) => (
-                      <div key={product.id} className="embla__slide relative flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_45%] lg:flex-[0_0_33.33%] min-w-0 pl-4">
-                        <div className="embla-slide-inner">
-                          <ProductCard product={product} variant="mission" />
-                        </div>
-                      </div>
-                      ))}
+            <div className="overflow-hidden" ref={emblaRef} style={{ perspective: '1000px' }}>
+              <div className="flex">
+                {missionProducts.map((product) => (
+                  <div key={product.id} className="embla__slide relative flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_45%] lg:flex-[0_0_33.33%] min-w-0 pl-4">
+                    <div className="embla-slide-inner">
+                      <ProductCard product={product} variant="mission" />
+                    </div>
                   </div>
+                ))}
               </div>
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute top-1/2 left-4 -translate-y-1/2 rounded-full h-10 w-10 z-10 hidden md:flex"
-                onClick={scrollPrev}
-              >
-                <ChevronLeft className="h-6 w-6" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute top-1/2 right-4 -translate-y-1/2 rounded-full h-10 w-10 z-10 hidden md:flex"
-                onClick={scrollNext}
-              >
-                <ChevronRight className="h-6 w-6" />
-              </Button>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute top-1/2 left-4 -translate-y-1/2 rounded-full h-10 w-10 z-10 hidden md:flex"
+              onClick={scrollPrev}
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute top-1/2 right-4 -translate-y-1/2 rounded-full h-10 w-10 z-10 hidden md:flex"
+              onClick={scrollNext}
+            >
+              <ChevronRight className="h-6 w-6" />
+            </Button>
           </div>
         </section>
 
@@ -108,7 +108,7 @@ export default function Marketplace() {
             </div>
           </div>
         </section>
-        
+
         <section className="py-20 bg-gradient-to-t from-teal-50/50 to-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row items-center justify-center gap-8">

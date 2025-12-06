@@ -23,7 +23,7 @@ export default function CartSidebar() {
 
   return (
     <Sheet open={isCartOpen} onOpenChange={setCartOpen}>
-      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col">
+      <SheetContent className="w-full sm:w-[540px] flex flex-col">
         <SheetHeader>
           <SheetTitle>Your Cart</SheetTitle>
         </SheetHeader>
@@ -74,16 +74,16 @@ export default function CartSidebar() {
               </div>
             </ScrollArea>
             <div className="border-t mt-auto pt-4 pr-6 space-y-4">
-               <div>
-                  <h3 className="font-semibold text-lg mb-4">You might also like</h3>
-                  <div className="grid grid-cols-3 gap-4">
-                    {recommendedProducts.map(p => (
-                       <Link href={`/product/${p.id}`} key={p.id} onClick={() => setCartOpen(false)}>
-                         <Image src={p.images[0]} alt={p.name} width={100} height={100} className="rounded-md object-cover aspect-square" />
-                       </Link>
-                    ))}
-                  </div>
-               </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-4">You might also like</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {recommendedProducts.map(p => (
+                    <Link href={`/product/${p.id}`} key={p.id} onClick={() => setCartOpen(false)}>
+                      <Image src={p.images[0]} alt={p.name} width={100} height={100} className="rounded-md object-cover aspect-square" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
               <div className="flex justify-between font-bold text-lg">
                 <span>Subtotal</span>
                 <span>₹{total.toFixed(2)}</span>
