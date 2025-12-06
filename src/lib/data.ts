@@ -7,6 +7,7 @@ export const users: User[] = [
     role: 'artisan',
     createdAt: '2023-01-10T10:00:00Z',
     lastLogin: '2023-11-01T12:30:00Z',
+    cart: [],
   },
   {
     id: 'artisan-2',
@@ -14,6 +15,7 @@ export const users: User[] = [
     role: 'artisan',
     createdAt: '2023-02-15T11:00:00Z',
     lastLogin: '2023-10-30T18:00:00Z',
+    cart: [],
   },
   {
     id: 'user-123',
@@ -21,6 +23,7 @@ export const users: User[] = [
     role: 'buyer',
     createdAt: '2023-03-20T14:00:00Z',
     lastLogin: '2023-11-01T20:00:00Z',
+    cart: [],
   },
 ];
 
@@ -75,9 +78,9 @@ export const products: Product[] = [
     ],
     shippingInfo: 'Ships within 3-5 business days.',
     aiInsights: {
-        keyFeatures: ['Hand-thrown pottery', 'Lead-free glaze', 'Unique azure color'],
-        styleTags: ['Minimalist', 'Coastal', 'Modern'],
-        useCases: ['Flower arrangement', 'Statement decor piece', 'Bookshelf styling'],
+      keyFeatures: ['Hand-thrown pottery', 'Lead-free glaze', 'Unique azure color'],
+      styleTags: ['Minimalist', 'Coastal', 'Modern'],
+      useCases: ['Flower arrangement', 'Statement decor piece', 'Bookshelf styling'],
     },
     isActive: true,
     status: 'active', // Legacy
@@ -99,10 +102,10 @@ export const products: Product[] = [
       'https://picsum.photos/seed/prod2-2/600/600',
     ],
     shippingInfo: 'Made to order. Ships within 1-2 weeks.',
-     aiInsights: {
-        keyFeatures: ['100% natural fibers', 'Handwoven on a traditional loom', 'Rich, warm color palette'],
-        styleTags: ['Bohemian', 'Rustic', 'Eclectic'],
-        useCases: ['Living room wall art', 'Above a bed headboard', 'Meditation space focus'],
+    aiInsights: {
+      keyFeatures: ['100% natural fibers', 'Handwoven on a traditional loom', 'Rich, warm color palette'],
+      styleTags: ['Bohemian', 'Rustic', 'Eclectic'],
+      useCases: ['Living room wall art', 'Above a bed headboard', 'Meditation space focus'],
     },
     isActive: true,
     status: 'active', // Legacy
@@ -205,7 +208,7 @@ export const products: Product[] = [
     createdAt: '2023-10-01T09:00:00Z',
     updatedAt: '2023-10-30T10:00:00Z',
   },
-    {
+  {
     id: 'prod-9',
     name: 'Hand-painted Wooden Box',
     artisanId: 'artisan-1',
@@ -279,12 +282,12 @@ export const orders: Order[] = [
     items: [{ productId: 'prod-1', productName: 'Azure Ceramic Vase', quantity: 1, unitPrice: 3750, itemImageUrl: 'https://picsum.photos/seed/prod1-1/600/600' }],
     totalAmount: 3750,
     shippingAddress: {
-        fullName: "Alice Johnson",
-        addressLine1: "123 Market St",
-        city: "San Francisco",
-        state: "CA",
-        zipCode: "94103",
-        country: "USA",
+      fullName: "Alice Johnson",
+      addressLine1: "123 Market St",
+      city: "San Francisco",
+      state: "CA",
+      zipCode: "94103",
+      country: "USA",
     },
     status: 'Delivered',
     paymentStatus: 'Paid',
@@ -301,12 +304,12 @@ export const orders: Order[] = [
     ],
     totalAmount: 4500,
     shippingAddress: {
-        fullName: "Bob Williams",
-        addressLine1: "456 Oak Ave",
-        city: "Chicago",
-        state: "IL",
-        zipCode: "60607",
-        country: "USA"
+      fullName: "Bob Williams",
+      addressLine1: "456 Oak Ave",
+      city: "Chicago",
+      state: "IL",
+      zipCode: "60607",
+      country: "USA"
     },
     status: 'Shipped',
     paymentStatus: 'Paid',
@@ -320,31 +323,31 @@ export const orders: Order[] = [
     items: [{ productId: 'prod-2', productName: 'Sunset Tapestry', quantity: 1, unitPrice: 9900, itemImageUrl: 'https://picsum.photos/seed/prod2-1/600/600' }],
     totalAmount: 9900,
     shippingAddress: {
-        fullName: "Charlie Brown",
-        addressLine1: "789 Pine Ln",
-        city: "New York",
-        state: "NY",
-        zipCode: "10001",
-        country: "USA"
+      fullName: "Charlie Brown",
+      addressLine1: "789 Pine Ln",
+      city: "New York",
+      state: "NY",
+      zipCode: "10001",
+      country: "USA"
     },
     status: 'Pending',
     paymentStatus: 'Pending Payment',
     orderDate: '2023-11-01T12:00:00Z',
     updatedAt: '2023-11-01T12:00:00Z',
   },
-    {
+  {
     id: 'ord-004',
     buyerId: 'user-123',
     artisanId: 'artisan-2',
     items: [{ productId: 'prod-7', productName: 'Embroidered Cushion Cover', quantity: 2, unitPrice: 3200, itemImageUrl: 'https://images.unsplash.com/photo-1689413182146-14b0a9b972b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxN3x8ZW1icm9pZGVyZWQlMjBjdXNoaW9ufGVufDB8fHx8MTc1ODQ0NDc3Mnww&ixlib=rb-4.1.0&q=80&w=1080' }],
     totalAmount: 6400,
     shippingAddress: {
-        fullName: "Alice Johnson",
-        addressLine1: "123 Market St",
-        city: "San Francisco",
-        state: "CA",
-        zipCode: "94103",
-        country: "USA",
+      fullName: "Alice Johnson",
+      addressLine1: "123 Market St",
+      city: "San Francisco",
+      state: "CA",
+      zipCode: "94103",
+      country: "USA",
     },
     status: 'Processing',
     paymentStatus: 'Paid',
@@ -358,12 +361,12 @@ export const orders: Order[] = [
     items: [{ productId: 'prod-8', productName: 'Ceramic Tea Set', quantity: 1, unitPrice: 6800, itemImageUrl: 'https://picsum.photos/seed/prod8-1/600/600' }],
     totalAmount: 6800,
     shippingAddress: {
-        fullName: "Bob Williams",
-        addressLine1: "456 Oak Ave",
-        city: "Chicago",
-        state: "IL",
-        zipCode: "60607",
-        country: "USA"
+      fullName: "Bob Williams",
+      addressLine1: "456 Oak Ave",
+      city: "Chicago",
+      state: "IL",
+      zipCode: "60607",
+      country: "USA"
     },
     status: 'Pending',
     paymentStatus: 'Pending Payment',
@@ -382,7 +385,7 @@ export const categories: string[] = [
   'Painting',
 ];
 
-    
-    
-    
+
+
+
 

@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { extend, Object3DNode } from '@react-three/fiber'
+import { extend, ThreeElement } from '@react-three/fiber'
 
 // Paul West @prisoner849 https://discourse.threejs.org/u/prisoner849
 // https://discourse.threejs.org/t/simple-curved-plane/26647/10
@@ -58,8 +58,8 @@ extend({ MeshSineMaterial, BentPlaneGeometry })
 
 declare module '@react-three/fiber' {
     interface ThreeElements {
-        bentPlaneGeometry: Object3DNode<BentPlaneGeometry, typeof BentPlaneGeometry>;
-        meshSineMaterial: Object3DNode<MeshSineMaterial, typeof MeshSineMaterial>;
+        bentPlaneGeometry: ThreeElement<typeof BentPlaneGeometry>;
+        meshSineMaterial: ThreeElement<typeof MeshSineMaterial>;
     }
 }
 
