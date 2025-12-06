@@ -9,6 +9,8 @@ import { LanguageProvider } from '@/context/language-context';
 import LanguageSwitcher from '@/components/language-switcher';
 import { MainContent } from '@/components/main-content';
 import { CartProvider } from '@/context/cart-context';
+import { Background3D } from '@/components/background-3d';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
   title: 'Viraasat AI',
@@ -32,11 +34,20 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased text-foreground">
         <LanguageProvider>
-          <CartProvider>
-            <MainContent>
-              {children}
-            </MainContent>
-          </CartProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+            themes={['light', 'dark', 'sapphire', 'emerald', 'sunset']}
+          >
+            <CartProvider>
+              <Background3D />
+              <MainContent>
+                {children}
+              </MainContent>
+            </CartProvider>
+          </ThemeProvider>
         </LanguageProvider>
       </body>
     </html>

@@ -10,13 +10,13 @@ import { ViraasatLogo } from "@/components/viraasat-logo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { GooglePayLogo, PaytmLogo, PhonePeLogo } from '@/components/payment-icons';
-import { QrCode } from 'lucide-react';
+import { QrCode, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CheckoutPage() {
     const { cartItems, getCartTotal } = useCart();
     const subtotal = getCartTotal();
-    const shipping = 0; // Assuming free shipping for now
+    const shipping: number = 0; // Assuming free shipping for now
     const total = subtotal + shipping;
     const [showQr, setShowQr] = useState(false);
 
@@ -31,130 +31,180 @@ export default function CheckoutPage() {
             </div>
         );
     }
-    
+
     return (
-        <div className="min-h-screen bg-background">
-            <header className="sticky top-0 z-40 w-full border-b bg-card">
-              <div className="container mx-auto flex h-16 items-center px-4">
-                <ViraasatLogo />
-              </div>
+        <div className="min-h-screen bg-background relative">
+            {/* Background elements are handled by Background3D now */}
+            <header className="sticky top-0 z-40 w-full border-b bg-card/80 backdrop-blur-md supports-[backdrop-filter]:bg-card/60">
+                <div className="container mx-auto flex h-16 items-center px-4 justify-between">
+                    <ViraasatLogo />
+                    <Button variant="ghost" asChild>
+                        <Link href="/shop">Back to Shop</Link>
+                    </Button>
+                </div>
             </header>
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 py-8 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Payment Details Section */}
                     <div>
-                        <h1 className="text-2xl font-bold mb-2">Shipping Information</h1>
-                        <p className="text-muted-foreground mb-6">Please enter your shipping details.</p>
-                        <form className="space-y-4">
-                            <Input placeholder="Full Name" />
-                            <Input placeholder="Address Line 1" />
-                            <div className="grid grid-cols-2 gap-4">
-                                <Input placeholder="City" />
-                                <Input placeholder="State / Province" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <Input placeholder="ZIP / Postal Code" />
-                                <Input placeholder="Country" defaultValue="India" />
-                            </div>
-                            <Input placeholder="Phone Number" type="tel" />
-                        </form>
-                        
-                        <Separator className="my-8" />
+                        <div className='mb-8'>
+                            <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Checkout</h1>
+                            <p className="text-muted-foreground">Complete your order by providing your details.</p>
+                        </div>
 
-                        <h2 className="text-2xl font-bold mb-4">Payment</h2>
-                        <Tabs defaultValue="upi" className="w-full">
-                            <TabsList className="grid w-full grid-cols-3">
-                                <TabsTrigger value="upi">UPI</TabsTrigger>
-                                <TabsTrigger value="card">Card</TabsTrigger>
-                                <TabsTrigger value="netbanking">Net Banking</TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="upi">
-                                <Card>
-                                    <CardContent className="pt-6 space-y-6">
-                                        <p className="text-sm text-muted-foreground">Select your preferred UPI app or enter your UPI ID.</p>
-                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                            <Button variant="outline" className="h-14"><GooglePayLogo /></Button>
-                                            <Button variant="outline" className="h-14"><PhonePeLogo /></Button>
-                                            <Button variant="outline" className="h-14"><PaytmLogo /></Button>
-                                            <Button variant="outline" className="h-14 flex-col gap-1" onClick={() => setShowQr(!showQr)}>
-                                                <QrCode />
-                                                <span className="text-xs">Scan QR</span>
+                        <div className="space-y-6">
+                            <div className="bg-card/50 backdrop-blur-sm border rounded-xl p-6 shadow-sm">
+                                <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
+                                <form className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Input placeholder="First Name" className="bg-background/50" />
+                                        <Input placeholder="Last Name" className="bg-background/50" />
+                                    </div>
+                                    <Input placeholder="Address Line 1" className="bg-background/50" />
+                                    <Input placeholder="Address Line 2 (Optional)" className="bg-background/50" />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Input placeholder="City" className="bg-background/50" />
+                                        <Input placeholder="State / Province" className="bg-background/50" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Input placeholder="ZIP / Postal Code" className="bg-background/50" />
+                                        <Input placeholder="Country" defaultValue="India" readOnly className="bg-muted" />
+                                    </div>
+                                    <Input placeholder="Phone Number" type="tel" className="bg-background/50" />
+                                </form>
+                            </div>
+
+                            <div className="bg-card/50 backdrop-blur-sm border rounded-xl p-6 shadow-sm">
+                                <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
+                                <Tabs defaultValue="upi" className="w-full">
+                                    <TabsList className="grid w-full grid-cols-3 mb-6">
+                                        <TabsTrigger value="upi">UPI</TabsTrigger>
+                                        <TabsTrigger value="card">Card</TabsTrigger>
+                                        <TabsTrigger value="netbanking">Net Banking</TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="upi">
+                                        <div className="space-y-6">
+                                            <p className="text-sm text-muted-foreground">Select your preferred UPI app or enter your UPI ID.</p>
+                                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                                <Button variant="outline" className="h-16 hover:border-primary/50 hover:bg-primary/5 transition-all"><GooglePayLogo /></Button>
+                                                <Button variant="outline" className="h-16 hover:border-primary/50 hover:bg-primary/5 transition-all"><PhonePeLogo /></Button>
+                                                <Button variant="outline" className="h-16 hover:border-primary/50 hover:bg-primary/5 transition-all"><PaytmLogo /></Button>
+                                                <Button variant="outline" className={`h-16 flex-col gap-1 transition-all ${showQr ? 'border-primary bg-primary/5' : 'hover:border-primary/50 hover:bg-primary/5'}`} onClick={() => setShowQr(!showQr)}>
+                                                    <QrCode className="h-5 w-5" />
+                                                    <span className="text-[10px]">Scan QR</span>
+                                                </Button>
+                                            </div>
+
+                                            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${showQr ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                                <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-primary/30 rounded-xl bg-primary/5">
+                                                    <div className="p-2 bg-white rounded-lg shadow-md">
+                                                        <Image
+                                                            src={`https://api.qrserver.com/v1/create-qr-code/?data=upi://pay?pa=viraasat@example&pn=Viraasat&am=${total.toFixed(2)}&cu=INR&tn=ViraasatOrder&size=200x200`}
+                                                            alt="UPI QR Code"
+                                                            width={200}
+                                                            height={200}
+                                                            className="mix-blend-multiply"
+                                                        />
+                                                    </div>
+                                                    <p className="mt-4 text-sm font-medium text-primary">Scan with any UPI app to pay ₹{total.toFixed(2)}</p>
+                                                    <p className="text-xs text-muted-foreground mt-1">GPay, PhonePe, Paytm, etc.</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center space-x-2">
+                                                <Separator className="flex-1" /> <span className="text-xs text-muted-foreground font-medium">OR ENTER VPA</span> <Separator className="flex-1" />
+                                            </div>
+                                            <Input placeholder="Enter your UPI ID (e.g. yourname@oksbi)" className="bg-background/50" />
+                                            <div className="flex gap-2">
+                                                <Button className="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20 transition-transform active:scale-95">
+                                                    Verify & Pay ₹{total.toFixed(2)}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </TabsContent>
+                                    <TabsContent value="card">
+                                        <div className="space-y-4">
+                                            <Input placeholder="Card Number" className="bg-background/50" />
+                                            <Input placeholder="Name on Card" className="bg-background/50" />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <Input placeholder="Expiry Date (MM/YY)" className="bg-background/50" />
+                                                <Input placeholder="CVV" className="bg-background/50" />
+                                            </div>
+                                            <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20 mt-4">
+                                                Pay ₹{total.toFixed(2)}
                                             </Button>
                                         </div>
-                                        {showQr && (
-                                            <div className="flex flex-col items-center justify-center p-4 border rounded-lg">
-                                                <Image 
-                                                    src={`https://api.qrserver.com/v1/create-qr-code/?data=upi://pay?pa=viraasat@example&pn=Viraasat&am=${total.toFixed(2)}&cu=INR&tn=ViraasatOrder&size=200x200`}
-                                                    alt="UPI QR Code"
-                                                    width={200}
-                                                    height={200}
-                                                    data-ai-hint="qr code"
-                                                />
-                                                <p className="mt-4 text-sm text-muted-foreground">Scan with any UPI app</p>
+                                    </TabsContent>
+                                    <TabsContent value="netbanking">
+                                        <div className="text-center py-8 space-y-4">
+                                            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-building-2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /><path d="M10 6h4" /><path d="M10 10h4" /><path d="M10 14h4" /><path d="M10 18h4" /></svg>
                                             </div>
-                                        )}
-                                        <div className="flex items-center space-x-2">
-                                            <Separator className="flex-1" /> <span className="text-xs text-muted-foreground">OR</span> <Separator className="flex-1" />
+                                            <p className="text-muted-foreground">You will be redirected to our secure payment gateway to select your bank.</p>
+                                            <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20 mt-2">
+                                                Proceed to Payment
+                                            </Button>
                                         </div>
-                                        <Input placeholder="Enter your UPI ID (e.g. yourname@oksbi)" />
-                                    </CardContent>
-                                </Card>
-                            </TabsContent>
-                             <TabsContent value="card">
-                                <Card>
-                                    <CardContent className="pt-6 space-y-4">
-                                        <Input placeholder="Card Number" />
-                                        <Input placeholder="Name on Card" />
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <Input placeholder="Expiry Date (MM/YY)" />
-                                            <Input placeholder="CVV" />
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </TabsContent>
-                             <TabsContent value="netbanking">
-                                <Card>
-                                    <CardContent className="pt-6">
-                                        <p className="text-center text-muted-foreground">You will be redirected to our secure payment gateway to select your bank.</p>
-                                    </CardContent>
-                                </Card>
-                            </TabsContent>
-                        </Tabs>
-
-                        <Button size="lg" className="w-full mt-6">Pay ₹{total.toFixed(2)}</Button>
-
+                                    </TabsContent>
+                                </Tabs>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Order Summary Section */}
-                    <div className="bg-muted/30 p-8 rounded-lg border">
-                        <h2 className="text-xl font-bold mb-6">Order Summary</h2>
-                        <div className="space-y-4">
-                            {cartItems.map(item => (
-                                <div key={item.id} className="flex items-center gap-4">
-                                    <Image src={item.images[0]} alt={item.name} width={64} height={64} className="rounded-md" />
-                                    <div className="flex-grow">
-                                        <p className="font-medium">{item.name}</p>
+                    <div>
+                        <div className="bg-card/80 backdrop-blur-md p-8 rounded-xl border shadow-lg sticky top-24">
+                            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                                <ShoppingCart className="w-5 h-5 text-primary" />
+                                Order Summary
+                            </h2>
+                            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                {cartItems.map(item => (
+                                    <div key={item.id} className="flex items-center gap-4 group">
+                                        <div className="relative overflow-hidden rounded-md border w-16 h-16 shrink-0">
+                                            <Image
+                                                src={item.images[0]}
+                                                alt={item.name}
+                                                fill
+                                                className="object-cover transition-transform group-hover:scale-110"
+                                            />
+                                        </div>
+                                        <div className="flex-grow">
+                                            <p className="font-medium text-sm line-clamp-2">{item.name}</p>
+                                            <p className="text-xs text-muted-foreground">Qty: 1</p>
+                                        </div>
+                                        <p className="font-semibold text-sm">₹{item.price.toFixed(2)}</p>
                                     </div>
-                                    <p className="font-medium">₹{item.price.toFixed(2)}</p>
+                                ))}
+                            </div>
+                            <Separator className="my-6" />
+                            <div className="space-y-3">
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-muted-foreground">Subtotal</span>
+                                    <span>₹{subtotal.toFixed(2)}</span>
                                 </div>
-                            ))}
-                        </div>
-                        <Separator className="my-6" />
-                        <div className="space-y-2 text-muted-foreground">
-                            <div className="flex justify-between">
-                                <span>Subtotal</span>
-                                <span>₹{subtotal.toFixed(2)}</span>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-muted-foreground">Shipping</span>
+                                    <span className="text-green-600 font-medium">{shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-muted-foreground">Tax</span>
+                                    <span>₹0.00</span>
+                                </div>
                             </div>
-                            <div className="flex justify-between">
-                                <span>Shipping</span>
-                                <span>{shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`}</span>
+                            <Separator className="my-6" />
+                            <div className="flex justify-between font-bold text-lg items-end">
+                                <span>Total</span>
+                                <span className="text-2xl text-primary">₹{total.toFixed(2)}</span>
+                            </div>
+
+                            <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/10">
+                                <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shield-check text-green-600"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path d="m9 12 2 2 4-4" /></svg>
+                                    Secure Checkout powered by Evo
+                                </p>
                             </div>
                         </div>
-                         <Separator className="my-6" />
-                         <div className="flex justify-between font-bold text-lg">
-                            <span>Total</span>
-                            <span>₹{total.toFixed(2)}</span>
-                         </div>
                     </div>
                 </div>
             </main>
