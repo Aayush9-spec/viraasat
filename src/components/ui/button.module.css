@@ -1,0 +1,89 @@
+.button {
+    cursor: pointer;
+    /* font-size: 1.4rem; */
+    /* Using Tailwind class for size */
+    border-radius: 16px;
+    border: none;
+    padding: 2px;
+    background: radial-gradient(circle 80px at 80% -10%, #ffffff, #181b1b);
+    position: relative;
+    overflow: hidden;
+    /* Ensure blobs don't overflow */
+}
+
+.button::after {
+    content: "";
+    position: absolute;
+    width: 65%;
+    height: 60%;
+    border-radius: 120px;
+    top: 0;
+    right: 0;
+    box-shadow: 0 0 20px #ffffff38;
+    z-index: 1;
+    /* Was -1, but button background is on parent. If z-index is -1 it might go behind button background? No, button creates stacking context? */
+    pointer-events: none;
+}
+
+.blob1 {
+    position: absolute;
+    width: 70px;
+    height: 100%;
+    border-radius: 16px;
+    bottom: 0;
+    left: 0;
+    background: radial-gradient(circle 60px at 0% 100%,
+            #3fe9ff,
+            #0000ff80,
+            transparent);
+    box-shadow: -10px 10px 30px #0051ff2d;
+    z-index: 1;
+}
+
+.blob2 {
+    position: absolute;
+    width: 70px;
+    height: 100%;
+    border-radius: 16px;
+    bottom: 0;
+    right: 0;
+    /* Assuming blob2 might be on right or similar to blob1 */
+    /* No specific CSS provided for blob2 in the prompt, but it was in HTML. 
+     I'll add a placeholder or mirror blob1 if needed, or just leave it empty. 
+     The prompt CSS only had .blob1. 
+     I will comment it out or leave it unstyled if not provided. 
+     Actually, let's make it symmetric for better look if it was intended? 
+     Or just stick to the prompt.
+  */
+}
+
+.inner {
+    padding: 14px 25px;
+    border-radius: 14px;
+    color: #fff;
+    z-index: 3;
+    position: relative;
+    background: radial-gradient(circle 80px at 80% -50%, #777777, #0f1111);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    /* For icon spacing */
+    height: 100%;
+    width: 100%;
+}
+
+.inner::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    border-radius: 14px;
+    background: radial-gradient(circle 60px at 0% 100%,
+            #00e1ff1a,
+            #0000ff11,
+            transparent);
+    position: absolute;
+    pointer-events: none;
+}

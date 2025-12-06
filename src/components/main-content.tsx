@@ -100,9 +100,9 @@ export function MainContent({ children }: { children: React.ReactNode }) {
             V
           </div>
           <div className="flex space-x-6 text-gray-500">
-            <a href="#" className="hover:text-gray-900"><Twitter className="h-5 w-5" /></a>
+            <a href="https://x.com/aayush03061102" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900"><Twitter className="h-5 w-5" /></a>
             <a href="#" className="hover:text-gray-900"><Facebook className="h-5 w-5" /></a>
-            <a href="#" className="hover:text-gray-900"><Instagram className="h-5 w-5" /></a>
+            <a href="https://www.instagram.com/aasr_233/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900"><Instagram className="h-5 w-5" /></a>
           </div>
         </div>
       </footer>

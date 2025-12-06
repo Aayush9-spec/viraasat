@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { Carousel3D } from '@/components/carousel-3d';
+import { Viraasat3DHero } from '@/components/viraasat-3d-hero';
 
 export default function Marketplace() {
   const { t } = useTranslation();
@@ -22,9 +23,9 @@ export default function Marketplace() {
 
         <div className="hero-parallax-layer hero-content-layer max-w-4xl mx-auto px-4">
           <p className="text-lg text-amber-100 mb-2">{t('home.hero.subtitle')}</p>
-          <h1 className="font-heading text-5xl sm:text-7xl md:text-9xl font-semibold text-white">
-            Viraasat
-          </h1>
+          <div className="my-4">
+            <Viraasat3DHero />
+          </div>
           <p className="text-base text-amber-50 mt-4 max-w-xl mx-auto">
             {t('home.hero.description')}
           </p>

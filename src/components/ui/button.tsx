@@ -35,19 +35,43 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
 }
 
+import styles from './button.module.css';
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+
+    // Apply special UI only for filled variants to maintain layout integrity for links/icons
+    const isSpecial = variant !== 'ghost' && variant !== 'link' && variant !== 'outline' && !asChild;
+
+    if (isSpecial) {
+      return (
+        <Comp
+          className={cn(buttonVariants({ variant, size, className }), styles.button, "p-0 overflow-hidden border-0")}
+          ref={ref}
+          {...props}
+        >
+          <div className={styles.blob1}></div>
+          <div className={styles.blob2}></div>
+          <div className={cn(styles.inner, "w-full h-full flex items-center justify-center")}>
+            {children}
+          </div>
+        </Comp>
+      )
+    }
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
-      />
+      >
+        {children}
+      </Comp>
     )
   }
 )
