@@ -1,0 +1,208 @@
+.parent {
+    width: 100%;
+    aspect-ratio: 1;
+    /* Keep square-ish aspect ratio */
+    perspective: 1000px;
+}
+
+.card {
+    height: 100%;
+    width: 100%;
+    border-radius: 20px;
+    /* Use app theme gradient instead of neon green */
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    transition: all 0.5s ease-in-out;
+    transform-style: preserve-3d;
+    box-shadow: rgba(5, 71, 17, 0) 40px 50px 25px -40px, rgba(5, 71, 17, 0.2) 0px 25px 25px -5px;
+    position: relative;
+}
+
+.glass {
+    transform-style: preserve-3d;
+    position: absolute;
+    inset: 8px;
+    border-radius: 15px;
+    border-top-right-radius: 50px;
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.8) 100%);
+    transform: translate3d(0px, 0px, 25px);
+    border-left: 1px solid white;
+    border-bottom: 1px solid white;
+    transition: all 0.5s ease-in-out;
+    overflow: hidden;
+    /* Contain the image */
+}
+
+/* Add Image styling */
+.productImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+    transition: transform 0.5s ease-in-out;
+}
+
+.content {
+    position: absolute;
+    padding: 20px;
+    bottom: 60px;
+    /* Space for bottom bar */
+    left: 0;
+    width: 100%;
+    transform: translate3d(0, 0, 30px);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.content .title {
+    display: block;
+    color: #0f3d2e;
+    /* Darker green/teal for contrast */
+    font-weight: 800;
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
+.content .text {
+    display: block;
+    color: #1a5c45;
+    font-size: 0.9rem;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+.bottom {
+    padding: 10px 15px;
+    transform-style: preserve-3d;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transform: translate3d(0, 0, 26px);
+    z-index: 20;
+}
+
+.bottom .priceTag {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #003d22;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 4px 10px;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.bottom .viewMoreButton {
+    background: white;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    color: #00894d;
+    font-weight: bold;
+    font-size: 0.8rem;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.bottom .viewMoreButton:hover {
+    transform: scale(1.05);
+}
+
+/* Logo Circles Animation */
+.logo {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform-style: preserve-3d;
+    pointer-events: none;
+    /* Let clicks pass through */
+}
+
+.logo .circle {
+    display: block;
+    position: absolute;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    top: 0;
+    right: 0;
+    box-shadow: rgba(100, 100, 111, 0.2) -10px 10px 20px 0px;
+    backdrop-filter: blur(5px);
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.5s ease-in-out;
+}
+
+.logo .circle1 {
+    width: 100px;
+    transform: translate3d(0, 0, 20px);
+    top: 5px;
+    right: 5px;
+}
+
+.logo .circle2 {
+    width: 80px;
+    transform: translate3d(0, 0, 40px);
+    top: 8px;
+    right: 8px;
+    backdrop-filter: blur(1px);
+    transition-delay: 0.2s;
+}
+
+.logo .circle3 {
+    width: 60px;
+    transform: translate3d(0, 0, 60px);
+    top: 12px;
+    right: 12px;
+    transition-delay: 0.4s;
+}
+
+.logo .circle4 {
+    width: 40px;
+    transform: translate3d(0, 0, 80px);
+    top: 16px;
+    right: 16px;
+    transition-delay: 0.6s;
+}
+
+.logo .circle5 {
+    width: 25px;
+    transform: translate3d(0, 0, 100px);
+    top: 20px;
+    right: 20px;
+    transition-delay: 0.8s;
+    background: white;
+}
+
+/* Hover Effects */
+.parent:hover .card {
+    transform: rotate3d(1, 1, 0, 15deg);
+    /* Reduced rotation for usability */
+    box-shadow: rgba(5, 71, 17, 0.3) 30px 50px 25px -40px, rgba(5, 71, 17, 0.1) 0px 25px 30px 0px;
+}
+
+.parent:hover .card .glass {
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.9) 100%);
+}
+
+.parent:hover .productImage {
+    opacity: 0.5;
+    /* Fade out image slightly to show text better */
+    transform: scale(1.1);
+}
+
+.parent:hover .card .logo .circle2 {
+    transform: translate3d(0, 0, 60px);
+}
+
+.parent:hover .card .logo .circle3 {
+    transform: translate3d(0, 0, 80px);
+}
+
+.parent:hover .card .logo .circle4 {
+    transform: translate3d(0, 0, 100px);
+}
+
+.parent:hover .card .logo .circle5 {
+    transform: translate3d(0, 0, 120px);
+}
