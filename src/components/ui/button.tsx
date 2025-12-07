@@ -45,13 +45,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
 
-    // Apply special UI only for filled variants to maintain layout integrity for links/icons
+    // Apply special UI only for filled variants to maintain layout integrity for links/icons.
+    // Skip if asChild is true, as we cannot easily inject specific DOM structure into the child slot.
     const isSpecial = variant !== 'ghost' && variant !== 'link' && variant !== 'outline' && !asChild;
 
     if (isSpecial) {
       return (
         <Comp
-          className={cn(buttonVariants({ variant, size, className }), styles.button, "p-0 overflow-hidden border-0")}
+          className={cn(
+            buttonVariants({ variant, size, className }),
+            styles.button,
+            "h-auto p-[2px] border-0 ring-0 bg-transparent hover:bg-transparent"
+          )}
           ref={ref}
           {...props}
         >

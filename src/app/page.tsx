@@ -1,19 +1,18 @@
 'use client';
-// Rebuild trigger
+
 import ProductCard from '@/components/product-card';
 import { products } from '@/lib/data';
 import { useTranslation } from '@/hooks/use-translation';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
-import Link from 'next/link';
 import { Carousel3D } from '@/components/carousel-3d';
 import { Viraasat3DHero } from '@/components/viraasat-3d-hero';
+import { useRouter } from 'next/navigation';
 
 export default function Marketplace() {
   const { t } = useTranslation();
-  // const missionProducts = products.slice(0, 8); // No longer needed
-  // const gridProducts = products.slice(0, 12); // unused
+  const router = useRouter();
 
   return (
     <div className="parallax-viewport">
@@ -63,8 +62,8 @@ export default function Marketplace() {
               ))}
             </div>
             <div className="text-center mt-12">
-              <Button asChild size="lg">
-                <Link href="/shop">Shop All Products</Link>
+              <Button size="lg" onClick={() => router.push('/shop')}>
+                Shop All Products
               </Button>
             </div>
           </div>
@@ -97,7 +96,7 @@ export default function Marketplace() {
               </div>
               <div className="hidden lg:block">
                 <Image
-                  src="https://images.unsplash.com/photo-1521799022345-481a897e45ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhcnRpc2FufGVufDB8fHx8MTc1ODQ0NjA4OHww&ixlib=rb-4.1.0&q=80&w=1080"
+                  src="https://images.unsplash.com/photo-1521799022345-481a897e45ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw7fHxhcnRpc2FufGVufDB8fHx8MTc1ODQ0NjA4OHww&ixlib=rb-4.1.0&q=80&w=1080"
                   alt="Local artisans at work"
                   width={400}
                   height={300}
