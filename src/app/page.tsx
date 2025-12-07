@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Carousel3D } from '@/components/carousel-3d';
-import { Viraasat3DHero } from '@/components/viraasat-3d-hero';
+
 import { useRouter } from 'next/navigation';
 
 export default function Marketplace() {
@@ -23,7 +23,15 @@ export default function Marketplace() {
         <div className="hero-parallax-layer hero-content-layer max-w-4xl mx-auto px-4">
           <p className="text-lg text-amber-100 mb-2">{t('home.hero.subtitle')}</p>
           <div className="my-4">
-            <Viraasat3DHero />
+            <div className="relative w-full max-w-[600px] mx-auto aspect-square md:aspect-[4/3] flex items-center justify-center">
+              <Image
+                src="/logo-replacement.png"
+                alt="Viraasat Heritage Logo"
+                fill
+                className="object-contain drop-shadow-2xl filter hover:brightness-110 transition-all duration-500"
+                priority
+              />
+            </div>
           </div>
           <p className="text-base text-amber-50 mt-4 max-w-xl mx-auto">
             {t('home.hero.description')}
