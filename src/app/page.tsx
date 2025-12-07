@@ -21,7 +21,6 @@ export default function Marketplace() {
         <div className="hero-parallax-layer hero-overlay-layer" />
 
         <div className="hero-parallax-layer hero-content-layer max-w-4xl mx-auto px-4">
-          <p className="text-lg text-amber-100 mb-2">{t('home.hero.subtitle')}</p>
           <div className="my-4">
             <div className="relative w-full max-w-[600px] mx-auto aspect-square md:aspect-[4/3] flex items-center justify-center">
               <Image
@@ -53,12 +52,39 @@ export default function Marketplace() {
               {t('home.mission.description')}
             </p>
           </div>
-          <div className="relative mt-12">
-            <Carousel3D />
+        </section>
+
+        <section id="explore-collection" className="py-20 bg-gradient-to-b from-amber-50/30 via-orange-50/20 to-background relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(251,191,36,0.1),transparent_50%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(249,115,22,0.1),transparent_50%)] pointer-events-none" />
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="text-center mb-12">
+              <h2 className="text-5xl font-heading font-bold text-amber-900 mb-4 tracking-tight">
+                Explore Our Collection
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Discover authentic handcrafted treasures from India's finest artisans
+              </p>
+            </div>
+
+            <div className="relative">
+              <Carousel3D />
+            </div>
+
+            <div className="text-center mt-12">
+              <Button
+                size="lg"
+                onClick={() => router.push('/shop')}
+                className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-6 text-lg"
+              >
+                View All Products
+              </Button>
+            </div>
           </div>
         </section>
 
-        <section id="product-grid" className="py-16 bg-gradient-to-b from-orange-50/50 to-background">
+        <section id="product-grid" className="py-16 bg-gradient-to-b from-background to-orange-50/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
               {products.slice(0, 8).map((product) => (
