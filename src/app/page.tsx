@@ -6,7 +6,8 @@ import { useTranslation } from '@/hooks/use-translation';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
-import { Carousel3D } from '@/components/carousel-3d';
+import { Carousel3DWrapper } from '@/components/carousel-3d-wrapper';
+
 
 import { useRouter } from 'next/navigation';
 
@@ -29,6 +30,8 @@ export default function Marketplace() {
                 fill
                 className="object-contain drop-shadow-2xl filter hover:brightness-110 transition-all duration-500"
                 priority
+                quality={85}
+                sizes="(max-width: 768px) 100vw, 600px"
               />
             </div>
           </div>
@@ -69,7 +72,7 @@ export default function Marketplace() {
             </div>
 
             <div className="relative">
-              <Carousel3D />
+              <Carousel3DWrapper />
             </div>
 
             <div className="text-center mt-12">
@@ -114,6 +117,9 @@ export default function Marketplace() {
                   height={300}
                   className="rounded-lg shadow-lg"
                   data-ai-hint="artisan workshop"
+                  loading="lazy"
+                  quality={75}
+                  sizes="(max-width: 1024px) 0px, 400px"
                 />
               </div>
               <div className="text-center max-w-lg">
@@ -136,6 +142,9 @@ export default function Marketplace() {
                   height={300}
                   className="rounded-lg shadow-lg"
                   data-ai-hint="local artisans"
+                  loading="lazy"
+                  quality={75}
+                  sizes="(max-width: 1024px) 0px, 400px"
                 />
               </div>
             </div>

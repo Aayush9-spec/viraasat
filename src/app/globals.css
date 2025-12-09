@@ -169,6 +169,15 @@
 
   body {
     @apply text-foreground;
+    font-family: var(--font-inter), sans-serif;
+  }
+
+  .font-heading {
+    font-family: var(--font-heading), serif;
+  }
+
+  .font-sans {
+    font-family: var(--font-inter), sans-serif;
   }
 }
 

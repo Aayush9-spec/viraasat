@@ -2,21 +2,21 @@
 
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Sparkles, MeshDistortMaterial, Sphere, OrbitControls } from '@react-three/drei';
-import { useRef } from 'react';
+import { useRef, memo } from 'react';
 import * as THREE from 'three';
 import { useTheme } from 'next-themes';
 
-export function Login3DBackground() {
+export const Login3DBackground = memo(function Login3DBackground() {
     return (
         <div className="absolute inset-0 -z-10">
-            <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
+            <Canvas camera={{ position: [0, 0, 8], fov: 50 }} dpr={[1, 1.5]}>
                 <SceneContent />
             </Canvas>
         </div>
     );
-}
+});
 
-function SceneContent() {
+const SceneContent = memo(function SceneContent() {
     const { theme } = useTheme();
     const primaryColor = theme === 'dark' ? '#fbbf24' : '#f59e0b';
     const secondaryColor = theme === 'dark' ? '#f59e0b' : '#d97706';
@@ -65,9 +65,9 @@ function SceneContent() {
             />
         </>
     );
-}
+});
 
-function DistortedSphere({ position, color, scale = 1 }: { position: [number, number, number], color: string, scale?: number }) {
+const DistortedSphere = memo(function DistortedSphere({ position, color, scale = 1 }: { position: [number, number, number], color: string, scale?: number }) {
     return (
         <mesh position={position} scale={scale}>
             <sphereGeometry args={[1, 32, 32]} />
@@ -83,9 +83,9 @@ function DistortedSphere({ position, color, scale = 1 }: { position: [number, nu
             />
         </mesh>
     );
-}
+});
 
-function RotatingRing({ position, color, rotation = [0, 0, 0] }: { position: [number, number, number], color: string, rotation?: [number, number, number] }) {
+const RotatingRing = memo(function RotatingRing({ position, color, rotation = [0, 0, 0] }: { position: [number, number, number], color: string, rotation?: [number, number, number] }) {
     const ringRef = useRef<THREE.Mesh>(null);
 
     useFrame((state) => {
@@ -101,4 +101,4 @@ function RotatingRing({ position, color, rotation = [0, 0, 0] }: { position: [nu
             <meshStandardMaterial color={color} metalness={0.8} roughness={0.2} transparent opacity={0.4} />
         </mesh>
     );
-}
+});

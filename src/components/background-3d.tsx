@@ -1,34 +1,61 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 
 export function Background3D() {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const rafId = useRef<number | null>(null);
+    const lastUpdateTime = useRef<number>(0);
 
     useEffect(() => {
+        let pendingUpdate = { x: 0, y: 0 };
+        let isUpdateScheduled = false;
+
         const handleMouseMove = (event: MouseEvent) => {
-            setMousePosition({
+            pendingUpdate = {
                 x: (event.clientX / window.innerWidth) * 2 - 1,
                 y: (event.clientY / window.innerHeight) * 2 - 1
-            });
+            };
+
+            // Throttle updates to 60fps max
+            if (!isUpdateScheduled) {
+                isUpdateScheduled = true;
+                rafId.current = requestAnimationFrame((timestamp) => {
+                    // Only update if at least 16ms have passed (60fps)
+                    if (timestamp - lastUpdateTime.current >= 16) {
+                        setMousePosition(pendingUpdate);
+                        lastUpdateTime.current = timestamp;
+                    }
+                    isUpdateScheduled = false;
+                });
+            }
         };
 
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
+        // Use passive listener for better scroll performance
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            if (rafId.current !== null) {
+                cancelAnimationFrame(rafId.current);
+            }
+        };
     }, []);
 
-    const rotateX = mousePosition.y * 8;
-    const rotateY = mousePosition.x * 8;
+    const rotateX = useMemo(() => mousePosition.y * 8, [mousePosition.y]);
+    const rotateY = useMemo(() => mousePosition.x * 8, [mousePosition.x]);
 
     return (
         <div className="fixed inset-0 -z-30 overflow-hidden pointer-events-none perspective-container bg-background"
             style={{
-                perspective: '1200px'
+                perspective: '1200px',
+                willChange: 'transform'
             }}>
             <div
                 className="absolute inset-0 transition-transform duration-100 ease-out"
                 style={{
-                    transform: `rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`
+                    transform: `rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`,
+                    willChange: 'transform'
                 }}
             >
                 {/* Central Ornamental Frame */}
@@ -53,7 +80,8 @@ export function Background3D() {
                 <div
                     className="absolute top-[15%] left-[10%] w-64 h-48 opacity-10 transform-style-3d animate-float-1"
                     style={{
-                        transform: `translate(${mousePosition.x * -25}px, ${mousePosition.y * -25}px) rotateX(${rotateX * 1.5}deg) rotateY(${rotateY * 1.5}deg)`
+                        transform: `translate(${mousePosition.x * -25}px, ${mousePosition.y * -25}px) rotateX(${rotateX * 1.5}deg) rotateY(${rotateY * 1.5}deg)`,
+                        willChange: 'transform'
                     }}
                 >
                     <div className="absolute inset-0 border-2 border-teal-400/50 rounded-xl bg-gradient-to-br from-teal-500/5 to-transparent backdrop-blur-sm">
@@ -65,7 +93,8 @@ export function Background3D() {
                 <div
                     className="absolute top-[20%] right-[12%] w-56 h-56 opacity-12 transform-style-3d animate-float-2"
                     style={{
-                        transform: `translate(${mousePosition.x * -35}px, ${mousePosition.y * -20}px) rotateX(${-rotateX * 1.2}deg) rotateY(${-rotateY * 1.2}deg)`
+                        transform: `translate(${mousePosition.x * -35}px, ${mousePosition.y * -20}px) rotateX(${-rotateX * 1.2}deg) rotateY(${-rotateY * 1.2}deg)`,
+                        willChange: 'transform'
                     }}
                 >
                     <div className="absolute inset-0 border-2 border-amber-400/50 rotate-12 rounded-2xl bg-gradient-to-br from-amber-500/5 to-transparent">
@@ -79,7 +108,8 @@ export function Background3D() {
                 <div
                     className="absolute bottom-[15%] left-[15%] w-72 h-40 opacity-10 transform-style-3d animate-float-3"
                     style={{
-                        transform: `translate(${mousePosition.x * -20}px, ${mousePosition.y * -30}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
+                        transform: `translate(${mousePosition.x * -20}px, ${mousePosition.y * -30}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+                        willChange: 'transform'
                     }}
                 >
                     <div className="absolute inset-0 border-2 border-orange-400/50 -rotate-6 rounded-xl bg-gradient-to-br from-orange-500/5 to-transparent">
@@ -91,7 +121,8 @@ export function Background3D() {
                 <div
                     className="absolute bottom-[25%] right-[8%] w-48 h-64 opacity-10 transform-style-3d animate-float-1"
                     style={{
-                        transform: `translate(${mousePosition.x * -28}px, ${mousePosition.y * -22}px) rotateX(${-rotateX}deg) rotateY(${rotateY * 1.3}deg)`
+                        transform: `translate(${mousePosition.x * -28}px, ${mousePosition.y * -22}px) rotateX(${-rotateX}deg) rotateY(${rotateY * 1.3}deg)`,
+                        willChange: 'transform'
                     }}
                 >
                     <div className="absolute inset-0 border-2 border-emerald-400/50 rotate-6 rounded-2xl bg-gradient-to-br from-emerald-500/5 to-transparent">
