@@ -1,7 +1,6 @@
 .parent {
     width: 100%;
     aspect-ratio: 1;
-    /* Keep square-ish aspect ratio */
     perspective: 1000px;
 }
 
@@ -9,12 +8,12 @@
     height: 100%;
     width: 100%;
     border-radius: 20px;
-    /* Use app theme gradient instead of neon green */
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
     transition: all 0.5s ease-in-out;
     transform-style: preserve-3d;
-    box-shadow: rgba(5, 71, 17, 0) 40px 50px 25px -40px, rgba(5, 71, 17, 0.2) 0px 25px 25px -5px;
+    box-shadow: 0 40px 50px -20px rgba(0, 0, 0, 0.2), 0 20px 25px -10px rgba(0, 0, 0, 0.1);
     position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .glass {
@@ -23,39 +22,39 @@
     inset: 8px;
     border-radius: 15px;
     border-top-right-radius: 50px;
-    background: linear-gradient(0deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.8) 100%);
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.6) 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     transform: translate3d(0px, 0px, 25px);
-    border-left: 1px solid white;
-    border-bottom: 1px solid white;
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     transition: all 0.5s ease-in-out;
     overflow: hidden;
-    /* Contain the image */
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
-/* Add Image styling */
 .productImage {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.9;
-    transition: transform 0.5s ease-in-out;
+    opacity: 1;
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease;
 }
 
 .content {
     position: absolute;
     padding: 20px;
     bottom: 60px;
-    /* Space for bottom bar */
     left: 0;
     width: 100%;
     transform: translate3d(0, 0, 30px);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
 }
 
 .content .title {
     display: block;
-    color: #0f3d2e;
-    /* Darker green/teal for contrast */
+    color: hsl(var(--primary-foreground));
     font-weight: 800;
     font-size: 1.25rem;
     line-height: 1.2;
@@ -63,7 +62,8 @@
 
 .content .text {
     display: block;
-    color: #1a5c45;
+    color: hsl(var(--primary-foreground));
+    opacity: 0.9;
     font-size: 0.9rem;
     margin-top: 8px;
     font-weight: 500;
@@ -86,28 +86,31 @@
 .bottom .priceTag {
     font-weight: bold;
     font-size: 1.1rem;
-    color: #003d22;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 4px 10px;
+    color: hsl(var(--primary));
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4px 12px;
     border-radius: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
 }
 
 .bottom .viewMoreButton {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
     border: none;
     border-radius: 20px;
-    padding: 6px 12px;
-    color: #00894d;
+    padding: 8px 16px;
+    color: hsl(var(--primary));
     font-weight: bold;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
+    transition: transform 0.2s, background 0.2s;
+    backdrop-filter: blur(4px);
 }
 
 .bottom .viewMoreButton:hover {
-    transform: scale(1.05);
+    transform: scale(1.05) translateZ(10px);
+    background: white;
 }
 
 /* Logo Circles Animation */
@@ -117,7 +120,6 @@
     top: 0;
     transform-style: preserve-3d;
     pointer-events: none;
-    /* Let clicks pass through */
 }
 
 .logo .circle {
@@ -127,10 +129,11 @@
     border-radius: 50%;
     top: 0;
     right: 0;
-    box-shadow: rgba(100, 100, 111, 0.2) -10px 10px 20px 0px;
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5), 0 5px 15px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
     transition: all 0.5s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .logo .circle1 {
@@ -145,8 +148,7 @@
     transform: translate3d(0, 0, 40px);
     top: 8px;
     right: 8px;
-    backdrop-filter: blur(1px);
-    transition-delay: 0.2s;
+    transition-delay: 0.1s;
 }
 
 .logo .circle3 {
@@ -154,7 +156,7 @@
     transform: translate3d(0, 0, 60px);
     top: 12px;
     right: 12px;
-    transition-delay: 0.4s;
+    transition-delay: 0.2s;
 }
 
 .logo .circle4 {
@@ -162,7 +164,7 @@
     transform: translate3d(0, 0, 80px);
     top: 16px;
     right: 16px;
-    transition-delay: 0.6s;
+    transition-delay: 0.3s;
 }
 
 .logo .circle5 {
@@ -170,24 +172,24 @@
     transform: translate3d(0, 0, 100px);
     top: 20px;
     right: 20px;
-    transition-delay: 0.8s;
-    background: white;
+    transition-delay: 0.4s;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 /* Hover Effects */
 .parent:hover .card {
     transform: rotate3d(1, 1, 0, 15deg);
-    /* Reduced rotation for usability */
-    box-shadow: rgba(5, 71, 17, 0.3) 30px 50px 25px -40px, rgba(5, 71, 17, 0.1) 0px 25px 30px 0px;
+    box-shadow: 0 50px 60px -20px rgba(0, 0, 0, 0.3), 0 30px 40px -10px rgba(0, 0, 0, 0.2);
 }
 
 .parent:hover .card .glass {
-    background: linear-gradient(0deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.9) 100%);
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.8) 100%);
+    transform: translate3d(0, 0, 35px);
 }
 
 .parent:hover .productImage {
-    opacity: 0.5;
-    /* Fade out image slightly to show text better */
+    opacity: 0.6;
     transform: scale(1.1);
 }
 

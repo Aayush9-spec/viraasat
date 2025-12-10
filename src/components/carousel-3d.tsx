@@ -17,13 +17,13 @@ export const Carousel3D = () => {
     return (
         <div className="h-[500px] w-full relative">
             <Canvas camera={{ position: [0, 0, 100], fov: 15 }}>
-                <fog attach="fog" args={['#ffffff', 8.5, 12]} />
                 <ScrollControls pages={4} infinite>
                     <Rig rotation={[0, 0, 0.15]}>
                         <Carousel items={carouselProducts} />
                     </Rig>
                 </ScrollControls>
-                <Environment preset="dawn" background blur={0.5} />
+                {/* Removed background prop to let the global Background3D show through */}
+                <Environment preset="dawn" blur={0.5} />
             </Canvas>
             <div className="absolute bottom-4 left-0 right-0 text-center pointer-events-none text-gray-500 text-sm">
                 Scroll to explore &bull; Click to view details
