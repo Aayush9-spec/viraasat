@@ -27,6 +27,8 @@ export default function ShopPage() {
   const [sortOrder, setSortOrder] = useState('newest');
 
   useEffect(() => {
+    if (!db) return;
+
     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedProducts: Product[] = snapshot.docs.map(doc => ({
