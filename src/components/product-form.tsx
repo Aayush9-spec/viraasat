@@ -37,6 +37,9 @@ import ImageEnhancer from './image-enhancer';
 import { generateProductInsights } from '@/ai/flows/generate-product-insights';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from './ui/badge';
+import { db } from '@/lib/firebase';
+import { collection, addDoc } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 import { Sparkles, Trash2, X } from 'lucide-react';
 
 const productSchema = z.object({
@@ -59,6 +62,8 @@ export function ProductForm({ product }: ProductFormProps) {
   );
   const [useCases, setUseCases] = useState<string[]>(product?.aiInsights?.useCases || []);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
@@ -70,18 +75,56 @@ export function ProductForm({ product }: ProductFormProps) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof productSchema>) {
-    console.log({
-      ...values,
-      images,
-      features,
-      styleTags,
-      useCases,
-    });
-    toast({
-      title: 'Product Saved',
-      description: `${values.name} has been successfully saved.`,
-    });
+  async function onSubmit(values: z.infer<typeof productSchema>) {
+    setIsSubmitting(true);
+    try {
+      const productData = {
+        artisanId: 'artisan-1', // TODO: Get from auth context
+        name: values.name,
+        description: values.description,
+        category: values.category,
+        price: values.price,
+        currency: 'INR',
+        stock: 10, // Default stock
+        images: images,
+        tagline: values.description.substring(0, 50) + '...', // Generate tagline from description
+        isActive: true,
+        status: 'active',
+        aiInsights: {
+          keyFeatures: features,
+          styleTags: styleTags,
+          useCases: useCases
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      if (product) {
+        // Update existing product logic would go here
+        // const docRef = doc(db, "products", product.id);
+        // await updateDoc(docRef, productData);
+      } else {
+        await addDoc(collection(db, "products"), productData);
+      }
+
+      toast({
+        title: 'Product Saved',
+        description: `${values.name} has been successfully saved.`,
+      });
+
+      router.push('/dashboard/products');
+      router.refresh();
+
+    } catch (error) {
+      console.error("Error saving product:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to save product. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const handleInsights = async () => {
@@ -261,8 +304,8 @@ export function ProductForm({ product }: ProductFormProps) {
                       <FormLabel>Price</FormLabel>
                       <FormControl>
                         <div className="relative">
-                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">₹</span>
-                            <Input type="number" placeholder="0.00" className="pl-7" {...field} />
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">₹</span>
+                          <Input type="number" placeholder="0.00" className="pl-7" {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -299,16 +342,16 @@ export function ProductForm({ product }: ProductFormProps) {
                 />
               </CardContent>
             </Card>
-             <Card>
-                <CardHeader>
-                    <CardTitle>Actions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Button type="submit" className="w-full">
-                        {product ? 'Save Changes' : 'Create Product'}
-                    </Button>
-                </CardContent>
-             </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? 'Saving...' : (product ? 'Save Changes' : 'Create Product')}
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </form>

@@ -1,6 +1,6 @@
 
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProductCard from '@/components/product-card';
 import { products, categories } from '@/lib/data';
 import { Button } from '@/components/ui/button';
@@ -17,10 +17,35 @@ import {
 } from '@/components/ui/select';
 import { Product } from '@/lib/types';
 
+import { db } from '@/lib/firebase';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+
 export default function ShopPage() {
+  const [dbProducts, setDbProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState('newest');
+
+  useEffect(() => {
+    const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedProducts: Product[] = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Product));
+      setDbProducts(fetchedProducts);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Combine static and db products for filtering
+  const allProducts = [...dbProducts, ...products];
+
+  useEffect(() => {
+    filterAndSortProducts(selectedCategories, sortOrder);
+  }, [dbProducts, selectedCategories, sortOrder]); // Re-run when DB products change
+
 
   const handleCategoryChange = (category: string) => {
     const newSelectedCategories = selectedCategories.includes(category)
@@ -37,7 +62,7 @@ export default function ShopPage() {
   };
 
   const filterAndSortProducts = (categories: string[], sort: string) => {
-    let tempProducts = [...products];
+    let tempProducts = [...dbProducts, ...products];
 
     // Filter by category
     if (categories.length > 0) {
@@ -110,7 +135,7 @@ export default function ShopPage() {
               <p className="text-sm text-muted-foreground">
                 Showing {filteredProducts.length} of {products.length} products
               </p>
-              
+
               {/* Mobile Filters */}
               <Sheet>
                 <SheetTrigger asChild>
@@ -120,9 +145,9 @@ export default function ShopPage() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent>
-                    <div className="p-4">
-                        <Filters />
-                    </div>
+                  <div className="p-4">
+                    <Filters />
+                  </div>
                 </SheetContent>
               </Sheet>
 
@@ -140,16 +165,16 @@ export default function ShopPage() {
             </div>
 
             {filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
                 {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} variant="grid" />
+                  <ProductCard key={product.id} product={product} variant="grid" />
                 ))}
-                </div>
+              </div>
             ) : (
-                <div className="text-center py-16">
-                    <h2 className="text-2xl font-semibold">No products found</h2>
-                    <p className="text-muted-foreground mt-2">Try adjusting your filters.</p>
-                </div>
+              <div className="text-center py-16">
+                <h2 className="text-2xl font-semibold">No products found</h2>
+                <p className="text-muted-foreground mt-2">Try adjusting your filters.</p>
+              </div>
             )}
           </div>
         </div>
