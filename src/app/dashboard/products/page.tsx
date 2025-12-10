@@ -38,6 +38,8 @@ export default function ProductsPage() {
   const [dbProducts, setDbProducts] = useState<Product[]>([]);
 
   useEffect(() => {
+    if (!db) return;
+
     // Assuming a single artisan 'artisan-1' for mock purposes
     const q = query(
       collection(db, "products"),
