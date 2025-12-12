@@ -143,7 +143,6 @@ firebase deploy --only functions
 🔹 6️⃣ Run Frontend
 npm start
 
-
 👉 Opens at: http://localhost:3000
 
 🤝 Contributing Guide
