@@ -7,144 +7,200 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Carousel3DWrapper } from '@/components/carousel-3d-wrapper';
-
-
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Marketplace() {
   const { t } = useTranslation();
   const router = useRouter();
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <div className="parallax-viewport">
-      <header className="hero-parallax-group relative overflow-hidden text-center hero-section">
-        <div className="hero-parallax-layer hero-bg-layer" />
-        <div className="hero-parallax-layer hero-overlay-layer" />
+    <div className="relative min-h-screen overflow-hidden bg-amber-50">
+      {/* Global Background Watermark */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none opacity-[0.03] flex items-center justify-center overflow-hidden"
+        style={{ transform: `translateY(${scrollY * 0.1}px)` }}
+      >
+        <Image
+          src="/viraasat-logo-full.png"
+          alt="Watermark"
+          width={1200}
+          height={1200}
+          className="object-contain w-[150%] h-[150%] max-w-none animate-custom-spin-slow"
+          priority
+        />
+      </div>
 
-        <div className="hero-parallax-layer hero-content-layer max-w-4xl mx-auto px-4">
-          <div className="my-4">
-            <div className="relative w-full max-w-[600px] mx-auto aspect-square md:aspect-[4/3] flex items-center justify-center">
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <header className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+          {/* Hero Background with Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-50/50 to-amber-100/80 z-0" />
+
+          <div className="relative z-10 w-full max-w-4xl mx-auto space-y-8 animate-fade-in-up">
+            <div className="relative w-full max-w-[500px] mx-auto aspect-video flex items-center justify-center transition-transform duration-700 hover:scale-105">
+              <div className="absolute inset-0 bg-amber-400/20 blur-3xl rounded-full opacity-50 animate-pulse" />
               <Image
-                src="/logo-replacement.png"
+                src="/viraasat-logo-full.png"
                 alt="Viraasat Heritage Logo"
                 fill
-                className="object-contain drop-shadow-2xl filter hover:brightness-110 transition-all duration-500"
+                className="object-contain drop-shadow-2xl"
                 priority
-                quality={85}
-                sizes="(max-width: 768px) 100vw, 600px"
+                quality={100}
+                sizes="(max-width: 768px) 100vw, 500px"
               />
             </div>
+
+            <div className="space-y-4 backdrop-blur-sm bg-white/30 p-8 rounded-3xl border border-white/40 shadow-xl">
+              <h1 className="text-4xl md:text-6xl font-heading font-bold text-amber-950 tracking-tight">
+                {t('home.hero.title') || 'Preserving Heritage, Empowering Artisans'}
+              </h1>
+              <p className="text-lg md:text-xl text-amber-900/80 max-w-2xl mx-auto font-medium leading-relaxed">
+                {t('home.hero.description')}
+              </p>
+
+              <div className="pt-6">
+                <Button
+                  size="lg"
+                  onClick={() => {
+                    const el = document.getElementById('explore-collection');
+                    el?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="bg-amber-900 hover:bg-amber-800 text-amber-50 rounded-full px-8 py-6 text-lg shadow-lg hover:shadow-amber-900/20 transition-all duration-300"
+                >
+                  Start Your Journey
+                </Button>
+              </div>
+            </div>
           </div>
-          <p className="text-base text-amber-50 mt-4 max-w-xl mx-auto">
-            {t('home.hero.description')}
-          </p>
-        </div>
 
-        <div className="absolute bottom-0 left-0 right-0 z-20">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-            <path d="M1440 120H0V26.2205C159.549 34.9398 325.753 38.6479 495.733 36.837C778.361 33.722 1056.49 14.8687 1440 0V120Z" fill="hsl(var(--background))" />
-          </svg>
-        </div>
-      </header>
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-amber-50 to-transparent pointer-events-none" />
+        </header>
 
-      <div className="content-container bg-background">
-        <section id="mission" className="py-16 relative">
+        {/* Mission Section */}
+        <section id="mission" className="py-24 relative">
           <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-4xl font-heading font-semibold text-amber-900 mb-4">{t('home.mission.title')}</h2>
-            <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
-              {t('home.mission.description')}
+            <h2 className="text-4xl md:text-5xl font-heading font-bold text-amber-900 mb-8 decoration-amber-400/30 underline decoration-wavy underline-offset-8">
+              {t('home.mission.title')}
+            </h2>
+            <p className="text-xl text-amber-900/70 leading-relaxed max-w-3xl mx-auto font-serif italic">
+              &ldquo;{t('home.mission.description')}&rdquo;
             </p>
           </div>
         </section>
 
-        <section id="explore-collection" className="py-20 bg-gradient-to-b from-amber-50/30 via-orange-50/20 to-background relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(251,191,36,0.1),transparent_50%)] pointer-events-none" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(249,115,22,0.1),transparent_50%)] pointer-events-none" />
-
+        {/* Carousel Section */}
+        <section id="explore-collection" className="py-24 relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-12">
+            <div className="text-center mb-16">
               <h2 className="text-5xl font-heading font-bold text-amber-900 mb-4 tracking-tight">
                 Explore Our Collection
               </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              <p className="text-lg text-amber-800/60 max-w-2xl mx-auto">
                 Discover authentic handcrafted treasures from India's finest artisans
               </p>
             </div>
 
-            <div className="relative">
+            <div className="relative min-h-[500px]">
               <Carousel3DWrapper />
             </div>
 
-            <div className="text-center mt-12">
+            <div className="text-center mt-16">
               <Button
                 size="lg"
                 onClick={() => router.push('/shop')}
-                className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-6 text-lg"
+                className="bg-gradient-to-r from-amber-700 to-orange-700 hover:from-amber-800 hover:to-orange-800 text-white rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 px-10 py-7 text-xl"
               >
-                View All Products
+                View Full Collection
               </Button>
             </div>
           </div>
         </section>
 
-        <section id="product-grid" className="py-16 bg-gradient-to-b from-background to-orange-50/50">
+        {/* Featured Products */}
+        <section id="product-grid" className="py-24 bg-white/40 backdrop-blur-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            <h3 className="text-3xl font-heading font-semibold text-amber-900 mb-12 text-center">
+              Featured Masterpieces
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {products.slice(0, 8).map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  variant="grid"
-                />
+                <div key={product.id} className="transform hover:-translate-y-2 transition-transform duration-300">
+                  <ProductCard
+                    product={product}
+                    variant="grid"
+                  />
+                </div>
               ))}
             </div>
-            <div className="text-center mt-12">
-              <Button size="lg" onClick={() => router.push('/shop')}>
-                Shop All Products
+            <div className="text-center mt-16">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => router.push('/shop')}
+                className="border-amber-900 text-amber-900 hover:bg-amber-900 hover:text-white rounded-full px-8"
+              >
+                Browse Shop
               </Button>
             </div>
           </div>
         </section>
 
-        <section className="py-20 bg-gradient-to-t from-teal-50/50 to-background">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-8">
-              <div className="hidden lg:block">
+        {/* Artisan Story Section */}
+        <section className="py-24 my-12 relative overflow-hidden">
+          <div className="absolute inset-0 bg-amber-900 text-white transform -skew-y-3 scale-110 z-0 origin-top-left" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-white">
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
+              <div className="hidden lg:block w-1/3 transform rotate-3 hover:rotate-0 transition-transform duration-500">
                 <Image
-                  src="https://images.unsplash.com/photo-1563837738662-c86ef2ba99f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhcnRpc2FufGVufDB8fHx8MTc1ODQ0NjA4OHww&ixlib=rb-4.1.0&q=80&w=1080"
+                  src="https://images.unsplash.com/photo-1563837738662-c86ef2ba99f8?auto=format&fit=crop&q=80&w=800"
                   alt="Artisan workshop"
                   width={400}
-                  height={300}
-                  className="rounded-lg shadow-lg"
-                  data-ai-hint="artisan workshop"
+                  height={500}
+                  className="rounded-2xl shadow-2xl border-4 border-amber-100/20"
                   loading="lazy"
-                  quality={75}
-                  sizes="(max-width: 1024px) 0px, 400px"
                 />
               </div>
-              <div className="text-center max-w-lg">
-                <h3 className="font-heading text-3xl font-semibold text-gray-800">Hand-picked for Indian Artisans</h3>
-                <p className="mt-2 text-gray-600">Quality goods from passionate creators.</p>
-                <div className="mt-8">
-                  <h4 className="font-semibold text-gray-700">Subscription</h4>
-                  <p className="mt-1 text-sm text-gray-500">Stay updated with our latest collections.</p>
-                  <form className="mt-4 flex flex-col sm:flex-row gap-2 justify-center">
-                    <Input type="email" placeholder="Your email..." className="max-w-xs" />
-                    <Button type="submit" className="bg-amber-500 hover:bg-amber-600 text-white">Subscribe</Button>
+
+              <div className="text-center max-w-lg space-y-8">
+                <div>
+                  <h3 className="font-heading text-4xl font-bold text-amber-50">Supporting Local Artisans</h3>
+                  <p className="mt-4 text-amber-100/80 text-lg">
+                    Every purchase directly impacts the lives of skilled craftsmen across India. We believe in fair trade and preserving our cultural legacy.
+                  </p>
+                </div>
+
+                <div className="bg-white/10 p-8 rounded-2xl backdrop-blur-sm border border-white/10">
+                  <h4 className="font-semibold text-amber-50 text-xl mb-2">Join Our Community</h4>
+                  <p className="text-sm text-amber-200 mb-6">Stay updated with our latest heritage collections.</p>
+                  <form className="flex flex-col sm:flex-row gap-3 justify-center" onSubmit={(e) => e.preventDefault()}>
+                    <Input
+                      type="email"
+                      placeholder="Your email address"
+                      className="bg-white/90 border-0 focus:ring-2 focus:ring-amber-400 text-gray-900 placeholder:text-gray-500"
+                    />
+                    <Button type="submit" className="bg-amber-500 hover:bg-amber-400 text-amber-950 font-semibold">
+                      Subscribe
+                    </Button>
                   </form>
                 </div>
               </div>
-              <div className="hidden lg:block">
+
+              <div className="hidden lg:block w-1/3 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
                 <Image
-                  src="https://images.unsplash.com/photo-1521799022345-481a897e45ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw7fHxhcnRpc2FufGVufDB8fHx8MTc1ODQ0NjA4OHww&ixlib=rb-4.1.0&q=80&w=1080"
-                  alt="Local artisans at work"
+                  src="https://images.unsplash.com/photo-1521799022345-481a897e45ca?auto=format&fit=crop&q=80&w=800"
+                  alt="Local artisans"
                   width={400}
-                  height={300}
-                  className="rounded-lg shadow-lg"
-                  data-ai-hint="local artisans"
+                  height={500}
+                  className="rounded-2xl shadow-2xl border-4 border-amber-100/20"
                   loading="lazy"
-                  quality={75}
-                  sizes="(max-width: 1024px) 0px, 400px"
                 />
               </div>
             </div>
@@ -154,3 +210,4 @@ export default function Marketplace() {
     </div>
   );
 }
+

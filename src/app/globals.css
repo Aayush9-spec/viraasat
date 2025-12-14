@@ -349,3 +349,23 @@
 .hero-parallax-group {
   perspective: 300px;
 }
+@layer utilities {
+  .animate-custom-spin-slow {
+    animation: slow-spin 120s linear infinite;
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 1s ease-out forwards;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 40px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
