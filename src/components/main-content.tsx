@@ -94,15 +94,80 @@ export function MainContent({ children }: { children: React.ReactNode }) {
 
       <CartSidebar />
 
-      <footer className="bg-white py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div className="flex items-center justify-center h-10 w-10 bg-gray-900 text-white font-bold rounded-full text-lg">
-            V
+      <footer className="bg-neutral-950 border-t border-amber-900/20 pt-16 pb-8 relative overflow-hidden">
+        {/* Decorative top gradient */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-900/50 to-transparent" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+
+            {/* Brand Column */}
+            <div className="col-span-1 md:col-span-1 space-y-4">
+              <Link href="/" className="inline-block">
+                <span className="font-heading text-3xl font-bold text-amber-100">Viraasat</span>
+              </Link>
+              <p className="text-amber-200/60 text-sm leading-relaxed font-light">
+                Celebrating the timeless art of Indian craftsmanship. Every piece tells a story of heritage, skill, and dedication.
+              </p>
+              <div className="flex space-x-4 pt-4">
+                <a href="https://x.com/aayush03061102" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-900 rounded-full text-amber-400 hover:text-white hover:bg-amber-700 transition-all duration-300">
+                  <Twitter className="h-4 w-4" />
+                </a>
+                <a href="#" className="p-2 bg-neutral-900 rounded-full text-amber-400 hover:text-white hover:bg-amber-700 transition-all duration-300">
+                  <Facebook className="h-4 w-4" />
+                </a>
+                <a href="https://www.instagram.com/aasr_233/" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-900 rounded-full text-amber-400 hover:text-white hover:bg-amber-700 transition-all duration-300">
+                  <Instagram className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Links Column 1 */}
+            <div className="col-span-1">
+              <h3 className="font-serif text-amber-500 tracking-wider uppercase text-sm mb-6">Discover</h3>
+              <ul className="space-y-3 text-sm text-neutral-400">
+                <li><Link href="/shop" className="hover:text-amber-200 transition-colors">Our Collection</Link></li>
+                <li><Link href="/#mission" className="hover:text-amber-200 transition-colors">The Mission</Link></li>
+                <li><Link href="/artisans" className="hover:text-amber-200 transition-colors">Meet the Artisans</Link></li>
+                <li><Link href="/journal" className="hover:text-amber-200 transition-colors">Heritage Journal</Link></li>
+              </ul>
+            </div>
+
+            {/* Links Column 2 */}
+            <div className="col-span-1">
+              <h3 className="font-serif text-amber-500 tracking-wider uppercase text-sm mb-6">Support</h3>
+              <ul className="space-y-3 text-sm text-neutral-400">
+                <li><Link href="/faq" className="hover:text-amber-200 transition-colors">FAQ</Link></li>
+                <li><Link href="/shipping" className="hover:text-amber-200 transition-colors">Shipping & Returns</Link></li>
+                <li><Link href="/contact" className="hover:text-amber-200 transition-colors">Contact Us</Link></li>
+                <li><Link href="/privacy" className="hover:text-amber-200 transition-colors">Privacy Policy</Link></li>
+              </ul>
+            </div>
+
+            {/* Newsletter Column */}
+            <div className="col-span-1 md:col-span-1">
+              <h3 className="font-serif text-amber-500 tracking-wider uppercase text-sm mb-6">Newsletter</h3>
+              <p className="text-neutral-500 text-sm mb-4">Subscribe to receive updates on new arrivals and special offers.</p>
+              <div className="flex bg-neutral-900 rounded-md border border-neutral-800 focus-within:border-amber-700 transition-colors p-1">
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  className="bg-transparent border-none text-sm text-amber-100 placeholder:text-neutral-600 focus:ring-0 flex-1 px-3"
+                />
+                <Button size="sm" className="bg-amber-800 hover:bg-amber-700 text-amber-100 h-8">
+                  Join
+                </Button>
+              </div>
+            </div>
           </div>
-          <div className="flex space-x-6 text-gray-500">
-            <a href="https://x.com/aayush03061102" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900"><Twitter className="h-5 w-5" /></a>
-            <a href="#" className="hover:text-gray-900"><Facebook className="h-5 w-5" /></a>
-            <a href="https://www.instagram.com/aasr_233/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900"><Instagram className="h-5 w-5" /></a>
+
+          <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-neutral-600 text-xs">
+              &copy; {new Date().getFullYear()} Viraasat. All rights reserved.
+            </p>
+            <p className="text-neutral-700 text-xs font-serif italic">
+              Made with &hearts; for Indian Heritage
+            </p>
           </div>
         </div>
       </footer>
