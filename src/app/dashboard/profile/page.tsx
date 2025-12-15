@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -20,19 +20,122 @@ import { generateArtisanStory } from '@/ai/flows/generate-artisan-story';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function ProfilePage() {
-  const user = artisans[0]; // Mock user
   const { toast } = useToast();
+
+  // State for all fields
+  const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [bio, setBio] = useState(user.bio);
-  const [craft, setCraft] = useState(categories[0]);
-  const [experience, setExperience] = useState(5);
+  const [isSaving, setIsSaving] = useState<string | null>(null); // Track which section is saving
+
+  const [name, setName] = useState('');
+  const [shopName, setShopName] = useState('');
+  const [profilePicture, setProfilePicture] = useState('');
+  const [bio, setBio] = useState('');
+  const [craft, setCraft] = useState('');
+  const [experience, setExperience] = useState(1);
+  const [instagram, setInstagram] = useState('');
+  const [facebook, setFacebook] = useState('');
+
+  // Load initial data
+  useEffect(() => {
+    const loadData = () => {
+      const savedData = localStorage.getItem('viraasat_profile');
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        setName(parsed.name || '');
+        setShopName(parsed.shopName || '');
+        setProfilePicture(parsed.profilePicture || '');
+        setBio(parsed.bio || '');
+        setCraft(parsed.craft || categories[0]);
+        setExperience(parsed.experience || 1);
+        setInstagram(parsed.instagram || '');
+        setFacebook(parsed.facebook || '');
+      } else {
+        // Fallback to mock data if no local storage
+        const defaultUser = artisans[0];
+        setName(defaultUser.name);
+        setShopName(defaultUser.shopName);
+        setProfilePicture(defaultUser.profilePicture);
+        setBio(defaultUser.bio);
+        setCraft(categories[0]); // Default or parsed from bio?
+        setExperience(5);
+        setInstagram(defaultUser.socialLinks?.instagram || '');
+        setFacebook(defaultUser.socialLinks?.facebook || '');
+      }
+      setIsLoading(false);
+    };
+
+    loadData();
+  }, []);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast({
+          variant: 'destructive',
+          title: "File too large",
+          description: "Please upload an image smaller than 2MB.",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicture(reader.result as string);
+        toast({
+          title: "Image Uploaded",
+          description: "Don't forget to save your basic info.",
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const saveToLocalStorage = () => {
+    const data = {
+      name,
+      shopName,
+      profilePicture,
+      bio,
+      craft,
+      experience,
+      instagram,
+      facebook
+    };
+    localStorage.setItem('viraasat_profile', JSON.stringify(data));
+    window.dispatchEvent(new Event('profile-updated'));
+  };
+
+  const handleSave = async (section: 'basic' | 'story' | 'social') => {
+    setIsSaving(section);
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    saveToLocalStorage();
+
+    toast({
+      title: "Profile Updated",
+      description: `Your ${section === 'basic' ? 'basic info' : section === 'story' ? 'story' : 'social links'} has been saved successfully.`,
+    });
+    setIsSaving(null);
+  };
 
   const handleGenerateStory = async () => {
+    if (!name || !shopName || !craft) {
+      toast({
+        variant: "destructive",
+        title: "Missing Information",
+        description: "Please fill in your Name, Shop Name, and Craft before generating a story."
+      });
+      return;
+    }
+
     setIsGenerating(true);
     try {
       const result = await generateArtisanStory({
-        artisanName: user.name,
-        shopName: user.shopName,
+        artisanName: name,
+        shopName: shopName,
         craftType: craft,
         yearsExperience: experience,
       });
@@ -55,6 +158,10 @@ export default function ProfilePage() {
     }
   };
 
+  if (isLoading) {
+    return <div className="flex h-96 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+  }
+
   return (
     <div className="space-y-6">
       <Card>
@@ -64,29 +171,32 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent className="space-y-8">
           <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
-                  <AvatarImage src={user.profilePicture} data-ai-hint="person portrait" />
-                  <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                  <Label htmlFor="picture">Profile Picture</Label>
-                  <Input id="picture" type="file" className="w-full max-w-sm" />
-              </div>
+            <Avatar className="h-20 w-20 border-2 border-muted">
+              <AvatarImage src={profilePicture} className="object-cover" />
+              <AvatarFallback className="text-lg">{name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="grid gap-1.5 w-full max-w-sm">
+              <Label htmlFor="picture">Profile Picture</Label>
+              <Input id="picture" type="file" onChange={handleImageUpload} accept="image/*" className="cursor-pointer" />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" defaultValue={user.name} />
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Riya Sharma" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="shopName">Shop Name</Label>
-              <Input id="shopName" defaultValue={user.shopName} />
+              <Input id="shopName" value={shopName} onChange={(e) => setShopName(e.target.value)} placeholder="e.g. Riya's Creations" />
             </div>
           </div>
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
-          <Button>Save Basic Info</Button>
+          <Button onClick={() => handleSave('basic')} disabled={isSaving === 'basic'}>
+            {isSaving === 'basic' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Basic Info
+          </Button>
         </CardFooter>
       </Card>
 
@@ -110,42 +220,55 @@ export default function ProfilePage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="experience">Years of Experience</Label>
-              <Input id="experience" type="number" value={experience} onChange={e => setExperience(Number(e.target.value))} />
+              <Input id="experience" type="number" min="0" value={experience} onChange={e => setExperience(Number(e.target.value))} />
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="bio">Bio</Label>
-            <Textarea id="bio" value={bio} onChange={e => setBio(e.target.value)} rows={6} />
+            <Textarea
+              id="bio"
+              value={bio}
+              onChange={e => setBio(e.target.value)}
+              rows={6}
+              className="resize-none"
+              placeholder="Tell us about your journey, your craft, and what makes your work unique..."
+            />
             <p className="text-sm text-muted-foreground">
               A brief description of you and your craft.
             </p>
           </div>
         </CardContent>
-        <CardFooter className="border-t px-6 py-4 flex justify-between items-center">
-           <Button onClick={handleGenerateStory} disabled={isGenerating}>
-            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+        <CardFooter className="border-t px-6 py-4 flex justify-between items-center gap-4 flex-wrap">
+          <Button variant="outline" onClick={handleGenerateStory} disabled={isGenerating}>
+            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4 text-purple-500" />}
             Generate with AI
           </Button>
-          <Button>Save Bio</Button>
+          <Button onClick={() => handleSave('story')} disabled={isSaving === 'story'}>
+            {isSaving === 'story' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Bio
+          </Button>
         </CardFooter>
       </Card>
-      
+
       <Card>
         <CardHeader>
-            <h3 className="text-lg font-medium">Social Media Links</h3>
+          <h3 className="text-lg font-medium">Social Media Links</h3>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-                <Label htmlFor="instagram">Instagram</Label>
-                <Input id="instagram" defaultValue={user.socialLinks.instagram} placeholder="https://instagram.com/..." />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="facebook">Facebook</Label>
-                <Input id="facebook" defaultValue={user.socialLinks.facebook} placeholder="https://facebook.com/..." />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="instagram">Instagram</Label>
+            <Input id="instagram" value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="https://instagram.com/..." />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="facebook">Facebook</Label>
+            <Input id="facebook" value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="https://facebook.com/..." />
+          </div>
         </CardContent>
-         <CardFooter className="border-t px-6 py-4">
-          <Button>Save Social Links</Button>
+        <CardFooter className="border-t px-6 py-4">
+          <Button onClick={() => handleSave('social')} disabled={isSaving === 'social'}>
+            {isSaving === 'social' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Social Links
+          </Button>
         </CardFooter>
       </Card>
     </div>

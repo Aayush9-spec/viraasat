@@ -1,3 +1,5 @@
+'use client';
+import { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,7 +15,26 @@ import { artisans } from "@/lib/data"
 import Link from "next/link"
 
 export function UserNav() {
-  const user = artisans[0]; // mock user
+  const [user, setUser] = useState(artisans[0]);
+
+  useEffect(() => {
+    const loadUser = () => {
+      const savedData = localStorage.getItem('viraasat_profile');
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          setUser(prev => ({ ...prev, ...parsed }));
+        } catch (e) {
+          console.error("Failed to parse user data", e);
+        }
+      }
+    };
+
+    loadUser();
+
+    window.addEventListener('profile-updated', loadUser);
+    return () => window.removeEventListener('profile-updated', loadUser);
+  }, []);
 
   return (
     <DropdownMenu>
@@ -37,10 +58,10 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-             <Link href="/dashboard/profile">Profile</Link>
+            <Link href="/dashboard/profile">Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-             <Link href="/dashboard/products">Products</Link>
+            <Link href="/dashboard/products">Products</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
