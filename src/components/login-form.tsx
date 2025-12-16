@@ -30,15 +30,18 @@ export function LoginForm({ userType }: LoginFormProps) {
 
   const toggleForm = () => setIsSignUp(!isSignUp);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Capture values BEFORE async operation to avoid currentTarget being null
+    const formData = new FormData(e.currentTarget);
+    const identifier = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
     setIsLoading(true);
 
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const identifier = (e.currentTarget.elements.namedItem('email') as HTMLInputElement).value;
-    const password = (e.currentTarget.elements.namedItem('password') as HTMLInputElement).value;
 
     if (userType === 'Artisan') {
       // Mock Backend Verification Logic for Artisan
@@ -115,6 +118,7 @@ export function LoginForm({ userType }: LoginFormProps) {
               <Label htmlFor="email">{isArtisan ? 'Email or Artisan ID' : 'Email'}</Label>
               <Input
                 id="email"
+                name="email"
                 type={isArtisan ? "text" : "email"}
                 placeholder={isArtisan ? "e.g. ART-2024-1234 or email@example.com" : "m@example.com"}
                 required
@@ -129,7 +133,7 @@ export function LoginForm({ userType }: LoginFormProps) {
                   </Link>
                 )}
               </div>
-              <Input id="password" type="password" required />
+              <Input id="password" name="password" type="password" required />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Signing in..." : (isSignUp ? 'Sign Up' : 'Sign In')}
