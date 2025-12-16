@@ -14,10 +14,12 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { artisans, categories } from "@/lib/data";
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2, ShieldCheck, AlertCircle, IdCard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateArtisanStory } from '@/ai/flows/generate-artisan-story';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function ProfilePage() {
   const { toast } = useToast();
@@ -26,6 +28,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState<string | null>(null); // Track which section is saving
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const [name, setName] = useState('');
   const [shopName, setShopName] = useState('');
@@ -35,6 +38,10 @@ export default function ProfilePage() {
   const [experience, setExperience] = useState(1);
   const [instagram, setInstagram] = useState('');
   const [facebook, setFacebook] = useState('');
+
+  // Verification State
+  const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'pending' | 'verified'>('unverified');
+  const [artisanId, setArtisanId] = useState<string | null>(null);
 
   // Load initial data
   useEffect(() => {
@@ -50,6 +57,8 @@ export default function ProfilePage() {
         setExperience(parsed.experience || 1);
         setInstagram(parsed.instagram || '');
         setFacebook(parsed.facebook || '');
+        setVerificationStatus(parsed.verificationStatus || 'unverified');
+        setArtisanId(parsed.artisanId || null);
       } else {
         // Fallback to mock data if no local storage
         const defaultUser = artisans[0];
@@ -57,10 +66,13 @@ export default function ProfilePage() {
         setShopName(defaultUser.shopName);
         setProfilePicture(defaultUser.profilePicture);
         setBio(defaultUser.bio);
-        setCraft(categories[0]); // Default or parsed from bio?
+        setCraft(categories[0]);
         setExperience(5);
         setInstagram(defaultUser.socialLinks?.instagram || '');
         setFacebook(defaultUser.socialLinks?.facebook || '');
+        // Default to unverified for demo purposes
+        setVerificationStatus('unverified');
+        setArtisanId(null);
       }
       setIsLoading(false);
     };
@@ -92,7 +104,7 @@ export default function ProfilePage() {
     }
   };
 
-  const saveToLocalStorage = () => {
+  const saveToLocalStorage = (updatedStatus?: 'verified' | 'unverified', newId?: string) => {
     const data = {
       name,
       shopName,
@@ -101,7 +113,9 @@ export default function ProfilePage() {
       craft,
       experience,
       instagram,
-      facebook
+      facebook,
+      verificationStatus: updatedStatus || verificationStatus,
+      artisanId: newId || artisanId
     };
     localStorage.setItem('viraasat_profile', JSON.stringify(data));
     window.dispatchEvent(new Event('profile-updated'));
@@ -158,12 +172,95 @@ export default function ProfilePage() {
     }
   };
 
+  const handleVerify = async () => {
+    // 1. Check necessary details
+    const missingFields = [];
+    if (!name) missingFields.push("Name");
+    if (!shopName) missingFields.push("Shop Name");
+    if (!craft) missingFields.push("Craft");
+    if (!bio || bio.length < 20) missingFields.push("Bio (at least 20 chars)");
+
+    if (missingFields.length > 0) {
+      toast({
+        variant: "destructive",
+        title: "Incomplete Profile",
+        description: `Please complete the following fields to verify: ${missingFields.join(', ')}.`,
+      });
+      return;
+    }
+
+    setIsVerifying(true);
+
+    // Simulate verification process
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Generate ID
+    const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const newId = `ART-${new Date().getFullYear()}-${randomNum}`;
+
+    setVerificationStatus('verified');
+    setArtisanId(newId);
+    saveToLocalStorage('verified', newId);
+
+    toast({
+      title: "Verification Successful!",
+      description: "You are now a verified artisan. Your Artisan ID has been generated.",
+    });
+
+    setIsVerifying(false);
+  };
+
   if (isLoading) {
     return <div className="flex h-96 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
   }
 
   return (
     <div className="space-y-6">
+      {/* Verification Section */}
+      <Card className={`border-l-4 ${verificationStatus === 'verified' ? 'border-l-green-500' : 'border-l-yellow-500'}`}>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <CardTitle className="flex items-center gap-2">
+                Artisan Identity
+                {verificationStatus === 'verified' && <Badge variant="default" className="bg-green-600 hover:bg-green-700 gap-1"><ShieldCheck className="h-3 w-3" /> Verified</Badge>}
+                {verificationStatus !== 'verified' && <Badge variant="secondary" className="gap-1"><AlertCircle className="h-3 w-3" /> Unverified</Badge>}
+              </CardTitle>
+              <CardDescription>
+                {verificationStatus === 'verified'
+                  ? "Your identity has been verified. You can now access all artisan features."
+                  : "Verify your profile details to generate your unique Artisan ID and start selling."}
+              </CardDescription>
+            </div>
+            {verificationStatus === 'verified' ? (
+              <div className="bg-muted p-3 rounded-lg flex items-center gap-3">
+                <IdCard className="h-8 w-8 opacity-50" />
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Artisan ID</div>
+                  <div className="font-mono text-lg font-semibold">{artisanId}</div>
+                </div>
+              </div>
+            ) : (
+              <Button onClick={handleVerify} disabled={isVerifying}>
+                {isVerifying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
+                Verify & Generate ID
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        {verificationStatus !== 'verified' && (
+          <CardContent>
+            <Alert className="bg-yellow-50/50 border-yellow-200">
+              <AlertCircle className="h-4 w-4 text-yellow-600" />
+              <AlertTitle>Action Required</AlertTitle>
+              <AlertDescription>
+                To get your Artisan ID, please ensure your <strong>Full Name</strong>, <strong>Shop Name</strong>, <strong>Craft</strong>, and <strong>Bio</strong> are filled out correctly below.
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+        )}
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Profile</CardTitle>
@@ -183,11 +280,11 @@ export default function ProfilePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">Full Name <span className="text-red-500">*</span></Label>
               <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Riya Sharma" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="shopName">Shop Name</Label>
+              <Label htmlFor="shopName">Shop Name <span className="text-red-500">*</span></Label>
               <Input id="shopName" value={shopName} onChange={(e) => setShopName(e.target.value)} placeholder="e.g. Riya's Creations" />
             </div>
           </div>
@@ -208,7 +305,7 @@ export default function ProfilePage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="craftType">Primary Craft</Label>
+              <Label htmlFor="craftType">Primary Craft <span className="text-red-500">*</span></Label>
               <Select value={craft} onValueChange={setCraft}>
                 <SelectTrigger id="craftType">
                   <SelectValue placeholder="Select your craft" />
@@ -224,7 +321,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="bio">Bio</Label>
+            <Label htmlFor="bio">Bio <span className="text-red-500">*</span></Label>
             <Textarea
               id="bio"
               value={bio}
