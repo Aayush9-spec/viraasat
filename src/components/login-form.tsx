@@ -16,6 +16,7 @@ import { ViraasatLogo } from './viraasat-logo';
 import { FaFacebook } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 interface LoginFormProps {
   userType: 'Artisan' | 'Customer';
@@ -24,17 +25,68 @@ interface LoginFormProps {
 export function LoginForm({ userType }: LoginFormProps) {
   const [isSignUp, setIsSignUp] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleForm = () => setIsSignUp(!isSignUp);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, handle login/signup logic here
+    setIsLoading(true);
+
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const identifier = (e.currentTarget.elements.namedItem('email') as HTMLInputElement).value;
+    const password = (e.currentTarget.elements.namedItem('password') as HTMLInputElement).value;
+
     if (userType === 'Artisan') {
+      // Mock Backend Verification Logic for Artisan
+      let isAuthenticated = false;
+      let authMessage = "Login successful";
+
+      // 1. Check LocalStorage (Simulating DB check for verified artisan)
+      const storedProfile = localStorage.getItem('viraasat_profile');
+      if (storedProfile) {
+        const parsed = JSON.parse(storedProfile);
+        // Check if entered ID matches stored Artisan ID (case-insensitive)
+        if (parsed.artisanId && parsed.artisanId.toLowerCase() === identifier.toLowerCase()) {
+          isAuthenticated = true;
+          authMessage = `Welcome back, ${parsed.name || 'Artisan'}!`;
+        }
+      }
+
+      // 2. Fallback to Mock Data (for demo emails)
+      if (!isAuthenticated) {
+        // Allow standard demo emails or if no specific ID match found but it looks like a valid email login
+        if (identifier.includes('@') && password.length > 0) {
+          isAuthenticated = true;
+          authMessage = "Welcome back!";
+        }
+      }
+
+      if (isAuthenticated) {
+        toast({
+          title: "Authentication Successful",
+          description: authMessage,
+        });
         router.push('/dashboard');
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Authentication Failed",
+          description: "Invalid Artisan ID or Email. Please check your credentials.",
+        });
+      }
     } else {
-        router.push('/');
+      // Customer Logic (Keep as is/Simulate success)
+      toast({
+        title: "Welcome!",
+        description: "Logged in successfully.",
+      });
+      router.push('/');
     }
+    setIsLoading(false);
   }
 
   const isArtisan = userType === 'Artisan';
@@ -43,12 +95,12 @@ export function LoginForm({ userType }: LoginFormProps) {
     <div className="flex min-h-screen items-center justify-center p-4 bg-background">
       <Card className="w-full max-w-sm border-2 shadow-lg">
         <CardHeader className="text-center">
-            <div className="mb-4 flex justify-center">
-                <ViraasatLogo />
-            </div>
+          <div className="mb-4 flex justify-center">
+            <ViraasatLogo />
+          </div>
           <CardTitle className="text-2xl">{isSignUp ? `Create ${isArtisan ? '' : 'a Customer'} Account` : `${userType} Login`}</CardTitle>
           <CardDescription>
-            {isSignUp ? 'Enter your details to get started.' : `Enter your ${isArtisan ? 'credentials' : 'email'} below to login`}
+            {isSignUp ? 'Enter your details to get started.' : `Enter your ${isArtisan ? 'ID or email' : 'email'} below to login`}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -61,7 +113,12 @@ export function LoginForm({ userType }: LoginFormProps) {
             )}
             <div className="grid gap-2">
               <Label htmlFor="email">{isArtisan ? 'Email or Artisan ID' : 'Email'}</Label>
-              <Input id="email" type="email" placeholder={isArtisan ? "artisan-id or m@example.com" : "m@example.com"} required />
+              <Input
+                id="email"
+                type={isArtisan ? "text" : "email"}
+                placeholder={isArtisan ? "e.g. ART-2024-1234 or email@example.com" : "m@example.com"}
+                required
+              />
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
@@ -74,8 +131,8 @@ export function LoginForm({ userType }: LoginFormProps) {
               </div>
               <Input id="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full">
-              {isSignUp ? 'Sign Up' : 'Sign In'}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Signing in..." : (isSignUp ? 'Sign Up' : 'Sign In')}
             </Button>
           </form>
 
@@ -91,15 +148,15 @@ export function LoginForm({ userType }: LoginFormProps) {
                   </span>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
-                 <Button variant="outline">
-                    <FcGoogle className="mr-2 h-5 w-5" />
-                    Google
+                <Button variant="outline">
+                  <FcGoogle className="mr-2 h-5 w-5" />
+                  Google
                 </Button>
                 <Button variant="outline">
-                    <FaFacebook className="mr-2 h-5 w-5 text-[#1877F2]" />
-                    Facebook
+                  <FaFacebook className="mr-2 h-5 w-5 text-[#1877F2]" />
+                  Facebook
                 </Button>
               </div>
             </>
@@ -107,18 +164,18 @@ export function LoginForm({ userType }: LoginFormProps) {
 
         </CardContent>
         <CardFooter className="flex-col gap-4 text-sm">
-           <div>
+          <div>
             {isSignUp ? (
               <span>Already have an account? <button onClick={toggleForm} className="underline">Sign In</button></span>
             ) : (
-                isArtisan ? (
-                    <span>Not yet a Viraasat Artisan? <Link href="/apply" className="underline">Apply Here</Link></span>
-                ) : (
-                    <span>Don't have an account? <button onClick={toggleForm} className="underline">Sign Up</button></span>
-                )
+              isArtisan ? (
+                <span>Not yet a Viraasat Artisan? <Link href="/apply" className="underline">Apply Here</Link></span>
+              ) : (
+                <span>Don't have an account? <button onClick={toggleForm} className="underline">Sign Up</button></span>
+              )
             )}
           </div>
-           <Link href="/login" className="underline text-muted-foreground hover:text-primary">Back to main login</Link>
+          <Link href="/login" className="underline text-muted-foreground hover:text-primary">Back to main login</Link>
         </CardFooter>
       </Card>
     </div>
