@@ -20,7 +20,7 @@ export default function CheckoutPage() {
     const shipping: number = 0; // Assuming free shipping for now
     const total = subtotal + shipping;
     const [showQr, setShowQr] = useState(false);
-    const { Razorpay } = useRazorpay();
+    const { Razorpay, isLoaded } = useRazorpay();
     const [isProcessing, setIsProcessing] = useState(false);
 
     const handleRazorpayPayment = async () => {
@@ -148,7 +148,7 @@ export default function CheckoutPage() {
                                                 </div>
                                                 <Button
                                                     onClick={handleRazorpayPayment}
-                                                    disabled={isProcessing}
+                                                    disabled={isProcessing || !isLoaded}
                                                     className="w-full max-w-sm bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
                                                 >
                                                     {isProcessing ? 'Processing...' : `Pay ₹${total.toFixed(2)} Securely`}
