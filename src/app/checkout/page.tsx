@@ -9,16 +9,64 @@ import { useCart } from "@/context/cart-context";
 import { ViraasatLogo } from "@/components/viraasat-logo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { GooglePayLogo, PaytmLogo, PhonePeLogo } from '@/components/payment-icons';
-import { QrCode, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
+import { useRazorpay } from 'react-razorpay';
+import { GooglePayLogo, PaytmLogo, PhonePeLogo, RazorpayLogo } from '@/components/payment-icons';
+import { QrCode, ShoppingCart, CreditCard, ShieldCheck } from 'lucide-react';
 
 export default function CheckoutPage() {
     const { cartItems, getCartTotal } = useCart();
     const subtotal = getCartTotal();
     const shipping: number = 0; // Assuming free shipping for now
     const total = subtotal + shipping;
+    const total = subtotal + shipping;
     const [showQr, setShowQr] = useState(false);
+    const { Razorpay } = useRazorpay();
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    const handleRazorpayPayment = async () => {
+        setIsProcessing(true);
+        try {
+            const response = await fetch('/api/razorpay', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: total, currency: 'INR' }),
+            });
+            const order = await response.json();
+
+            const options = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_1234567890',
+                amount: order.amount,
+                currency: order.currency,
+                name: "Viraasat",
+                description: "Purchase from Viraasat",
+                order_id: order.id,
+                handler: function (response: any) {
+                    alert('Payment Successful! Payment ID: ' + response.razorpay_payment_id);
+                    // Handle success (e.g., redirect to success page)
+                },
+                prefill: {
+                    name: "Customer Name",
+                    email: "customer@example.com",
+                    contact: "9999999999"
+                },
+                theme: {
+                    color: "#F37254"
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', function (response: any) {
+                alert('Payment Failed: ' + response.error.description);
+            });
+            rzp.open();
+        } catch (error) {
+            console.error("Payment Error:", error);
+            alert("Payment initiation failed. Please try again.");
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     if (cartItems.length === 0) {
         return (
@@ -76,12 +124,42 @@ export default function CheckoutPage() {
 
                             <div className="bg-card/50 backdrop-blur-sm border rounded-xl p-6 shadow-sm">
                                 <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
-                                <Tabs defaultValue="upi" className="w-full">
-                                    <TabsList className="grid w-full grid-cols-3 mb-6">
+                                <Tabs defaultValue="online" className="w-full">
+                                    <TabsList className="grid w-full grid-cols-4 mb-6">
+                                        <TabsTrigger value="online">Online</TabsTrigger>
                                         <TabsTrigger value="upi">UPI</TabsTrigger>
                                         <TabsTrigger value="card">Card</TabsTrigger>
                                         <TabsTrigger value="netbanking">Net Banking</TabsTrigger>
                                     </TabsList>
+                                    <TabsContent value="online">
+                                        <div className="space-y-6 text-center py-4">
+                                            <div className="flex flex-col items-center justify-center space-y-4">
+                                                <div className="p-4 bg-primary/5 rounded-full">
+                                                    <ShieldCheck className="w-12 h-12 text-primary" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <h3 className="font-semibold text-lg">Secure Online Payment</h3>
+                                                    <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                                                        Pay securely using Credit/Debit Card, UPI, NetBanking, or Wallets via Razorpay.
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center gap-4 py-2">
+                                                    <CreditCard className="w-6 h-6 text-muted-foreground" />
+                                                    <RazorpayLogo />
+                                                </div>
+                                                <Button
+                                                    onClick={handleRazorpayPayment}
+                                                    disabled={isProcessing}
+                                                    className="w-full max-w-sm bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
+                                                >
+                                                    {isProcessing ? 'Processing...' : `Pay ₹${total.toFixed(2)} Securely`}
+                                                </Button>
+                                                <p className="text-xs text-muted-foreground">
+                                                    By proceeding, you agree to our Terms of Service and Privacy Policy.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </TabsContent>
                                     <TabsContent value="upi">
                                         <div className="space-y-6">
                                             <p className="text-sm text-muted-foreground">Select your preferred UPI app or enter your UPI ID.</p>
