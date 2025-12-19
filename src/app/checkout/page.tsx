@@ -19,7 +19,6 @@ export default function CheckoutPage() {
     const subtotal = getCartTotal();
     const shipping: number = 0; // Assuming free shipping for now
     const total = subtotal + shipping;
-    const total = subtotal + shipping;
     const [showQr, setShowQr] = useState(false);
     const { Razorpay } = useRazorpay();
     const [isProcessing, setIsProcessing] = useState(false);
