@@ -223,5 +223,5 @@ This project is licensed under the **MIT License**. See the [LICENSE](https://ww
 
 
 
-Built with ❤️ by Aayush and Team
+Built with ❤️ by Aayush KS and Team
 </p>
