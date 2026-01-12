@@ -21,7 +21,7 @@
 ---
 
 ## 🛑 The Problem 
-
+ 
 Despite extraordinary skill, rural artisans face significant barriers in the digital age:
 
 | Challenge 📉 | Impact ⚠️ |
