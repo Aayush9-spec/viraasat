@@ -1,6 +1,6 @@
 🪔 Viraasat – The AI-Driven Marketplace for Local Artisans
 
-> **Preserve the heritage. Empower the artisans. Inspire the world.**
+> **Preserve the heritage. Empower the artisans. Inspire the world.** 
 
 **Viraasat** (Heritage) is an innovative, AI-powered digital marketplace bridging the gap between India’s traditional artisans and a global audience. By leveraging **Firebase** and **Google AI services**, we transform raw handcrafted products into professionally showcased treasures—complete with enhanced visuals, voice-first interactions, and intelligent storytelling.
 
