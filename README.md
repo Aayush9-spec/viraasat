@@ -16,7 +16,7 @@
 * [Getting Started](https://www.google.com/search?q=%23-getting-started)  
 * [Project Structure](https://www.google.com/search?q=%23-project-structure)
 * [Contributing](https://www.google.com/search?q=%23-contributing) 
-* [License](https://www.google.com/search?q=%23-license)
+* [License](https://www.google.com/search?q=%23-license) 
 
 --- 
 
