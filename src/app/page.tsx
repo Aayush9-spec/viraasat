@@ -48,7 +48,7 @@ export default function Marketplace() {
               {/* No background glow needed for cream on cream */}
               <div className="relative w-full aspect-[16/9] md:aspect-[2/1]">
                 <Image
-                  src="/viraasat-hero-cream.png"
+                  src="/viraasat-logo-full.png"
                   alt="Viraasat Heritage Logo"
                   fill
                   className="object-contain drop-shadow-xl"
