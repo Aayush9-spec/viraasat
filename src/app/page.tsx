@@ -44,13 +44,13 @@ export default function Marketplace() {
           <div className="relative z-10 w-full max-w-5xl mx-auto space-y-6 animate-fade-in-up pt-10">
 
             {/* Logo Image - Centered and Large */}
-            <div className="relative w-full max-w-[600px] mx-auto flex items-center justify-center transition-transform duration-1000 hover:scale-105">
-              <div className="relative w-full max-w-[400px] aspect-square overflow-hidden rounded-full drop-shadow-2xl ring-4 ring-[#8b4513]/10">
+            <div className="relative w-full max-w-[800px] mx-auto flex items-center justify-center transition-transform duration-1000 hover:scale-105">
+              <div className="relative w-full aspect-[16/9] md:aspect-[2/1] mix-blend-multiply drop-shadow-xl">
                 <Image
-                  src="/viraasat-logo-full.png"
+                  src="/logo-replacement.png"
                   alt="Viraasat Heritage Logo"
                   fill
-                  className="object-cover w-full h-full scale-[1.1]"
+                  className="object-contain w-full h-full"
                   priority
                   quality={100}
                 />
