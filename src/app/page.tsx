@@ -46,12 +46,12 @@ export default function Marketplace() {
             {/* Logo Image - Centered and Large */}
             <div className="relative w-full max-w-[800px] mx-auto flex items-center justify-center transition-transform duration-1000 hover:scale-105">
               {/* No background glow needed for cream on cream */}
-              <div className="relative w-full aspect-[16/9] md:aspect-[2/1]">
+              <div className="relative w-full aspect-[16/9] md:aspect-[2/1] overflow-hidden rounded-xl shadow-2xl">
                 <Image
                   src="/viraasat-logo-full.png"
                   alt="Viraasat Heritage Logo"
                   fill
-                  className="object-contain drop-shadow-xl"
+                  className="object-cover w-full h-full"
                   priority
                   quality={100}
                 />
