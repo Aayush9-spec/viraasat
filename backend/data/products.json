@@ -1,0 +1,18 @@
+[
+  {
+    "id": "prod-1",
+    "name": "Jaipur Blue Pottery Vase",
+    "price": 2400,
+    "category": "Home Decor",
+    "region": "Rajasthan",
+    "description": "Hand-painted blue pottery from the Pink City."
+  },
+  {
+    "id": "prod-2",
+    "name": "Silver Jhumka Earrings",
+    "price": 1800,
+    "category": "Jewelry",
+    "region": "Gujarat",
+    "description": "Authentic silver filigree work from Bhuj."
+  }
+]
