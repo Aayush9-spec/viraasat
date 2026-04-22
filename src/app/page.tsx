@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Carousel3DWrapper } from '@/components/carousel-3d-wrapper';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 export default function Marketplace() {
   const { t } = useTranslation();
@@ -218,6 +220,76 @@ export default function Marketplace() {
                 </div>
               </div>
 
+            </div>
+          </div>
+        </section>
+
+        {/* Shop Heritage Section */}
+        <section className="py-32 bg-[#fbf7f0] relative overflow-hidden" id="shop-heritage">
+          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#5e2c18]/20 to-transparent" />
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 text-left">
+              <div className="max-w-2xl">
+                <span className="text-[#5e2c18] text-sm tracking-[0.4em] uppercase mb-4 block font-bold opacity-40">The Viraasat Collection</span>
+                <h2 className="text-4xl md:text-6xl font-heading text-[#5e2c18] leading-tight">Bring India's Soul <br /><span className="italic font-normal">To Your Home</span></h2>
+                <div className="h-px w-24 bg-[#5e2c18]/20 mt-8" />
+              </div>
+              <Button size="lg" className="rounded-none bg-[#5e2c18] hover:bg-[#4a2315] text-[#fbf7f0] px-10 h-14 tracking-widest uppercase text-xs shadow-2xl" asChild>
+                <a href="/shop">View Full Gallery</a>
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+              {products.slice(0, 4).map((product) => (
+                <div key={product.id} className="group cursor-pointer">
+                  <a href={`/product/${product.id}`} className="block">
+                    <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100 mb-8 shadow-sm group-hover:shadow-[0_30px_60px_rgba(94,44,24,0.15)] transition-all duration-700">
+                      <Image 
+                        src={product.images[0]} 
+                        alt={product.name} 
+                        fill 
+                        className="object-cover group-hover:scale-105 transition-transform duration-1000 grayscale-[0.1] group-hover:grayscale-0"
+                      />
+                      <div className="absolute top-6 left-6">
+                        <Badge className="rounded-none bg-[#5e2c18]/90 text-amber-50 border-none text-[9px] tracking-widest uppercase px-4 py-1.5 font-bold backdrop-blur-sm">{product.region}</Badge>
+                      </div>
+                      <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    <div className="space-y-4 px-2">
+                      <h3 className="font-heading text-2xl text-[#5e2c18] group-hover:text-amber-800 transition-colors leading-tight">{product.name}</h3>
+                      <div className="flex items-center gap-3">
+                        <div className="h-px w-8 bg-[#5e2c18]/10" />
+                        <p className="text-[11px] text-amber-900/40 uppercase tracking-[0.3em] font-bold">₹{product.price.toLocaleString('en-IN')}</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              ))}
+            </div>
+
+            {/* Region Based Browsing */}
+            <div className="mt-32">
+              <h4 className="text-[10px] text-center uppercase tracking-[0.5em] text-amber-900/30 mb-12 font-bold">Explore by Geographic Heritage</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                {[
+                  { name: 'Rajasthan', count: products.filter(p => p.region === 'Rajasthan').length },
+                  { name: 'Gujarat', count: products.filter(p => p.region === 'Gujarat').length },
+                  { name: 'Uttar Pradesh', count: products.filter(p => p.region === 'Uttar Pradesh').length },
+                  { name: 'Maharashtra', count: '04' },
+                  { name: 'West Bengal', count: '06' },
+                  { name: 'Tamil Nadu', count: '08' }
+                ].map((reg) => (
+                  <a 
+                    key={reg.name}
+                    href={`/shop?region=${reg.name}`}
+                    className="px-4 py-10 bg-white border border-[#5e2c18]/5 text-center hover:bg-[#5e2c18] hover:text-[#fbf7f0] transition-all duration-700 group flex flex-col items-center justify-center space-y-4 shadow-sm hover:shadow-2xl hover:-translate-y-1"
+                  >
+                    <span className="text-[9px] tracking-[0.1em] text-amber-600/40 font-bold group-hover:text-amber-400/50">{reg.count} Artifacts</span>
+                    <span className="text-xs tracking-[0.3em] uppercase font-bold text-[#5e2c18] group-hover:text-[#fbf7f0]">{reg.name}</span>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </section>
