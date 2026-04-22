@@ -7,14 +7,14 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Minus, Plus } from 'lucide-react';
 import { artisans, products } from '@/lib/data';
 import ProductCard from './product-card';
 
 const FREE_SHIPPING_THRESHOLD = 5000;
 
 export default function CartSidebar() {
-  const { isCartOpen, setCartOpen, cartItems, removeItem, getCartTotal } = useCart();
+  const { isCartOpen, setCartOpen, cartItems, removeItem, updateQuantity, getCartTotal } = useCart();
   const total = getCartTotal();
   const amountLeftForFreeShipping = FREE_SHIPPING_THRESHOLD - total;
   const progressPercentage = (total / FREE_SHIPPING_THRESHOLD) * 100;
@@ -43,31 +43,57 @@ export default function CartSidebar() {
               )}
             </div>
             <ScrollArea className="flex-grow pr-6">
-              <div className="my-4 space-y-4">
+              <div className="my-4 space-y-6">
                 {cartItems.map((item) => {
                   const artisan = artisans.find(a => a.id === item.artisanId);
                   return (
-                    <div key={item.id} className="flex items-start gap-4">
-                      <Image
-                        src={item.images[0]}
-                        alt={item.name}
-                        width={80}
-                        height={80}
-                        className="rounded-md object-cover"
-                      />
-                      <div className="flex-grow">
-                        <h3 className="font-semibold">{item.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          From the workshop of{' '}
-                          <Link href="#" className="underline hover:text-primary">
-                            {artisan?.shopName || 'an artisan'}
-                          </Link>
-                        </p>
-                        <p className="text-sm font-semibold mt-1">₹{item.price.toFixed(2)}</p>
+                    <div key={item.id} className="flex items-start gap-4 p-2 rounded-lg hover:bg-muted/30 transition-colors">
+                      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md border bg-muted">
+                        <Image
+                          src={item.images[0]}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                        />
                       </div>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeItem(item.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex flex-grow flex-col justify-between self-stretch">
+                        <div>
+                          <h3 className="font-semibold text-sm line-clamp-1">{item.name}</h3>
+                          <p className="text-xs text-muted-foreground mb-1">
+                            {artisan?.shopName || 'Handcrafted'}
+                          </p>
+                          <p className="text-sm font-bold text-primary">₹{item.price.toFixed(0)}</p>
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className="flex items-center border rounded-md">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-7 w-7 rounded-none"
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <span className="w-8 text-center text-xs font-medium">{item.quantity}</span>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-7 w-7 rounded-none"
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" 
+                            onClick={() => removeItem(item.id)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
