@@ -14,6 +14,7 @@ export default function DashboardLayout({
   const pageTitles: { [key: string]: string } = {
     'products': 'Products',
     'orders': 'Orders',
+    'ai-tools': 'AI Tools',
     'profile': 'Profile',
     'new': 'New Product',
     'edit': 'Edit Product'

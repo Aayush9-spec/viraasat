@@ -35,12 +35,13 @@ import type { Product } from '@/lib/types';
 import VoiceRecorder from './voice-recorder';
 import ImageEnhancer from './image-enhancer';
 import { generateProductInsights } from '@/ai/flows/generate-product-insights';
+import { generateProductDescription } from '@/ai/flows/generate-product-description';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from './ui/badge';
 import { db } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { Sparkles, Trash2, X } from 'lucide-react';
+import { Sparkles, Trash2, X, Wand2, Loader2 } from 'lucide-react';
 
 const productSchema = z.object({
   name: z.string().min(3, 'Product name must be at least 3 characters'),
@@ -62,6 +63,7 @@ export function ProductForm({ product }: ProductFormProps) {
   );
   const [useCases, setUseCases] = useState<string[]>(product?.aiInsights?.useCases || []);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
@@ -179,6 +181,37 @@ export function ProductForm({ product }: ProductFormProps) {
     }
   };
 
+  const handleGenerateDescription = async () => {
+    const name = form.getValues('name');
+    if (!name || name.length < 3) {
+      toast({
+        variant: 'destructive',
+        title: 'Product Name Required',
+        description: 'Please enter a product name (at least 3 characters) before generating a description.',
+      });
+      return;
+    }
+
+    setIsGeneratingDesc(true);
+    try {
+      const result = await generateProductDescription({ productName: name });
+      form.setValue('description', result.description);
+      toast({
+        title: '✨ Description Generated!',
+        description: 'AI has crafted a culturally rich description for your product.',
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: 'destructive',
+        title: 'Generation Failed',
+        description: 'Could not generate description. Please try again.',
+      });
+    } finally {
+      setIsGeneratingDesc(false);
+    }
+  };
+
   const removeTag = (
     list: string[],
     setter: React.Dispatch<React.SetStateAction<string[]>>,
@@ -219,7 +252,29 @@ export function ProductForm({ product }: ProductFormProps) {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <div className="flex items-center justify-between">
+                        <FormLabel>Description</FormLabel>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleGenerateDescription}
+                          disabled={isGeneratingDesc}
+                          className="h-7 text-xs gap-1.5 text-primary hover:text-primary/80"
+                        >
+                          {isGeneratingDesc ? (
+                            <>
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                              Generating...
+                            </>
+                          ) : (
+                            <>
+                              <Wand2 className="h-3 w-3" />
+                              AI Generate
+                            </>
+                          )}
+                        </Button>
+                      </div>
                       <div className="relative">
                         <FormControl>
                           <Textarea

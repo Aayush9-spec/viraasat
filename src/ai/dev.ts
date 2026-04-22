@@ -6,3 +6,6 @@ import '@/ai/flows/generate-product-description-from-voice.ts';
 import '@/ai/flows/generate-product-insights.ts';
 import '@/ai/flows/generate-artisan-story.ts';
 import '@/ai/flows/search-with-voice.ts';
+import '@/ai/flows/generate-product-description.ts';
+import '@/ai/flows/translate-text.ts';
+import '@/ai/flows/image-cultural-story.ts';
