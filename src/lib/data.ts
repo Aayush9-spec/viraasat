@@ -97,6 +97,8 @@ export const products: Product[] = [
       styleTags: ['Minimalist', 'Coastal', 'Modern'],
       useCases: ['Flower arrangement', 'Statement decor piece', 'Bookshelf styling'],
     },
+    region: 'Rajasthan',
+    artisanName: 'Riya Sharma',
     isActive: true,
     status: 'active', // Legacy
     createdAt: '2023-05-01T10:00:00Z',
@@ -122,6 +124,8 @@ export const products: Product[] = [
       styleTags: ['Bohemian', 'Rustic', 'Eclectic'],
       useCases: ['Living room wall art', 'Above a bed headboard', 'Meditation space focus'],
     },
+    region: 'Gujarat',
+    artisanName: 'Aarav Patel',
     isActive: true,
     status: 'active', // Legacy
     createdAt: '2023-06-15T14:30:00Z',
@@ -138,6 +142,8 @@ export const products: Product[] = [
     stock: 25,
     category: 'Kitchenware',
     images: ['https://images.unsplash.com/photo-1708368952731-db40e6a86d21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNHx8ZWFydGhlbndhcmUlMjBtdWclMjBzZXR8ZW58MHx8fHwxNzU4NDQzOTM0fDA&ixlib=rb-4.1.0&q=80&w=1080'],
+    region: 'Rajasthan',
+    artisanName: 'Riya Sharma',
     isActive: true,
     status: 'active', // Legacy
     createdAt: '2023-07-01T09:00:00Z',
@@ -154,6 +160,8 @@ export const products: Product[] = [
     stock: 50,
     category: 'Accessories',
     images: ['https://images.unsplash.com/photo-1609803384370-0e73ef8d424f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxnZW9tZXRyaWMlMjBwcmludCUyMHNjYXJmfGVufDB8fHx8MTc1ODQ0NDA2M3ww&ixlib=rb-4.1.0&q=80&w=1080'],
+    region: 'Gujarat',
+    artisanName: 'Aarav Patel',
     isActive: true,
     status: 'active', // Legacy
     createdAt: '2023-07-20T18:00:00Z',
@@ -170,6 +178,8 @@ export const products: Product[] = [
     stock: 0,
     category: 'Gardening',
     images: ['https://images.unsplash.com/photo-1728463098232-4ab2f94f53f2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxOXx8dGVycmFjb3R0YSUyMHBsYW50ZXJ8ZW58MHx8fHwxNzU4NDQ0MjcxfDA&ixlib=rb-4.1.0&q=80&w=1080'],
+    region: 'Rajasthan',
+    artisanName: 'Riya Sharma',
     isActive: false,
     status: 'archived', // Legacy
     createdAt: '2023-08-10T11:45:00Z',
@@ -186,6 +196,8 @@ export const products: Product[] = [
     category: 'Kitchenware',
     stock: 12,
     images: ['https://images.unsplash.com/photo-1648889095175-1757165415e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxN3x8Z2xhemVkJTIwc291cCUyMGJvd2xzfGVufDB8fHx8MTc1ODQ0NTAzNHww&ixlib=rb-4.1.0&q=80&w=1080'],
+    region: 'Rajasthan',
+    artisanName: 'Riya Sharma',
     isActive: true,
     status: 'active',
     createdAt: '2023-09-01T10:00:00Z',
@@ -202,6 +214,8 @@ export const products: Product[] = [
     category: 'Textiles',
     stock: 20,
     images: ['https://images.unsplash.com/photo-1689413182146-14b0a9b972b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxN3x8ZW1icm9pZGVyZWQlMjBjdXNoaW9ufGVufDB8fHx8MTc1ODQ0NDc3Mnww&ixlib=rb-4.1.0&q=80&w=1080'],
+    region: 'Gujarat',
+    artisanName: 'Aarav Patel',
     isActive: true,
     status: 'active',
     createdAt: '2023-09-15T14:30:00Z',
@@ -218,6 +232,8 @@ export const products: Product[] = [
     category: 'Kitchenware',
     stock: 8,
     images: ['https://images.unsplash.com/photo-1721373489867-b95a7b3fe16c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwdGVhJTIwc2V0fGVufDB8fHx8MTc1ODQ0Mzc5MHww&ixlib=rb-4.1.0&q=80&w=1080'],
+    region: 'Rajasthan',
+    artisanName: 'Riya Sharma',
     isActive: true,
     status: 'active',
     createdAt: '2023-10-01T09:00:00Z',
@@ -234,6 +250,8 @@ export const products: Product[] = [
     stock: 30,
     category: 'Home Decor',
     images: ['https://images.unsplash.com/photo-1614623171216-7755e8650e8e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxoYW5kJTIwcGFpbnRlZCUyMHdvb2RlbiUyMGJveHxlbnwwfHx8fDE3NTg0NDUxNTl8MA&ixlib=rb-4.1.0&q=80&w=1080'],
+    region: 'Rajasthan',
+    artisanName: 'Riya Sharma',
     isActive: true,
     status: 'active',
     createdAt: '2023-10-10T18:00:00Z',
@@ -250,6 +268,8 @@ export const products: Product[] = [
     stock: 18,
     category: 'Textiles',
     images: ['https://images.unsplash.com/photo-1591011094220-0d66c676a6f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bmF0dXJhbCUyMGR5ZSUyMHRhYmxlJTIwcnVubmVyfGVufDB8fHx8MTc1ODQ0NTI1NHww&ixlib=rb-4.1.0&q=80&w=1080'],
+    region: 'Gujarat',
+    artisanName: 'Aarav Patel',
     isActive: true,
     status: 'active',
     createdAt: '2023-10-12T11:45:00Z',
@@ -266,6 +286,8 @@ export const products: Product[] = [
     stock: 22,
     category: 'Jewelry',
     images: ['https://images.unsplash.com/photo-1663170808179-06942aa40a56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzaWx2ZXIlMjBqaHVta2ElMjBlYXJyaW5nc3xlbnwwfHx8fDE3NTg0NDQ0ODN8MA&ixlib=rb-4.1.0&q=80&w=1080'],
+    region: 'Rajasthan',
+    artisanName: 'Riya Sharma',
     isActive: true,
     status: 'active',
     createdAt: '2023-10-15T10:00:00Z',
@@ -282,6 +304,8 @@ export const products: Product[] = [
     stock: 7,
     category: 'Textiles',
     images: ['https://images.unsplash.com/photo-1700530501759-189d3dbfe2d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YmxvY2slMjBwcmludGVkJTIwcXVpbHR8ZW58MHx8fHwxNzU4NDQ1ODIwfDA&ixlib=rb-4.1.0&q=80&w=1080'],
+    region: 'Gujarat',
+    artisanName: 'Aarav Patel',
     isActive: true,
     status: 'active',
     createdAt: '2023-10-18T14:30:00Z',
@@ -302,6 +326,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-10T10:00:00Z',
     updatedAt: '2023-11-10T10:00:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['White Marble', 'Semi-precious stone inlay', 'Handcrafted'],
       styleTags: ['Mughal', 'Luxurious', 'Traditional'],
@@ -323,6 +349,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-11T12:00:00Z',
     updatedAt: '2023-11-11T12:00:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Solid Brass', 'Hand Polished', 'Intricate Detail'],
       styleTags: ['Religious', 'Traditional', 'Antique'],
@@ -344,6 +372,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-12T09:30:00Z',
     updatedAt: '2023-11-12T09:30:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Heavy-duty metal', 'Working mechanism', 'Vintage finish'],
       styleTags: ['Industrial', 'Vintage', 'Rustic'],
@@ -365,6 +395,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-13T14:15:00Z',
     updatedAt: '2023-11-13T14:15:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Natural Clay', 'Hand-sculpted', 'Kiln-fired'],
       styleTags: ['Folk Art', 'Rustic', 'Indian Village'],
@@ -386,6 +418,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-14T11:00:00Z',
     updatedAt: '2023-11-14T11:00:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Glass work', 'Hand-painted', 'Set of 12'],
       styleTags: ['Ethnic', 'Colorful', 'Festive'],
@@ -407,6 +441,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-15T10:00:00Z',
     updatedAt: '2023-11-15T10:00:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Hand-cut paper', 'Temple Art', 'Intricate Stencil'],
       styleTags: ['Devotional', 'Traditional', 'Folk Art'],
@@ -428,6 +464,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-16T11:00:00Z',
     updatedAt: '2023-11-16T11:00:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Blue Glaze', 'Quartz Stone Dough', 'Hand-painted'],
       styleTags: ['Persian-style', 'Vibrant', 'Artistic'],
@@ -449,6 +487,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-17T14:30:00Z',
     updatedAt: '2023-11-17T14:30:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Hand Embroidery', 'White-on-White', 'Fine Muslin/Georgette'],
       styleTags: ['Elegant', 'Sophisticated', 'Summer Wear'],
@@ -470,6 +510,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-18T09:00:00Z',
     updatedAt: '2023-11-18T09:00:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Sheesham Wood', 'Hand-carved', 'Jaali Work'],
       styleTags: ['Rustic', 'Vintage', 'Heirloom'],
@@ -491,6 +533,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-19T10:00:00Z',
     updatedAt: '2023-11-19T10:00:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Pure Silk', 'Gold Zari', 'Handwoven'],
       styleTags: ['Royal', 'Wedding', 'Traditional'],
@@ -512,6 +556,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-20T11:00:00Z',
     updatedAt: '2023-11-20T11:00:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Brass/Bronze', 'Lost Wax Casting', 'Religious Motif'],
       styleTags: ['Antique', 'Spiritual', 'Collectible'],
@@ -533,6 +579,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-21T09:30:00Z',
     updatedAt: '2023-11-21T09:30:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Bone China/Ceramic', 'Hand-Glazed', 'Durable'],
       styleTags: ['Floral', 'Bright', 'Family Dining'],
@@ -554,6 +602,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-22T14:15:00Z',
     updatedAt: '2023-11-22T14:15:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Flat Weave', 'Cotton/Wool', 'Reversible'],
       styleTags: ['Geometric', 'Boho', 'Modern Rustic'],
@@ -575,6 +625,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-23T10:00:00Z',
     updatedAt: '2023-11-23T10:00:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Gold/Silver Wire', 'Velvet Base', 'Hand Embroidered'],
       styleTags: ['Opulent', 'Regal', 'Ornate'],
@@ -596,6 +648,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-24T12:00:00Z',
     updatedAt: '2023-11-24T12:00:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Persian Knot', 'Pure Wool', 'High Knot Count'],
       styleTags: ['Classic', 'Luxury', 'Grand Millennial'],
@@ -617,6 +671,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-25T14:30:00Z',
     updatedAt: '2023-11-25T14:30:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Pure Silver Wire', 'Tarkashi Art', 'Handcrafted'],
       styleTags: ['Delicate', 'Precious', 'Artistic'],
@@ -638,6 +694,8 @@ export const products: Product[] = [
     status: 'active',
     createdAt: '2023-11-26T10:00:00Z',
     updatedAt: '2023-11-26T10:00:00Z',
+    region: 'Uttar Pradesh',
+    artisanName: 'Arjun Verma',
     aiInsights: {
       keyFeatures: ['Full-Grain Leather', 'Hand-Stitched', 'Multiple Compartments'],
       styleTags: ['Vintage', 'Rugged', 'Professional'],
@@ -748,13 +806,21 @@ export const orders: Order[] = [
 ];
 
 export const categories: string[] = [
+  'Painting',
+  'Jewelry',
   'Home Decor',
   'Textiles',
   'Kitchenware',
   'Accessories',
-  'Gardening',
-  'Jewelry',
-  'Painting',
+];
+
+export const regions: string[] = [
+  'Rajasthan',
+  'Gujarat',
+  'Uttar Pradesh',
+  'Maharashtra',
+  'West Bengal',
+  'Tamil Nadu',
 ];
 
 

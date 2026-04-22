@@ -17,6 +17,8 @@ export type Product = {
     styleTags?: string[];
     useCases?: string[];
   };
+  region: string;
+  artisanName?: string;
   isActive: boolean;
   status: 'active' | 'archived'; // To be deprecated in favor of isActive
   features?: string[]; // To be deprecated in favor of aiInsights
