@@ -29,6 +29,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                 <div className="hidden md:flex items-center space-x-7">
                   <Link href="/shop" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.shop')}</Link>
                   <a href="/#mission" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.mission')}</a>
+                  <Link href="/orders" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.orders')}</Link>
                   <a href="#" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.journal')}</a>
                 </div>
               </div>
@@ -69,6 +70,9 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                           <a href="/#mission" className="text-lg font-medium hover:text-amber-600 transition-colors">
                             {t('nav.mission')}
                           </a>
+                          <Link href="/orders" className="text-lg font-medium hover:text-amber-600 transition-colors">
+                            {t('nav.orders')}
+                          </Link>
                           <a href="#" className="text-lg font-medium hover:text-amber-600 transition-colors">
                             {t('nav.journal')}
                           </a>
