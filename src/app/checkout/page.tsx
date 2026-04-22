@@ -26,7 +26,7 @@ export default function CheckoutPage() {
     const handleRazorpayPayment = async () => {
         setIsProcessing(true);
         try {
-            const response = await fetch('/api/razorpay', {
+            const response = await fetch('http://localhost:8000/api/razorpay/order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: total, currency: 'INR' }),
@@ -248,9 +248,9 @@ export default function CheckoutPage() {
                                         </div>
                                         <div className="flex-grow">
                                             <p className="font-medium text-sm line-clamp-2">{item.name}</p>
-                                            <p className="text-xs text-muted-foreground">Qty: 1</p>
+                                            <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                                         </div>
-                                        <p className="font-semibold text-sm">₹{item.price.toFixed(2)}</p>
+                                        <p className="font-semibold text-sm">₹{(item.price * item.quantity).toFixed(2)}</p>
                                     </div>
                                 ))}
                             </div>
