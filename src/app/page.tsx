@@ -24,7 +24,7 @@ export default function Marketplace() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-neutral-950 text-amber-50 overflow-x-hidden selection:bg-amber-500/30">
+    <div className="relative min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-primary/30">
 
       {/* Background Texture/Watermark - "Filling the page" conceptually */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -42,21 +42,24 @@ export default function Marketplace() {
         <header className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden bg-[#fbf7f0]">
           {/* Subtle Texture for Cream Background */}
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%235e2c18\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
+          
+          {/* Subtle Vignette Overlay */}
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,transparent_40%,rgba(94,44,24,0.08)_100%)]" />
 
           <div className="relative z-10 w-full max-w-5xl mx-auto space-y-6 animate-fade-in-up pt-10">
 
             {/* Logo Image - Centered and Large */}
-            <div className="relative w-full max-w-[800px] mx-auto flex items-center justify-center transition-transform duration-1000 hover:scale-105">
-              <div className="relative w-full aspect-[16/9] md:aspect-[2/1] mix-blend-multiply drop-shadow-xl">
-                <Image
-                  src="/logo-replacement.png"
-                  alt="Viraasat Heritage Logo"
-                  fill
-                  className="object-contain w-full h-full"
-                  priority
-                  quality={100}
-                />
-              </div>
+            <div className="relative w-full max-w-[650px] mx-auto z-30 transition-transform duration-1000 hover:scale-105">
+              <img
+                src="/viraasat-hero-cream.png"
+                alt="Viraasat Heritage Logo"
+                className="w-full h-auto mix-blend-multiply"
+                style={{ 
+                  maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 95%)',
+                  WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 95%)'
+                }}
+                loading="eager"
+              />
             </div>
 
             <div className="space-y-6 max-w-3xl mx-auto">
@@ -83,39 +86,39 @@ export default function Marketplace() {
             </div>
           </div>
 
-          {/* Transition to Dark Section */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-neutral-950 to-transparent pointer-events-none" />
+          {/* Transition to Secondary Section */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-secondary to-transparent pointer-events-none" />
         </header>
 
         {/* MISSION SECTION */}
-        <section id="mission" className="py-32 relative bg-neutral-900 border-t border-white/5">
+        <section id="mission" className="py-32 relative bg-secondary border-t border-border/50">
           <div className="max-w-5xl mx-auto px-4 text-center">
-            <span className="text-amber-500 text-sm tracking-[0.3em] uppercase mb-4 block">Our Philosophy</span>
-            <h2 className="text-3xl md:text-5xl font-heading text-amber-100 mb-12">
+            <span className="text-primary text-sm tracking-[0.3em] uppercase mb-4 block">Our Philosophy</span>
+            <h2 className="text-3xl md:text-5xl font-heading text-foreground mb-12">
               {t('home.mission.title')}
             </h2>
             <div className="relative">
-              <span className="absolute -top-10 -left-4 text-8xl text-amber-500/10 font-serif leading-none">“</span>
-              <p className="text-xl md:text-2xl text-amber-200/70 leading-relaxed font-serif relative z-10 px-8">
+              <span className="absolute -top-10 -left-4 text-8xl text-primary/10 font-serif leading-none">“</span>
+              <p className="text-xl md:text-2xl text-foreground/70 leading-relaxed font-serif relative z-10 px-8">
                 {t('home.mission.description')}
               </p>
-              <span className="absolute -bottom-10 -right-4 text-8xl text-amber-500/10 font-serif leading-none">”</span>
+              <span className="absolute -bottom-10 -right-4 text-8xl text-primary/10 font-serif leading-none">”</span>
             </div>
           </div>
         </section>
 
         {/* COLLECTION CAROUSEL */}
-        <section id="explore-collection" className="py-32 relative bg-neutral-950 overflow-hidden">
+        <section id="explore-collection" className="py-32 relative bg-background overflow-hidden">
           {/* Decorative gradients */}
-          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-900/50 to-transparent" />
+          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-20">
-              <span className="text-amber-500 text-sm tracking-[0.3em] uppercase mb-4 block">The Collection</span>
-              <h2 className="text-4xl md:text-6xl font-heading font-normal text-amber-100 mb-6">
+              <span className="text-primary text-sm tracking-[0.3em] uppercase mb-4 block">The Collection</span>
+              <h2 className="text-4xl md:text-6xl font-heading font-normal text-foreground mb-6">
                 Masterpieces
               </h2>
-              <p className="text-lg text-amber-400/50 max-w-2xl mx-auto font-light">
+              <p className="text-lg text-foreground/50 max-w-2xl mx-auto font-light">
                 Handcrafted treasures from the heart of India
               </p>
             </div>
@@ -137,17 +140,17 @@ export default function Marketplace() {
         </section>
 
         {/* PRODUCT GRID */}
-        <section id="product-grid" className="py-32 bg-neutral-900 relative">
+        <section id="product-grid" className="py-32 bg-secondary/30 relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h3 className="text-3xl font-heading text-amber-100 mb-16 text-center border-b border-amber-900/30 pb-8 inline-block w-full">
+            <h3 className="text-3xl font-heading text-foreground mb-16 text-center border-b border-primary/20 pb-8 inline-block w-full">
               Curated Selections
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
               {products.slice(0, 8).map((product) => (
                 <div key={product.id} className="group cursor-pointer">
                   {/* Custom Card Wrapper for Dark Theme */}
-                  <div className="bg-neutral-800/50 p-4 border border-white/5 transition-all duration-300 group-hover:bg-neutral-800 group-hover:border-amber-900/50 group-hover:shadow-2xl group-hover:shadow-amber-900/10">
-                    <div className="relative aspect-[3/4] overflow-hidden mb-4 bg-neutral-900">
+                  <div className="bg-card p-4 border border-border/50 transition-all duration-300 group-hover:bg-card/80 group-hover:border-primary/50 group-hover:shadow-2xl group-hover:shadow-primary/5">
+                    <div className="relative aspect-[3/4] overflow-hidden mb-4 bg-secondary">
                       {/* We can use the product image here. Assuming ProductCard handles it, 
                             but we'll just wrap the existing component for logic re-use */}
                       <div className="pointer-events-none">
@@ -158,8 +161,8 @@ export default function Marketplace() {
                       </div>
                     </div>
                     <div className="text-center space-y-2 mt-4">
-                      <h4 className="text-amber-100 font-serif text-lg group-hover:text-amber-400 transition-colors">{product.name}</h4>
-                      <p className="text-amber-600/80 text-sm uppercase tracking-widest">{product.category}</p>
+                      <h4 className="text-foreground font-serif text-lg group-hover:text-primary transition-colors">{product.name}</h4>
+                      <p className="text-primary/80 text-sm uppercase tracking-widest">{product.category}</p>
                     </div>
                   </div>
                 </div>
@@ -168,9 +171,45 @@ export default function Marketplace() {
           </div>
         </section>
 
+        {/* REGIONAL DISCOVERY */}
+        <section className="py-32 relative bg-background overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.03] clay-texture pointer-events-none" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="text-center mb-16">
+              <span className="text-primary text-sm tracking-[0.3em] uppercase mb-4 block">Regional Heritage</span>
+              <h2 className="text-4xl md:text-6xl font-heading font-normal text-foreground">Explore by Origin</h2>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { name: 'Rajasthan', img: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&q=80&w=400' },
+                { name: 'Kutch', img: 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&q=80&w=400' },
+                { name: 'Kashmir', img: 'https://images.unsplash.com/photo-1566833925222-72120b419615?auto=format&fit=crop&q=80&w=400' },
+                { name: 'Varanasi', img: 'https://images.unsplash.com/photo-1561359313-0639aad49ca6?auto=format&fit=crop&q=80&w=400' },
+              ].map((region) => (
+                <Link 
+                  key={region.name}
+                  href={`/shop?region=${region.name}`}
+                  className="group relative aspect-square overflow-hidden bg-secondary clay-shadow"
+                >
+                  <Image 
+                    src={region.img} 
+                    alt={region.name} 
+                    fill 
+                    className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                    <span className="text-white font-heading text-xl md:text-2xl">{region.name}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ARTISAN STORY */}
-        <section className="py-32 relative overflow-hidden bg-neutral-950">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-900/50 to-transparent" />
+        <section className="py-32 relative overflow-hidden bg-background">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -194,25 +233,25 @@ export default function Marketplace() {
 
               <div className="space-y-8">
                 <div>
-                  <span className="text-amber-600 text-sm tracking-[0.3em] uppercase mb-2 block">Tradition</span>
-                  <h3 className="font-heading text-4xl md:text-5xl text-amber-50 mb-6">Supporting The Hands That Create</h3>
-                  <p className="text-amber-200/60 text-lg leading-relaxed font-light">
+                  <span className="text-primary text-sm tracking-[0.3em] uppercase mb-2 block">Tradition</span>
+                  <h3 className="font-heading text-4xl md:text-5xl text-foreground mb-6">Supporting The Hands That Create</h3>
+                  <p className="text-foreground/60 text-lg leading-relaxed font-light">
                     Viraasat is not just a marketplace; it is a movement. A movement to bring the spotlight back to the hands that weave magic, carve history, and paint culture. Your patronage directly empowers these guardians of our heritage.
                   </p>
                 </div>
 
-                <div className="bg-neutral-900/80 p-10 border border-white/5 backdrop-blur-sm">
-                  <h4 className="font-heading text-2xl text-amber-100 mb-2">Join The Legacy</h4>
-                  <p className="text-amber-400/60 mb-8 text-sm">Be the first to know about rare acquirements.</p>
+                <div className="bg-secondary/50 p-10 border border-border/50 backdrop-blur-sm">
+                  <h4 className="font-heading text-2xl text-foreground mb-2">Join The Legacy</h4>
+                  <p className="text-primary/60 mb-8 text-sm">Be the first to know about rare acquirements.</p>
 
                   <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
                     <Input
                       type="email"
                       placeholder="EMAIL ADDRESS"
-                      className="bg-transparent border-b border-white/20 rounded-none px-0 py-2 text-amber-100 placeholder:text-neutral-600 focus:border-amber-500 focus:ring-0 transition-colors"
+                      className="bg-transparent border-b border-primary/20 rounded-none px-0 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-0 transition-colors"
                     />
                     <div className="pt-4">
-                      <Button type="submit" className="w-full bg-amber-800/80 hover:bg-amber-700 text-amber-100 uppercase tracking-widest py-6 text-sm">
+                      <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-widest py-6 text-sm">
                         Subscribe
                       </Button>
                     </div>
