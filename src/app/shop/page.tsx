@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useEffect } from 'react';
 import ProductCard from '@/components/product-card';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Filter, Search as SearchIcon, X } from 'lucide-react';
+import { Filter, MapPin, Sparkles, Search, X } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -17,13 +16,19 @@ import {
 } from '@/components/ui/select';
 import { Product } from '@/lib/types';
 import { Input } from '@/components/ui/input';
-import { regions } from '@/lib/data';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
-import { db } from '@/lib/firebase';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+const regions = [
+  'Rajasthan',
+  'Kutch',
+  'Uttar Pradesh',
+  'Varanasi',
+  'Kashmir',
+  'Andhra Pradesh',
+];
 
 export default function ShopPage() {
-  const [dbProducts, setDbProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
@@ -31,263 +36,180 @@ export default function ShopPage() {
   const [sortOrder, setSortOrder] = useState('newest');
 
   useEffect(() => {
-    if (!db) return;
+    filterAndSortProducts();
+  }, [selectedCategories, selectedRegions, searchQuery, sortOrder]);
 
-    const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedProducts: Product[] = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Product));
-      setDbProducts(fetchedProducts);
-    });
+  const filterAndSortProducts = () => {
+    let tempProducts = [...products];
 
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    filterAndSortProducts(selectedCategories, selectedRegions, searchQuery, sortOrder);
-  }, [dbProducts, selectedCategories, selectedRegions, searchQuery, sortOrder]);
-
-
-  const handleCategoryChange = (category: string) => {
-    const newSelectedCategories = selectedCategories.includes(category)
-      ? selectedCategories.filter((c) => c !== category)
-      : [...selectedCategories, category];
-
-    setSelectedCategories(newSelectedCategories);
-  };
-
-  const handleRegionChange = (region: string) => {
-    const newSelectedRegions = selectedRegions.includes(region)
-      ? selectedRegions.filter((r) => r !== region)
-      : [...selectedRegions, region];
-
-    setSelectedRegions(newSelectedRegions);
-  };
-
-  const handleSortChange = (value: string) => {
-    setSortOrder(value);
-  };
-
-  const filterAndSortProducts = (categoriesArr: string[], regionsArr: string[], queryStr: string, sort: string) => {
-    let tempProducts = [...dbProducts, ...products];
-
-    // Filter by search query
-    if (queryStr) {
-      const lowQuery = queryStr.toLowerCase();
-      tempProducts = tempProducts.filter((product) => 
-        product.name.toLowerCase().includes(lowQuery) || 
-        product.description.toLowerCase().includes(lowQuery) ||
-        product.category.toLowerCase().includes(lowQuery) ||
-        product.region?.toLowerCase().includes(lowQuery)
+    // Search
+    if (searchQuery) {
+      tempProducts = tempProducts.filter(p => 
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        p.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // Filter by category
-    if (categoriesArr.length > 0) {
-      tempProducts = tempProducts.filter((product) =>
-        categoriesArr.includes(product.category)
+    // Category Filter
+    if (selectedCategories.length > 0) {
+      tempProducts = tempProducts.filter(p => selectedCategories.includes(p.category));
+    }
+
+    // Regional Filter
+    if (selectedRegions.length > 0) {
+      tempProducts = tempProducts.filter(p => 
+        selectedRegions.some(region => 
+          p.description.toLowerCase().includes(region.toLowerCase()) || 
+          p.tagline.toLowerCase().includes(region.toLowerCase())
+        )
       );
     }
 
-    // Filter by region
-    if (regionsArr.length > 0) {
-      tempProducts = tempProducts.filter((product) =>
-        product.region && regionsArr.includes(product.region)
-      );
-    }
-
-    // Sort products
-    switch (sort) {
-      case 'price-asc':
-        tempProducts.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        tempProducts.sort((a, b) => b.price - a.price);
-        break;
-      case 'newest':
-        tempProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        break;
-      default:
-        break;
+    // Sort
+    switch (sortOrder) {
+      case 'price-asc': tempProducts.sort((a, b) => a.price - b.price); break;
+      case 'price-desc': tempProducts.sort((a, b) => b.price - a.price); break;
+      case 'newest': tempProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); break;
     }
 
     setFilteredProducts(tempProducts);
   };
 
-  const FiltersList = () => (
-    <div className="space-y-8">
-      <div>
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-amber-900/50 mb-4">Category</h3>
-        <div className="space-y-3">
-          {categories.map((category) => (
-            <div key={category} className="flex items-center space-x-2">
-              <Checkbox
-                id={`cat-${category}`}
-                checked={selectedCategories.includes(category)}
-                onCheckedChange={() => handleCategoryChange(category)}
-                className="border-amber-900/20 data-[state=checked]:bg-amber-800 data-[state=checked]:border-amber-800"
-              />
-              <Label htmlFor={`cat-${category}`} className="text-sm font-medium leading-none cursor-pointer hover:text-amber-800 transition-colors">
-                {category}
-              </Label>
+  const FilterSection = () => (
+    <div className="space-y-8 py-4">
+      <div className="space-y-4">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-primary/60 border-b border-primary/10 pb-2">Craft Categories</h3>
+        <div className="space-y-2">
+          {categories.map((cat) => (
+            <div key={cat} className="flex items-center space-x-3 group cursor-pointer" onClick={() => {
+              setSelectedCategories(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
+            }}>
+              <Checkbox id={cat} checked={selectedCategories.includes(cat)} />
+              <Label htmlFor={cat} className="text-sm font-medium text-foreground/70 group-hover:text-primary transition-colors cursor-pointer">{cat}</Label>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="pt-6 border-t border-amber-900/10">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-amber-900/50 mb-4">Region</h3>
-        <div className="space-y-3">
-          {regions.filter(r => r).map((region) => (
-            <div key={region} className="flex items-center space-x-2">
-              <Checkbox
-                id={`reg-${region}`}
-                checked={selectedRegions.includes(region)}
-                onCheckedChange={() => handleRegionChange(region)}
-                className="border-amber-900/20 data-[state=checked]:bg-amber-800 data-[state=checked]:border-amber-800"
-              />
-              <Label htmlFor={`reg-${region}`} className="text-sm font-medium leading-none cursor-pointer hover:text-amber-800 transition-colors">
-                {region}
-              </Label>
+      <div className="space-y-4">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-primary/60 border-b border-primary/10 pb-2">Regional Heritage</h3>
+        <div className="space-y-2">
+          {regions.map((region) => (
+            <div key={region} className="flex items-center space-x-3 group cursor-pointer" onClick={() => {
+              setSelectedRegions(prev => prev.includes(region) ? prev.filter(r => r !== region) : [...prev, region]);
+            }}>
+              <Checkbox id={region} checked={selectedRegions.includes(region)} />
+              <Label htmlFor={region} className="text-sm font-medium text-foreground/70 group-hover:text-primary transition-colors cursor-pointer">{region}</Label>
             </div>
           ))}
         </div>
       </div>
-
-      {(selectedCategories.length > 0 || selectedRegions.length > 0) && (
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => {
-            setSelectedCategories([]);
-            setSelectedRegions([]);
-          }}
-          className="text-muted-foreground hover:text-amber-800 p-0 h-auto"
-        >
-          Clear all filters
-        </Button>
-      )}
     </div>
   );
 
   return (
-    <div className="bg-[#fbf7f0] min-h-screen">
-      {/* Premium Heritage Header */}
-      <header className="relative py-20 overflow-hidden bg-neutral-950 text-amber-50">
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-900/50 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-900/50 to-transparent" />
+    <div className="bg-background min-h-screen selection:bg-primary/20">
+      {/* Premium Header */}
+      <header className="relative py-24 overflow-hidden bg-[#fbf7f0] border-b border-primary/5">
+        <div className="absolute inset-0 opacity-[0.03] clay-texture pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(94,44,24,0.05),transparent_40%)]" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <span className="text-amber-500 text-sm tracking-[0.3em] uppercase mb-4 block">The Marketplace</span>
-          <h1 className="text-5xl md:text-7xl font-heading font-normal text-amber-100 mb-6 italic">Shop Heritage</h1>
-          <p className="text-lg text-amber-200/50 max-w-2xl mx-auto font-light leading-relaxed">
-            Support rural artisans by bringing home a piece of India's timeless legacy.
+          <Badge variant="outline" className="mb-4 border-primary/20 text-primary px-4 py-1 uppercase tracking-widest text-[10px]">The Viraasat Gallery</Badge>
+          <h1 className="text-5xl md:text-7xl font-heading font-normal text-[#5e2c18] mb-6">Masterpieces</h1>
+          <p className="max-w-2xl mx-auto text-lg text-[#8b4513]/70 font-serif italic">
+            "Discover the soul of India through its most exquisite handcrafted treasures, each piece a legacy of centuries."
           </p>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Search and Sort Bar */}
-        <div className="flex flex-col md:flex-row gap-6 justify-between items-center mb-12">
-          <div className="relative w-full max-w-md group">
-            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-900/30 group-focus-within:text-amber-800 transition-colors" />
-            <Input 
-              placeholder="Search products, regions, categories..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-11 bg-white border-amber-900/10 focus:border-amber-800 focus:ring-amber-800/10 rounded-none h-12"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-amber-900/30 hover:text-amber-800"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <Select onValueChange={handleSortChange} defaultValue={sortOrder}>
-              <SelectTrigger className="w-full md:w-[200px] bg-white border-amber-900/10 rounded-none h-12">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Featured First</SelectItem>
-                <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                <SelectItem value="price-desc">Price: High to Low</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Mobile Filter Toggle */}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" className="lg:hidden border-amber-900/10 rounded-none h-12 px-6">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filters
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="bg-[#fbf7f0]">
-                <div className="py-8">
-                  <h2 className="font-heading text-2xl text-amber-900 mb-8">Refine Search</h2>
-                  <FiltersList />
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-          {/* Desktop Sidebar Filters */}
-          <aside className="hidden lg:block space-y-8 sticky top-24 h-fit">
-            <div className="bg-white p-8 border border-amber-900/5 shadow-sm">
-              <FiltersList />
-            </div>
-            
-            {/* Curated Box */}
-            <div className="bg-amber-900/5 p-8 border border-amber-900/10">
-              <h4 className="font-heading text-lg text-amber-900 mb-2">Artisan Direct</h4>
-              <p className="text-xs text-amber-900/60 leading-relaxed">
-                Every purchase goes directly to the artisan families, ensuring fair wages and preserving traditional crafts.
-              </p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          {/* Desktop Filters */}
+          <aside className="hidden lg:block lg:col-span-3 sticky top-24 h-fit">
+            <div className="bg-secondary/30 p-8 border border-primary/10 rounded-none clay-texture">
+              <FilterSection />
             </div>
           </aside>
 
-          {/* Products Grid */}
-          <div className="lg:col-span-3">
-            <div className="flex justify-between items-center mb-8 pb-4 border-b border-amber-900/10">
-              <p className="text-sm font-medium text-amber-900/40 uppercase tracking-widest">
-                Showing {filteredProducts.length} unique treasures
-              </p>
+          {/* Main content area */}
+          <div className="lg:col-span-9 space-y-8">
+            
+            {/* Control Bar */}
+            <div className="flex flex-col md:flex-row gap-6 justify-between items-center bg-card p-4 border border-border shadow-sm">
+              <div className="relative w-full md:max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search the collection..." 
+                  className="pl-10 rounded-none border-none bg-secondary/50 focus-visible:ring-primary/20"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+
+              <div className="flex items-center gap-4 w-full md:w-auto">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="lg:hidden flex-1 rounded-none">
+                      <Filter className="mr-2 h-4 w-4" /> Filters
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-[300px] clay-texture">
+                    <FilterSection />
+                  </SheetContent>
+                </Sheet>
+
+                <Select onValueChange={setSortOrder} defaultValue={sortOrder}>
+                  <SelectTrigger className="w-full md:w-[200px] rounded-none bg-secondary/50 border-none">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Latest Arrivals</SelectItem>
+                    <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                    <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
+            {/* Active Filters */}
+            {(selectedCategories.length > 0 || selectedRegions.length > 0) && (
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-xs font-bold text-muted-foreground mr-2">ACTIVE FILTERS:</span>
+                {[...selectedCategories, ...selectedRegions].map(filter => (
+                  <Badge key={filter} variant="secondary" className="bg-primary/5 text-primary border-primary/10 px-3 py-1 rounded-none">
+                    {filter}
+                    <X className="ml-2 h-3 w-3 cursor-pointer" onClick={() => {
+                      if (selectedCategories.includes(filter)) setSelectedCategories(prev => prev.filter(c => c !== filter));
+                      else setSelectedRegions(prev => prev.filter(r => r !== filter));
+                    }} />
+                  </Badge>
+                ))}
+                <Button variant="link" size="sm" className="text-xs text-muted-foreground" onClick={() => {
+                  setSelectedCategories([]);
+                  setSelectedRegions([]);
+                }}>Clear All</Button>
+              </div>
+            )}
+
+            {/* Results Grid */}
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-12">
-                {filteredProducts.filter(p => p.isActive !== false).map((product) => (
+                {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} variant="grid" />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-32 border-2 border-dashed border-amber-900/10 bg-amber-900/[0.02]">
-                <div className="max-w-xs mx-auto">
-                  <SearchIcon className="h-12 w-12 text-amber-900/10 mx-auto mb-4" />
-                  <h2 className="text-xl font-heading text-amber-900 mb-2">No masterpieces found</h2>
-                  <p className="text-amber-900/50 text-sm mb-8">We couldn't find any products matching your current filters.</p>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      setSearchQuery('');
-                      setSelectedCategories([]);
-                      setSelectedRegions([]);
-                    }}
-                    className="border-amber-900/20 text-amber-900 rounded-none transform transition active:scale-95"
-                  >
-                    Reset All Filters
-                  </Button>
-                </div>
+              <div className="text-center py-32 bg-secondary/20 border border-dashed border-primary/20 clay-texture">
+                <Sparkles className="mx-auto h-12 w-12 text-primary/20 mb-4" />
+                <h2 className="text-2xl font-heading text-foreground">No masterpieces found</h2>
+                <p className="text-muted-foreground mt-2 max-w-xs mx-auto">Try broadening your search or adjusting the filters to discover more treasures.</p>
+                <Button variant="outline" className="mt-8 rounded-none border-primary/20" onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategories([]);
+                  setSelectedRegions([]);
+                }}>Reset Gallery</Button>
               </div>
             )}
           </div>
