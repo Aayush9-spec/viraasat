@@ -85,10 +85,10 @@ export default function RootLayout({
         <LanguageProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="clay"
             enableSystem
             disableTransitionOnChange
-            themes={['light', 'dark', 'sapphire', 'emerald', 'sunset']}
+            themes={['light', 'dark', 'sapphire', 'emerald', 'sunset', 'clay']}
           >
             <CartProvider>
               <Background3D />
