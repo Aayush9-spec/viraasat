@@ -11,6 +11,7 @@ import { Toaster } from "./ui/toaster";
 import VoiceSearch from "./voice-search";
 import { useCart } from "@/context/cart-context";
 import CartSidebar from "./cart-sidebar";
+import { AIAssistant } from "./ai-assistant";
 
 export function MainContent({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
@@ -21,23 +22,23 @@ export function MainContent({ children }: { children: React.ReactNode }) {
     <>
       <div className="relative min-h-screen">
         <div className="parallax-background"></div>
-        <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200/80">
+        <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-4">
               <div className="flex items-center space-x-8">
                 <ViraasatLogo />
                 <div className="hidden md:flex items-center space-x-7">
-                  <Link href="/shop" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.shop')}</Link>
-                  <a href="/#mission" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.mission')}</a>
-                  <Link href="/orders" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.orders')}</Link>
-                  <a href="#" className="text-sm font-medium text-gray-600 hover:text-amber-800 transition-colors">{t('nav.journal')}</a>
+                  <Link href="/shop" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.shop')}</Link>
+                  <a href="/#mission" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.mission')}</a>
+                  <Link href="/orders" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.orders')}</Link>
+                  <a href="#" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.journal')}</a>
                 </div>
               </div>
               <div className="flex items-center space-x-2 md:space-x-5">
                 <VoiceSearch />
                 <LanguageSwitcher />
                 <ThemeSwitcher />
-                <Button variant="ghost" size="icon" className="relative text-gray-600 hover:text-amber-800" onClick={() => setCartOpen(true)}>
+                <Button variant="ghost" size="icon" className="relative text-foreground/70 hover:text-primary" onClick={() => setCartOpen(true)}>
                   <ShoppingCart className="h-5 w-5" />
                   {itemCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
@@ -45,7 +46,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                     </span>
                   )}
                 </Button>
-                <Button asChild className="hidden sm:inline-block text-white rounded-md transition-all ease-out duration-300 bg-gradient-to-r from-amber-400 to-orange-500 hover:shadow-lg hover:shadow-orange-500/30 hover:[background-position:15%]">
+                <Button asChild className="hidden sm:inline-block text-primary-foreground rounded-md transition-all ease-out duration-300 bg-primary hover:bg-primary/90">
                   <Link href="/login">{t('nav.login')}</Link>
                 </Button>
 
@@ -64,21 +65,21 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                       </SheetHeader>
                       <div className="flex flex-col gap-6 mt-8">
                         <nav className="flex flex-col space-y-4">
-                          <Link href="/shop" className="text-lg font-medium hover:text-amber-600 transition-colors">
+                          <Link href="/shop" className="text-lg font-medium hover:text-primary transition-colors">
                             {t('nav.shop')}
                           </Link>
-                          <a href="/#mission" className="text-lg font-medium hover:text-amber-600 transition-colors">
+                          <a href="/#mission" className="text-lg font-medium hover:text-primary transition-colors">
                             {t('nav.mission')}
                           </a>
-                          <Link href="/orders" className="text-lg font-medium hover:text-amber-600 transition-colors">
+                          <Link href="/orders" className="text-lg font-medium hover:text-primary transition-colors">
                             {t('nav.orders')}
                           </Link>
-                          <a href="#" className="text-lg font-medium hover:text-amber-600 transition-colors">
+                          <a href="#" className="text-lg font-medium hover:text-primary transition-colors">
                             {t('nav.journal')}
                           </a>
                         </nav>
                         <div className="border-t pt-6">
-                          <Button asChild className="w-full text-white bg-gradient-to-r from-amber-400 to-orange-500 hover:shadow-lg">
+                          <Button asChild className="w-full text-primary-foreground bg-primary hover:bg-primary/90">
                             <Link href="/login">{t('nav.login')}</Link>
                           </Button>
                         </div>
@@ -96,11 +97,9 @@ export function MainContent({ children }: { children: React.ReactNode }) {
         </main>
       </div>
 
-      <CartSidebar />
-
-      <footer className="bg-neutral-950 border-t border-amber-900/20 pt-16 pb-8 relative overflow-hidden">
+      <footer className="bg-secondary/50 border-t border-primary/20 pt-16 pb-8 relative overflow-hidden">
         {/* Decorative top gradient */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-900/50 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
@@ -108,19 +107,19 @@ export function MainContent({ children }: { children: React.ReactNode }) {
             {/* Brand Column */}
             <div className="col-span-1 md:col-span-1 space-y-4">
               <Link href="/" className="inline-block">
-                <span className="font-heading text-3xl font-bold text-amber-100">Viraasat</span>
+                <span className="font-heading text-3xl font-bold text-foreground">Viraasat</span>
               </Link>
-              <p className="text-amber-200/60 text-sm leading-relaxed font-light">
+              <p className="text-foreground/60 text-sm leading-relaxed font-light">
                 Celebrating the timeless art of Indian craftsmanship. Every piece tells a story of heritage, skill, and dedication.
               </p>
               <div className="flex space-x-4 pt-4">
-                <a href="https://x.com/aayush03061102" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-900 rounded-full text-amber-400 hover:text-white hover:bg-amber-700 transition-all duration-300">
+                <a href="https://x.com/aayush03061102" target="_blank" rel="noopener noreferrer" className="p-2 bg-background rounded-full text-primary hover:text-primary/80 hover:bg-secondary transition-all duration-300">
                   <Twitter className="h-4 w-4" />
                 </a>
-                <a href="#" className="p-2 bg-neutral-900 rounded-full text-amber-400 hover:text-white hover:bg-amber-700 transition-all duration-300">
+                <a href="#" className="p-2 bg-background rounded-full text-primary hover:text-primary/80 hover:bg-secondary transition-all duration-300">
                   <Facebook className="h-4 w-4" />
                 </a>
-                <a href="https://www.instagram.com/aasr_233/" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-900 rounded-full text-amber-400 hover:text-white hover:bg-amber-700 transition-all duration-300">
+                <a href="https://www.instagram.com/aasr_233/" target="_blank" rel="noopener noreferrer" className="p-2 bg-background rounded-full text-primary hover:text-primary/80 hover:bg-secondary transition-all duration-300">
                   <Instagram className="h-4 w-4" />
                 </a>
               </div>
@@ -128,53 +127,55 @@ export function MainContent({ children }: { children: React.ReactNode }) {
 
             {/* Links Column 1 */}
             <div className="col-span-1">
-              <h3 className="font-serif text-amber-500 tracking-wider uppercase text-sm mb-6">Discover</h3>
-              <ul className="space-y-3 text-sm text-neutral-400">
-                <li><Link href="/shop" className="hover:text-amber-200 transition-colors">Our Collection</Link></li>
-                <li><Link href="/#mission" className="hover:text-amber-200 transition-colors">The Mission</Link></li>
-                <li><Link href="/artisans" className="hover:text-amber-200 transition-colors">Meet the Artisans</Link></li>
-                <li><Link href="/journal" className="hover:text-amber-200 transition-colors">Heritage Journal</Link></li>
+              <h3 className="font-serif text-primary tracking-wider uppercase text-sm mb-6">Discover</h3>
+              <ul className="space-y-3 text-sm text-foreground/60">
+                <li><Link href="/shop" className="hover:text-primary transition-colors">Our Collection</Link></li>
+                <li><Link href="/#mission" className="hover:text-primary transition-colors">The Mission</Link></li>
+                <li><Link href="/artisans" className="hover:text-primary transition-colors">Meet the Artisans</Link></li>
+                <li><Link href="/journal" className="hover:text-primary transition-colors">Heritage Journal</Link></li>
               </ul>
             </div>
 
             {/* Links Column 2 */}
             <div className="col-span-1">
-              <h3 className="font-serif text-amber-500 tracking-wider uppercase text-sm mb-6">Support</h3>
-              <ul className="space-y-3 text-sm text-neutral-400">
-                <li><Link href="/faq" className="hover:text-amber-200 transition-colors">FAQ</Link></li>
-                <li><Link href="/shipping" className="hover:text-amber-200 transition-colors">Shipping & Returns</Link></li>
-                <li><Link href="/contact" className="hover:text-amber-200 transition-colors">Contact Us</Link></li>
-                <li><Link href="/privacy" className="hover:text-amber-200 transition-colors">Privacy Policy</Link></li>
+              <h3 className="font-serif text-primary tracking-wider uppercase text-sm mb-6">Support</h3>
+              <ul className="space-y-3 text-sm text-foreground/60">
+                <li><Link href="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
+                <li><Link href="/shipping" className="hover:text-primary transition-colors">Shipping & Returns</Link></li>
+                <li><Link href="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
+                <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
               </ul>
             </div>
 
             {/* Newsletter Column */}
             <div className="col-span-1 md:col-span-1">
-              <h3 className="font-serif text-amber-500 tracking-wider uppercase text-sm mb-6">Newsletter</h3>
-              <p className="text-neutral-500 text-sm mb-4">Subscribe to receive updates on new arrivals and special offers.</p>
-              <div className="flex bg-neutral-900 rounded-md border border-neutral-800 focus-within:border-amber-700 transition-colors p-1">
+              <h3 className="font-serif text-primary tracking-wider uppercase text-sm mb-6">Newsletter</h3>
+              <p className="text-foreground/50 text-sm mb-4">Subscribe to receive updates on new arrivals and special offers.</p>
+              <div className="flex bg-background rounded-md border border-border focus-within:border-primary transition-colors p-1">
                 <input
                   type="email"
                   placeholder="Your email"
-                  className="bg-transparent border-none text-sm text-amber-100 placeholder:text-neutral-600 focus:ring-0 flex-1 px-3"
+                  className="bg-transparent border-none text-sm text-foreground placeholder:text-muted-foreground focus:ring-0 flex-1 px-3"
                 />
-                <Button size="sm" className="bg-amber-800 hover:bg-amber-700 text-amber-100 h-8">
+                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground h-8">
                   Join
                 </Button>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-neutral-600 text-xs">
+          <div className="border-t border-primary/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-foreground/40 text-xs">
               &copy; {new Date().getFullYear()} Viraasat. All rights reserved.
             </p>
-            <p className="text-neutral-700 text-xs font-serif italic">
+            <p className="text-foreground/50 text-xs font-serif italic">
               Made with &hearts; for Indian Heritage
             </p>
           </div>
         </div>
       </footer>
+      <CartSidebar />
+      <AIAssistant />
       <Toaster />
     </>
   );
