@@ -11,7 +11,8 @@ import { Toaster } from "./ui/toaster";
 import VoiceSearch from "./voice-search";
 import { useCart } from "@/context/cart-context";
 import CartSidebar from "./cart-sidebar";
-import { AIAssistant } from "./ai-assistant";
+import dynamic from 'next/dynamic';
+const AIAssistant = dynamic(() => import('./ai-assistant').then(mod => mod.AIAssistant), { ssr: false });
 
 export function MainContent({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
