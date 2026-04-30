@@ -4,71 +4,73 @@
 
 @layer base {
   :root {
-    --background: 180 20% 99%;
-    /* Very Light Cyan/Gray */
-    --foreground: 220 10% 10%;
+    --background: 30 30% 99%;
+    /* Premium Paper White */
+    --foreground: 20 40% 12%;
+    /* Dark Umber/Clay Text */
 
     --card: 0 0% 100%;
-    --card-foreground: 220 10% 10%;
+    --card-foreground: 20 40% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 10% 10%;
+    --popover-foreground: 20 40% 12%;
 
-    --primary: 180 100% 25%;
-    /* Teal #008080 - Keeping as brand color */
-    --primary-foreground: 180 20% 99%;
+    --primary: 25 50% 35%;
+    /* Rich Terracotta Clay */
+    --primary-foreground: 30 30% 99%;
 
-    --secondary: 180 10% 96%;
-    --secondary-foreground: 220 10% 10%;
+    --secondary: 28 30% 95%;
+    /* Soft Clay tint */
+    --secondary-foreground: 20 40% 12%;
 
-    --muted: 220 10% 96%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 28 20% 92%;
+    --muted-foreground: 25 20% 45%;
 
-    --accent: 16 90% 60%;
-    /* Coral */
+    --accent: 20 70% 50%;
+    /* Burnt Orange/Clay Accent */
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 10% 90%;
-    --input: 220 10% 90%;
-    --ring: 180 100% 25%;
+    --border: 25 30% 88%;
+    --input: 25 30% 88%;
+    --ring: 25 50% 35%;
 
-    --radius: 0.75rem;
-    /* Slightly more rounded for premium feel */
+    --radius: 0rem;
+    /* Sharp, architectural edges for premium heritage feel */
   }
 
   .dark {
-    --background: 220 20% 8%;
-    /* Deep rich dark blue-gray */
-    --foreground: 220 10% 98%;
+    --background: 20 40% 8%;
+    /* Deep Umber Dark */
+    --foreground: 30 30% 98%;
 
-    --card: 220 20% 10%;
-    --card-foreground: 220 10% 98%;
+    --card: 20 40% 10%;
+    --card-foreground: 30 30% 98%;
 
-    --popover: 220 20% 10%;
-    --popover-foreground: 220 10% 98%;
+    --popover: 20 40% 10%;
+    --popover-foreground: 30 30% 98%;
 
-    --primary: 180 80% 40%;
-    /* Lighter teal for dark mode */
-    --primary-foreground: 220 20% 8%;
+    --primary: 25 60% 45%;
+    /* Bright Clay */
+    --primary-foreground: 20 40% 8%;
 
-    --secondary: 220 20% 15%;
-    --secondary-foreground: 220 10% 98%;
+    --secondary: 20 40% 15%;
+    --secondary-foreground: 30 30% 98%;
 
-    --muted: 220 20% 15%;
-    --muted-foreground: 220 10% 65%;
+    --muted: 20 40% 15%;
+    --muted-foreground: 25 20% 65%;
 
-    --accent: 16 90% 65%;
-    --accent-foreground: 220 20% 8%;
+    --accent: 20 70% 55%;
+    --accent-foreground: 20 40% 8%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 220 10% 98%;
+    --destructive-foreground: 30 30% 98%;
 
-    --border: 220 20% 20%;
-    --input: 220 20% 20%;
-    --ring: 180 80% 40%;
+    --border: 20 40% 20%;
+    --input: 20 40% 20%;
+    --ring: 25 60% 45%;
   }
 
   .sapphire {
@@ -162,37 +164,33 @@
   }
 
   .clay {
-    --background: 30 20% 98%;
-    /* Soft Paper/Cream */
+    --background: 30 40% 99%;
+    /* Pure White + Clay vibe */
     --foreground: 20 40% 12%;
-    /* Dark Umber/Clay */
 
-    --card: 30 20% 100%;
+    --card: 0 0% 100%;
     --card-foreground: 20 40% 12%;
 
-    --popover: 30 20% 100%;
+    --popover: 0 0% 100%;
     --popover-foreground: 20 40% 12%;
 
     --primary: 25 50% 35%;
-    /* Rich Terracotta Clay */
-    --primary-foreground: 30 20% 98%;
+    --primary-foreground: 30 40% 99%;
 
-    --secondary: 28 30% 94%;
-    /* Soft Clay tint */
+    --secondary: 28 30% 95%;
     --secondary-foreground: 20 40% 12%;
 
     --muted: 28 20% 92%;
     --muted-foreground: 25 20% 45%;
 
     --accent: 20 70% 50%;
-    /* Burnt Orange */
-    --accent-foreground: 30 20% 98%;
+    --accent-foreground: 30 40% 99%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 30 20% 98%;
+    --destructive-foreground: 30 40% 99%;
 
-    --border: 25 30% 85%;
-    --input: 25 30% 85%;
+    --border: 25 30% 88%;
+    --input: 25 30% 88%;
     --ring: 25 50% 35%;
   }
 }
@@ -433,4 +431,4 @@
   .clay-texture {
     background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noiseFilter)' fill='transparent' opacity='0.05'/%3E%3C/svg%3E");
   }
-}
+}
