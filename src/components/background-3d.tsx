@@ -79,7 +79,7 @@ export function Background3D() {
                         transform: `translate(${mousePosition.x * -20}px, ${mousePosition.y * -20}px) translateZ(50px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
                     }}
                 >
-                    <div className="absolute inset-0 border border-teal-400/30 rounded-2xl bg-gradient-to-br from-teal-500/10 to-transparent backdrop-blur-sm shadow-lg"></div>
+                    <div className="absolute inset-0 border border-orange-400/30 rounded-2xl bg-gradient-to-br from-orange-500/10 to-transparent backdrop-blur-sm shadow-lg"></div>
                 </div>
 
                 {/* Floating Glass Panels - Top Right */}
@@ -89,8 +89,8 @@ export function Background3D() {
                         transform: `translate(${mousePosition.x * -30}px, ${mousePosition.y * -15}px) translateZ(80px) rotateX(${-rotateX}deg) rotateY(${-rotateY}deg)`,
                     }}
                 >
-                    <div className="absolute inset-0 border border-amber-400/30 rotate-12 rounded-3xl bg-gradient-to-br from-amber-500/10 to-transparent backdrop-blur-sm shadow-xl">
-                        <div className="absolute inset-6 border border-amber-300/20 rounded-2xl"></div>
+                    <div className="absolute inset-0 border border-amber-600/30 rotate-12 rounded-3xl bg-gradient-to-br from-amber-700/10 to-transparent backdrop-blur-sm shadow-xl">
+                        <div className="absolute inset-6 border border-amber-500/20 rounded-2xl"></div>
                     </div>
                 </div>
 
@@ -101,7 +101,7 @@ export function Background3D() {
                         transform: `translate(${mousePosition.x * -25}px, ${mousePosition.y * -25}px) translateZ(60px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
                     }}
                 >
-                    <div className="absolute inset-0 border border-orange-400/30 -rotate-6 rounded-2xl bg-gradient-to-br from-orange-500/10 to-transparent backdrop-blur-sm shadow-lg"></div>
+                    <div className="absolute inset-0 border border-red-400/30 -rotate-6 rounded-2xl bg-gradient-to-br from-red-500/10 to-transparent backdrop-blur-sm shadow-lg"></div>
                 </div>
 
                 {/* Floating Glass Panels - Bottom Right */}
@@ -111,8 +111,8 @@ export function Background3D() {
                         transform: `translate(${mousePosition.x * -35}px, ${mousePosition.y * -20}px) translateZ(100px) rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`,
                     }}
                 >
-                    <div className="absolute inset-0 border border-emerald-400/30 rotate-6 rounded-3xl bg-gradient-to-br from-emerald-500/10 to-transparent backdrop-blur-sm shadow-xl">
-                        <div className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-emerald-400/20 rounded-full"></div>
+                    <div className="absolute inset-0 border border-amber-400/30 rotate-6 rounded-3xl bg-gradient-to-br from-amber-500/10 to-transparent backdrop-blur-sm shadow-xl">
+                        <div className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-amber-400/20 rounded-full"></div>
                     </div>
                 </div>
 
@@ -126,8 +126,8 @@ export function Background3D() {
                 <div className="absolute top-1/2 left-1/2 w-40 h-40 -translate-x-1/2 -translate-y-1/2 transform-style-3d animate-tumble opacity-25">
                     <div className="cube-face front bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-400/20 backdrop-blur-md rounded-lg"></div>
                     <div className="cube-face back bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-400/20 backdrop-blur-md rounded-lg"></div>
-                    <div className="cube-face right bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-400/20 backdrop-blur-md rounded-lg"></div>
-                    <div className="cube-face left bg-gradient-to-br from-teal-500/10 to-teal-500/5 border border-teal-400/20 backdrop-blur-md rounded-lg"></div>
+                    <div className="cube-face right bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-400/20 backdrop-blur-md rounded-lg"></div>
+                    <div className="cube-face left bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-400/20 backdrop-blur-md rounded-lg"></div>
                     <div className="cube-face top bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-400/20 backdrop-blur-md rounded-lg"></div>
                     <div className="cube-face bottom bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-400/20 backdrop-blur-md rounded-lg"></div>
                 </div>
@@ -135,7 +135,7 @@ export function Background3D() {
                 {/* Ambient Glow Particles */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none">
                     <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-amber-400/20 rounded-full blur-[100px] animate-pulse-slow"></div>
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-400/10 rounded-full blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-400/10 rounded-full blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
                 </div>
             </div>
         </div>
