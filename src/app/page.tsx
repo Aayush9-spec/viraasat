@@ -39,7 +39,7 @@ export default function Marketplace() {
 
       <div className="relative z-10">
         {/* HERO SECTION */}
-        <header className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden bg-[#fbf7f0]">
+        <header className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden bg-background">
           {/* Subtle Texture for Cream Background */}
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%235e2c18\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
           
@@ -63,11 +63,11 @@ export default function Marketplace() {
             </div>
 
             <div className="space-y-6 max-w-3xl mx-auto">
-              <h1 className="text-4xl md:text-6xl font-heading font-bold text-[#5e2c18] tracking-tight drop-shadow-sm">
+              <h1 className="text-4xl md:text-6xl font-heading font-bold text-primary tracking-tight drop-shadow-sm">
                 {t('home.hero.title')}
               </h1>
               <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-[#8b4513] to-transparent opacity-50" />
-              <p className="text-lg md:text-2xl text-[#8b4513]/80 font-serif italic tracking-wide leading-relaxed">
+              <p className="text-lg md:text-2xl text-primary/80 font-serif italic tracking-wide leading-relaxed">
                 {t('home.hero.description')}
               </p>
 
@@ -78,7 +78,7 @@ export default function Marketplace() {
                     const el = document.getElementById('explore-collection');
                     el?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="bg-[#5e2c18] hover:bg-[#4a2315] text-[#fbf7f0] rounded-none px-12 py-7 text-lg uppercase tracking-widest transition-all duration-500 shadow-xl hover:shadow-2xl border border-[#8b4513]/20"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-none px-12 py-7 text-lg uppercase tracking-widest transition-all duration-500 shadow-xl hover:shadow-2xl border border-primary/20"
                 >
                   Enter The Viraasat
                 </Button>
@@ -264,17 +264,17 @@ export default function Marketplace() {
         </section>
 
         {/* Shop Heritage Section */}
-        <section className="py-32 bg-[#fbf7f0] relative overflow-hidden" id="shop-heritage">
+        <section className="py-32 bg-secondary/50 relative overflow-hidden" id="shop-heritage">
           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#5e2c18]/20 to-transparent" />
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 text-left">
               <div className="max-w-2xl">
-                <span className="text-[#5e2c18] text-sm tracking-[0.4em] uppercase mb-4 block font-bold opacity-40">The Viraasat Collection</span>
-                <h2 className="text-4xl md:text-6xl font-heading text-[#5e2c18] leading-tight">Bring India's Soul <br /><span className="italic font-normal">To Your Home</span></h2>
-                <div className="h-px w-24 bg-[#5e2c18]/20 mt-8" />
+                <span className="text-primary text-sm tracking-[0.4em] uppercase mb-4 block font-bold opacity-40">The Viraasat Collection</span>
+                <h2 className="text-4xl md:text-6xl font-heading text-primary leading-tight">Bring India's Soul <br /><span className="italic font-normal">To Your Home</span></h2>
+                <div className="h-px w-24 bg-primary/20 mt-8" />
               </div>
-              <Button size="lg" className="rounded-none bg-[#5e2c18] hover:bg-[#4a2315] text-[#fbf7f0] px-10 h-14 tracking-widest uppercase text-xs shadow-2xl" asChild>
+              <Button size="lg" className="rounded-none bg-primary hover:bg-primary/90 text-primary-foreground px-10 h-14 tracking-widest uppercase text-xs shadow-2xl" asChild>
                 <a href="/shop">View Full Gallery</a>
               </Button>
             </div>
@@ -296,10 +296,10 @@ export default function Marketplace() {
                       <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="space-y-4 px-2">
-                      <h3 className="font-heading text-2xl text-[#5e2c18] group-hover:text-amber-800 transition-colors leading-tight">{product.name}</h3>
+                      <h3 className="font-heading text-2xl text-primary group-hover:text-primary/80 transition-colors leading-tight">{product.name}</h3>
                       <div className="flex items-center gap-3">
-                        <div className="h-px w-8 bg-[#5e2c18]/10" />
-                        <p className="text-[11px] text-amber-900/40 uppercase tracking-[0.3em] font-bold">₹{product.price.toLocaleString('en-IN')}</p>
+                        <div className="h-px w-8 bg-primary/10" />
+                        <p className="text-[11px] text-primary/40 uppercase tracking-[0.3em] font-bold">₹{product.price.toLocaleString('en-IN')}</p>
                       </div>
                     </div>
                   </a>
@@ -322,10 +322,10 @@ export default function Marketplace() {
                   <a 
                     key={reg.name}
                     href={`/shop?region=${reg.name}`}
-                    className="px-4 py-10 bg-white border border-[#5e2c18]/5 text-center hover:bg-[#5e2c18] hover:text-[#fbf7f0] transition-all duration-700 group flex flex-col items-center justify-center space-y-4 shadow-sm hover:shadow-2xl hover:-translate-y-1"
+                    className="px-4 py-10 bg-background border border-primary/5 text-center hover:bg-primary hover:text-primary-foreground transition-all duration-700 group flex flex-col items-center justify-center space-y-4 shadow-sm hover:shadow-2xl hover:-translate-y-1"
                   >
                     <span className="text-[9px] tracking-[0.1em] text-amber-600/40 font-bold group-hover:text-amber-400/50">{reg.count} Artifacts</span>
-                    <span className="text-xs tracking-[0.3em] uppercase font-bold text-[#5e2c18] group-hover:text-[#fbf7f0]">{reg.name}</span>
+                    <span className="text-xs tracking-[0.3em] uppercase font-bold text-primary group-hover:text-primary-foreground">{reg.name}</span>
                   </a>
                 ))}
               </div>
