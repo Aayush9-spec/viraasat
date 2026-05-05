@@ -150,7 +150,7 @@ export default function Marketplace() {
                 <div key={product.id} className="group cursor-pointer">
                   {/* Custom Card Wrapper for Dark Theme */}
                   <div className="bg-card p-4 border border-border/50 transition-all duration-300 group-hover:bg-card/80 group-hover:border-primary/50 group-hover:shadow-2xl group-hover:shadow-primary/5">
-                    <div className="relative aspect-[3/4] overflow-hidden mb-4 bg-secondary">
+                    <div className="relative aspect-square overflow-hidden mb-4 bg-secondary">
                       {/* We can use the product image here. Assuming ProductCard handles it, 
                             but we'll just wrap the existing component for logic re-use */}
                       <div className="pointer-events-none">
