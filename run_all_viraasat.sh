@@ -4,32 +4,45 @@
 # Starts the Python (FastAPI) Backend and Next.js Frontend simultaneously.
 
 # Colors for logging
-GREEN='\033[0-32m'
-BLUE='\033[0-34m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}>>> Starting VIRAASAT Python Backend (Port 8000)...${NC}"
-# Use absolute path to python binaries found earlier
-export PATH="/opt/homebrew/bin:$PATH"
+# Cleanup function to kill background processes on script exit
+cleanup() {
+    echo -e "\n${BLUE}>>> Stopping VIRAASAT services and cleaning up ports...${NC}"
+    # Kill backend and frontend processes by port
+    lsof -ti:8000,9002 | xargs kill -9 2>/dev/null
+    exit
+}
 
-# Install backend dependencies if not present
-pip3 install -r backend/requirements.txt --quiet
+# Trap SIGINT (Ctrl+C) and SIGTERM
+trap cleanup INT TERM
 
-# Start FastAPI in background
+echo -e "${BLUE}>>> Cleaning up existing processes on ports 8000 and 9002...${NC}"
+lsof -ti:8000,9002 | xargs kill -9 2>/dev/null
+
+echo -e "${BLUE}>>> Preparing Python Backend (Port 8000)...${NC}"
+# Check for virtual environment
+if [ ! -d "backend/venv" ]; then
+    echo -e "${BLUE}>>> Creating virtual environment...${NC}"
+    python3 -m venv backend/venv
+fi
+
+# Activate virtual environment and install dependencies
+source backend/venv/bin/activate
+pip install -r backend/requirements.txt --quiet
+
+echo -e "${BLUE}>>> Starting VIRAASAT Python Backend...${NC}"
 uvicorn backend.main:app --host 0.0.0.0 --port 8000 &
-BACKEND_PID=$!
 
 echo -e "${GREEN}>>> Starting VIRAASAT Next.js Frontend (Port 9002)...${NC}"
 npm run dev -- -p 9002 &
-FRONTEND_PID=$!
-
-# Handle shutdown
-trap "kill $BACKEND_PID $FRONTEND_PID; echo -e '\n${BLUE}>>> Services stopped.${NC}'; exit" INT TERM
 
 echo -e "${BLUE}>>> VIRAASAT is now running!${NC}"
 echo -e "Frontend: http://localhost:9002"
 echo -e "Backend (API): http://localhost:8000"
 echo -e "Press Ctrl+C to stop both services."
 
-# Keep script running
+# Keep script running to maintain the trap
 wait
