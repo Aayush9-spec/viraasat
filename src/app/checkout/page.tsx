@@ -82,14 +82,7 @@ export default function CheckoutPage() {
     return (
         <div className="min-h-screen bg-background relative">
             {/* Background elements are handled by Background3D now */}
-            <header className="sticky top-0 z-40 w-full border-b bg-card/80 backdrop-blur-md supports-[backdrop-filter]:bg-card/60">
-                <div className="container mx-auto flex h-16 items-center px-4 justify-between">
-                    <ViraasatLogo />
-                    <Button variant="ghost" asChild>
-                        <Link href="/shop">Back to Shop</Link>
-                    </Button>
-                </div>
-            </header>
+            <div className="h-4" /> {/* Spacing after global navbar */}
             <main className="container mx-auto px-4 py-8 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Payment Details Section */}
