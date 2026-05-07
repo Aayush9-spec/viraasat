@@ -62,23 +62,7 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 w-full border-b bg-card">
-        <div className="container mx-auto flex h-16 items-center space-x-4 px-4 sm:justify-between sm:space-x-0">
-          <div className="flex gap-6 md:gap-10">
-            <ViraasatLogo />
-          </div>
-          <div className="flex flex-1 items-center justify-end space-x-4">
-            <nav className="flex items-center space-x-1">
-              <Button variant="ghost" asChild>
-                <a href="/dashboard">Artisan Dashboard</a>
-              </Button>
-              <Button variant="link" asChild>
-                <a href="/">Back to Marketplace</a>
-              </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <div className="h-4" /> {/* Spacing after global navbar */}
       <main className="container mx-auto px-4 py-8 md:py-12">
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
           <div>
