@@ -78,9 +78,7 @@ export default function ArtisanApplicationPage() {
     <div className="flex min-h-screen items-center justify-center p-4 bg-background">
       <Card className="w-full max-w-2xl border-2 shadow-lg">
          <CardHeader className="text-center">
-            <div className="mb-4 flex justify-center">
-                <ViraasatLogo />
-            </div>
+          {/* Removed redundant logo */}
           <CardTitle className="text-2xl">Become a Viraasat Artisan</CardTitle>
           <CardDescription>
             Tell us about your craft. We're excited to learn about your work.
