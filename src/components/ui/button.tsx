@@ -39,35 +39,9 @@ export interface ButtonProps
   asChild?: boolean
 }
 
-import styles from './button.module.css';
-
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
-
-    // Apply special UI only for filled variants to maintain layout integrity for links/icons.
-    // Skip if asChild is true, as we cannot easily inject specific DOM structure into the child slot.
-    const isSpecial = variant !== 'ghost' && variant !== 'link' && variant !== 'outline' && !asChild;
-
-    if (isSpecial) {
-      return (
-        <Comp
-          className={cn(
-            buttonVariants({ variant, size, className }),
-            styles.button,
-            "h-auto p-[2px] border-0 ring-0 bg-transparent hover:bg-transparent"
-          )}
-          ref={ref}
-          {...props}
-        >
-          <div className={styles.blob1}></div>
-          <div className={styles.blob2}></div>
-          <div className={cn(styles.inner, "w-full h-full flex items-center justify-center")}>
-            {children}
-          </div>
-        </Comp>
-      )
-    }
 
     return (
       <Comp
