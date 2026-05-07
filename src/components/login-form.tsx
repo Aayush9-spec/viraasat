@@ -98,9 +98,7 @@ export function LoginForm({ userType }: LoginFormProps) {
     <div className="flex min-h-screen items-center justify-center p-4 bg-background">
       <Card className="w-full max-w-sm border-2 shadow-lg">
         <CardHeader className="text-center">
-          <div className="mb-4 flex justify-center">
-            <ViraasatLogo />
-          </div>
+          {/* Removed redundant logo */}
           <CardTitle className="text-2xl">{isSignUp ? `Create ${isArtisan ? '' : 'a Customer'} Account` : `${userType} Login`}</CardTitle>
           <CardDescription>
             {isSignUp ? 'Enter your details to get started.' : `Enter your ${isArtisan ? 'ID or email' : 'email'} below to login`}
