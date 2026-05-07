@@ -21,10 +21,7 @@ export default function LoginPage() {
         {/* Left Side - Login Options */}
         <div className="flex items-center justify-center p-6 sm:p-12 lg:p-16 relative z-10">
           <div className="mx-auto w-full max-w-[480px] space-y-10">
-            {/* Logo */}
-            <div className="flex justify-center lg:justify-start">
-              <ViraasatLogo />
-            </div>
+            {/* Removed redundant logo as it's present in navbar */}
 
             {/* Header */}
             <div className="space-y-3 text-center lg:text-left">
