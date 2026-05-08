@@ -15,6 +15,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import InstallPrompt from '@/components/install-prompt';
 import PWALifecycle from '@/components/pwa-lifecycle';
 import OnlineStatus from '@/components/online-status';
+import { ClerkProvider } from '@clerk/nextjs';
 
 // Optimize font loading
 const inter = Inter({
@@ -75,33 +76,35 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${cormorant.variable}`}>
-      <head>
-        <link rel="icon" href="/viraasat-logo-full.png" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-      </head>
-      <body className="font-sans antialiased text-foreground" suppressHydrationWarning>
-        <PWALifecycle />
-        <LanguageProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="clay"
-            enableSystem
-            disableTransitionOnChange
-            themes={['light', 'dark', 'sapphire', 'emerald', 'sunset', 'clay']}
-          >
-            <CartProvider>
-              <Background3D />
-              <MainContent>
-                {children}
-              </MainContent>
-              <InstallPrompt />
-              <OnlineStatus />
-            </CartProvider>
-          </ThemeProvider>
-        </LanguageProvider>
-        <Toaster />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning className={`${inter.variable} ${cormorant.variable}`}>
+        <head>
+          <link rel="icon" href="/viraasat-logo-full.png" />
+          <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        </head>
+        <body className="font-sans antialiased text-foreground" suppressHydrationWarning>
+          <PWALifecycle />
+          <LanguageProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="clay"
+              enableSystem
+              disableTransitionOnChange
+              themes={['light', 'dark', 'sapphire', 'emerald', 'sunset', 'clay']}
+            >
+              <CartProvider>
+                <Background3D />
+                <MainContent>
+                  {children}
+                </MainContent>
+                <InstallPrompt />
+                <OnlineStatus />
+              </CartProvider>
+            </ThemeProvider>
+          </LanguageProvider>
+          <Toaster />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
