@@ -12,6 +12,8 @@ import VoiceSearch from "./voice-search";
 import { useCart } from "@/context/cart-context";
 import CartSidebar from "./cart-sidebar";
 import dynamic from 'next/dynamic';
+import { Show, UserButton, SignInButton, SignUpButton } from "@clerk/nextjs";
+
 const AIAssistant = dynamic(() => import('./ai-assistant').then(mod => mod.AIAssistant), { ssr: false });
 
 export function MainContent({ children }: { children: React.ReactNode }) {
@@ -47,9 +49,28 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                     </span>
                   )}
                 </Button>
-                <Button asChild className="hidden sm:inline-block text-primary-foreground rounded-md transition-all ease-out duration-300 bg-primary hover:bg-primary/90">
-                  <Link href="/login">{t('nav.login')}</Link>
-                </Button>
+                
+                <Show 
+                  when="signed-in"
+                  fallback={
+                    <div className="hidden sm:flex items-center gap-4">
+                      <SignInButton mode="modal">
+                        <Button variant="ghost" className="text-foreground/70 hover:text-primary transition-colors">
+                          {t('nav.login')}
+                        </Button>
+                      </SignInButton>
+                      <SignUpButton mode="modal">
+                        <Button className="text-primary-foreground rounded-md transition-all ease-out duration-300 bg-primary hover:bg-primary/90">
+                          Sign Up
+                        </Button>
+                      </SignUpButton>
+                    </div>
+                  }
+                >
+                  <div className="flex items-center">
+                    <UserButton afterSignOutUrl="/" />
+                  </div>
+                </Show>
 
                 {/* Mobile Menu */}
                 <div className="md:hidden">
@@ -80,9 +101,27 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                           </a>
                         </nav>
                         <div className="border-t pt-6">
-                          <Button asChild className="w-full text-primary-foreground bg-primary hover:bg-primary/90">
-                            <Link href="/login">{t('nav.login')}</Link>
-                          </Button>
+                          <Show 
+                            when="signed-in"
+                            fallback={
+                              <div className="flex flex-col gap-3">
+                                <SignInButton mode="modal">
+                                  <Button variant="outline" className="w-full">
+                                    {t('nav.login')}
+                                  </Button>
+                                </SignInButton>
+                                <SignUpButton mode="modal">
+                                  <Button className="w-full text-primary-foreground bg-primary hover:bg-primary/90">
+                                    Sign Up
+                                  </Button>
+                                </SignUpButton>
+                              </div>
+                            }
+                          >
+                            <div className="flex justify-center py-2">
+                              <UserButton afterSignOutUrl="/" />
+                            </div>
+                          </Show>
                         </div>
                       </div>
                     </SheetContent>
