@@ -20,12 +20,12 @@
  
 --- 
 
-## 🛑 The Problem 
+## 🛑 The Problem  
  
 Despite extraordinary skill, rural artisans face significant barriers in the digital age:
 
 | Challenge 📉 | Impact ⚠️ | 
-| --- | --- |
+| --- | --- | 
 | **Poor Digital Content** | Bad lighting and low-quality photos fail to attract premium buyers. |
 | **Language Barriers** | Inability to write compelling English descriptions limits reach. |
 | **Tech Intimidation** | Complex e-commerce onboarding scares away non-technical creators. |
