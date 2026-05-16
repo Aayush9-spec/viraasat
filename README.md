@@ -101,7 +101,7 @@ Follow these steps to set up the project locally.
 ### Installation
 
 1. **Clone the Repository**
-```bash
+```bash 
 git clone https://github.com/Aayush9-spec/viraasat_.git
 cd viraasat_
 
