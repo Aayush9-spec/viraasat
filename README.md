@@ -200,7 +200,7 @@ We ❤️ contributions! Help us preserve heritage through code.
 
 4. **Push** to the branch.
 5. **Open a Pull Request**.
-
+ 
 ---
 
 ## 🙏 Acknowledgements
