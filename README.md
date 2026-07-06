@@ -210,7 +210,7 @@ We ❤️ contributions! Help us preserve heritage through code.
 * **The Artisans** who inspire us every day.
 
 ---
-
+ 
 ## 📄 License
 
 This project is licensed under the **MIT License**. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
