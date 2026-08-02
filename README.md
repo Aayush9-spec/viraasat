@@ -1,4 +1,4 @@
-🪔 Viraasat – The AI-Driven Marketplace for Local Artisans 
+🪔 Viraasat – The AI-Driven Marketplace for Local Artisans  
    
 > **Preserve the heritage. Empower the artisans. Inspire the world.**   
   
