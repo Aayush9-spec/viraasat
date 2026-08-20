@@ -1,18 +1,8 @@
 [
-  {
-    "id": "prod-1",
-    "name": "Jaipur Blue Pottery Vase",
-    "price": 2400,
-    "category": "Home Decor",
-    "region": "Rajasthan",
-    "description": "Hand-painted blue pottery from the Pink City."
-  },
-  {
-    "id": "prod-2",
-    "name": "Silver Jhumka Earrings",
-    "price": 1800,
-    "category": "Jewelry",
-    "region": "Gujarat",
-    "description": "Authentic silver filigree work from Bhuj."
-  }
+  {"id": "prod-1", "name": "Azure Ceramic Vase", "region": "Rajasthan", "category": "Home Decor", "price": 3750},
+  {"id": "prod-2", "name": "Sunset Tapestry", "region": "Gujarat", "category": "Textiles", "price": 9900},
+  {"id": "prod-3", "name": "Earthenware Mug Set", "region": "Rajasthan", "category": "Kitchenware", "price": 2500},
+  {"id": "prod-4", "name": "Geometric Print Scarf", "region": "Gujarat", "category": "Accessories", "price": 2000},
+  {"id": "prod-5", "name": "Terracotta Planter", "region": "Rajasthan", "category": "Gardening", "price": 2300},
+  {"id": "prod-6", "name": "Glazed Soup Bowls", "region": "Rajasthan", "category": "Kitchenware", "price": 4200}
 ]
