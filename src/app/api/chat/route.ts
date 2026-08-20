@@ -3,11 +3,12 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const { message, history } = await req.json();
+    const { message, history, imageDataUri } = await req.json();
     
     const result = await heritageChatFlow({
       message,
-      history
+      history,
+      imageDataUri
     });
 
     return NextResponse.json(result);
