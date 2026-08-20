@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ViraasatLogo } from '@/components/viraasat-logo';
@@ -17,21 +16,13 @@ import PWALifecycle from '@/components/pwa-lifecycle';
 import OnlineStatus from '@/components/online-status';
 import { ClerkProvider } from '@clerk/nextjs';
 
-// Optimize font loading
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-  preload: true,
-});
+const inter = {
+  variable: 'font-sans',
+};
 
-const cormorant = Cormorant_Garamond({
-  weight: ['600', '700'],
-  subsets: ['latin'],
-  variable: '--font-heading',
-  display: 'swap',
-  preload: true,
-});
+const cormorant = {
+  variable: 'font-serif',
+};
 
 export const metadata: Metadata = {
   title: 'Viraasat - Artisan Marketplace',
