@@ -68,7 +68,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                   }
                 >
                   <div className="flex items-center">
-                    <UserButton afterSignOutUrl="/" />
+                    <UserButton />
                   </div>
                 </Show>
 
@@ -119,7 +119,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                             }
                           >
                             <div className="flex justify-center py-2">
-                              <UserButton afterSignOutUrl="/" />
+                              <UserButton />
                             </div>
                           </Show>
                         </div>

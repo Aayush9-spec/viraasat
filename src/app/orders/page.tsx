@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Package, Truck, CheckCircle2, Clock, MapPin } from 'lucide-react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 
 const STATUS_ICONS = {
   'Processing': <Clock className="h-4 w-4 text-amber-500" />,
@@ -52,7 +53,7 @@ export default function OrdersPage() {
                         <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-amber-900/40 mb-1">Acquired On</p>
                         <p className="text-xs font-bold text-[#5e2c18] uppercase tracking-wider">
                           {(() => {
-                            const dateStr = order.createdAt || order.orderDate;
+                            const dateStr = order.orderDate;
                             if (!dateStr) return 'TBA';
                             try {
                               return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -85,7 +86,7 @@ export default function OrdersPage() {
                             <p className="text-xs text-amber-900/60 mt-1">Quantity: {item.quantity}</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm font-bold text-[#5e2c18]">₹{(item.price || item.unitPrice || 0).toLocaleString('en-IN')}</p>
+                             <p className="text-sm font-bold text-[#5e2c18]">₹{(item.unitPrice || 0).toLocaleString('en-IN')}</p>
                           </div>
                         </div>
                       );
@@ -101,8 +102,8 @@ export default function OrdersPage() {
                         <div>
                           <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-amber-900/40 mb-1">Delivery Destination</p>
                           <p className="text-xs text-amber-900/70 leading-relaxed">
-                            {order.shippingAddress.addressLine1 || order.shippingAddress.line1}, {order.shippingAddress.city},<br />
-                            {order.shippingAddress.state} - {order.shippingAddress.postalCode || order.shippingAddress.zipCode}
+                            {order.shippingAddress.addressLine1}, {order.shippingAddress.city},<br />
+                            {order.shippingAddress.state} - {order.shippingAddress.zipCode}
                           </p>
                         </div>
                       </div>

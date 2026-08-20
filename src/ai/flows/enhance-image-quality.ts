@@ -58,17 +58,22 @@ const enhanceImageQualityFlow = ai.defineFlow(
     outputSchema: EnhanceImageQualityOutputSchema,
   },
   async input => {
-    const {media} = await ai.generate({
-      model: 'googleai/gemini-pro-vision',
-      prompt: [
-        {media: {url: input.imageUri}},
-        {text: 'Enhance the quality of this image. Improve clarity, reduce noise, and sharpen details. Return the enhanced image as a data URI.'},
-      ],
-      config: {
-        responseModalities: ['TEXT', 'IMAGE'],
-      },
-    });
+    try {
+      const response = await ai.generate({
+        model: 'googleai/gemini-pro-vision',
+        prompt: [
+          {media: {url: input.imageUri}},
+          {text: 'Enhance the quality of this image. Improve clarity, reduce noise, and sharpen details. Return the enhanced image as a data URI.'},
+        ],
+        config: {
+          responseModalities: ['TEXT', 'IMAGE'],
+        },
+      });
 
-    return {enhancedImageUri: media.url!};
+      return {enhancedImageUri: response.media?.url || input.imageUri};
+    } catch (e) {
+      console.warn("Enhance image flow failed, falling back to input image.", e);
+      return {enhancedImageUri: input.imageUri};
+    }
   }
 );
