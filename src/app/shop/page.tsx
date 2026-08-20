@@ -29,25 +29,69 @@ const regions = [
 ];
 
 export default function ShopPage() {
+  const [allProducts, setAllProducts] = useState<Product[]>(products);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('newest');
+  const [semanticScores, setSemanticScores] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const local = localStorage.getItem('viraasat_local_products');
+    if (local) {
+      try {
+        const parsed = JSON.parse(local);
+        if (parsed.length > 0) {
+          setAllProducts([...parsed, ...products]);
+        }
+      } catch (e) {}
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      setSemanticScores({});
+      return;
+    }
+    
+    const delayDebounce = setTimeout(async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/api/search/semantic?q=${encodeURIComponent(searchQuery)}`);
+        if (res.ok) {
+          const data = await res.json();
+          const scores: Record<string, number> = {};
+          data.results.forEach((item: any) => {
+            scores[item.id] = item.score;
+          });
+          setSemanticScores(scores);
+        }
+      } catch (e) {
+        console.warn("Semantic search offline, falling back to local query terms matching.");
+      }
+    }, 300);
+    
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
 
   useEffect(() => {
     filterAndSortProducts();
-  }, [selectedCategories, selectedRegions, searchQuery, sortOrder]);
+  }, [selectedCategories, selectedRegions, searchQuery, sortOrder, semanticScores, allProducts]);
 
   const filterAndSortProducts = () => {
-    let tempProducts = [...products];
+    let tempProducts = [...allProducts];
 
-    // Search
+    // Search (Semantic Vector Search)
     if (searchQuery) {
-      tempProducts = tempProducts.filter(p => 
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        p.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      if (Object.keys(semanticScores).length > 0) {
+        tempProducts = tempProducts.filter(p => (semanticScores[p.id] || 0) > 0.1);
+        tempProducts.sort((a, b) => (semanticScores[b.id] || 0) - (semanticScores[a.id] || 0));
+      } else {
+        tempProducts = tempProducts.filter(p => 
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+          p.description.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
     }
 
     // Category Filter

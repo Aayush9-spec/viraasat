@@ -16,6 +16,19 @@ export default function Marketplace() {
   const { t } = useTranslation();
   const router = useRouter();
   const [scrollY, setScrollY] = useState(0);
+  const [allProducts, setAllProducts] = useState(products);
+
+  useEffect(() => {
+    const local = localStorage.getItem('viraasat_local_products');
+    if (local) {
+      try {
+        const parsed = JSON.parse(local);
+        if (parsed.length > 0) {
+          setAllProducts([...parsed, ...products]);
+        }
+      } catch (e) {}
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -146,7 +159,7 @@ export default function Marketplace() {
               Curated Selections
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-              {products.slice(0, 8).map((product) => (
+              {allProducts.slice(0, 8).map((product) => (
                 <div key={product.id} className="group cursor-pointer">
                   {/* Custom Card Wrapper for Dark Theme */}
                   <div className="bg-card p-4 border border-border/50 transition-all duration-300 group-hover:bg-card/80 group-hover:border-primary/50 group-hover:shadow-2xl group-hover:shadow-primary/5">
