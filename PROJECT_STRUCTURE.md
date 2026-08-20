@@ -35,6 +35,17 @@ viraasat/
 
 ---
 
+## 🗄️ The Databases: Where is the data stored?
+
+Since Viraasat serves buyers, artisans, and AI assistants, it stores data in four simple ways depending on the type of information:
+
+1. **The Shared Showcase (Static Database)**: Located in `src/lib/data.ts`. This contains our default list of products and categories that are always ready to display.
+2. **The Notebook (Browser Local Storage)**: When an artisan adds a new product during a demo session, the website writes it down in the browser's local memory (`localStorage`). This ensures the product immediately appears on the Shop page for that session.
+3. **The Global Archive (Cloud Firestore)**: If Firebase keys are set up, new listings are synchronized to Google's cloud database, allowing multiple users to see newly uploaded items in real-time.
+4. **The Heritage Archives (AI JSON Data)**: Located in `backend/data/`. These are text registries holding cultural connections (like linking Madhubani paintings to Bihar and natural colors) which our AI assistant reads to answer heritage queries.
+
+---
+
 ## 🔧 Component Guide: How it works in simple terms
 
 ### 1. The Listing Form (`src/components/product-form.tsx`)
