@@ -38,7 +38,12 @@ const searchWithVoicePrompt = ai.definePrompt({
   name: 'searchWithVoicePrompt',
   input: { schema: z.object({ audioDataUri: z.string() }) },
   output: { schema: SearchWithVoiceOutputSchema },
-  prompt: `You are an intelligent search assistant for Viraasat, an Indian artisan marketplace.
+  prompt: [
+    {
+      media: { url: '{{audioDataUri}}' },
+    },
+    {
+      text: `You are an intelligent search assistant for Viraasat, an Indian artisan marketplace.
 You will receive an audio file of a user's search query.
 Your task is to:
 1.  Transcribe the user's query. The query might be in English, Hindi, or a mix of both (Hinglish). For example: "mujhe blue colour ki saree dikhao".
@@ -48,9 +53,9 @@ Your task is to:
     - Identify the product category if mentioned.
     - Identify the color if mentioned.
 
-Return the full transcription and the extracted search terms.
-
-User's voice query: {{media url=audioDataUri}}`,
+Return the full transcription and the extracted search terms.`,
+    },
+  ],
 });
 
 const searchWithVoiceFlow = ai.defineFlow(

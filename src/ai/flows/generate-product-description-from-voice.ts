@@ -40,13 +40,17 @@ const generateProductDescriptionFromVoicePrompt = ai.definePrompt({
   name: 'generateProductDescriptionFromVoicePrompt',
   input: {schema: GenerateProductDescriptionFromVoiceInputSchema},
   output: {schema: GenerateProductDescriptionFromVoiceOutputSchema},
-  prompt: `You are an expert marketing copywriter. You will receive a transcription of an artisan's spoken description of their product.
+  prompt: [
+    {
+      media: { url: '{{audioDataUri}}' },
+    },
+    {
+      text: `You are an expert marketing copywriter. You will receive an audio recording of an artisan's spoken description of their product.
 Your job is to rewrite it into a compelling product description that is grammatically correct and optimized for marketing purposes.
 
-Here is the artisan's description: {{{audioDataUri}}}
-
-Rewrite this description to be more appealing to customers. Focus on highlighting the unique features and benefits of the product. Make sure the generated text is concise, engaging, and persuasive, ready to be used on an e-commerce platform.
-`,
+Rewrite this description to be more appealing to customers. Focus on highlighting the unique features and benefits of the product. Make sure the generated text is concise, engaging, and persuasive, ready to be used on an e-commerce platform.`,
+    },
+  ],
   config: {
     safetySettings: [
       {

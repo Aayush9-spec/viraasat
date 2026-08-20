@@ -19,7 +19,20 @@ export default function VoiceRecorder({ onTranscriptionComplete }: VoiceRecorder
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      
+      // Dynamically select a supported mimeType (crucial for cross-browser, e.g. Safari vs Chrome)
+      let options = {};
+      if (typeof MediaRecorder !== 'undefined') {
+        const types = ['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav', 'audio/aac'];
+        for (const type of types) {
+          if (MediaRecorder.isTypeSupported(type)) {
+            options = { mimeType: type };
+            break;
+          }
+        }
+      }
+
+      mediaRecorderRef.current = new MediaRecorder(stream, options);
       mediaRecorderRef.current.ondataavailable = (event) => {
         audioChunksRef.current.push(event.data);
       };
@@ -43,7 +56,8 @@ export default function VoiceRecorder({ onTranscriptionComplete }: VoiceRecorder
   };
 
   const handleStop = async () => {
-    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+    const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
+    const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
     const reader = new FileReader();
     reader.readAsDataURL(audioBlob);
     reader.onloadend = async () => {

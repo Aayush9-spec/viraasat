@@ -50,3 +50,6 @@ firestore-debug.log
 /venv
 __pycache__/
 *.pyc
+
+# clerk configuration (can include secrets)
+/.clerk/

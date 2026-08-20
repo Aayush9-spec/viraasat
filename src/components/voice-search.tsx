@@ -19,7 +19,7 @@ export default function VoiceSearch() {
   const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
   const [suggestionExplanation, setSuggestionExplanation] = useState('');
   const [showResults, setShowResults] = useState(false);
-  
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const { toast } = useToast();
@@ -35,7 +35,7 @@ export default function VoiceSearch() {
     if (isCulturalQuery) {
       setIsProcessing(true);
       toast({ title: 'Exploring heritage matches...', description: `Finding treasures related to "${searchQuery}"` });
-      
+
       try {
         const suggestions = await suggestProducts({ query: searchQuery });
         if (suggestions.productIds.length > 0) {
@@ -59,7 +59,20 @@ export default function VoiceSearch() {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+      // Dynamically select a supported mimeType (crucial for cross-browser, e.g. Safari vs Chrome)
+      let options = {};
+      if (typeof MediaRecorder !== 'undefined') {
+        const types = ['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav', 'audio/aac'];
+        for (const type of types) {
+          if (MediaRecorder.isTypeSupported(type)) {
+            options = { mimeType: type };
+            break;
+          }
+        }
+      }
+
+      mediaRecorderRef.current = new MediaRecorder(stream, options);
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) audioChunksRef.current.push(event.data);
       };
@@ -84,7 +97,8 @@ export default function VoiceSearch() {
   };
 
   const handleStop = async () => {
-    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+    const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
+    const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
     const reader = new FileReader();
     reader.readAsDataURL(audioBlob);
     reader.onloadend = async () => {
@@ -92,10 +106,10 @@ export default function VoiceSearch() {
       try {
         const result = await searchWithVoice({ audioDataUri: base64Audio });
         setSearchQuery(result.transcription);
-        
+
         // conversational commerce: get product suggestions
         const suggestions = await suggestProducts({ query: result.transcription });
-        
+
         if (suggestions.productIds.length > 0) {
           const matchedProducts = products.filter(p => suggestions.productIds.includes(p.id));
           setSuggestedProducts(matchedProducts);
@@ -171,8 +185,8 @@ export default function VoiceSearch() {
           </DialogHeader>
           <div className="space-y-4">
             {suggestedProducts.map((product) => (
-              <Link 
-                key={product.id} 
+              <Link
+                key={product.id}
                 href={`/product/${product.id}`}
                 onClick={() => setShowResults(false)}
                 className="flex items-center gap-4 p-3 bg-white border border-amber-900/5 hover:border-amber-900/20 transition-all group"
