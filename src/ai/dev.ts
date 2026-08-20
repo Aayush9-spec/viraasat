@@ -9,3 +9,4 @@ import '@/ai/flows/search-with-voice.ts';
 import '@/ai/flows/generate-product-description.ts';
 import '@/ai/flows/translate-text.ts';
 import '@/ai/flows/image-cultural-story.ts';
+import '@/ai/flows/analyze-image.ts';

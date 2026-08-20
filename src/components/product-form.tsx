@@ -36,18 +36,22 @@ import VoiceRecorder from './voice-recorder';
 import ImageEnhancer from './image-enhancer';
 import { generateProductInsights } from '@/ai/flows/generate-product-insights';
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
+import { analyzeImage } from '@/ai/flows/analyze-image';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from './ui/badge';
 import { db } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { Sparkles, Trash2, X, Wand2, Loader2 } from 'lucide-react';
+import { Sparkles, Trash2, X, Wand2, Loader2, Cpu, Clock, Scale, Coins } from 'lucide-react';
 
 const productSchema = z.object({
   name: z.string().min(3, 'Product name must be at least 3 characters'),
   description: z.string().min(10, 'Description is too short'),
   price: z.coerce.number().positive('Price must be a positive number'),
   category: z.string().min(1, 'Please select a category'),
+  laborHours: z.coerce.number().default(5),
+  sizeSqft: z.coerce.number().default(1),
+  material: z.string().default('Natural Vegetable Dyes'),
 });
 
 interface ProductFormProps {
@@ -65,6 +69,9 @@ export function ProductForm({ product }: ProductFormProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
+  const [isPredictingPrice, setIsPredictingPrice] = useState(false);
+  const [pricingInfo, setPricingInfo] = useState<any>(null);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof productSchema>>({
@@ -74,8 +81,83 @@ export function ProductForm({ product }: ProductFormProps) {
       description: product?.description || '',
       price: product?.price || 0,
       category: product?.category || '',
+      laborHours: 5,
+      sizeSqft: 1,
+      material: 'Natural Vegetable Dyes',
     },
   });
+
+  const handlePredictPrice = async () => {
+    setIsPredictingPrice(true);
+    try {
+      const values = form.getValues();
+      const res = await fetch('http://localhost:8000/api/predict-price', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: values.category || 'Home Decor',
+          material: values.material || 'Natural Vegetable Dyes',
+          labor_hours: Number(values.laborHours) || 5,
+          size_sqft: Number(values.sizeSqft) || 1,
+          is_organic: true
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPricingInfo(data);
+        form.setValue('price', data.recommended_price);
+        toast({
+          title: "AI Suggested Price Applied!",
+          description: `Suggested price: ₹${data.recommended_price} based on labor & materials.`
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({
+        variant: "destructive",
+        title: "Pricing Prediction Failed",
+        description: "Could not connect to the pricing model service."
+      });
+    } finally {
+      setIsPredictingPrice(false);
+    }
+  };
+
+  const handleVisionScan = async () => {
+    if (images.length === 0) {
+      toast({
+        variant: 'destructive',
+        title: "No Image Found",
+        description: "Please upload an image to run a computer vision scan."
+      });
+      return;
+    }
+    
+    setIsAnalyzingImage(true);
+    try {
+      const result = await analyzeImage({ imageDataUri: images[0] });
+      form.setValue('name', result.predictedTitle);
+      form.setValue('category', result.detectedCategory);
+      form.setValue('material', result.detectedMaterial);
+      
+      // Set features and tags
+      setStyleTags(result.suggestedTags || []);
+      
+      toast({
+        title: "Computer Vision Scan Complete!",
+        description: `Detected craft: ${result.predictedTitle} in category ${result.detectedCategory}.`
+      });
+    } catch (err) {
+      console.error(err);
+      toast({
+        variant: "destructive",
+        title: "Vision Scan Failed",
+        description: "Could not analyze the image. Please try again."
+      });
+    } finally {
+      setIsAnalyzingImage(false);
+    }
+  };
 
   async function onSubmit(values: z.infer<typeof productSchema>) {
     setIsSubmitting(true);
@@ -103,21 +185,20 @@ export function ProductForm({ product }: ProductFormProps) {
 
       if (product) {
         // Update existing product logic would go here
-        // const docRef = doc(db, "products", product.id);
-        // await updateDoc(docRef, productData);
+        const localProducts = JSON.parse(localStorage.getItem('viraasat_local_products') || '[]');
+        const updatedLocal = localProducts.map((p: any) => p.id === product.id ? { ...p, ...productData } : p);
+        localStorage.setItem('viraasat_local_products', JSON.stringify(updatedLocal));
       } else {
+        // Fallback/Demo sync: Save product to local storage so it registers in the marketplace
+        const localProducts = JSON.parse(localStorage.getItem('viraasat_local_products') || '[]');
+        const newProduct = { ...productData, id: `local-prod-${Date.now()}` };
+        localProducts.push(newProduct);
+        localStorage.setItem('viraasat_local_products', JSON.stringify(localProducts));
+
         if (db) {
           await addDoc(collection(db, "products"), productData);
         } else {
-          console.warn("Firebase DB not initialized. Product not saved to backend.");
-          toast({
-            variant: 'destructive',
-            title: 'Database unavailable',
-            description: 'Firebase keys missing. Product saved locally only (mock).',
-          });
-          // Determine what to do if no DB. For now, we simulate success so the UI doesn't break? 
-          // Or we just let it fall through to the success toast to "fake" it for the demo.
-          // Let's add a small delay to simulate network
+          console.warn("Firebase DB not initialized. Product saved locally only.");
           await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
@@ -297,10 +378,34 @@ export function ProductForm({ product }: ProductFormProps) {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Product Images</CardTitle>
-                <CardDescription>
-                  Upload high-quality images. Use AI to enhance them.
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Product Images</CardTitle>
+                    <CardDescription>
+                      Upload high-quality images. Use AI to enhance them.
+                    </CardDescription>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs gap-1.5 border-primary/20 text-[#5e2c18]"
+                    onClick={handleVisionScan}
+                    disabled={isAnalyzingImage || images.length === 0}
+                  >
+                    {isAnalyzingImage ? (
+                      <>
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Scanning...
+                      </>
+                    ) : (
+                      <>
+                        <Cpu className="h-3 w-3" />
+                        Computer Vision Scan
+                      </>
+                    )}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <ImageEnhancer images={images} setImages={setImages} />
@@ -361,7 +466,29 @@ export function ProductForm({ product }: ProductFormProps) {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Pricing & Category</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Pricing & Category</CardTitle>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs gap-1.5 border-primary/20 text-[#5e2c18]"
+                    onClick={handlePredictPrice}
+                    disabled={isPredictingPrice}
+                  >
+                    {isPredictingPrice ? (
+                      <>
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Analyzing...
+                      </>
+                    ) : (
+                      <>
+                        <Coins className="h-3 w-3" />
+                        AI Price Predictor
+                      </>
+                    )}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <FormField
@@ -408,6 +535,80 @@ export function ProductForm({ product }: ProductFormProps) {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="material"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Raw Material</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select material" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {[
+                            "Natural Vegetable Dyes",
+                            "Multani Mitti & Quartz",
+                            "Changthangi Cashmere Wool",
+                            "Pure Chandi / Silver Alloy",
+                            "Khadi Cotton"
+                          ].map((mat) => (
+                            <SelectItem key={mat} value={mat}>
+                              {mat}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="laborHours"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 opacity-60" /> Labor Hours</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="sizeSqft"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-1.5"><Scale className="h-3.5 w-3.5 opacity-60" /> Size (sq ft)</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.1" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {pricingInfo && (
+                  <div className="p-3 bg-green-50/50 border border-green-200 text-left text-xs space-y-1 rounded-sm">
+                    <div className="font-bold text-green-800">Suggested Price Details:</div>
+                    <div>Estimated Labor Cost: ₹{pricingInfo.labor_cost}</div>
+                    <div>Material Multiplier: x{pricingInfo.material_factor}</div>
+                    <div>Sustainability Sourcing Premium: +₹{pricingInfo.sustainability_premium}</div>
+                    <div className="text-muted-foreground text-[10px] mt-1 font-mono">Suggested Range: ₹{pricingInfo.price_range.min} - ₹{pricingInfo.price_range.max}</div>
+                  </div>
+                )}
               </CardContent>
             </Card>
             <Card>
