@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import ProductCard from '@/components/product-card';
+import ProductCard from '@/features/marketplace/components/product-card';
 import { products, categories } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';

@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef } from 'react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { Mic, Square, Circle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateProductDescriptionFromVoice } from '@/ai/flows/generate-product-description-from-voice';

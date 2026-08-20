@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Input } from '@/components/ui/input';
 import { Sparkles, MessageSquare, X, Send, User, Bot, Camera, Mic, Loader2, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from './ui/badge';
+import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
 import { products } from '@/lib/data';

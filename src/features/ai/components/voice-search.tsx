@@ -1,14 +1,14 @@
 'use client';
 import { useState, useRef } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Mic, Search, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { searchWithVoice } from '@/ai/flows/search-with-voice';
 import { suggestProducts } from '@/ai/flows/suggest-products';
 import { products } from '@/lib/data';
 import { Product } from '@/lib/types';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Image from 'next/image';
 import Link from 'next/link';
 

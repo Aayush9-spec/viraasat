@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import { artisans, products } from '@/lib/data';
-import ProductCard from './product-card';
+import ProductCard from '@/features/marketplace/components/product-card';
 
 const FREE_SHIPPING_THRESHOLD = 5000;
 

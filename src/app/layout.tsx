@@ -11,9 +11,9 @@ import { MainContent } from '@/components/main-content';
 import { CartProvider } from '@/context/cart-context';
 import { Background3D } from '@/components/background-3d';
 import { ThemeProvider } from '@/components/theme-provider';
-import InstallPrompt from '@/components/install-prompt';
-import PWALifecycle from '@/components/pwa-lifecycle';
-import OnlineStatus from '@/components/online-status';
+import InstallPrompt from '@/components/common/install-prompt';
+import PWALifecycle from '@/components/common/pwa-lifecycle';
+import OnlineStatus from '@/components/common/online-status';
 import { ClerkProvider } from '@clerk/nextjs';
 
 const inter = {

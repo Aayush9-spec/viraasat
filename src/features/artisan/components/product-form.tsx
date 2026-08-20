@@ -32,14 +32,14 @@ import {
 } from '@/components/ui/select';
 import { products, categories } from '@/lib/data';
 import type { Product } from '@/lib/types';
-import VoiceRecorder from './voice-recorder';
+import VoiceRecorder from '@/features/ai/components/voice-recorder';
 import ImageEnhancer from './image-enhancer';
 import { generateProductInsights } from '@/ai/flows/generate-product-insights';
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
 import { analyzeImage } from '@/ai/flows/analyze-image';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from './ui/badge';
-import { db } from '@/lib/firebase';
+import { Badge } from '@/components/ui/badge';
+import { db } from '@/services/firebase/firestore';
 import { collection, addDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Sparkles, Trash2, X, Wand2, Loader2, Cpu, Clock, Scale, Coins } from 'lucide-react';

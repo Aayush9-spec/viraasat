@@ -1,5 +1,5 @@
-import { SustainabilityAnalytics } from '@/components/sustainability-analytics';
-import { SocialImpact } from '@/components/social-impact';
+import { SustainabilityAnalytics } from '@/features/analytics/components/sustainability-analytics';
+import { SocialImpact } from '@/features/analytics/components/social-impact';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function SustainabilityDashboardPage() {

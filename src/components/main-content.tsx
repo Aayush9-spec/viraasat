@@ -8,13 +8,13 @@ import Link from "next/link";
 import { Facebook, Instagram, Search, ShoppingCart, Twitter, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Toaster } from "./ui/toaster";
-import VoiceSearch from "./voice-search";
+import VoiceSearch from "@/features/ai/components/voice-search";
 import { useCart } from "@/context/cart-context";
-import CartSidebar from "./cart-sidebar";
+import CartSidebar from "@/features/cart/components/cart-sidebar";
 import dynamic from 'next/dynamic';
 import { Show, UserButton, SignInButton, SignUpButton } from "@clerk/nextjs";
 
-const AIAssistant = dynamic(() => import('./ai-assistant').then(mod => mod.AIAssistant), { ssr: false });
+const AIAssistant = dynamic(() => import('@/features/ai/components/ai-assistant').then(mod => mod.AIAssistant), { ssr: false });
 
 export function MainContent({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();

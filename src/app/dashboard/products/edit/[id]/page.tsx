@@ -1,4 +1,4 @@
-import { ProductForm } from "@/components/product-form";
+import { ProductForm } from "@/features/artisan/components/product-form";
 import { products } from "@/lib/data";
 import { notFound } from "next/navigation";
 

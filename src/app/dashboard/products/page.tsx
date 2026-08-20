@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from "next/link"
 import Image from "next/image"
 import { PlusCircle, MoreHorizontal } from "lucide-react"
-import { db } from '@/lib/firebase';
+import { db } from '@/services/firebase/firestore';
 import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore';
 import type { Product } from "@/lib/types";
 

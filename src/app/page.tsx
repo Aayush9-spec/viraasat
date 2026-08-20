@@ -1,6 +1,6 @@
 'use client';
 
-import ProductCard from '@/components/product-card';
+import ProductCard from '@/features/marketplace/components/product-card';
 import { products } from '@/lib/data';
 import { useTranslation } from '@/hooks/use-translation';
 import { Button } from '@/components/ui/button';

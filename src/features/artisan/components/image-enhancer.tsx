@@ -2,7 +2,7 @@
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { UploadCloud, X, Sparkles, Trash2 } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { enhanceImageQuality } from '@/ai/flows/enhance-image-quality';
 
