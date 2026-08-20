@@ -1,0 +1,67 @@
+{
+  "nodes": [
+    { "id": "region-bihar", "label": "Bihar", "type": "State" },
+    { "id": "region-rajasthan", "label": "Rajasthan", "type": "State" },
+    { "id": "region-gujarat", "label": "Gujarat", "type": "State" },
+    { "id": "region-up", "label": "Uttar Pradesh", "type": "State" },
+    { "id": "region-kashmir", "label": "Kashmir", "type": "State" },
+    { "id": "region-ap", "label": "Andhra Pradesh", "type": "State" },
+    
+    { "id": "craft-madhubani", "label": "Madhubani Painting", "type": "ArtForm" },
+    { "id": "craft-bluepottery", "label": "Jaipur Blue Pottery", "type": "ArtForm" },
+    { "id": "craft-bandhani", "label": "Bandhani Tie-Dye", "type": "ArtForm" },
+    { "id": "craft-filigree", "label": "Silver Filigree", "type": "ArtForm" },
+    { "id": "craft-pashmina", "label": "Pashmina Weaving", "type": "ArtForm" },
+    { "id": "craft-kalamkari", "label": "Kalamkari Painting", "type": "ArtForm" },
+    
+    { "id": "material-colors", "label": "Natural Vegetable Dyes", "type": "Material" },
+    { "id": "material-clay", "label": "Multani Mitti & Quartz", "type": "Material" },
+    { "id": "material-wool", "label": "Changthangi Cashmere Wool", "type": "Material" },
+    { "id": "material-silver", "label": "Pure Chandi / Silver Alloy", "type": "Material" },
+    { "id": "material-cotton", "label": "Khadi Cotton", "type": "Material" },
+    
+    { "id": "gi-madhubani", "label": "GI Tag: Madhubani Painting", "type": "GITag" },
+    { "id": "gi-bluepottery", "label": "GI Tag: Jaipur Blue Pottery", "type": "GITag" },
+    { "id": "gi-pashmina", "label": "GI Tag: Kashmir Pashmina", "type": "GITag" },
+    { "id": "gi-kalamkari", "label": "GI Tag: Srikalahasti Kalamkari", "type": "GITag" },
+    
+    { "id": "fest-diwali", "label": "Diwali", "type": "Festival" },
+    { "id": "fest-karwa", "label": "Karwa Chauth", "type": "Festival" },
+    { "id": "fest-durga", "label": "Durga Puja", "type": "Festival" },
+    { "id": "fest-eid", "label": "Eid-ul-Fitr", "type": "Festival" },
+    
+    { "id": "comm-mithila", "label": "Mithila Women Collective", "type": "Community" },
+    { "id": "comm-weaver", "label": "Kashmiri Handloom Guild", "type": "Community" },
+    { "id": "comm-potter", "label": "Jaipur Kumbhar Society", "type": "Community" }
+  ],
+  "edges": [
+    { "source": "craft-madhubani", "target": "region-bihar", "relation": "ORIGINATES_IN" },
+    { "source": "craft-madhubani", "target": "material-colors", "relation": "USES_MATERIAL" },
+    { "source": "craft-madhubani", "target": "gi-madhubani", "relation": "HAS_CERTIFICATE" },
+    { "source": "craft-madhubani", "target": "comm-mithila", "relation": "CRAFTED_BY" },
+    { "source": "craft-madhubani", "target": "fest-durga", "relation": "TRADITIONALLY_MADE_FOR" },
+    
+    { "source": "craft-bluepottery", "target": "region-rajasthan", "relation": "ORIGINATES_IN" },
+    { "source": "craft-bluepottery", "target": "material-clay", "relation": "USES_MATERIAL" },
+    { "source": "craft-bluepottery", "target": "gi-bluepottery", "relation": "HAS_CERTIFICATE" },
+    { "source": "craft-bluepottery", "target": "comm-potter", "relation": "CRAFTED_BY" },
+    { "source": "craft-bluepottery", "target": "fest-diwali", "relation": "TRADITIONALLY_MADE_FOR" },
+    
+    { "source": "craft-pashmina", "target": "region-kashmir", "relation": "ORIGINATES_IN" },
+    { "source": "craft-pashmina", "target": "material-wool", "relation": "USES_MATERIAL" },
+    { "source": "craft-pashmina", "target": "gi-pashmina", "relation": "HAS_CERTIFICATE" },
+    { "source": "craft-pashmina", "target": "comm-weaver", "relation": "CRAFTED_BY" },
+    
+    { "source": "craft-kalamkari", "target": "region-ap", "relation": "ORIGINATES_IN" },
+    { "source": "craft-kalamkari", "target": "material-colors", "relation": "USES_MATERIAL" },
+    { "source": "craft-kalamkari", "target": "gi-kalamkari", "relation": "HAS_CERTIFICATE" },
+    { "source": "craft-kalamkari", "target": "material-cotton", "relation": "USES_MATERIAL" },
+    
+    { "source": "craft-bandhani", "target": "region-gujarat", "relation": "ORIGINATES_IN" },
+    { "source": "craft-bandhani", "target": "material-cotton", "relation": "USES_MATERIAL" },
+    { "source": "craft-bandhani", "target": "fest-karwa", "relation": "TRADITIONALLY_MADE_FOR" },
+    
+    { "source": "craft-filigree", "target": "region-gujarat", "relation": "ORIGINATES_IN" },
+    { "source": "craft-filigree", "target": "material-silver", "relation": "USES_MATERIAL" }
+  ]
+}
