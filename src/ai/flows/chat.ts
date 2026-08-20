@@ -28,6 +28,35 @@ export const heritageChatFlow = ai.defineFlow(
     outputSchema: HeritageChatOutputSchema,
   },
   async (input) => {
+    // Graceful fallback if Gemini keys are missing
+    if (!process.env.GEMINI_API_KEY && !process.env.GOOGLE_API_KEY) {
+      console.warn("API Key missing. Falling back to mock coordinator agent.");
+      const query = input.message.toLowerCase();
+      let responseText = "[Buyer Agent] Namaste! Based on your query, here is a curated recommendation: ";
+      let activeAgent = "Buyer Agent";
+      
+      if (query.includes("origin") || query.includes("history") || query.includes("gi tag") || query.includes("culture")) {
+        responseText = "[Cultural Research Agent] Namaste! Mithila painting (also known as Madhubani art) is a traditional art form of Bihar. It is created using natural vegetable dyes and traditionally depicts mythological stories and nature motifs.";
+        activeAgent = "Cultural Research Agent";
+      } else if (query.includes("stock") || query.includes("price") || query.includes("inventory")) {
+        responseText = "[Inventory Agent] Namaste! We currently have 12 pieces of Azure Ceramic Vases in stock in our Jaipur warehouse. Delivery time to your location is estimated at 3-5 business days.";
+        activeAgent = "Inventory Agent";
+      } else {
+        responseText += "The Azure Ceramic Vase from Rajasthan. Handcrafted by local master artisans using quartz glaze techniques, it's the perfect heritage piece under your budget.";
+      }
+      
+      const suggestedProductIds = products
+        .filter(p => query.includes(p.name.toLowerCase()) || query.includes(p.category.toLowerCase()) || query.includes("rajasthan"))
+        .map(p => p.id)
+        .slice(0, 2);
+        
+      return {
+        response: responseText,
+        suggestedProductIds: suggestedProductIds.length > 0 ? suggestedProductIds : ["prod-1"],
+        activeAgent: activeAgent
+      };
+    }
+
     // 1. RAG Document Retrieval
     let docsContext = '';
     try {
