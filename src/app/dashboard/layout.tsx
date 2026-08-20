@@ -17,7 +17,10 @@ export default function DashboardLayout({
     'ai-tools': 'AI Tools',
     'profile': 'Profile',
     'new': 'New Product',
-    'edit': 'Edit Product'
+    'edit': 'Edit Product',
+    'business-advisor': 'AI Business Advisor',
+    'sustainability': 'Sustainability & Impact Analytics',
+    'metrics': 'Capstone System Evaluation Metrics'
   }
   const title = pageTitles[pathname] || 'Dashboard'
 

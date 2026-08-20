@@ -1,13 +1,16 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Package, ShoppingCart, UserCircle, Sparkles } from 'lucide-react';
+import { Package, ShoppingCart, UserCircle, Sparkles, TrendingUp, BarChart3, LineChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/dashboard/products', label: 'Products', icon: Package },
   { href: '/dashboard/orders', label: 'Orders', icon: ShoppingCart },
   { href: '/dashboard/ai-tools', label: 'AI Tools', icon: Sparkles },
+  { href: '/dashboard/business-advisor', label: 'Business Advisor', icon: TrendingUp },
+  { href: '/dashboard/sustainability', label: 'Sustainability & Impact', icon: BarChart3 },
+  { href: '/dashboard/metrics', label: 'Engine Metrics', icon: LineChart },
   { href: '/dashboard/profile', label: 'Profile', icon: UserCircle },
 ];
 
