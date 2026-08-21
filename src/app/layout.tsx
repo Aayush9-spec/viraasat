@@ -15,6 +15,7 @@ import InstallPrompt from '@/components/common/install-prompt';
 import PWALifecycle from '@/components/common/pwa-lifecycle';
 import OnlineStatus from '@/components/common/online-status';
 import { ClerkProvider } from '@clerk/nextjs';
+import { AuthSync } from '@/components/auth-sync';
 
 const inter = {
   variable: 'font-sans',
@@ -75,6 +76,7 @@ export default function RootLayout({
         </head>
         <body className="font-sans antialiased text-foreground" suppressHydrationWarning>
           <PWALifecycle />
+          <AuthSync />
           <LanguageProvider>
             <ThemeProvider
               attribute="class"
