@@ -1,7 +1,9 @@
+import { BACKEND_URL } from '@/services/backend/client';
+
 export class RazorpayService {
   static async createOrderOnServer(amount: number): Promise<any> {
     try {
-      const response = await fetch('http://localhost:8000/api/razorpay/order', {
+      const response = await fetch(`${BACKEND_URL}/api/razorpay/order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount, currency: 'INR' }),

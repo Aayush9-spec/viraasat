@@ -39,6 +39,7 @@ import { generateProductDescription } from '@/ai/flows/generate-product-descript
 import { analyzeImage } from '@/ai/flows/analyze-image';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { BACKEND_URL } from '@/services/backend/client';
 import { db } from '@/services/firebase/firestore';
 import { collection, addDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
@@ -93,7 +94,7 @@ export function ProductForm({ product }: ProductFormProps) {
     setIsPredictingPrice(true);
     try {
       const values = form.getValues();
-      const res = await fetch('http://localhost:8000/api/predict-price', {
+      const res = await fetch(`${BACKEND_URL}/api/predict-price`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

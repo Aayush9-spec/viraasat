@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { Cpu, Server, ShieldCheck, Gauge, Award, BarChart3, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { BACKEND_URL } from '@/services/backend/client';
 
 // Latency mock points for charts
 const latencyData = [
@@ -31,7 +32,7 @@ export default function MetricsPage() {
     async function fetchMetrics() {
       setLoading(true);
       try {
-        const res = await fetch('http://localhost:8000/api/metrics/evaluation');
+        const res = await fetch(`${BACKEND_URL}/api/metrics/evaluation`);
         if (res.ok) {
           const data = await res.json();
           setMetrics(data);

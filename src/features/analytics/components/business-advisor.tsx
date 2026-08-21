@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 
+import { BACKEND_URL } from '@/services/backend/client';
+
 export function BusinessAdvisor() {
   const [region, setRegion] = useState('Rajasthan');
   const [category, setCategory] = useState('Home Decor');
@@ -18,7 +20,7 @@ export function BusinessAdvisor() {
     async function fetchForecast() {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:8000/api/forecast-demand?region=${region}&category=${category}`);
+        const res = await fetch(`${BACKEND_URL}/api/forecast-demand?region=${region}&category=${category}`);
         if (res.ok) {
           const data = await res.json();
           setForecast(data.time_series || []);

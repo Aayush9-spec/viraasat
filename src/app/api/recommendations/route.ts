@@ -1,4 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
+import { BACKEND_URL } from '@/services/backend/client';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -6,7 +7,7 @@ export async function GET(request: NextRequest) {
   
   // Call Python Backend Graph database recommendations endpoint
   try {
-    const res = await fetch(`http://localhost:8000/api/blockchain/provenance/${productId}`);
+    const res = await fetch(`${BACKEND_URL}/api/blockchain/provenance/${productId}`);
     const data = await res.ok ? await res.json() : null;
     return NextResponse.json({
       success: true,

@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from 'next/link';
 import { useRazorpay } from 'react-razorpay';
+import { BACKEND_URL } from '@/services/backend/client';
 import { GooglePayLogo, PaytmLogo, PhonePeLogo, RazorpayLogo } from '@/components/payment-icons';
 import { QrCode, ShoppingCart, CreditCard, ShieldCheck } from 'lucide-react';
 
@@ -26,7 +27,7 @@ export default function CheckoutPage() {
     const handleRazorpayPayment = async () => {
         setIsProcessing(true);
         try {
-            const response = await fetch('http://localhost:8000/api/razorpay/order', {
+            const response = await fetch(`${BACKEND_URL}/api/razorpay/order`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: total, currency: 'INR' }),

@@ -19,6 +19,7 @@ import { Product } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { BACKEND_URL } from '@/services/backend/client';
 
 const regions = [
   'Rajasthan',
@@ -67,7 +68,7 @@ export default function ShopPage() {
     
     const delayDebounce = setTimeout(async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/search/semantic?q=${encodeURIComponent(searchQuery)}`);
+        const res = await fetch(`${BACKEND_URL}/api/search/semantic?q=${encodeURIComponent(searchQuery)}`);
         if (res.ok) {
           const data = await res.json();
           const scores: Record<string, number> = {};

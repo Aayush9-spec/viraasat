@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
 import { products } from '@/lib/data';
+import { BACKEND_URL } from '@/services/backend/client';
 
 interface Message {
   role: 'user' | 'bot';
@@ -118,7 +119,7 @@ export function AIAssistant() {
             reader.onloadend = async () => {
               const base64Audio = reader.result as string;
               // Call voice search api to transcribe
-              const res = await fetch('http://localhost:8000/api/metrics/evaluation'); // telemetry check
+              const res = await fetch(`${BACKEND_URL}/api/metrics/evaluation`); // telemetry check
               // Fallback translation query
               setInput("Blue Pottery Vase Rajasthan");
             };

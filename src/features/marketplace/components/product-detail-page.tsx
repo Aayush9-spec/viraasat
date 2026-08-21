@@ -21,6 +21,7 @@ import { useCart } from '@/context/cart-context';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
 import { translateText } from '@/ai/flows/translate-text';
+import { BACKEND_URL } from '@/services/backend/client';
 import {
   Select,
   SelectContent,
@@ -45,7 +46,7 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
     async function fetchProvenance() {
       setLoadingProvenance(true);
       try {
-        const res = await fetch(`http://localhost:8000/api/blockchain/provenance/${product.id}`);
+        const res = await fetch(`${BACKEND_URL}/api/blockchain/provenance/${product.id}`);
         if (res.ok) {
           const data = await res.json();
           setProvenance(data.ledger_chain || []);
