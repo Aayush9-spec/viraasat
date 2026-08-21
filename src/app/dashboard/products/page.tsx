@@ -33,18 +33,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { products } from "@/lib/data"
+import { useUser } from '@clerk/nextjs';
 
 export default function ProductsPage() {
+  const { user } = useUser();
   const [dbProducts, setDbProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    if (!db) return;
+    if (!db || !user) return;
 
-    // Assuming a single artisan 'artisan-1' for mock purposes
     const q = query(
       collection(db, "products"),
-      where("artisanId", "==", "artisan-1"),
-      // orderBy("createdAt", "desc") // Requires index, simpler to sort client side if needed or skip
+      where("artisanId", "==", user.id),
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -56,10 +56,10 @@ export default function ProductsPage() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   // Combine static and db products
-  const staticArtisanProducts = products.filter(p => p.artisanId === 'artisan-1');
+  const staticArtisanProducts = products.filter(p => p.artisanId === (user?.id || 'artisan-1'));
   const artisanProducts = [...dbProducts, ...staticArtisanProducts];
 
   return (

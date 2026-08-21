@@ -43,6 +43,7 @@ import { db } from '@/services/firebase/firestore';
 import { collection, addDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Sparkles, Trash2, X, Wand2, Loader2, Cpu, Clock, Scale, Coins } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 
 const productSchema = z.object({
   name: z.string().min(3, 'Product name must be at least 3 characters'),
@@ -59,6 +60,7 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ product }: ProductFormProps) {
+  const { user } = useUser();
   const { toast } = useToast();
   const [images, setImages] = useState<string[]>(product?.images || []);
   const [features, setFeatures] = useState<string[]>(product?.aiInsights?.keyFeatures || []);
@@ -163,7 +165,7 @@ export function ProductForm({ product }: ProductFormProps) {
     setIsSubmitting(true);
     try {
       const productData = {
-        artisanId: 'artisan-1', // TODO: Get from auth context
+        artisanId: user?.id || 'artisan-1',
         name: values.name,
         description: values.description,
         category: values.category,
