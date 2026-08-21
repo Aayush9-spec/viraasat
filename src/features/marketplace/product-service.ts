@@ -1,22 +1,56 @@
 import { products } from '@/lib/data';
 import type { Product } from '@/lib/types';
+import { db } from '@/services/firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 
 export class ProductService {
-  static getAllProducts(): Product[] {
-    return products;
+  static async getAllProducts(): Promise<Product[]> {
+    try {
+      if (!db) return products;
+      const querySnapshot = await getDocs(collection(db, "products"));
+      const dbProducts = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Product[];
+
+      // Merge dynamic and static products, avoiding duplicates
+      const merged = [...dbProducts];
+      products.forEach(staticProd => {
+        if (!merged.some(p => p.id === staticProd.id)) {
+          merged.push(staticProd);
+        }
+      });
+      return merged;
+    } catch (e) {
+      console.warn("Failed to fetch products from Firestore, falling back to static:", e);
+      return products;
+    }
   }
 
-  static getProductById(id: string): Product | undefined {
+  static async getProductById(id: string): Promise<Product | undefined> {
+    try {
+      if (db) {
+        const docRef = doc(db, "products", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          return { id: docSnap.id, ...docSnap.data() } as Product;
+        }
+      }
+    } catch (e) {
+      console.warn(`Failed to fetch product ${id} from Firestore:`, e);
+    }
     return products.find(p => p.id === id);
   }
 
-  static getProductsByCategory(category: string): Product[] {
-    return products.filter(p => p.category.toLowerCase() === category.toLowerCase());
+  static async getProductsByCategory(category: string): Promise<Product[]> {
+    const all = await this.getAllProducts();
+    return all.filter(p => p.category.toLowerCase() === category.toLowerCase());
   }
 
-  static searchProducts(query: string): Product[] {
+  static async searchProducts(query: string): Promise<Product[]> {
     const q = query.toLowerCase();
-    return products.filter(p => 
+    const all = await this.getAllProducts();
+    return all.filter(p => 
       p.name.toLowerCase().includes(q) || 
       p.description.toLowerCase().includes(q) || 
       p.region.toLowerCase().includes(q)

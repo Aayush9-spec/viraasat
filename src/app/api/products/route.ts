@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { products } from '@/lib/data';
+import { ProductService } from '@/features/marketplace/product-service';
 
 export async function GET() {
+  const all = await ProductService.getAllProducts();
   return NextResponse.json({
     success: true,
-    products: products
+    products: all
   });
 }

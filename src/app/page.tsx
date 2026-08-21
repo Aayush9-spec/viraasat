@@ -1,7 +1,7 @@
 'use client';
 
 import ProductCard from '@/features/marketplace/components/product-card';
-import { products } from '@/lib/data';
+import { ProductService } from '@/features/marketplace/product-service';
 import { useTranslation } from '@/hooks/use-translation';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -16,18 +16,26 @@ export default function Marketplace() {
   const { t } = useTranslation();
   const router = useRouter();
   const [scrollY, setScrollY] = useState(0);
-  const [allProducts, setAllProducts] = useState(products);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
 
   useEffect(() => {
-    const local = localStorage.getItem('viraasat_local_products');
-    if (local) {
-      try {
-        const parsed = JSON.parse(local);
-        if (parsed.length > 0) {
-          setAllProducts([...parsed, ...products]);
-        }
-      } catch (e) {}
+    async function loadProducts() {
+      const items = await ProductService.getAllProducts();
+      const local = localStorage.getItem('viraasat_local_products');
+      let finalItems = [...items];
+      if (local) {
+        try {
+          const parsed = JSON.parse(local);
+          parsed.forEach((localProd: any) => {
+            if (!finalItems.some(p => p.id === localProd.id)) {
+              finalItems.unshift(localProd);
+            }
+          });
+        } catch (e) {}
+      }
+      setAllProducts(finalItems);
     }
+    loadProducts();
   }, []);
 
   useEffect(() => {
@@ -293,7 +301,7 @@ export default function Marketplace() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-              {products.slice(0, 4).map((product) => (
+              {allProducts.slice(0, 4).map((product) => (
                 <div key={product.id} className="group cursor-pointer">
                   <a href={`/product/${product.id}`} className="block">
                     <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100 mb-8 shadow-sm group-hover:shadow-[0_30px_60px_rgba(94,44,24,0.15)] transition-all duration-700">
@@ -325,9 +333,9 @@ export default function Marketplace() {
               <h4 className="text-[10px] text-center uppercase tracking-[0.5em] text-amber-900/30 mb-12 font-bold">Explore by Geographic Heritage</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                 {[
-                  { name: 'Rajasthan', count: products.filter(p => p.region === 'Rajasthan').length },
-                  { name: 'Gujarat', count: products.filter(p => p.region === 'Gujarat').length },
-                  { name: 'Uttar Pradesh', count: products.filter(p => p.region === 'Uttar Pradesh').length },
+                  { name: 'Rajasthan', count: allProducts.filter(p => p.region === 'Rajasthan').length },
+                  { name: 'Gujarat', count: allProducts.filter(p => p.region === 'Gujarat').length },
+                  { name: 'Uttar Pradesh', count: allProducts.filter(p => p.region === 'Uttar Pradesh').length },
                   { name: 'Maharashtra', count: '04' },
                   { name: 'West Bengal', count: '06' },
                   { name: 'Tamil Nadu', count: '08' }

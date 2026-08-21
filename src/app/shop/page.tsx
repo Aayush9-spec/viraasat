@@ -1,7 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import ProductCard from '@/features/marketplace/components/product-card';
-import { products, categories } from '@/lib/data';
+import { ProductService } from '@/features/marketplace/product-service';
+import { categories } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -29,8 +30,8 @@ const regions = [
 ];
 
 export default function ShopPage() {
-  const [allProducts, setAllProducts] = useState<Product[]>(products);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,15 +39,24 @@ export default function ShopPage() {
   const [semanticScores, setSemanticScores] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    const local = localStorage.getItem('viraasat_local_products');
-    if (local) {
-      try {
-        const parsed = JSON.parse(local);
-        if (parsed.length > 0) {
-          setAllProducts([...parsed, ...products]);
-        }
-      } catch (e) {}
+    async function loadProducts() {
+      const items = await ProductService.getAllProducts();
+      const local = localStorage.getItem('viraasat_local_products');
+      let finalItems = [...items];
+      if (local) {
+        try {
+          const parsed = JSON.parse(local);
+          parsed.forEach((localProd: Product) => {
+            if (!finalItems.some(p => p.id === localProd.id)) {
+              finalItems.unshift(localProd);
+            }
+          });
+        } catch (e) {}
+      }
+      setAllProducts(finalItems);
+      setFilteredProducts(finalItems);
     }
+    loadProducts();
   }, []);
 
   useEffect(() => {
