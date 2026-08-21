@@ -50,6 +50,7 @@ firestore-debug.log
 
 # python
 /venv
+backend/venv/
 __pycache__/
 *.pyc
 

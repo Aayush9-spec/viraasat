@@ -4,3 +4,7 @@ razorpay
 pydantic
 python-dotenv
 cors
+numpy
+pandas
+scikit-learn
+networkx

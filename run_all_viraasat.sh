@@ -34,7 +34,8 @@ source backend/venv/bin/activate
 pip install -r backend/requirements.txt --quiet
 
 echo -e "${BLUE}>>> Starting VIRAASAT Python Backend...${NC}"
-uvicorn backend.main:app --host 0.0.0.0 --port 8000 &
+export PYTHONPATH=backend
+uvicorn main:app --host 0.0.0.0 --port 8000 &
 
 echo -e "${GREEN}>>> Starting VIRAASAT Next.js Frontend (Port 9002)...${NC}"
 npm run dev -- -p 9002 &
