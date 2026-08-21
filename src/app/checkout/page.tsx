@@ -12,11 +12,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from 'next/link';
 import { useRazorpay } from 'react-razorpay';
 import { BACKEND_URL } from '@/services/backend/client';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 import { GooglePayLogo, PaytmLogo, PhonePeLogo, RazorpayLogo } from '@/components/payment-icons';
 import { QrCode, ShoppingCart, CreditCard, ShieldCheck } from 'lucide-react';
 
 export default function CheckoutPage() {
-    const { cartItems, getCartTotal } = useCart();
+    const { cartItems, getCartTotal, clearCart } = useCart();
+    const router = useRouter();
+    const { toast } = useToast();
     const subtotal = getCartTotal();
     const shipping: number = 0; // Assuming free shipping for now
     const total = subtotal + shipping;
@@ -42,8 +46,12 @@ export default function CheckoutPage() {
                 description: "Purchase from Viraasat",
                 order_id: order.id,
                 handler: function (response: any) {
-                    alert('Payment Successful! Payment ID: ' + response.razorpay_payment_id);
-                    // Handle success (e.g., redirect to success page)
+                    clearCart();
+                    toast({
+                        title: "Acquisition Confirmed!",
+                        description: `Payment ID: ${response.razorpay_payment_id}. Your masterpiece has been added to your collection.`,
+                    });
+                    router.push('/orders');
                 },
                 prefill: {
                     name: "Customer Name",
