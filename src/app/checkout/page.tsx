@@ -16,17 +16,31 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { GooglePayLogo, PaytmLogo, PhonePeLogo, RazorpayLogo } from '@/components/payment-icons';
 import { QrCode, ShoppingCart, CreditCard, ShieldCheck } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import { db } from '@/services/firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 
 export default function CheckoutPage() {
     const { cartItems, getCartTotal, clearCart } = useCart();
     const router = useRouter();
     const { toast } = useToast();
+    const { user } = useUser();
     const subtotal = getCartTotal();
     const shipping: number = 0; // Assuming free shipping for now
     const total = subtotal + shipping;
     const [showQr, setShowQr] = useState(false);
     const { Razorpay, isLoading } = useRazorpay();
     const [isProcessing, setIsProcessing] = useState(false);
+
+    // Shipping form states
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [address1, setAddress1] = useState('');
+    const [address2, setAddress2] = useState('');
+    const [city, setCity] = useState('');
+    const [stateName, setStateName] = useState('');
+    const [zip, setZip] = useState('');
+    const [phone, setPhone] = useState('');
 
     const handleRazorpayPayment = async () => {
         setIsProcessing(true);
@@ -45,7 +59,39 @@ export default function CheckoutPage() {
                 name: "Viraasat",
                 description: "Purchase from Viraasat",
                 order_id: order.id,
-                handler: function (response: any) {
+                handler: async function (response: any) {
+                    try {
+                        const orderData = {
+                            userId: user?.id || 'customer-1',
+                            customerName: `${firstName} ${lastName}`.trim() || 'Anonymous Buyer',
+                            items: cartItems.map(item => ({
+                                productId: item.id,
+                                productName: item.name,
+                                quantity: item.quantity,
+                                unitPrice: item.price,
+                                itemImageUrl: item.images[0] || ''
+                            })),
+                            totalAmount: total,
+                            orderDate: new Date().toISOString(),
+                            status: 'Processing',
+                            shippingAddress: {
+                                addressLine1: address1 || 'No Address Line 1',
+                                addressLine2: address2 || '',
+                                city: city || 'Unknown City',
+                                state: stateName || 'Unknown State',
+                                zipCode: zip || '000000',
+                                country: 'India'
+                            },
+                            paymentId: response.razorpay_payment_id
+                        };
+                        
+                        if (db) {
+                            await addDoc(collection(db, "orders"), orderData);
+                        }
+                    } catch (e) {
+                        console.error("Failed to save order to Firestore:", e);
+                    }
+
                     clearCart();
                     toast({
                         title: "Acquisition Confirmed!",
@@ -106,20 +152,20 @@ export default function CheckoutPage() {
                                 <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
                                 <form className="space-y-4">
                                     <div className="grid grid-cols-2 gap-4">
-                                        <Input placeholder="First Name" className="bg-background/50" />
-                                        <Input placeholder="Last Name" className="bg-background/50" />
+                                        <Input placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-background/50" />
+                                        <Input placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-background/50" />
                                     </div>
-                                    <Input placeholder="Address Line 1" className="bg-background/50" />
-                                    <Input placeholder="Address Line 2 (Optional)" className="bg-background/50" />
+                                    <Input placeholder="Address Line 1" value={address1} onChange={(e) => setAddress1(e.target.value)} className="bg-background/50" />
+                                    <Input placeholder="Address Line 2 (Optional)" value={address2} onChange={(e) => setAddress2(e.target.value)} className="bg-background/50" />
                                     <div className="grid grid-cols-2 gap-4">
-                                        <Input placeholder="City" className="bg-background/50" />
-                                        <Input placeholder="State / Province" className="bg-background/50" />
+                                        <Input placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} className="bg-background/50" />
+                                        <Input placeholder="State / Province" value={stateName} onChange={(e) => setStateName(e.target.value)} className="bg-background/50" />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <Input placeholder="ZIP / Postal Code" className="bg-background/50" />
+                                        <Input placeholder="ZIP / Postal Code" value={zip} onChange={(e) => setZip(e.target.value)} className="bg-background/50" />
                                         <Input placeholder="Country" defaultValue="India" readOnly className="bg-muted" />
                                     </div>
-                                    <Input placeholder="Phone Number" type="tel" className="bg-background/50" />
+                                    <Input placeholder="Phone Number" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-background/50" />
                                 </form>
                             </div>
 

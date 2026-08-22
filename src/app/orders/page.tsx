@@ -1,6 +1,11 @@
 'use client';
 
 import { orders, products } from '@/lib/data';
+import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { db } from '@/services/firebase/firestore';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -16,6 +21,48 @@ const STATUS_ICONS = {
 };
 
 export default function OrdersPage() {
+  const { user } = useUser();
+  const [dbOrders, setDbOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!db || !user) {
+      setLoading(false);
+      return;
+    }
+
+    const q = query(
+      collection(db, "orders"),
+      where("userId", "==", user.id)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedOrders = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setDbOrders(fetchedOrders);
+      setLoading(false);
+    }, (err) => {
+      console.error("Firestore orders failed:", err);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  // Combine static and db orders
+  const userStaticOrders = orders.filter(o => o.userId === (user?.id || 'customer-1'));
+  const allOrders = [...dbOrders, ...userStaticOrders];
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#fbf7f0]">
+        <Loader2 className="h-8 w-8 animate-spin text-[#5e2c18]" />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[#fbf7f0] min-h-screen pb-20">
       {/* Header */}
@@ -31,9 +78,9 @@ export default function OrdersPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20">
-        {orders.length > 0 ? (
+        {allOrders.length > 0 ? (
           <div className="space-y-8">
-            {orders.map((order) => (
+            {allOrders.map((order) => (
               <Card key={order.id} className="rounded-none border-amber-900/10 shadow-xl bg-white overflow-hidden">
                 <CardHeader className="bg-[#fbf7f0]/50 border-b border-amber-900/5 px-8 py-6">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
