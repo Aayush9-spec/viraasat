@@ -38,8 +38,10 @@ export PYTHONPATH=backend
 uvicorn main:app --host 0.0.0.0 --port 8000 &
 
 echo -e "${GREEN}>>> Starting VIRAASAT Next.js Frontend (Port 9002)...${NC}"
+cd frontend
 rm -rf .next
 npm run dev -- -p 9002 &
+cd ..
 
 echo -e "${BLUE}>>> VIRAASAT is now running!${NC}"
 echo -e "Frontend: http://localhost:9002"
