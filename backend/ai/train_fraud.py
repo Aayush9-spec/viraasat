@@ -98,8 +98,10 @@ def train_model():
     print(f"Spam probability for spam test: {prob_spam:.4f} (expect close to 1)")
     
     # Save the pipeline
-    os.makedirs("backend/data", exist_ok=True)
-    model_path = "backend/data/fraud_model.pkl"
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    model_dir = os.path.abspath(os.path.join(current_dir, "../../database"))
+    os.makedirs(model_dir, exist_ok=True)
+    model_path = os.path.join(model_dir, "fraud_model.pkl")
     with open(model_path, "wb") as f:
         pickle.dump(pipeline, f)
     print(f"Model saved to {model_path}")

@@ -1,3 +1,4 @@
+
 import os
 import pickle
 import pandas as pd
@@ -10,7 +11,8 @@ class ReviewAnomalyInput(BaseModel):
     review_text: str
 
 # Load the trained IsolationForest anomaly detection pipeline
-MODEL_PATH = "backend/data/fraud_model.pkl"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.abspath(os.path.join(current_dir, "../../database/fraud_model.pkl"))
 model = None
 
 try:

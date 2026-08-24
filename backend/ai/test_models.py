@@ -64,13 +64,15 @@ def test_blockchain():
     
     # 1. Clean old test ledger
     import json
-    if os.path.exists("backend/data/blockchain_ledger.json"):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    ledger_path = os.path.abspath(os.path.join(current_dir, "../../database/blockchain_ledger.json"))
+    if os.path.exists(ledger_path):
         try:
-            with open("backend/data/blockchain_ledger.json", "r") as f:
+            with open(ledger_path, "r") as f:
                 db = json.load(f)
             if product_id in db:
                 del db[product_id]
-            with open("backend/data/blockchain_ledger.json", "w") as f:
+            with open(ledger_path, "w") as f:
                 json.dump(db, f)
         except Exception:
             pass

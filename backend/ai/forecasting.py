@@ -4,7 +4,8 @@ import random
 import pandas as pd
 
 # Load the trained Ridge forecasting pipeline
-MODEL_PATH = "backend/data/forecasting_model.pkl"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.abspath(os.path.join(current_dir, "../../database/forecasting_model.pkl"))
 model = None
 
 try:

@@ -88,8 +88,10 @@ def train_model():
     print(f"Model trained successfully. Evaluation R^2 score: {r2:.4f}")
     
     # Serialize pipeline
-    os.makedirs("backend/data", exist_ok=True)
-    model_path = "backend/data/pricing_model.pkl"
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    model_dir = os.path.abspath(os.path.join(current_dir, "../../database"))
+    os.makedirs(model_dir, exist_ok=True)
+    model_path = os.path.join(model_dir, "pricing_model.pkl")
     with open(model_path, "wb") as f:
         pickle.dump(pipeline, f)
     print(f"Model saved to {model_path}")

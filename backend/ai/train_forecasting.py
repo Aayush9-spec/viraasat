@@ -87,8 +87,10 @@ def train_model():
     print(f"Tourist inflow R^2 fit: {r2_tourist:.4f}")
     
     # Save both models
-    os.makedirs("backend/data", exist_ok=True)
-    model_path = "backend/data/forecasting_model.pkl"
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    model_dir = os.path.abspath(os.path.join(current_dir, "../../database"))
+    os.makedirs(model_dir, exist_ok=True)
+    model_path = os.path.join(model_dir, "forecasting_model.pkl")
     with open(model_path, "wb") as f:
         pickle.dump({
             "demand": pipeline_demand,

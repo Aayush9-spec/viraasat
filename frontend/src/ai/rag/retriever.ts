@@ -4,7 +4,9 @@ import path from 'path';
 export class HeritageRetriever {
   static retrieveMatchedContext(query: string): string {
     try {
-      const docsPath = path.join(process.cwd(), 'backend/data/documents.json');
+      const docsPath = fs.existsSync(path.join(process.cwd(), 'database/documents.json'))
+        ? path.join(process.cwd(), 'database/documents.json')
+        : path.join(process.cwd(), '../database/documents.json');
       if (fs.existsSync(docsPath)) {
         const docs = JSON.parse(fs.readFileSync(docsPath, 'utf8'));
         const queryWords = query.toLowerCase().split(/\s+/);

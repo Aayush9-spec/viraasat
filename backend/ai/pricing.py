@@ -11,7 +11,8 @@ class PricePredictionInput(BaseModel):
     is_organic: bool = True
 
 # Load the trained RandomForestRegressor pipeline
-MODEL_PATH = "backend/data/pricing_model.pkl"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.abspath(os.path.join(current_dir, "../../database/pricing_model.pkl"))
 model = None
 
 try:

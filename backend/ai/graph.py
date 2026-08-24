@@ -9,10 +9,11 @@ graph_data = {"nodes": [], "edges": []}
 
 def load_and_build_graph():
     global G, graph_data
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     paths_to_try = [
-        "backend/data/knowledge_graph.json",
-        "data/knowledge_graph.json",
-        "../data/knowledge_graph.json"
+        os.path.abspath(os.path.join(current_dir, "../../database/knowledge_graph.json")),
+        "database/knowledge_graph.json",
+        "../database/knowledge_graph.json"
     ]
     
     loaded = False

@@ -31,7 +31,9 @@ export const heritageChatFlow = ai.defineFlow(
     // 1. RAG Document Retrieval
     let docsContext = '';
     try {
-      const docsPath = path.join(process.cwd(), 'backend/data/documents.json');
+      const docsPath = fs.existsSync(path.join(process.cwd(), 'database/documents.json'))
+        ? path.join(process.cwd(), 'database/documents.json')
+        : path.join(process.cwd(), '../database/documents.json');
       if (fs.existsSync(docsPath)) {
         const docs = JSON.parse(fs.readFileSync(docsPath, 'utf8'));
         const queryWords = input.message.toLowerCase().split(/\s+/);

@@ -4,7 +4,8 @@ import hashlib
 from datetime import datetime, timedelta
 from typing import List, Dict
 
-LEDGER_FILE = "backend/data/blockchain_ledger.json"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+LEDGER_FILE = os.path.abspath(os.path.join(current_dir, "../../database/blockchain_ledger.json"))
 DIFFICULTY = 3  # Hashing target prefix length (e.g. "000")
 
 def calculate_block_hash(index: int, timestamp: str, action: str, actor: str, prev_hash: str, nonce: int) -> str:
