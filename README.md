@@ -13,7 +13,7 @@
 * [Key Features](https://www.google.com/search?q=%23-key-features)  
 * [Tech Stack](https://www.google.com/search?q=%23-tech-stack)  
 * [System Architecture](https://www.google.com/search?q=%23-system-architecture) 
-* [Getting Started](https://www.google.com/search?q=%23-getting-started)   
+* [Getting Started](https://www.google.com/search?q=%23-getting-started)    
 * [Project Structure](https://www.google.com/search?q=%23-project-structure)
 * [Contributing](https://www.google.com/search?q=%23-contributing) 
 * [License](https://www.google.com/search?q=%23-license)  
