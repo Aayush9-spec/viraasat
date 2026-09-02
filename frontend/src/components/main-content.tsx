@@ -14,12 +14,15 @@ import CartSidebar from "@/features/cart/components/cart-sidebar";
 import dynamic from 'next/dynamic';
 import { Show, UserButton, SignInButton, SignUpButton } from "@clerk/nextjs";
 
+import { useUserRole } from "@/hooks/use-user-role";
+
 const AIAssistant = dynamic(() => import('@/features/ai/components/ai-assistant').then(mod => mod.AIAssistant), { ssr: false });
 
 export function MainContent({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const { cartItems, setCartOpen } = useCart();
   const itemCount = cartItems.length;
+  const { isArtisan, isBuyer } = useUserRole();
 
   return (
     <>
@@ -31,10 +34,21 @@ export function MainContent({ children }: { children: React.ReactNode }) {
               <div className="flex items-center space-x-8">
                 <ViraasatLogo />
                 <div className="hidden md:flex items-center space-x-7">
+                  <Link href="/" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Home</Link>
                   <Link href="/shop" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.shop')}</Link>
-                  <a href="/#mission" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.mission')}</a>
-                  <Link href="/orders" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.orders')}</Link>
-                  <a href="#" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.journal')}</a>
+                  {isArtisan ? (
+                    <>
+                      <Link href="/artisan/dashboard" className="text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors">Artisan Portal</Link>
+                      <Link href="/artisan/products" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Products</Link>
+                      <Link href="/artisan/orders" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Orders</Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/wishlist" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Wishlist</Link>
+                      <Link href="/orders" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.orders')}</Link>
+                      <Link href="/dashboard" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">My Account</Link>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="flex items-center space-x-2 md:space-x-5">
