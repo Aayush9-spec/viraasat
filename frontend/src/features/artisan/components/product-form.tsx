@@ -211,7 +211,7 @@ export function ProductForm({ product }: ProductFormProps) {
         description: `${values.name} has been successfully saved.`,
       });
 
-      router.push('/dashboard/products');
+      router.push('/artisan/products');
       router.refresh();
 
     } catch (error) {

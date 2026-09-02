@@ -115,7 +115,7 @@ export default function OrdersPage() {
                 </CardHeader>
                 <CardContent className="px-8 py-8">
                   <div className="space-y-6">
-                    {order.items.map((item) => {
+                    {order.items.map((item: any) => {
                       const product = products.find(p => p.id === item.productId);
                       return (
                         <div key={item.productId} className="flex gap-6 items-center">
