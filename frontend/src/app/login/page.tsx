@@ -28,8 +28,11 @@ export default function LoginPage() {
               <h1 className="text-4xl lg:text-5xl font-heading font-bold bg-gradient-to-r from-amber-700 via-orange-600 to-amber-600 bg-clip-text text-transparent">
                 Welcome to Viraasat
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-300">
-                Choose your path to begin your journey
+              <p className="text-lg font-medium text-amber-900/80 dark:text-amber-200/80">
+                Preserving Heritage. Empowering Artisans.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Sign in or create an account to begin your journey
               </p>
             </div>
 
