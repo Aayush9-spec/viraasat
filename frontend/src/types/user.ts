@@ -1,10 +1,18 @@
 import { Product } from './product';
 
+export type UserRole = 'buyer' | 'artisan';
+
 export type User = {
   id: string;
+  clerkUserId?: string;
+  uid?: string;
+  name?: string;
   email: string;
-  role: 'artisan' | 'buyer';
-  cart: Product[];
+  imageUrl?: string;
+  role: UserRole;
+  cart?: Product[];
   createdAt: string;
-  lastLogin: string;
+  updatedAt?: string;
+  lastLogin?: string;
 };
+
