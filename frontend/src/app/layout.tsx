@@ -76,6 +76,15 @@ export default function RootLayout({
           <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         </head>
         <body className="font-sans antialiased text-foreground" suppressHydrationWarning>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `window.__SW_BUILD_ID__=${JSON.stringify(
+                process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ||
+                  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ||
+                  'dev',
+              )};`,
+            }}
+          />
           <PWALifecycle />
           <AuthSync />
           <LanguageProvider>

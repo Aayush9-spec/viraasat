@@ -3,18 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "node scripts/build-sw.js && next dev --turbopack -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
+    "prebuild": "node scripts/build-sw.js",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.2",
+    "@clerk/ui": "^1.32.1",
     "@genkit-ai/googleai": "^1.28.0",
     "@genkit-ai/next": "^1.14.1",
     "@hookform/resolvers": "^4.1.3",

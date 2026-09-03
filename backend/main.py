@@ -8,6 +8,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 
 from app.api.router import api_router
+from app.api.webhooks import router as webhooks_router
 
 load_dotenv()
 
@@ -37,10 +38,10 @@ ALLOWED_ORIGINS = [
     if origin.strip()
 ]
 
-# Default limits can be overridden per-route via @limiter.limit(...)
-DEFAULT_RATE_LIMIT = os.getenv("DEFAULT_RATE_LIMIT", "60/minute")
-
-limiter = Limiter(key_func=get_remote_address, default_limits=[DEFAULT_RATE_LIMIT])
+# Per-route limits are applied via @limiter.limit(...) in app/api/router.py.
+# No global default so that webhooks (signature-verified, called by Clerk)
+# are not throttled.
+limiter = Limiter(key_func=get_remote_address, default_limits=[])
 
 app = FastAPI(
     title="Viraasat Platform API Gateway",
@@ -63,6 +64,9 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api")
+# Webhooks are unauthenticated and use signature verification; mount them
+# under the same /api prefix without going through the rate limiter.
+app.include_router(webhooks_router, prefix="/api")
 
 
 @app.get("/")

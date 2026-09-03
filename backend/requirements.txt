@@ -1,15 +1,18 @@
-fastapi
-uvicorn
-razorpay
-pydantic
-python-dotenv
-cors
-numpy
-pandas
-scikit-learn
-networkx
-httpx
-python-jose[cryptography]
-slowapi
-sentry-sdk[fastapi]
-firebase-admin
+# Pinned dependencies for reproducible installs.
+# Regenerate with: pip-compile (or `python -m piptools compile`).
+# Versions match a clean Python 3.12 venv as of 2026-09.
+
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+pydantic==2.13.5
+python-dotenv==1.2.3
+razorpay==2.0.1
+numpy==2.5.2
+pandas==3.0.5
+scikit-learn==1.9.0
+networkx==3.6.1
+httpx==0.28.1
+python-jose[cryptography]==3.5.0
+slowapi==0.1.10
+sentry-sdk[fastapi]==2.68.1
+firebase-admin==7.5.0

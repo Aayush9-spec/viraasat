@@ -85,10 +85,6 @@ export default function ShopPage() {
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
 
-  useEffect(() => {
-    filterAndSortProducts();
-  }, [selectedCategories, selectedRegions, searchQuery, sortOrder, semanticScores, allProducts]);
-
   const filterAndSortProducts = () => {
     let tempProducts = [...allProducts];
 
@@ -129,6 +125,18 @@ export default function ShopPage() {
 
     setFilteredProducts(tempProducts);
   };
+
+  useEffect(() => {
+    filterAndSortProducts();
+  }, [
+    filterAndSortProducts,
+    selectedCategories,
+    selectedRegions,
+    searchQuery,
+    sortOrder,
+    semanticScores,
+    allProducts,
+  ]);
 
   const FilterSection = () => (
     <div className="space-y-8 py-4">
