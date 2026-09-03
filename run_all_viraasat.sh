@@ -11,7 +11,6 @@ NC='\033[0m' # No Color
 # Cleanup function to kill background processes on script exit
 cleanup() {
     echo -e "\n${BLUE}>>> Stopping VIRAASAT services and cleaning up ports...${NC}"
-    # Kill backend and frontend processes by port
     lsof -ti:8000,9002 | xargs kill -9 2>/dev/null
     exit
 }
@@ -23,15 +22,18 @@ echo -e "${BLUE}>>> Cleaning up existing processes on ports 8000 and 9002...${NC
 lsof -ti:8000,9002 | xargs kill -9 2>/dev/null
 
 echo -e "${BLUE}>>> Preparing Python Backend (Port 8000)...${NC}"
-# Check for virtual environment
-if [ ! -d "backend/venv" ]; then
-    echo -e "${BLUE}>>> Creating virtual environment...${NC}"
-    python3 -m venv backend/venv
-fi
 
-# Activate virtual environment and install dependencies
-source backend/venv/bin/activate
-pip install -r backend/requirements.txt --quiet
+# Verify Python virtualenv health; recreate if corrupted or missing uvicorn
+if [ ! -d "backend/venv" ] || ! backend/venv/bin/python3 -c "import uvicorn" 2>/dev/null; then
+    echo -e "${BLUE}>>> Re-creating Python virtual environment & installing dependencies...${NC}"
+    rm -rf backend/venv
+    python3 -m venv backend/venv
+    source backend/venv/bin/activate
+    pip install --upgrade pip --quiet 2>/dev/null || true
+    pip install -r backend/requirements.txt
+else
+    source backend/venv/bin/activate
+fi
 
 echo -e "${BLUE}>>> Starting VIRAASAT Python Backend...${NC}"
 export PYTHONPATH=backend
