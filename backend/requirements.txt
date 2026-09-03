@@ -1,5 +1,6 @@
 fastapi
 uvicorn
+httpx
 razorpay
 pydantic
 python-dotenv

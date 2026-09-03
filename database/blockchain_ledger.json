@@ -123,5 +123,34 @@
       "prev_hash": "000056a5f894f469fd6dadf407128d8df7d5b7859425162dc3c0a483bb0c306c",
       "nonce": 1314
     }
+  ],
+  "PROD-001": [
+    {
+      "index": 1,
+      "timestamp": "2026-08-04 00:03:58",
+      "action": "Artisan Identity & Workshop Verified",
+      "actor": "Viraasat Registrar",
+      "hash": "0008acffad3ada88e7acfa23ef1df01063b8595ab27ab28b22da4802f9feee50",
+      "prev_hash": "0000000000000000",
+      "nonce": 5060
+    },
+    {
+      "index": 2,
+      "timestamp": "2026-08-06 00:03:58",
+      "action": "GI Tag Authentication & Quality Test Passed",
+      "actor": "Handicrafts Development Board",
+      "hash": "0003b56d4c9554a04c580252de1df673a79960919ebee12970217668cc3630dd",
+      "prev_hash": "0008acffad3ada88e7acfa23ef1df01063b8595ab27ab28b22da4802f9feee50",
+      "nonce": 2
+    },
+    {
+      "index": 3,
+      "timestamp": "2026-08-09 00:03:58",
+      "action": "Digital Passport Issued & Genesis Block Mined",
+      "actor": "Viraasat Blockchain Node",
+      "hash": "000852d452d8e15b1012450f1450bbe02c093acea02aa1a4c6341fdae4b0ce87",
+      "prev_hash": "0003b56d4c9554a04c580252de1df673a79960919ebee12970217668cc3630dd",
+      "nonce": 6683
+    }
   ]
 }
