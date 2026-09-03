@@ -168,7 +168,7 @@ export function AIAssistant() {
                     <div className={cn("p-3 !rounded-none text-xs border leading-relaxed shadow-sm", msg.role === 'user' ? "bg-white border-amber-900/10 text-foreground" : "bg-white border-amber-900/10 text-foreground font-serif")}>
                       {msg.image && (
                         <div className="relative w-full aspect-video mb-2 border overflow-hidden">
-                          <img src={msg.image} alt="User upload" className="w-full h-full object-cover" />
+                          <Image src={msg.image} alt="User upload" width={640} height={360} unoptimized className="w-full h-full object-cover" />
                         </div>
                       )}
                       {msg.content}
@@ -188,7 +188,7 @@ export function AIAssistant() {
                               className="block bg-white border border-amber-900/5 hover:border-amber-900/20 p-2 transition-all group"
                             >
                               <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 mb-1">
-                                <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                <Image src={product.images[0]} alt={product.name} width={200} height={200} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                               </div>
                               <h4 className="text-[10px] font-heading font-bold text-[#5e2c18] truncate">{product.name}</h4>
                               <p className="text-[9px] text-[#5e2c18]/60">₹{product.price}</p>
@@ -218,7 +218,7 @@ export function AIAssistant() {
             <div className="px-4 py-2 bg-white border-t border-primary/10 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="relative w-10 h-10 border rounded overflow-hidden">
-                  <img src={selectedImage} alt="Attachment preview" className="w-full h-full object-cover" />
+                  <Image src={selectedImage} alt="Attachment preview" width={40} height={40} unoptimized className="w-full h-full object-cover" />
                 </div>
                 <span className="text-[10px] text-muted-foreground">Handicraft image attached</span>
               </div>

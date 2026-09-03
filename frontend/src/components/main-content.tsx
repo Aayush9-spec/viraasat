@@ -104,9 +104,9 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                           <Link href="/shop" className="text-lg font-medium hover:text-primary transition-colors">
                             {t('nav.shop')}
                           </Link>
-                          <a href="/#mission" className="text-lg font-medium hover:text-primary transition-colors">
+                          <Link href="/#mission" className="text-lg font-medium hover:text-primary transition-colors">
                             {t('nav.mission')}
-                          </a>
+                          </Link>
                           <Link href="/orders" className="text-lg font-medium hover:text-primary transition-colors">
                             {t('nav.orders')}
                           </Link>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { CheckCircle2, XCircle, AlertCircle, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 interface PWAStatus {
     serviceWorker: 'checking' | 'registered' | 'failed';
@@ -178,13 +179,13 @@ export default function PWATestPage() {
                         <li className="flex items-start gap-2">
                             <span className="text-purple-400 mt-1">•</span>
                             <span>
-                                <strong>Install:</strong> Look for the install button in your browser's address bar or wait for the install prompt
+                                <strong>Install:</strong> Look for the install button in your browser&apos;s address bar or wait for the install prompt
                             </span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-purple-400 mt-1">•</span>
                             <span>
-                                <strong>Offline:</strong> Open DevTools → Application → Service Workers → Check "Offline" to test offline mode
+                                <strong>Offline:</strong> Open DevTools → Application → Service Workers → Check &ldquo;Offline&rdquo; to test offline mode
                             </span>
                         </li>
                         <li className="flex items-start gap-2">
@@ -204,12 +205,12 @@ export default function PWATestPage() {
 
                 {/* Back Button */}
                 <div className="mt-8 text-center">
-                    <a
+                    <Link
                         href="/"
                         className="inline-block px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl hover:scale-105 transition-transform"
                     >
                         Back to Home
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>

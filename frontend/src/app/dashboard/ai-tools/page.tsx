@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import {
   Card,
   CardContent,
@@ -495,6 +496,9 @@ function TranslatorTab() {
 /* ==========================================
    Tab 3: Image → Cultural Story Generator
    ========================================== */
+
+const IMAGE_STORY_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
 function ImageStoryTab() {
   const { toast } = useToast();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -503,8 +507,6 @@ function ImageStoryTab() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
   const processFile = useCallback(
     (file: File) => {
@@ -516,7 +518,7 @@ function ImageStoryTab() {
         });
         return;
       }
-      if (file.size > MAX_FILE_SIZE) {
+      if (file.size > IMAGE_STORY_MAX_FILE_SIZE) {
         toast({
           variant: 'destructive',
           title: 'File too large',
@@ -629,9 +631,12 @@ function ImageStoryTab() {
           {imagePreview ? (
             <div className="relative group">
               <div className="aspect-square w-full overflow-hidden rounded-lg border border-border">
-                <img
+                <Image
                   src={imagePreview}
                   alt="Uploaded craft"
+                  width={512}
+                  height={512}
+                  unoptimized
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>

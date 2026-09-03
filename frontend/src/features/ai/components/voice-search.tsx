@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mic, Search, Loader2 } from 'lucide-react';
@@ -19,6 +20,7 @@ export default function VoiceSearch() {
   const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
   const [suggestionExplanation, setSuggestionExplanation] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const router = useRouter();
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -53,7 +55,7 @@ export default function VoiceSearch() {
     }
 
     // Default behavior: search in shop
-    window.location.href = `/shop?q=${encodeURIComponent(searchQuery)}`;
+    router.push(`/shop?q=${encodeURIComponent(searchQuery)}`);
   };
 
   const startRecording = async () => {
@@ -181,7 +183,7 @@ export default function VoiceSearch() {
               <div className="w-1 h-4 bg-amber-600" />
               <DialogTitle className="text-[10px] font-bold tracking-[0.3em] uppercase text-amber-900/60">Viraasat AI Suggestions</DialogTitle>
             </div>
-            <p className="text-xs text-amber-900/70 font-serif italic mb-6">"{suggestionExplanation}"</p>
+            <p className="text-xs text-amber-900/70 font-serif italic mb-6">&ldquo;{suggestionExplanation}&rdquo;</p>
           </DialogHeader>
           <div className="space-y-4">
             {suggestedProducts.map((product) => (

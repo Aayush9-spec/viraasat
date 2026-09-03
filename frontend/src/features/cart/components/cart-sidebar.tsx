@@ -32,12 +32,12 @@ export default function CartSidebar() {
             <div className="pr-6">
               {amountLeftForFreeShipping > 0 ? (
                 <div className="mt-4 text-center text-sm text-muted-foreground space-y-2">
-                  <p>You're <span className="font-semibold text-primary">₹{amountLeftForFreeShipping.toFixed(2)}</span> away from free shipping!</p>
+                  <p>You&apos;re <span className="font-semibold text-primary">₹{amountLeftForFreeShipping.toFixed(2)}</span> away from free shipping!</p>
                   <Progress value={progressPercentage} className="h-2" />
                 </div>
               ) : (
                 <div className="mt-4 text-center text-sm font-semibold text-green-600">
-                  <p>You've unlocked free shipping!</p>
+                  <p>You&apos;ve unlocked free shipping!</p>
                   <Progress value={100} className="h-2 [&>div]:bg-green-500" />
                 </div>
               )}

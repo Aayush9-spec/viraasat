@@ -173,7 +173,7 @@ export function LoginForm({ userType }: LoginFormProps) {
               isArtisan ? (
                 <span>Not yet a Viraasat Artisan? <Link href="/apply" className="underline">Apply Here</Link></span>
               ) : (
-                <span>Don't have an account? <button onClick={toggleForm} className="underline">Sign Up</button></span>
+                <span>Don&apos;t have an account? <button onClick={toggleForm} className="underline">Sign Up</button></span>
               )
             )}
           </div>

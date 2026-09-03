@@ -159,7 +159,7 @@ export function BusinessAdvisor() {
             </div>
             <div className="p-3 border-l-2 border-l-green-600 bg-green-50/10">
               <h4 className="text-xs font-bold text-[#5e2c18]">Adviser Marketing Plan</h4>
-              <p className="text-[11px] text-muted-foreground mt-1">Highly matches user clusters interested in 'Minimalist/Coastal' decor. Promoted campaign suggested on Instagram.</p>
+              <p className="text-[11px] text-muted-foreground mt-1">Highly matches user clusters interested in &apos;Minimalist/Coastal&apos; decor. Promoted campaign suggested on Instagram.</p>
             </div>
           </CardContent>
         </Card>

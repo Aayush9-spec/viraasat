@@ -97,6 +97,7 @@ function Card({ url, product, ...props }: { url: string; product: any;[key: stri
     });
 
     return (
+        // eslint-disable-next-line jsx-a11y/alt-text -- drei <Image> is a 3D mesh, not an <img> element
         <Image
             ref={ref}
             url={url}

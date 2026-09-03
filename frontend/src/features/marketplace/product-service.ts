@@ -6,21 +6,29 @@ import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 export class ProductService {
   static async getAllProducts(): Promise<Product[]> {
     try {
-      if (!db) return products;
-      const querySnapshot = await getDocs(collection(db, "products"));
-      const dbProducts = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Product[];
+      if (!db || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) return products;
+      
+      const timeoutPromise = new Promise<Product[]>((_, reject) =>
+        setTimeout(() => reject(new Error("Firestore timeout")), 1200)
+      );
 
-      // Merge dynamic and static products, avoiding duplicates
-      const merged = [...dbProducts];
-      products.forEach(staticProd => {
-        if (!merged.some(p => p.id === staticProd.id)) {
-          merged.push(staticProd);
-        }
-      });
-      return merged;
+      const fetchPromise = (async () => {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        const dbProducts = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Product[];
+
+        const merged = [...dbProducts];
+        products.forEach(staticProd => {
+          if (!merged.some(p => p.id === staticProd.id)) {
+            merged.push(staticProd);
+          }
+        });
+        return merged;
+      })();
+
+      return await Promise.race([fetchPromise, timeoutPromise]);
     } catch (e) {
       console.warn("Failed to fetch products from Firestore, falling back to static:", e);
       return products;
@@ -29,7 +37,7 @@ export class ProductService {
 
   static async getProductById(id: string): Promise<Product | undefined> {
     try {
-      if (db) {
+      if (db && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
         const docRef = doc(db, "products", id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {

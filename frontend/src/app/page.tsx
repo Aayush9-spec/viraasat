@@ -90,15 +90,17 @@ return (
 
             {/* Logo Image - Centered and Large */}
             <div className="relative w-full max-w-[650px] mx-auto z-30 transition-transform duration-1000 hover:scale-105">
-              <img
+              <Image
                 src="/viraasat-hero-cream.png"
                 alt="Viraasat Heritage Logo"
+                width={1024}
+                height={558}
+                priority
                 className="w-full h-auto mix-blend-multiply"
-                style={{ 
+                style={{
                   maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 95%)',
-                  WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 95%)'
+                  WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 95%)',
                 }}
-                loading="eager"
               />
             </div>
 
@@ -185,27 +187,9 @@ return (
             <h3 className="text-3xl font-heading text-foreground mb-16 text-center border-b border-primary/20 pb-8 inline-block w-full">
               Curated Selections
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {allProducts.slice(0, 8).map((product) => (
-                <div key={product.id} className="group cursor-pointer">
-                  {/* Custom Card Wrapper for Dark Theme */}
-                  <div className="bg-card p-4 border border-border/50 transition-all duration-300 group-hover:bg-card/80 group-hover:border-primary/50 group-hover:shadow-2xl group-hover:shadow-primary/5">
-                    <div className="relative aspect-square overflow-hidden mb-4 bg-secondary">
-                      {/* We can use the product image here. Assuming ProductCard handles it, 
-                            but we'll just wrap the existing component for logic re-use */}
-                      <div className="pointer-events-none">
-                        <ProductCard
-                          product={product}
-                          variant="grid"
-                        />
-                      </div>
-                    </div>
-                    <div className="text-center space-y-2 mt-4">
-                      <h4 className="text-foreground font-serif text-lg group-hover:text-primary transition-colors">{product.name}</h4>
-                      <p className="text-primary/80 text-sm uppercase tracking-widest">{product.category}</p>
-                    </div>
-                  </div>
-                </div>
+                <ProductCard key={product.id} product={product} variant="grid" />
               ))}
             </div>
           </div>
@@ -267,7 +251,7 @@ return (
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-80" />
                   <div className="absolute bottom-6 left-6 right-6">
-                    <p className="text-amber-400 font-serif italic text-lg">"Every thread tells a story of patience."</p>
+                    <p className="text-amber-400 font-serif italic text-lg">&ldquo;Every thread tells a story of patience.&rdquo;</p>
                   </div>
                 </div>
               </div>
@@ -312,7 +296,7 @@ return (
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 text-left">
               <div className="max-w-2xl">
                 <span className="text-primary text-sm tracking-[0.4em] uppercase mb-4 block font-bold opacity-40">The Viraasat Collection</span>
-                <h2 className="text-4xl md:text-6xl font-heading text-primary leading-tight">Bring India's Soul <br /><span className="italic font-normal">To Your Home</span></h2>
+                <h2 className="text-4xl md:text-6xl font-heading text-primary leading-tight">Bring India&apos;s Soul <br /><span className="italic font-normal">To Your Home</span></h2>
                 <div className="h-px w-24 bg-primary/20 mt-8" />
               </div>
               <Button size="lg" className="rounded-none bg-primary hover:bg-primary/90 text-primary-foreground px-10 h-14 tracking-widest uppercase text-xs shadow-2xl" asChild>

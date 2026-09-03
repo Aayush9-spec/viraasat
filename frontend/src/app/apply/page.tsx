@@ -81,7 +81,7 @@ export default function ArtisanApplicationPage() {
           {/* Removed redundant logo */}
           <CardTitle className="text-2xl">Become a Viraasat Artisan</CardTitle>
           <CardDescription>
-            Tell us about your craft. We're excited to learn about your work.
+            Tell us about your craft. We&apos;re excited to learn about your work.
           </CardDescription>
         </CardHeader>
         <CardContent>

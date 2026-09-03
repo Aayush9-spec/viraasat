@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ProductCard from '@/features/marketplace/components/product-card';
 import { ProductService } from '@/features/marketplace/product-service';
 import { categories } from '@/lib/data';
@@ -85,7 +85,7 @@ export default function ShopPage() {
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
 
-  const filterAndSortProducts = () => {
+  const filterAndSortProducts = useCallback(() => {
     let tempProducts = [...allProducts];
 
     // Search (Semantic Vector Search)
@@ -94,8 +94,8 @@ export default function ShopPage() {
         tempProducts = tempProducts.filter(p => (semanticScores[p.id] || 0) > 0.1);
         tempProducts.sort((a, b) => (semanticScores[b.id] || 0) - (semanticScores[a.id] || 0));
       } else {
-        tempProducts = tempProducts.filter(p => 
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        tempProducts = tempProducts.filter(p =>
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           p.description.toLowerCase().includes(searchQuery.toLowerCase())
         );
       }
@@ -108,9 +108,9 @@ export default function ShopPage() {
 
     // Regional Filter
     if (selectedRegions.length > 0) {
-      tempProducts = tempProducts.filter(p => 
-        selectedRegions.some(region => 
-          p.description.toLowerCase().includes(region.toLowerCase()) || 
+      tempProducts = tempProducts.filter(p =>
+        selectedRegions.some(region =>
+          p.description.toLowerCase().includes(region.toLowerCase()) ||
           p.tagline.toLowerCase().includes(region.toLowerCase())
         )
       );
@@ -124,7 +124,7 @@ export default function ShopPage() {
     }
 
     setFilteredProducts(tempProducts);
-  };
+  }, [allProducts, searchQuery, semanticScores, selectedCategories, selectedRegions, sortOrder]);
 
   useEffect(() => {
     filterAndSortProducts();
@@ -181,7 +181,7 @@ export default function ShopPage() {
           <Badge variant="outline" className="mb-4 border-primary/20 text-primary px-4 py-1 uppercase tracking-widest text-[10px]">The Viraasat Gallery</Badge>
           <h1 className="text-5xl md:text-7xl font-heading font-normal text-[#5e2c18] mb-6">Masterpieces</h1>
           <p className="max-w-2xl mx-auto text-lg text-[#8b4513]/70 font-serif italic">
-            "Discover the soul of India through its most exquisite handcrafted treasures, each piece a legacy of centuries."
+            &ldquo;Discover the soul of India through its most exquisite handcrafted treasures, each piece a legacy of centuries.&rdquo;
           </p>
         </div>
       </header>

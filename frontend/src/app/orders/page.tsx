@@ -179,7 +179,7 @@ export default function OrdersPage() {
           <div className="text-center py-32 bg-white border border-amber-900/5 shadow-xl">
              <Package className="h-16 w-16 text-amber-900/10 mx-auto mb-6" />
              <h2 className="text-2xl font-heading text-[#5e2c18] mb-4">No acquisitions yet</h2>
-             <p className="text-amber-900/50 text-sm mb-10 max-w-sm mx-auto leading-relaxed">Your journey through India's cultural gallery is just beginning. Explore our collection to find your first treasure.</p>
+              <p className="text-amber-900/50 text-sm mb-10 max-w-sm mx-auto leading-relaxed">Your journey through India&apos;s cultural gallery is just beginning. Explore our collection to find your first treasure.</p>
              <Button className="rounded-none bg-[#5e2c18] hover:bg-[#4a2315] text-[#fbf7f0] px-12 h-14 uppercase tracking-[0.3em] text-xs" asChild>
                <a href="/shop">Begin Exploration</a>
              </Button>

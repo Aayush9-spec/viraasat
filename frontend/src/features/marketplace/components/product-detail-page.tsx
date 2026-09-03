@@ -242,7 +242,7 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-4 pb-0">
-                  <p className="text-xs leading-relaxed text-amber-900/70 italic font-serif">"{artisan.bio}"</p>
+                  <p className="text-xs leading-relaxed text-amber-900/70 italic font-serif">&ldquo;{artisan.bio}&rdquo;</p>
                 </CardContent>
                 <div className="px-6 pb-6 pt-4">
                     <Button variant="outline" size="sm" className="w-full rounded-none border-amber-900/20 text-[#5e2c18] hover:bg-amber-50 h-10 text-[10px] tracking-widest uppercase font-bold">
@@ -306,9 +306,12 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
                   <CardContent className="pt-6 space-y-4">
                     <div className="flex flex-col sm:flex-row items-center gap-6 p-4 border border-dashed border-amber-900/10 bg-[#fbf7f0]/20">
                       <div className="relative w-28 h-28 bg-white p-1 border border-amber-900/10 shrink-0">
-                        <img 
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https://viraasat.org/passport/${product.id}`} 
+                        <Image
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https://viraasat.org/passport/${product.id}`}
                           alt="Passport QR Code"
+                          width={110}
+                          height={110}
+                          unoptimized
                           className="w-full h-full object-contain"
                         />
                       </div>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag, Store, Sparkles, CheckCircle2, Loader2 } from 'lucide-react';
-import { createUser, updateUserRole, getUser } from '@/lib/firebase/users';
+import { watchUser } from '@/lib/firebase/users';
 import { UserRole } from '@/types/user';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -29,42 +29,44 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
     setError(null);
 
     try {
-      const clerkUserId = user.id;
-      const name = user.fullName || user.username || user.primaryEmailAddress?.emailAddress || 'Viraasat User';
-      const email = user.primaryEmailAddress?.emailAddress || '';
-      const imageUrl = user.imageUrl || '';
-
-      const existingDoc = await getUser(clerkUserId);
-
-      if (existingDoc) {
-        await updateUserRole(clerkUserId, role);
-      } else {
-        await createUser({
-          clerkUserId,
-          name,
-          email,
-          imageUrl,
+      // Source of truth for role lives in Clerk (unsafeMetadata). Updating it
+      // here causes Clerk to fire a `user.updated` webhook, which our backend
+      // webhook handler (`/api/webhooks/clerk`) materializes into the
+      // Firestore user doc. The FE never writes to Firestore directly.
+      await user.update({
+        unsafeMetadata: {
+          ...user.unsafeMetadata,
           role,
-        });
-      }
-
-      // Also update Clerk unsafeMetadata for convenience
-      try {
-        await user.update({
-          unsafeMetadata: {
-            ...user.unsafeMetadata,
-            role,
-          },
-        });
-      } catch (err) {
-        console.warn('Could not update Clerk unsafeMetadata:', err);
-      }
+        },
+      });
 
       if (onRoleSelected) {
         onRoleSelected(role);
       }
 
       if (redirectOnSelect) {
+        // Wait briefly for the Clerk → backend webhook to materialize the
+        // role into Firestore so the destination page reads the right role
+        // on first paint. Bail out after 3s and proceed anyway; the
+        // destination page will read fresh data on its own.
+        await new Promise<void>((resolve) => {
+          const timeout = setTimeout(resolve, 3000);
+          const unsubscribe = watchUser(
+            user.id,
+            (firestoreUser) => {
+              if (firestoreUser?.role === role) {
+                clearTimeout(timeout);
+                unsubscribe();
+                resolve();
+              }
+            },
+            () => {
+              clearTimeout(timeout);
+              resolve();
+            },
+          );
+        });
+
         if (role === 'artisan') {
           router.push('/artisan/dashboard');
         } else {
@@ -72,9 +74,10 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
         }
         router.refresh();
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error saving user role:', err);
-      setError(err?.message || 'Failed to save role. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to save role. Please try again.');
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -117,7 +120,7 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
             'bg-card hover:shadow-2xl hover:scale-[1.02]',
             selectedRole === 'buyer' && isSubmitting
               ? 'border-emerald-500 ring-4 ring-emerald-500/20 bg-emerald-500/5'
-              : 'border-border hover:border-emerald-500/60'
+              : 'border-border hover:border-emerald-500/60',
           )}
         >
           <div className="flex flex-col h-full justify-between gap-6">
@@ -144,7 +147,7 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
               disabled={isSubmitting}
               className={cn(
                 'w-full py-6 text-base font-semibold rounded-xl transition-all',
-                'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md'
+                'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md',
               )}
             >
               {isSubmitting && selectedRole === 'buyer' ? (
@@ -153,7 +156,7 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">
-                  Continue as Buyer <CheckCircle2 className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Continue as Buyer <CheckCircle2 className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-transform" />
                 </span>
               )}
             </Button>
@@ -168,7 +171,7 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
             'bg-card hover:shadow-2xl hover:scale-[1.02]',
             selectedRole === 'artisan' && isSubmitting
               ? 'border-amber-500 ring-4 ring-amber-500/20 bg-amber-500/5'
-              : 'border-border hover:border-amber-500/60'
+              : 'border-border hover:border-amber-500/60',
           )}
         >
           <div className="flex flex-col h-full justify-between gap-6">
@@ -195,7 +198,7 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
               disabled={isSubmitting}
               className={cn(
                 'w-full py-6 text-base font-semibold rounded-xl transition-all',
-                'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-md'
+                'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-md',
               )}
             >
               {isSubmitting && selectedRole === 'artisan' ? (
@@ -204,7 +207,7 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">
-                  Continue as Artisan <CheckCircle2 className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Continue as Artisan <CheckCircle2 className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-transform" />
                 </span>
               )}
             </Button>
