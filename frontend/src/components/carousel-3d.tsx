@@ -3,16 +3,42 @@
 import * as THREE from 'three';
 import { useRef, useState, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Image, Environment, ScrollControls, useScroll, useTexture } from '@react-three/drei';
+import { Image, Environment, ScrollControls, useScroll } from '@react-three/drei';
 // @ts-ignore
 import { easing } from 'maath';
 import '../lib/three-utils';
 import { products } from '@/lib/data';
 import { useRouter } from 'next/navigation';
 
+// Reliable local images fallback map
+const LOCAL_IMAGE_FALLBACKS = [
+  '/images/products/marble-inlay.jpg',
+  '/images/products/brassware.jpg',
+  '/images/products/aligarh-lock.jpg',
+  '/images/products/terracotta-horse.jpg',
+  '/images/products/glass-bangles.jpg',
+  '/images/products/sanjhi-art.jpg',
+  '/images/products/blue-pottery.jpg',
+  '/images/products/chikankari.jpg',
+  '/images/products/wood-carving.jpg',
+  '/images/products/banarasi-silk.jpg',
+  '/images/products/khurja-ceramics.jpg',
+  '/images/products/leather-craft.jpg',
+];
+
 export const Carousel3D = () => {
-    // Only use first 12 products for the carousel
-    const carouselProducts = useMemo(() => products.slice(0, 12), []);
+    // Prefer products with local images or map remote images to local assets for reliable WebGL rendering
+    const carouselProducts = useMemo(() => {
+        return products.slice(0, 12).map((prod, idx) => {
+          const imgUrl = prod.images && prod.images[0] && prod.images[0].startsWith('/images/') 
+            ? prod.images[0] 
+            : LOCAL_IMAGE_FALLBACKS[idx % LOCAL_IMAGE_FALLBACKS.length];
+          return {
+            ...prod,
+            carouselImageUrl: imgUrl,
+          };
+        });
+    }, []);
 
     return (
         <div className="h-[500px] w-full relative">
@@ -22,7 +48,6 @@ export const Carousel3D = () => {
                         <Carousel items={carouselProducts} />
                     </Rig>
                 </ScrollControls>
-                {/* Removed background prop to let the global Background3D show through */}
                 <Environment preset="dawn" blur={0.5} />
             </Canvas>
             <div className="absolute bottom-4 left-0 right-0 text-center pointer-events-none text-gray-500 text-sm">
@@ -37,17 +62,17 @@ function Rig(props: any) {
     const scroll = useScroll();
     useFrame((state, delta) => {
         if (ref.current) {
-            ref.current.rotation.y = -scroll.offset * (Math.PI * 2); // Rotate contents
+            ref.current.rotation.y = -scroll.offset * (Math.PI * 2);
         }
-        if (state.events.update) state.events.update(); // Raycasts every frame rather than on pointer-move
+        if (state.events.update) state.events.update();
         // @ts-ignore
-        easing.damp3(state.camera.position, [-state.pointer.x * 2, state.pointer.y + 1.5, 10], 0.3, delta); // Move camera
-        state.camera.lookAt(0, 0, 0); // Look at center
+        easing.damp3(state.camera.position, [-state.pointer.x * 2, state.pointer.y + 1.5, 10], 0.3, delta);
+        state.camera.lookAt(0, 0, 0);
     });
     return <group ref={ref} {...props} />;
 }
 
-function Carousel({ radius = 1.4, items }: { radius?: number, items: typeof products }) {
+function Carousel({ radius = 1.4, items }: { radius?: number, items: any[] }) {
     const count = items.length;
     return (
         <>
@@ -55,7 +80,7 @@ function Carousel({ radius = 1.4, items }: { radius?: number, items: typeof prod
                 <Card
                     key={product.id}
                     product={product}
-                    url={product.images[0]}
+                    url={product.carouselImageUrl}
                     position={[Math.sin((i / count) * Math.PI * 2) * radius, 0, Math.cos((i / count) * Math.PI * 2) * radius]}
                     rotation={[0, Math.PI + (i / count) * Math.PI * 2, 0]}
                 />
@@ -64,7 +89,7 @@ function Carousel({ radius = 1.4, items }: { radius?: number, items: typeof prod
     );
 }
 
-function Card({ url, product, ...props }: { url: string; product: any;[key: string]: any }) {
+function Card({ url, product, ...props }: { url: string; product: any; [key: string]: any }) {
     const ref = useRef<any>(null);
     const [hovered, hover] = useState(false);
     const router = useRouter();
@@ -72,7 +97,6 @@ function Card({ url, product, ...props }: { url: string; product: any;[key: stri
     const pointerOver = (e: any) => {
         e.stopPropagation();
         hover(true);
-        // Change cursor
         document.body.style.cursor = 'pointer';
     };
 
@@ -90,14 +114,14 @@ function Card({ url, product, ...props }: { url: string; product: any;[key: stri
             // @ts-ignore
             easing.damp3(ref.current.scale, hovered ? 1.2 : 1, 0.1, delta);
             // @ts-ignore
-            easing.damp(ref.current.material, 'radius', hovered ? 0.25 : 0.1, 0.2, delta); // Radius prop might vary depending on Image impl
+            easing.damp(ref.current.material, 'radius', hovered ? 0.25 : 0.1, 0.2, delta);
             // @ts-ignore
             easing.damp(ref.current.material, 'zoom', hovered ? 1 : 1.2, 0.2, delta);
         }
     });
 
     return (
-        // eslint-disable-next-line jsx-a11y/alt-text -- drei <Image> is a 3D mesh, not an <img> element
+        // eslint-disable-next-line jsx-a11y/alt-text
         <Image
             ref={ref}
             url={url}
