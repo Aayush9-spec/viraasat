@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 9002",
+    "dev": "next dev --turbopack",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest"
+    "test": "jest",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -70,19 +70,19 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.4",
     "genkit-cli": "^0.0.2",
+    "jest": "^30.5.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5",
-    "jest": "^30.5.1",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/user-event": "^14.4.3",
-    "ts-jest": "^29.1.0"
+    "ts-jest": "^29.1.0",
+    "typescript": "^5"
   }
 }
