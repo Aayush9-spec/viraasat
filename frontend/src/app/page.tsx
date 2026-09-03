@@ -6,7 +6,9 @@ import { useTranslation } from '@/hooks/use-translation';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
-import { Carousel3DWrapper } from '@/components/carousel-3d-wrapper';
+import dynamic from 'next/dynamic';
+import type { Product } from '@/types/product';
+const Carousel3DWrapper = dynamic(() => import('@/components/carousel-3d-wrapper'), { ssr: false, loading: () => <div className="h-64 flex items-center justify-center">Loading…</div> });
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -15,43 +17,60 @@ import Link from 'next/link';
 export default function Marketplace() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [scrollY, setScrollY] = useState(0);
-  const [allProducts, setAllProducts] = useState<any[]>([]);
+  
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadProducts() {
-      const items = await ProductService.getAllProducts();
-      const local = localStorage.getItem('viraasat_local_products');
-      let finalItems = [...items];
-      if (local) {
-        try {
-          const parsed = JSON.parse(local);
-          parsed.forEach((localProd: any) => {
-            if (!finalItems.some(p => p.id === localProd.id)) {
-              finalItems.unshift(localProd);
-            }
-          });
-        } catch (e) {}
+      try {
+        const items = await ProductService.getAllProducts();
+        const local = localStorage.getItem('viraasat_local_products');
+        let finalItems = [...items];
+        if (local) {
+          try {
+            const parsed = JSON.parse(local);
+            parsed.forEach((localProd: any) => {
+              if (!finalItems.some(p => p.id === localProd.id)) {
+                finalItems.unshift(localProd);
+              }
+            });
+          } catch (e) {
+            // ignore malformed local storage
+          }
+        }
+        setAllProducts(finalItems);
+      } catch (err) {
+        setError('Failed to load products');
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-      setAllProducts(finalItems);
     }
     loadProducts();
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
-  return (
+
+if (loading) {
+  return <div className="flex h-screen items-center justify-center">Loading...</div>;
+}
+if (error) {
+  return <div className="flex h-screen items-center justify-center text-red-500">{error}</div>;
+}
+const regionInfo = Array.from(new Set(allProducts.map(p => p.region))).map(region => ({
+  name: region,
+  count: allProducts.filter(p => p.region === region).length,
+}));
+return (
     <div className="relative min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-primary/30">
 
       {/* Background Texture/Watermark - "Filling the page" conceptually */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Giant rotating watermark */}
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vmax] h-[150vmax] opacity-[0.03] blur-sm animate-custom-spin-slow"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vmax] h-[150vmax] max-w-full max-h-full overflow-hidden opacity-[0.03] blur-sm animate-custom-spin-slow"
           style={{ backgroundImage: 'url(/viraasat-logo-full.png)', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }}
         />
         {/* Noise overlay for texture */}
@@ -211,6 +230,7 @@ export default function Marketplace() {
                 <Link 
                   key={region.name}
                   href={`/shop?region=${region.name}`}
+                  aria-label={`Explore ${region.name}`}
                   className="group relative aspect-square overflow-hidden bg-secondary clay-shadow"
                 >
                   <Image 
@@ -332,18 +352,12 @@ export default function Marketplace() {
             <div className="mt-32">
               <h4 className="text-[10px] text-center uppercase tracking-[0.5em] text-amber-900/30 mb-12 font-bold">Explore by Geographic Heritage</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                {[
-                  { name: 'Rajasthan', count: allProducts.filter(p => p.region === 'Rajasthan').length },
-                  { name: 'Gujarat', count: allProducts.filter(p => p.region === 'Gujarat').length },
-                  { name: 'Uttar Pradesh', count: allProducts.filter(p => p.region === 'Uttar Pradesh').length },
-                  { name: 'Maharashtra', count: '04' },
-                  { name: 'West Bengal', count: '06' },
-                  { name: 'Tamil Nadu', count: '08' }
-                ].map((reg) => (
-                  <a 
-                    key={reg.name}
-                    href={`/shop?region=${reg.name}`}
-                    className="px-4 py-10 bg-background border border-primary/5 text-center hover:bg-primary hover:text-primary-foreground transition-all duration-700 group flex flex-col items-center justify-center space-y-4 shadow-sm hover:shadow-2xl hover:-translate-y-1"
+                {regionInfo.map((reg) => (
+<a 
+                  key={reg.name}
+                  href={`/shop?region=${reg.name}`}
+                  aria-label={`Explore ${reg.name}`}
+                  className="px-4 py-10 bg-background border border-primary/5 text-center hover:bg-primary hover:text-primary-foreground transition-all duration-700 group flex flex-col items-center justify-center space-y-4 shadow-sm hover:shadow-2xl hover:-translate-y-1"
                   >
                     <span className="text-[9px] tracking-[0.1em] text-amber-600/40 font-bold group-hover:text-amber-400/50">{reg.count} Artifacts</span>
                     <span className="text-xs tracking-[0.3em] uppercase font-bold text-primary group-hover:text-primary-foreground">{reg.name}</span>

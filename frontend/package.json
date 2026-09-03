@@ -9,6 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "jest"
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -39,6 +41,7 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.2",
+    "@sentry/nextjs": "^9.47.1",
     "@types/three": "^0.169.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -66,14 +69,20 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.4",
     "genkit-cli": "^0.0.2",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.5"
+    "jest": "^30.5.1",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "ts-jest": "^29.1.0"
   }
 }

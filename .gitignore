@@ -53,6 +53,9 @@ firestore-debug.log
 backend/venv/
 __pycache__/
 *.pyc
+# local SQLite state (blockchain ledger + knowledge graph cache)
+backend/viraasat.db
+backend/viraasat.db-*
 
 # clerk configuration (can include secrets)
 /.clerk/

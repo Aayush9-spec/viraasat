@@ -1,6 +1,5 @@
 fastapi
 uvicorn
-httpx
 razorpay
 pydantic
 python-dotenv
@@ -9,3 +8,8 @@ numpy
 pandas
 scikit-learn
 networkx
+httpx
+python-jose[cryptography]
+slowapi
+sentry-sdk[fastapi]
+firebase-admin

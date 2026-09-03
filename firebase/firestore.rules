@@ -1,0 +1,99 @@
+rules_version = '2';
+
+// Cloud Firestore security rules for Viraasat
+// Deploy with: firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- Helpers ----
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    function hasRole(role) {
+      return isSignedIn() && request.auth.token.role == role;
+    }
+    function isArtisan() {
+      return hasRole('artisan');
+    }
+    function isAdmin() {
+      return hasRole('admin');
+    }
+
+    // ---- Users ----
+    // Users can create their own doc on signup, read their own, update their own.
+    // Admins can read/write all.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == userId
+        && request.resource.data.keys().hasAll(['uid', 'email', 'role']);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+
+      // Wishlist subcollection
+      match /wishlist/{itemId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Cart subcollection
+      match /cart/{itemId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // ---- Products ----
+    // Public read. Only artisans can create (must own). Owner or admin can update/delete.
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isArtisan()
+        && request.resource.data.artisanId == request.auth.uid;
+      allow update, delete: if isSignedIn()
+        && (resource.data.artisanId == request.auth.uid || isAdmin());
+
+      // Reviews subcollection
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create: if isSignedIn()
+          && request.resource.data.reviewerId == request.auth.uid
+          && request.resource.data.rating is int
+          && request.resource.data.rating >= 1
+          && request.resource.data.rating <= 5;
+        allow update, delete: if isSignedIn()
+          && (resource.data.reviewerId == request.auth.uid || isAdmin());
+      }
+    }
+
+    // ---- Orders ----
+    // Only buyer (owner) or admin can read. Only buyer can create.
+    match /orders/{orderId} {
+      allow read: if isSignedIn()
+        && (resource.data.buyerId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn()
+        && request.resource.data.buyerId == request.auth.uid;
+      // Orders are immutable from the client; status changes happen via the backend.
+      allow update, delete: if isAdmin();
+    }
+
+    // ---- Artisan applications ----
+    // Anyone signed in can submit; only admin can read/update.
+    match /artisanApplications/{appId} {
+      allow create: if isSignedIn()
+        && request.resource.data.applicantId == request.auth.uid;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ---- Knowledge graph / catalogue read-only data ----
+    match /crafts/{craftId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ---- Default deny ----
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

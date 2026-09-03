@@ -1,0 +1,47 @@
+rules_version = '2';
+
+// Firebase Storage security rules for Viraasat
+// Deploy with: firebase deploy --only storage
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    function isUnder(sizeMB) {
+      return request.resource.size < sizeMB * 1024 * 1024;
+    }
+
+    // Product images: public read, artisan write (only into their folder)
+    match /products/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isOwner(userId) && isImage() && isUnder(10);
+    }
+
+    // User avatars: public read, owner write
+    match /users/{userId}/avatar {
+      allow read: if true;
+      allow write: if isOwner(userId) && isImage() && isUnder(2);
+    }
+
+    // KYC / verification documents: only owner can write, admin can read
+    match /kyc/{userId}/{allPaths=**} {
+      allow read: if isOwner(userId) || request.auth.token.role == 'admin';
+      allow write: if isOwner(userId)
+        && (request.resource.contentType == 'application/pdf'
+            || isImage())
+        && isUnder(10);
+    }
+
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

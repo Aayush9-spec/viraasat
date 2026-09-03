@@ -71,6 +71,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning className={`${inter.variable} ${cormorant.variable}`}>
         <head>
+          <meta property="og:image" content="/viraasat-hero-cream.png" />
           <link rel="icon" href="/viraasat-logo-full.png" />
           <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         </head>
