@@ -71,6 +71,10 @@ const imageCulturalStoryFlow = ai.defineFlow(
     outputSchema: ImageCulturalStoryOutputSchema,
   },
   async (input) => {
+    const approxBytes = Math.ceil((input.imageDataUri.length * 3) / 4);
+    if (approxBytes < 1024 || approxBytes > 10 * 1024 * 1024) {
+      throw new Error(`Image size out of range (${approxBytes} bytes).`);
+    }
     const { output } = await imageCulturalStoryPrompt({
       imageDataUri: input.imageDataUri,
     });

@@ -21,6 +21,8 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { BACKEND_URL } from '@/services/backend/client';
 
+import { ProductGridSkeleton } from '@/components/ui/product-skeleton';
+
 const regions = [
   'Rajasthan',
   'Kutch',
@@ -33,6 +35,7 @@ const regions = [
 export default function ShopPage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,21 +44,25 @@ export default function ShopPage() {
 
   useEffect(() => {
     async function loadProducts() {
-      const items = await ProductService.getAllProducts();
-      const local = localStorage.getItem('viraasat_local_products');
-      let finalItems = [...items];
-      if (local) {
-        try {
-          const parsed = JSON.parse(local);
-          parsed.forEach((localProd: Product) => {
-            if (!finalItems.some(p => p.id === localProd.id)) {
-              finalItems.unshift(localProd);
-            }
-          });
-        } catch (e) {}
+      try {
+        const items = await ProductService.getAllProducts();
+        const local = localStorage.getItem('viraasat_local_products');
+        let finalItems = [...items];
+        if (local) {
+          try {
+            const parsed = JSON.parse(local);
+            parsed.forEach((localProd: Product) => {
+              if (!finalItems.some(p => p.id === localProd.id)) {
+                finalItems.unshift(localProd);
+              }
+            });
+          } catch (e) {}
+        }
+        setAllProducts(finalItems);
+        setFilteredProducts(finalItems);
+      } finally {
+        setLoading(false);
       }
-      setAllProducts(finalItems);
-      setFilteredProducts(finalItems);
     }
     loadProducts();
   }, []);
@@ -257,7 +264,9 @@ export default function ShopPage() {
             )}
 
             {/* Results Grid */}
-            {filteredProducts.length > 0 ? (
+            {loading ? (
+              <ProductGridSkeleton count={6} />
+            ) : filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-12">
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} variant="grid" />

@@ -6,13 +6,15 @@ import { useTranslation } from '@/hooks/use-translation';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
-import dynamic from 'next/dynamic';
 import type { Product } from '@/types/product';
-const Carousel3DWrapper = dynamic(() => import('@/components/carousel-3d-wrapper'), { ssr: false, loading: () => <div className="h-64 flex items-center justify-center">Loading…</div> });
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+
+import { useState, useEffect } from 'react';
+import { ProductGridSkeleton } from '@/components/ui/product-skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Marketplace() {
   const { t } = useTranslation();
@@ -21,6 +23,23 @@ export default function Marketplace() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      setEmailError('Email is required');
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      setEmailError('Invalid email address');
+      return;
+    }
+    setEmailError(null);
+    console.log('Subscribed:', email);
+  };
 
   useEffect(() => {
     async function loadProducts() {
@@ -51,11 +70,22 @@ export default function Marketplace() {
     loadProducts();
   }, []);
 
-
-
-if (loading) {
-  return <div className="flex h-screen items-center justify-center">Loading...</div>;
-}
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
+        <div className="space-y-4 text-center max-w-2xl mx-auto">
+          <Skeleton className="h-4 w-32 mx-auto rounded-full bg-muted/60" />
+          <Skeleton className="h-12 w-3/4 mx-auto bg-muted/60" />
+          <Skeleton className="h-6 w-1/2 mx-auto bg-muted/40" />
+        </div>
+        <Skeleton className="h-[400px] w-full rounded-3xl bg-muted/40" />
+        <div className="space-y-8">
+          <Skeleton className="h-8 w-48 mx-auto bg-muted/60" />
+          <ProductGridSkeleton count={8} />
+        </div>
+      </div>
+    );
+  }
 if (error) {
   return <div className="flex h-screen items-center justify-center text-red-500">{error}</div>;
 }
@@ -166,7 +196,7 @@ return (
             </div>
 
             <div className="relative min-h-[500px]">
-              <Carousel3DWrapper />
+              <LazyCarousel />
             </div>
 
             <div className="text-center mt-20">
@@ -269,18 +299,27 @@ return (
                   <h4 className="font-heading text-2xl text-foreground mb-2">Join The Legacy</h4>
                   <p className="text-primary/60 mb-8 text-sm">Be the first to know about rare acquirements.</p>
 
-                  <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-                    <Input
-                      type="email"
-                      placeholder="EMAIL ADDRESS"
-                      className="bg-transparent border-b border-primary/20 rounded-none px-0 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-0 transition-colors"
-                    />
-                    <div className="pt-4">
-                      <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-widest py-6 text-sm">
-                        Subscribe
-                      </Button>
-                    </div>
-                  </form>
+                                      <form className="flex flex-col gap-4" onSubmit={handleSubscribe}>
+                      <label htmlFor="subscribe-email" className="sr-only">Email address</label>
+<Input
+                          id="subscribe-email"
+                          type="email"
+                          placeholder="EMAIL ADDRESS"
+                          value={email}
+                          onChange={e=>setEmail(e.target.value)}
+                          className="bg-transparent border-b rounded-none px-0 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-0 transition-colors"
+                          style={{ borderColor: emailError ? 'red' : 'rgb(139 95 244 / 20)' }}
+                          aria-describedby={emailError ? 'email-error' : undefined}
+                        />
+                      {emailError && (
+                        <p id="email-error" className="text-red-500 text-sm" role="alert" aria-live="polite">{emailError}</p>
+                      )}
+                      <div className="pt-4">
+                        <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-widest py-6 text-sm">
+                          Subscribe
+                        </Button>
+                      </div>
+                    </form>
                 </div>
               </div>
 

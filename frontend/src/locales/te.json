@@ -3,42 +3,171 @@
     "shop": "దుకాణం",
     "mission": "మా లక్ష్యం",
     "journal": "జర్నల్",
-    "login": "లాగిన్"
+    "orders": "కొనుగోళ్లు",
+    "login": "లాగిన్",
+    "wishlist": "కోరికల జాబితా",
+    "cart": "కార్ట్",
+    "dashboard": "డాష్‌బోర్డ్",
+    "artisan": "కళాకారుడు"
   },
   "home": {
     "hero": {
+      "title": "భారతీయ వారసత్వాన్ని సంరక్షించడం",
       "subtitle": "మా సేకరణను అన్వేషించండి",
-      "description": "అసలైన భారతీయ హస్తకళలను కనుగొనండి, ప్రతి ఒక్కటి ఒక ప్రత్యేకమైన కళాఖండం, సంప్రదాయం మరియు నైపుణ్యం యొక్క కథను చెబుతుంది."
+      "description": "ప్రామాణికమైన భారతీయ హస్తకళలను కనుగొనండి."
     },
     "mission": {
       "title": "మా లక్ష్యం",
-      "description": "విరాసత్ భారతదేశంలోని கைவினைஞர் சமூகங்களின் ఆత్మకు ఒక నివాళి. ప్రతిభావంతులైన கைவினைஞులు వారి పూర్వీకుల నైపుణ్యాలు మరియు చేతితో తయారు చేసిన నిధులను ప్రపంచంతో పంచుకోవడానికి మేము ఒక వేదికను అందిస్తాము. మా கைவினைஞుల నుండి కొనుగోలు చేయడం ద్వారా, మీరు ఒక వారసత్వాన్ని కాపాడటానికి మరియు ఒక சமூகానికి సాధికారత కల్పించడానికి సహాయం చేస్తున్నారు."
+      "description": "విరాసత్ భారతీయ కళాకారుల సంఘాల ఆత్మకు నివాళి."
     }
   },
   "footer": {
     "about": {
       "title": "విరాసత్",
-      "description": "భారతదేశంలోని கைவினைஞர் சமூகங்களின் గొప్ప వారసత్వాన్ని జరుపుకోవడం మరియు సాధికారత కల్పించడం."
+      "description": "భారతీయ కళాకారుల సంఘాల వారసత్వాన్ని జరుపుకోవడం."
     },
     "information": {
       "title": "సమాచారం",
-      "shop": "అన్నీ షాపింగ్ చేయండి",
+      "shop": "అన్నీ చూడు",
       "story": "మా కథ",
       "journal": "జర్నల్",
       "contact": "సంప్రదించండి"
     },
     "support": {
       "title": "మద్దతు",
-      "faq": "FAQs",
-      "shipping": "షిప్పింగ్ & amp; రిటర్న్స్",
-      "privacy": "గోపনীয়ता নীতি"
+      "faq": "తరచుగా అడిగే ప్రశ్నలు",
+      "shipping": "షిప్పింగ్ & రిటర్న్స్",
+      "privacy": "గోప్యతా విధానం"
     },
     "connect": {
-      "title": "కనెక్ట్ అయి ఉండండి",
-      "description": "కొత్తగా వచ్చినవి మరియు ప్రత్యేక ఆఫర్ల గురించి నవీకరణలను స్వీకరించండి.",
-      "subscribe": "సభ్యత్వం పొందండి",
+      "title": "కనెక్ట్ అవ్వండి",
+      "description": "కొత్త రాకలు మరియు ప్రత్యేక ఆఫర్ల నవీకరణలను పొందండి.",
+      "subscribe": "సబ్‌స్క్రైబ్",
       "placeholder": "మీ ఇమెయిల్‌ను నమోదు చేయండి"
     },
-    "copyright": "© 2024 విరాసత్. అన్ని హక్కులూ ప్రత్యేకించబడ్డాయి. చేతితో తయారు చేసిన చక్కదనానికి నివాళి."
+    "legal": {
+      "terms": "నిబంధనలు",
+      "privacy": "గోప్యత",
+      "refunds": "తిరిగి చెల్లింపులు"
+    },
+    "copyright": "© 2024 విరాసత్. అన్ని హక్కులూ ప్రత్యేకించబడ్డాయి."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Network error. Please check your connection and retry.",
+    "notFound": "We couldn't find what you were looking for.",
+    "unauthorized": "Please sign in to continue.",
+    "forbidden": "You don't have permission to do that.",
+    "validation": "Please check the highlighted fields and try again.",
+    "imageTooLarge": "This image is too large. Please upload an image under 10 MB.",
+    "imageTooSmall": "This image is too small. Please upload a real photograph.",
+    "imageUnsupported": "Unsupported file type. Please upload a JPEG, PNG, or WebP image.",
+    "imageRejected": "This image was rejected by our content policy. Please upload a different image.",
+    "moderationUnavailable": "Image moderation is temporarily unavailable. Please try again in a few minutes.",
+    "moderationCheckFailed": "We couldn't verify your image. Please try again.",
+    "paymentFailed": "Payment could not be processed. Please try a different method or contact your bank.",
+    "refundWindowClosed": "Refund window has closed. Please contact support for help.",
+    "stockUnavailable": "Sorry, this item is no longer in stock.",
+    "addressRequired": "Please enter a shipping address to continue."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "empty": "Your cart is empty.",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+    "placeOrder": "Pay",
+    "processing": "Processing...",
+    "byProceeding": "By proceeding, you agree to our {terms}, {privacy}, and {refunds}.",
+    "success": "Order placed successfully. Thank you!",
+    "failed": "We couldn't place your order. Please try again."
+  },
+  "orders": {
+    "title": "Your Acquisitions",
+    "empty": "No acquisitions yet.",
+    "emptyDescription": "Your journey through India's cultural gallery is just beginning.",
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
+    },
+    "refund": "Request Refund",
+    "refundDescription": "Refunds are available within 7 days of delivery."
+  },
+  "moderation": {
+    "checking": "Checking image...",
+    "rejected": "Image rejected",
+    "flagged": "This image was flagged by our content moderation. Please upload a different image."
+  },
+  "chat": {
+    "placeholder": "Ask about Indian crafts, materials, or products...",
+    "send": "Send",
+    "listening": "Listening...",
+    "transcribing": "Transcribing...",
+    "refused": "I'm sorry, I can't help with that.",
+    "rateLimited": "You've reached today's message limit. Please try again tomorrow.",
+    "error": "The chat service is temporarily unavailable. Please try again.",
+    "agentBuyer": "Buyer Agent",
+    "agentCultural": "Cultural Research Agent",
+    "agentInventory": "Inventory Agent",
+    "agentSafety": "Safety"
+  },
+  "legal": {
+    "termsTitle": "Terms of Service",
+    "privacyTitle": "Privacy Policy",
+    "refundTitle": "Refund Policy",
+    "lastUpdated": "Last updated: {date}",
+    "back": "Back to Viraasat"
+  },
+  "admin": {
+    "dashboard": "Admin dashboard",
+    "users": "Users",
+    "products": "Products",
+    "orders": "Orders",
+    "applications": "Artisan applications",
+    "fraudQueue": "Fraud review queue",
+    "approve": "Approve",
+    "reject": "Reject",
+    "suspend": "Suspend",
+    "verify": "Verify"
+  },
+  "artisan": {
+    "apply": "Apply to become an artisan",
+    "dashboard": "Workshop dashboard",
+    "products": "Your products",
+    "orders": "Incoming orders",
+    "analytics": "Analytics",
+    "uploadImage": "Upload high-quality image",
+    "imageRejected": "This image was rejected by content moderation.",
+    "kYCRequired": "Please complete identity verification before listing products."
+  },
+  "emails": {
+    "orderConfirmation": {
+      "subject": "Order #{orderId} confirmed",
+      "heading": "Thank you for your order",
+      "body": "We've received your order #{orderId}.",
+      "cta": "View your order"
+    },
+    "refundIssued": {
+      "subject": "Refund issued for order #{orderId}",
+      "heading": "Your refund has been issued",
+      "body": "We refunded \u20b9{amount} for order #{orderId}.",
+      "cta": "View refund details"
+    },
+    "verificationApproved": {
+      "subject": "Your artisan application was approved",
+      "heading": "Welcome to Viraasat",
+      "body": "Your workshop has been verified.",
+      "cta": "Open your dashboard"
+    },
+    "verificationRejected": {
+      "subject": "Your artisan application needs more information",
+      "heading": "Additional information needed",
+      "body": "We weren't able to verify your workshop.",
+      "cta": "Update application"
+    }
   }
 }

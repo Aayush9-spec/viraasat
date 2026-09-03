@@ -34,14 +34,16 @@ export async function POST(req: Request) {
   try {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      // Stable error code; the FE maps it to a localized message.
+      return NextResponse.json({ error: 'unauthorized', errorCode: 'CHAT_UNAUTHORIZED' }, { status: 401 });
     }
 
     const budget = checkAndIncrement(userId);
     if (!budget.allowed) {
       return NextResponse.json(
         {
-          error: 'Daily chat limit reached. Please try again tomorrow.',
+          error: 'rate_limited',
+          errorCode: 'CHAT_RATE_LIMITED',
           resetAt: new Date(budget.resetAt + 24 * 60 * 60 * 1000).toISOString(),
         },
         {
@@ -63,6 +65,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error('Chat API Error:', error);
-    return NextResponse.json({ error: 'Failed to process chat' }, { status: 500 });
+    return NextResponse.json({ error: 'service_error', errorCode: 'CHAT_SERVICE_ERROR' }, { status: 500 });
   }
 }

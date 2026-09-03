@@ -3,6 +3,9 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // mirror backend moderation limit
+const MIN_IMAGE_BYTES = 1024;
+
 const AnalyzeImageInputSchema = z.object({
   imageDataUri: z
     .string()
@@ -54,6 +57,17 @@ const analyzeImageFlow = ai.defineFlow(
     outputSchema: AnalyzeImageOutputSchema,
   },
   async (input) => {
+    // Basic size guard. The authoritative SafeSearch check happens via
+    // /api/moderate-image BEFORE this flow is ever called from the product
+    // form. This is a belt-and-braces check in case any other caller
+    // (tests, scripts) bypasses the FE gate.
+    const approxBytes = Math.ceil((input.imageDataUri.length * 3) / 4);
+    if (approxBytes < MIN_IMAGE_BYTES || approxBytes > MAX_IMAGE_BYTES) {
+      throw new Error(
+        `Image size out of range (${approxBytes} bytes). Must be between ${MIN_IMAGE_BYTES} and ${MAX_IMAGE_BYTES}.`,
+      );
+    }
+
     if (!process.env.GEMINI_API_KEY && !process.env.GOOGLE_API_KEY) {
       console.warn("API Key missing. Falling back to mock Vision classifier.");
       return {

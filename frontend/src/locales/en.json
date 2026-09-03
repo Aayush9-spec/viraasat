@@ -4,7 +4,11 @@
     "mission": "Our Mission",
     "journal": "Journal",
     "orders": "Acquisitions",
-    "login": "Login"
+    "login": "Login",
+    "wishlist": "Wishlist",
+    "cart": "Cart",
+    "dashboard": "Dashboard",
+    "artisan": "Artisan"
   },
   "home": {
     "hero": {
@@ -41,6 +45,129 @@
       "subscribe": "Subscribe",
       "placeholder": "Enter your email"
     },
+    "legal": {
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "refunds": "Refunds"
+    },
     "copyright": "© 2024 Viraasat. All rights reserved. A tribute to handmade elegance."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Network error. Please check your connection and retry.",
+    "notFound": "We couldn't find what you were looking for.",
+    "unauthorized": "Please sign in to continue.",
+    "forbidden": "You don't have permission to do that.",
+    "validation": "Please check the highlighted fields and try again.",
+    "imageTooLarge": "This image is too large. Please upload an image under 10 MB.",
+    "imageTooSmall": "This image is too small. Please upload a real photograph.",
+    "imageUnsupported": "Unsupported file type. Please upload a JPEG, PNG, or WebP image.",
+    "imageRejected": "This image was rejected by our content policy. Please upload a different image.",
+    "moderationUnavailable": "Image moderation is temporarily unavailable. Please try again in a few minutes.",
+    "moderationCheckFailed": "We couldn't verify your image. Please try again.",
+    "paymentFailed": "Payment could not be processed. Please try a different method or contact your bank.",
+    "refundWindowClosed": "Refund window has closed. Please contact support for help.",
+    "stockUnavailable": "Sorry, this item is no longer in stock.",
+    "addressRequired": "Please enter a shipping address to continue."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "empty": "Your cart is empty.",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+    "placeOrder": "Pay",
+    "processing": "Processing...",
+    "byProceeding": "By proceeding, you agree to our {terms}, {privacy}, and {refunds}.",
+    "success": "Order placed successfully. Thank you!",
+    "failed": "We couldn't place your order. Please try again."
+  },
+  "orders": {
+    "title": "Your Acquisitions",
+    "empty": "No acquisitions yet.",
+    "emptyDescription": "Your journey through India's cultural gallery is just beginning.",
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
+    },
+    "refund": "Request Refund",
+    "refundDescription": "Refunds are available within 7 days of delivery."
+  },
+  "moderation": {
+    "checking": "Checking image...",
+    "rejected": "Image rejected",
+    "flagged": "This image was flagged by our content moderation. Please upload a different image."
+  },
+  "chat": {
+    "placeholder": "Ask about Indian crafts, materials, or products...",
+    "send": "Send",
+    "listening": "Listening...",
+    "transcribing": "Transcribing...",
+    "refused": "I'm sorry, I can't help with that. I can answer questions about Indian heritage, this marketplace, and the products listed here.",
+    "rateLimited": "You've reached today's message limit. Please try again tomorrow.",
+    "error": "The chat service is temporarily unavailable. Please try again.",
+    "agentBuyer": "Buyer Agent",
+    "agentCultural": "Cultural Research Agent",
+    "agentInventory": "Inventory Agent",
+    "agentSafety": "Safety"
+  },
+  "legal": {
+    "termsTitle": "Terms of Service",
+    "privacyTitle": "Privacy Policy",
+    "refundTitle": "Refund Policy",
+    "lastUpdated": "Last updated: {date}",
+    "back": "Back to Viraasat"
+  },
+  "admin": {
+    "dashboard": "Admin dashboard",
+    "users": "Users",
+    "products": "Products",
+    "orders": "Orders",
+    "applications": "Artisan applications",
+    "fraudQueue": "Fraud review queue",
+    "approve": "Approve",
+    "reject": "Reject",
+    "suspend": "Suspend",
+    "verify": "Verify"
+  },
+  "artisan": {
+    "apply": "Apply to become an artisan",
+    "dashboard": "Workshop dashboard",
+    "products": "Your products",
+    "orders": "Incoming orders",
+    "analytics": "Analytics",
+    "uploadImage": "Upload high-quality image",
+    "imageRejected": "This image was rejected by content moderation. Please choose a different one.",
+    "kYCRequired": "Please complete identity verification before listing products."
+  },
+  "emails": {
+    "orderConfirmation": {
+      "subject": "Order #{orderId} confirmed",
+      "heading": "Thank you for your order",
+      "body": "We've received your order #{orderId}. We'll notify you when it ships.",
+      "cta": "View your order"
+    },
+    "refundIssued": {
+      "subject": "Refund issued for order #{orderId}",
+      "heading": "Your refund has been issued",
+      "body": "We refunded ₹{amount} for order #{orderId}. It will appear in your account within 5-7 business days.",
+      "cta": "View refund details"
+    },
+    "verificationApproved": {
+      "subject": "Your artisan application was approved",
+      "heading": "Welcome to Viraasat",
+      "body": "Your workshop has been verified. You can now list products on the marketplace.",
+      "cta": "Open your dashboard"
+    },
+    "verificationRejected": {
+      "subject": "Your artisan application needs more information",
+      "heading": "Additional information needed",
+      "body": "We weren't able to verify your workshop with the documents you provided. Please reply to this email with the requested information.",
+      "cta": "Update application"
+    }
   }
 }

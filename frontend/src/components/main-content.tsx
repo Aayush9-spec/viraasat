@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Facebook, Instagram, Search, ShoppingCart, Twitter, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Toaster } from "./ui/toaster";
+import { MobileNav } from "./mobile-nav";
 import VoiceSearch from "@/features/ai/components/voice-search";
 import { useCart } from "@/context/cart-context";
 import CartSidebar from "@/features/cart/components/cart-sidebar";
@@ -222,6 +223,11 @@ export function MainContent({ children }: { children: React.ReactNode }) {
             <p className="text-foreground/40 text-xs">
               &copy; {new Date().getFullYear()} Viraasat. All rights reserved.
             </p>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-foreground/40">
+              <Link href="/terms" className="hover:text-foreground">Terms</Link>
+              <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
+              <Link href="/refund" className="hover:text-foreground">Refunds</Link>
+            </div>
             <p className="text-foreground/50 text-xs font-serif italic">
               Made with &hearts; for Indian Heritage
             </p>
@@ -230,6 +236,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
       </footer>
       <CartSidebar />
       <AIAssistant />
+      <MobileNav />
       <Toaster />
     </>
   );

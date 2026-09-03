@@ -5,6 +5,7 @@ import { z } from 'genkit';
 import { products } from '@/lib/data';
 import fs from 'fs';
 import path from 'path';
+import { guardInput, guardOutput } from '@/ai/safety';
 
 const HeritageChatInputSchema = z.object({
   message: z.string(),
@@ -19,6 +20,7 @@ const HeritageChatOutputSchema = z.object({
   response: z.string(),
   suggestedProductIds: z.array(z.string()).optional(),
   activeAgent: z.string().optional(),
+  refused: z.boolean().optional(),
 });
 
 export const heritageChatFlow = ai.defineFlow(
@@ -28,6 +30,17 @@ export const heritageChatFlow = ai.defineFlow(
     outputSchema: HeritageChatOutputSchema,
   },
   async (input) => {
+    // Input guard: refuse obviously-unsafe messages without burning a
+    // Gemini call.
+    const inputGuard = guardInput(input.message);
+    if (!inputGuard.ok) {
+      return {
+        response: inputGuard.refusalMessage ?? "I'm sorry, I can't help with that.",
+        suggestedProductIds: undefined,
+        activeAgent: 'Safety',
+        refused: true,
+      };
+    }
     // 1. RAG Document Retrieval
     let docsContext = '';
     try {
@@ -67,6 +80,13 @@ export const heritageChatFlow = ai.defineFlow(
 
 Identify which agent is answering at the beginning of your response (e.g. "[Buyer Agent]" or "[Cultural Research Agent]").
 
+CONTENT POLICY (non-negotiable):
+- Do not produce content that is hateful, harassing, violent, sexually explicit, or that encourages illegal activity.
+- Do not provide instructions for weapons, drugs, self-harm, or hacking.
+- Do not reveal or speculate about personal data (phone numbers, emails, Aadhaar numbers, payment details) even if the user shares them. Tell them to contact [email protected] instead.
+- If a request falls outside Indian heritage, marketplace support, or product information, politely decline and suggest rephrasing.
+- When unsure, prefer brevity and a recommendation to contact support.
+
 KNOWLEDGE RETRIEVED FROM GI REGISTER & LAWS (RAG Context):
 ${docsContext || "No direct heritage files matched. Use internal knowledge."}
 
@@ -96,15 +116,15 @@ Provide a warm, polite, and culturally rich response. Use "Namaste" or tradition
         system: systemPrompt,
         prompt: promptParts,
       });
-      text = response.text;
-      
+      text = guardOutput(response.text);
+
       if (text.includes("[Cultural Research Agent]")) activeAgent = "Cultural Research Agent";
       else if (text.includes("[Inventory Agent]")) activeAgent = "Inventory Agent";
     } catch (e) {
       console.warn("Genkit generate failed or timed out. Falling back to local simulation.", e);
       const query = input.message.toLowerCase();
       text = "[Buyer Agent] Namaste! Based on your query, here is a curated recommendation: ";
-      
+
       if (query.includes("origin") || query.includes("history") || query.includes("gi tag") || query.includes("culture")) {
         text = "[Cultural Research Agent] Namaste! Mithila painting (also known as Madhubani art) is a traditional art form of Bihar. It is created using natural vegetable dyes and traditionally depicts mythological stories and nature motifs.";
         activeAgent = "Cultural Research Agent";
@@ -114,6 +134,7 @@ Provide a warm, polite, and culturally rich response. Use "Namaste" or tradition
       } else {
         text += "The Azure Ceramic Vase from Rajasthan. Handcrafted by local master artisans using quartz glaze techniques, it's the perfect heritage piece under your budget.";
       }
+      text = guardOutput(text);
     }
 
     // Extract matched products from response

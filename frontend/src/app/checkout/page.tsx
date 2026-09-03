@@ -202,7 +202,10 @@ export default function CheckoutPage() {
                                                     {isProcessing ? 'Processing...' : `Pay ₹${total.toFixed(2)} Securely`}
                                                 </Button>
                                                 <p className="text-xs text-muted-foreground">
-                                                    By proceeding, you agree to our Terms of Service and Privacy Policy.
+                                                    By proceeding, you agree to our{' '}
+                                                    <Link href="/terms" className="underline hover:text-foreground">Terms of Service</Link>,{' '}
+                                                    <Link href="/privacy" className="underline hover:text-foreground">Privacy Policy</Link>, and{' '}
+                                                    <Link href="/refund" className="underline hover:text-foreground">Refund Policy</Link>.
                                                 </p>
                                             </div>
                                         </div>

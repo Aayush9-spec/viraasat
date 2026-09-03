@@ -14,6 +14,9 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const MIN_IMAGE_BYTES = 1024;
+
 const EnhanceImageQualityInputSchema = z.object({
   imageUri: z
     .string()
@@ -58,6 +61,10 @@ const enhanceImageQualityFlow = ai.defineFlow(
     outputSchema: EnhanceImageQualityOutputSchema,
   },
   async input => {
+    const approxBytes = Math.ceil((input.imageUri.length * 3) / 4);
+    if (approxBytes < MIN_IMAGE_BYTES || approxBytes > MAX_IMAGE_BYTES) {
+      throw new Error(`Image size out of range (${approxBytes} bytes).`);
+    }
     try {
       const response = await ai.generate({
         model: 'googleai/gemini-3.6-flash',

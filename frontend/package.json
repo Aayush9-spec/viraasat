@@ -12,7 +12,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:a11y": "playwright test tests/e2e/a11y.spec.ts",
+    "test:keyboard": "playwright test tests/e2e/keyboard.spec.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.2",
@@ -71,7 +74,9 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/eslintrc": "^3.3.7",
+    "@playwright/test": "^1.62.1",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",

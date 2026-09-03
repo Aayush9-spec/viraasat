@@ -5,6 +5,7 @@ import { UploadCloud, X, Sparkles, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { enhanceImageQuality } from '@/ai/flows/enhance-image-quality';
+import { moderateImage } from '@/services/backend/moderation';
 
 interface ImageEnhancerProps {
   images: string[];
@@ -13,14 +14,17 @@ interface ImageEnhancerProps {
 
 export default function ImageEnhancer({ images, setImages }: ImageEnhancerProps) {
   const [originalImage, setOriginalImage] = useState<string | null>(null);
+  const [originalFile, setOriginalFile] = useState<File | null>(null);
   const [enhancedImage, setEnhancedImage] = useState<string | null>(null);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [isModerating, setIsModerating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setOriginalFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         setOriginalImage(e.target?.result as string);
@@ -46,14 +50,43 @@ export default function ImageEnhancer({ images, setImages }: ImageEnhancerProps)
     }
   };
 
-  const addEnhancedImage = () => {
-    if (enhancedImage) {
-      setImages([...images, enhancedImage]);
-      setOriginalImage(null);
-      setEnhancedImage(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+  const addEnhancedImage = async () => {
+    if (!enhancedImage || !originalFile) return;
+
+    setIsModerating(true);
+    try {
+      const verdict = await moderateImage(originalFile);
+      if (!verdict.allow) {
+        toast({
+          variant: 'destructive',
+          title: 'Image rejected',
+          description:
+            verdict.reason === 'policy_violation'
+              ? 'This image was flagged by our content moderation. Please upload a different image.'
+              : verdict.reason === 'moderation_unavailable'
+                ? 'Image moderation is temporarily unavailable. Please try again in a few minutes.'
+                : `Image rejected: ${verdict.reason}`,
+        });
+        return;
       }
+    } catch (error) {
+      console.error('Moderation error', error);
+      toast({
+        variant: 'destructive',
+        title: 'Could not verify image',
+        description: 'We could not check this image right now. Please try again.',
+      });
+      return;
+    } finally {
+      setIsModerating(false);
+    }
+
+    setImages([...images, enhancedImage]);
+    setOriginalImage(null);
+    setOriginalFile(null);
+    setEnhancedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -101,8 +134,12 @@ export default function ImageEnhancer({ images, setImages }: ImageEnhancerProps)
               <Sparkles className="mr-2 h-4 w-4" />
               {isEnhancing ? 'Enhancing...' : 'Enhance with AI'}
             </Button>
-            <Button type="button" onClick={addEnhancedImage} disabled={!enhancedImage}>
-              Add to Product
+            <Button
+              type="button"
+              onClick={addEnhancedImage}
+              disabled={!enhancedImage || isModerating}
+            >
+              {isModerating ? 'Checking…' : 'Add to Product'}
             </Button>
           </div>
         </div>
