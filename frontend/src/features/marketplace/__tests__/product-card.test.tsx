@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { CartProvider } from '@/context/cart-context';
 import ProductCard from '@/features/marketplace/components/product-card';
 import { Product } from '@/types/product';
 import userEvent from '@testing-library/user-event';
@@ -22,14 +23,22 @@ const mockProduct: Product = {
 };
 
 test('renders product information', () => {
-  render(<ProductCard product={mockProduct} variant="grid" />);
+  render(
+    <CartProvider>
+      <ProductCard product={mockProduct} variant="grid" />
+    </CartProvider>
+  );
   expect(screen.getByText(/Test Vase/i)).toBeInTheDocument();
   expect(screen.getByText(/₹12345/)).toBeInTheDocument();
 });
 
 test('clicking card navigates to product page', async () => {
   const user = userEvent.setup();
-  render(<ProductCard product={mockProduct} variant="grid" />);
+  render(
+    <CartProvider>
+      <ProductCard product={mockProduct} variant="grid" />
+    </CartProvider>
+  );
   const link = screen.getByRole('link');
   await user.click(link);
   // Check that the link has the correct href

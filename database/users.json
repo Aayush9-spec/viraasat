@@ -1,0 +1,46 @@
+[
+  {
+    "id": "user-1",
+    "name": "Anika Sharma",
+    "email": "anika.sharma@example.com",
+    "role": "artisan",
+    "profile": {
+      "bio": "Master ceramist from Rajasthan, specializing in terracotta pottery.",
+      "location": "Jaipur, Rajasthan",
+      "socialLinks": {
+        "instagram": "https://instagram.com/anikaceramics",
+        "facebook": "https://facebook.com/anika.ceramics"
+      }
+    },
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-15T10:30:00Z"
+  },
+  {
+    "id": "user-2",
+    "name": "Rahul Singh",
+    "email": "rahul.singh@example.com",
+    "role": "collector",
+    "profile": {
+      "bio": "Art enthusiast and collector of Indian handicrafts.",
+      "location": "Mumbai, Maharashtra",
+      "socialLinks": {
+        "instagram": "https://instagram.com/rahul.artcollector"
+      }
+    },
+    "createdAt": "2024-02-20T14:20:00Z",
+    "updatedAt": "2024-02-20T14:20:00Z"
+  },
+  {
+    "id": "user-3",
+    "name": "Priya Patel",
+    "email": "priya.patel@example.com",
+    "role": "admin",
+    "profile": {
+      "bio": "Platform administrator managing the Viraasat marketplace.",
+      "location": "Delhi",
+      "socialLinks": {}
+    },
+    "createdAt": "2023-11-30T09:05:00Z",
+    "updatedAt": "2023-11-30T09:05:00Z"
+  }
+]

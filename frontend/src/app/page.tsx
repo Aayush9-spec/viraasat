@@ -8,11 +8,10 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import type { Product } from '@/types/product';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-
-import { useState, useEffect } from 'react';
+import LazyCarousel from '@/components/LazyCarousel';
 import { ProductGridSkeleton } from '@/components/ui/product-skeleton';
 import { Skeleton } from '@/components/ui/skeleton';
 
