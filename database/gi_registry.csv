@@ -1,0 +1,491 @@
+"S.
+ No",Application No.,Year,Geographical Indications,"Goods
+ (As per Sec 2 (f) of GI Act 1999 )",State
+1,1 & 2,2004-2005,Darjeeling Tea (word & logo),Agricultural,West Bengal
+2,3,2004-2005,Aranmula Kannadi,Handicraft,Kerala
+3,4,2004-2005,Pochampalli Ikat,Handicraft,Telangana
+4,5,2005-2006,Salem Fabric,Handicraft,Tamil Nadu
+5,7,2005-2006,Chanderi Sarees,Handicraft,Madhya Pradesh
+6,8,2005-2006,Solapur Chaddar,Handicraft,Maharashtra
+7,9,2005-2006,Solapur Terry Towel,Handicraft,Maharashtra
+8,10,2005-2006,Kotpad Handloom fabric,Handicraft,Odisha
+9,11,2005-2006,Mysore Silk,Handicraft,Karnataka
+10,12,2005-2006,Kota Doria,Handicraft,Rajasthan
+11,13 & 18,2005-2006,Mysore Agarbathi,Manufactured,Karnataka
+12,15,2005-2006,Kancheepuram Silk,Handicraft,Tamil Nadu
+13,16,2005-2006,Bhavani Jamakkalam,Handicraft,Tamil Nadu
+14,19,2005-2006,Kullu Shawl,Handicraft,Himachal Pradesh
+15,20,2005-2006,Bidriware,Handicraft,Karnataka
+16,21,2005-2006,Madurai Sungudi,Handicraft,Tamil Nadu
+17,22,2005-2006,Orissa Ikat,Handicraft,Odisha
+18,23,2005-2006,Channapatna Toys & Dolls,Handicraft,Karnataka
+19,24,2005-2006,Mysore Rosewood Inlay,Handicraft,Karnataka
+20,25,2005-2006,Kangra Tea,Agricultural,Himachal Pradesh
+21,26,2005-2006,Coimbatore Wet Grinder,Manufactured,Tamil Nadu
+22,28,2005-2006,Srikalahasthi Kalamkari,Handicraft,Andhra Pradesh
+23,29,2005-2006,Mysore Sandalwood Oil,Manufactured,Karnataka
+24,30,2005-2006,Mysore Sandal soap,Manufactured,Karnataka
+25,31,2005-2006,Kasuti Embroidery,Handicraft,Karnataka
+26,32,2005-2006,Mysore Traditional Paintings,Handicraft,Karnataka
+27,33,2005-2006,Coorg Orange,Agricultural,Karnataka
+28,34,2006-2007,Mysore Betel leaf,Agricultural,Karnataka
+29,35,2006-2007,Nanjanagud Banana,Agricultural,Karnataka
+30,37,2006-2007,Madhubani Paintings,Handicraft,Bihar
+31,44,2007-2008,Kondapalli Bommallu,Handicraft,Andhra Pradesh
+32,47,2007-2008,Thanjavur Paintings,Handicraft,Tamil Nadu
+33,53,2007-2008,Silver Filigree of Karimnagar,Handicraft,Telangana
+34,54,2007-2008,Alleppey Coir,Handicraft,Kerala
+35,55,2007-2008,Muga Silk of Assam,Handicraft,Assam
+36,65,2007-2008,Temple Jewellery of Nagercoil,Handicraft,Tamil Nadu
+37,69,2007-2008,Mysore Malligae,Agricultural,Karnataka
+38,70,2007-2008,Udupi Malligae,Agricultural,Karnataka
+39,71,2007-2008,Hadagali Malligae,Agricultural,Karnataka
+40,17,2007-2008,Navara Rice,Agricultural,Kerala
+41,36,2007-2008,Palakkadan Matta Rice,Agricultural,Kerala
+42,63,2007-2008,Thanjavur Art Plate,Handicraft,Tamil Nadu
+43,76,2007-2008,Ilkal Sarees,Handicraft,Karnataka
+44,73,2007-2008,Applique (Khatwa) Work of Bihar,Handicraft,Bihar
+45,74,2007-2008,Sujini Embroidery Work of Bihar,Handicraft,Bihar
+46,75,2007-2008,Sikki Grass Products of Bihar,Handicraft,Bihar
+47,49 & 56,2007-2008,Malabar Pepper,Agricultural,"India
+ (Kerala, Karnataka & Tamilnadu)"
+48,50,2007-2008,Allahabad Surkha Guava,Agricultural,Uttar Pradesh
+49,52,2007-2008,Nakshi Kantha,Handicraft,West Bengal
+50,60,2007-2008,Ganjifa Cards of Mysore,Handicraft,Karnataka
+51,61,2007-2008,Navalgund Durries,Handicraft,Karnataka
+52,62,2007-2008,Karnataka Bronzeware,Handicraft,Karnataka
+53,77,2007-2008,Molakalmuru Sarees,Handicraft,Karnataka
+54,85,2007-2008,Monsooned Malabar Arabica Coffee,Agricultural,India (Karnataka & Kerala)
+55,114,2007-2008,Monsooned Malabar Robusta Coffee,Agricultural,India (Karnataka & Kerala)
+56,72,2007-2008,Alleppey Green Cardamom,Agricultural,"India
+ (Kerala & Tamilnadu)"
+57,78,2007-2008,Coorg Green Cardamom,Agricultural,Karnataka
+58,95,2007-2008,East India Leather,Manufactured,Tamil Nadu
+59,94,2007-2008,Salem Silk known as Salem Venpattu,Handicraft,Tamil Nadu
+60,93,2007-2008,Kovai Kora Cotton Sarees,Handicraft,Tamil Nadu
+61,92,2007-2008,Arani Silk,Handicraft,Tamil Nadu
+62,83,2008-2009,Bastar Dhokra,Handicraft,Chattisgarh
+63,84,2008-2009,Bastar Wooden Craft,Handicraft,Chattisgarh
+64,91,2008-2009,Nirmal Toys and Craft,Handicraft,Telangana
+65,59,2008-2009,Maddalam of Palakkad,Handicraft,Kerala
+66,58,2008-2009,Screw Pine Craft of Kerala,Handicraft,Kerala
+67,64,2008-2009,Swamimalai Bronze Icons,Handicraft,Tamil Nadu
+68,82,2008-2009,Bastar Iron Craft,Handicraft,Chattisgarh
+69,87,2008-2009,Konark Stone carving,Handicraft,Odisha
+70,88,2008-2009,Orissa Pattachitra,Handicraft,Odisha
+71,90,2008-2009,Machilipatnam Kalamkari,Handicraft,Andhra Pradesh
+72,110,2008-2009,Eathomozhy Tall Coconut,Agricultural,Tamil Nadu
+73,57,2008-2009,Brass Broidered Coconut Shell Crafts of Kerala,Handicraft,Kerala
+74,66,2008-2009,Blue Pottery of Jaipur,Handicraft,Rajasthan
+75,67,2008-2009,Molela Clay Work,Handicraft,Rajasthan
+76,68,2008-2009,Kathputlis of Rajasthan,Handicraft,Rajasthan
+77,97,2008-2009,Leather Toys of Indore,Handicraft,Madhya Pradesh
+78,98,2008-2009,Bagh Prints of Madhya Pradesh,Handicraft,Madhya Pradesh
+79,100,2008-2009,Sankheda Furniture,Handicraft,Gujarat
+80,101,2008-2009,Agates of Cambay,Handicraft,Gujarat
+81,102,2008-2009,Bell Metal Ware of Datia and Tikamgarh,Handicraft,Madhya Pradesh
+82,103,2008-2009,Kutch Embroidery,Handicraft,Gujarat
+83,51,2008-2009,Kani Shawl,Handicraft,Jammu & Kashmir
+84,79,2008-2009,Chamba Rumal,Handicraft,Himachal Pradesh
+85,80,2008-2009,Dharwad Pedha,Food stuff,Karnataka
+86,81,2008-2009,Pokkali Rice,Agricultural,Kerala
+87,86 & 108,2008-2009,Pipli Applique Work,Handicraft,Odisha
+88,89,2008-2009,Budithi Bell & Brass Metal Craft,Handicraft,Andhra Pradesh
+89,96,2008-2009,Thanjavur Doll,Handicraft,Tamil Nadu
+90,104,2008-2009,Santiniketan Leather Goods,Handicraft,West Bengal
+91,105,2008-2009,Nirmal Furniture,Handicraft,Telangana
+92,106,2008-2009,Nirmal Paintings,Handicraft,Telangana
+93,107,2008-2009,Andhra Pradesh Leather Puppetry,Handicraft,Andhra Pradesh
+94,111,2008-2009,Malda Laxman Bhog Mango,Agricultural,West Bengal
+95,112,2008-2009,Malda Khirsapati (Himsagar) Mango,Agricultural,West Bengal
+96,113,2008-2009,Malda Fazli Mango,Agricultural,West Bengal
+97,46,2008-2009,Kashmir Pashmina,Handicraft,Jammu & Kashmir
+98,48,2008-2009,Kashmir Sozani Craft,Handicraft,Jammu & Kashmir
+99,109,2008-2009,Naga Mircha,Agricultural,Nagaland
+100,116&117,2008-2009,Nilgiri (Orthodox),Agricultural,Tamil Nadu
+101,115 &118,2008-2009,Assam (Orthodox),Agricultural,Assam
+102,119,2008-2009,Lucknow Chikan Craft,Handicraft,Uttar Pradesh
+103,124,2008-2009,Virupakshi Hill Banana,Agricultural,Tamil Nadu
+104,126,2008-2009,Sirumalai Hill Banana,Agricultural,Tamil Nadu
+105,120,2008-2009,Feni,Manufactured,Goa
+106,122,2008-2009,Uppada Jamdani Sarees,Handicraft,Andhra Pradesh
+107,121,2009-2010,Tirupathi Laddu,Food stuff,Andhra Pradesh
+108,125,2009-2010,Mango Malihabadi Dusseheri,Agricultural,Uttar Pradesh
+109,128,2009-2010,Puneri Pagadi,Handicraft,Maharashtra
+110,99,2009-2010,Banaras Brocades and Sarees,Handicraft,Uttar Pradesh
+111,127,2009-2010,Tangaliya Shawl,Handicraft,Gujarat
+112,130 & 141,2009-2010,Vazhakulam Pineapple,Agricultural,Kerala
+113,131,2009-2010,Devanahalli Pomello,Agricultural,Karnataka
+114,132,2009-2010,Appemidi Mango,Agricultural,Karnataka
+115,133,2009-2010,Kamalapur Red Banana,Agricultural,Karnataka
+116,138,2009-2010,Santipore Saree,Handicraft,West Bengal
+117,144,2009-2010,Cannanore Home Furnishings,Handicraft,Kerala
+118,43,2009-2010,Peruvian Pisco,Manufactured,Peru
+119,147,2009-2010,Sanganeri Hand Block Printing,Handicraft,Rajasthan
+120,152,2009-2010,Balaramapuram Sarees and Fine Cotton Fabrics,Handicraft,Kerala
+121,142,2010-2011,Bikaneri Bhujia,Food Stuff,Rajasthan
+122,143,2010-2011,Guntur Sannam Chilli,Agricultural,Andhra Pradesh
+123,123,2010-2011,Nashik Valley Wine,Manufactured,Maharashtra
+124,137,2010-2011,Gadwal Sarees,Handicraft,Telangana
+125,149,2010-2011,Kinnauri Shawl,Handicraft,Himachal Pradesh
+126,170,2010-2011,Kasaragod Sarees,Handicraft,Kerala
+127,179,2010-2011,Kuthampully Sarees,Handicraft,Kerala
+128,134,2010-2011,Sandur Lambani Embroidery,Handicraft,Karnataka
+129,148,2010-2011,Hand Made Carpet of Bhadohi,Handicraft,Uttar Pradesh
+130,150 & 153,2010-2011,Paithani Sarees and Fabrics,Handicraft,Maharashtra
+131,154,2010-2011,Mahabaleshwar Strawberry,Agricultural,Maharashtra
+132,193,2010-2011,Hyderabad Haleem,Food Stuff,Telangana
+133,140,2010-2011,Champangne,Manufactured,France
+134,146,2010-2011,Napa Valley,Manufactured,United States of America
+135,163,2010-2011,Central Travancore Jaggery,Agricultural,Kerala
+136,172,2010-2011,Champa Silk Saree And Fabrics,Handicraft,Chhattisgarh
+137,186,2010-2011,Wayanad Jeerakasala Rice,Agricultural,Kerala
+138,187,2010-2011,Wayanad Gandhakasala Rice,Agricultural,Kerala
+139,191,2010-2011,Kota Doria (Logo),Handicraft,Rajasthan
+140,165,2010-2011,Nashik Grapes,Agricultural,Maharashtra
+141,171,2010-2011,Surat Zari Craft,Handicraft,Gujarat
+142,190,2010-2011,Cheriyal Paintings,Handicraft,Telangana
+143,194,2010-2011,Pembarthi Metal Craft,Handicraft,Telangana
+144,6,2010-2011,Payyannur Pavithra Ring,Handicraft,Kerala
+145,27,2010-2011,Phulkari,Handicraft,"India
+ (Punjab, Haryana & Rajasthan)"
+146,136,2010-2011,Khandua Saree and Fabrics,Handicraft,Odisha
+147,129,2010-2011,Byadagi Chilli,Agricultural,Karnataka
+148,151,2010-2011,Scotch Whisky,Manufactured,United Kingdom
+149,164,2010-2011,Prosciutto di Parma,Food Stuff,Italy
+150,183,2011-2012,Bagru Hand Block Print,Handicraft,Rajasthan
+151,189,2011-2012,Venkatagiri Sarees,Handicraft,Andhra Pradesh
+152,185,2011-2012,Gir Kesar Mango,Agricultural,Gujarat
+153,192,2011-2012,Bhalia Wheat,Agricultural,Gujarat
+154,201,2011-2012,Villianur Terracotta Works,Handicraft,Pondicherry
+155,202,2011-2012,Tirukanur Papier Mache Craft,Handicraft,Pondicherry
+156,230,2011-2012,Cognac,Manufactured,France
+157,174,2011-2012,Kachchh Shawls,Handicraft,Gujarat
+158,199,2011-2012,Udupi Mattu Gulla Brinjal,Agricultural,Karnataka
+159,173,2011-2012,Baluchari Saree,Handicraft,West Bengal
+160,176,2011-2012,Dhaniakhali Saree,Handicraft,West Bengal
+161,181,2011-2012,Kashmir Paper Machie,Handicraft,Jammu & Kashmir
+162,182,2011-2012,Kashmir Walnut Wood Carving,Handicraft,Jammu & Kashmir
+163,203,2011-2012,Bobbili Veena,Handicraft,Andhra Pradesh
+164,204,2011-2012,Khatamband,Handicraft,Jammu & Kashmir
+165,213,2011-2012,Kinhal Toys,Handicraft,Karnataka
+166,225,2011-2012,Chendamangalam Dhoties & Set Mundu,Handicraft,Kerala
+167,226,2011-2012,Porto,Manufactured,Portugal
+168,227,2011-2012,Douro,Manufactured,Portugal
+169,167,2011-2012,Gopalpur Tussar Fabrics,Handicraft,Odisha
+170,188,2011-2012,Siddipet Gollabama,Handicraft,Telangana
+171,228,2011-2012,Ganjam Kewda Rooh,Manufactured,Odisha
+172,229,2011-2012,Ganjam Kewda Flower,Agricultural,Odisha
+173,197,2012-2013,Maheshwar Sarees & Fabrics,Handicraft,Madhya Pradesh
+174,207,2012-2013,Dhalapathar Parda & Fabrics,Handicraft,Odisha
+175,208,2012-2013,Sambalpuri Bandha Saree & Fabrics,Handicraft,Odisha
+176,217,2012-2013,Bomkai Saree & Fabrics,Handicraft,Odisha
+177,219,2012-2013,Habaspuri Saree & Fabrics,Handicraft,Odisha
+178,220,2012-2013,Berhampur Patta (Phoda Kumbha) Saree & Joda,Handicraft,Odisha
+179,180,2012-2013,Bhagalpur Silk,Handicraft,Bihar
+180,198,2012-2013,Mangalagiri Sarees and Fabrics,Handicraft,Andhra Pradesh
+181,238,2012-2013,Madurai Malli,Agricultural,Tamil Nadu
+182,243,2012-2013,Tequila,Manufactured,Mexico
+183,195,2012-2013,"Pattamadai Pai (""Pattamadai Mat"")",Handicraft,Tamil Nadu
+184,196,2012-2013,"Nachiarkoil Kuthuvilakku (""Nachiarkoil Lamp"")",Handicraft,Tamil Nadu
+185,200,2012-2013,Chettinad Kottan,Handicraft,Tamil Nadu
+186,214,2012-2013,Narayanpet Handloom Sarees,Handicraft,Telangana
+187,135,2012-2013,Toda Embroidery,Handicraft,Tamil Nadu
+188,209,2012-2013,Thanjavur Veenai,Handicraft,Tamil Nadu
+189,211,2012-2013,Bangalore Blue Grapes,Agricultural,Karnataka
+190,233,2012-2013,Agra Durrie,Handicraft,Uttar Pradesh
+191,234,2012-2013,Farrukhabad Prints,Handicraft,Uttar Pradesh
+192,236,2012-2013,Lucknow Zardozi,Handicraft,Uttar Pradesh
+193,237,2012-2013,Banaras Brocades and Sarees (Logo),Handicraft,Uttar Pradesh
+194,205,2013-2014,Kalanamak Rice,Agricultural,Uttar Pradesh
+195,232,2013-2014,Patan Patola,Handicraft,Gujarat
+196,386,2013-2014,Orissa Pattachitra (Logo),Handicraft,Odisha
+197,387,2013-2014,Bastar Dhokra (Logo),Handicraft,Chhattisgarh
+198,388,2013-2014,Bell Metal Ware of Datia and Tikamgarh (Logo),Handicraft,Madhya Pradesh
+199,242,2013-2014,Kaipad Rice,Agricultural,Kerala
+200,383,2013-2014,Kullu ShawL (Logo),Handicraft,Himachal Pradesh
+201,384,2013-2014,Muga Silk of Assam (Logo),Handicraft,Assam
+202,155,2013-2014,Firozabad Glass,Handicraft,Uttar Pradesh
+203,157,2013-2014,Kannauj Perfume,Manufactured,Uttar Pradesh
+204,159,2013-2014,Kanpur Saddlery,Handicraft,Uttar Pradesh
+205,161,2013-2014,Moradabad Metal Craft,Handicraft,Uttar Pradesh
+206,184,2013-2014,Saharanpur Wood Craft,Handicraft,Uttar Pradesh
+207,215,2013-2014,Dharmavaram Handloom Pattu Sarres And Paavadas,Handicraft,Andhra Pradesh
+208,239,2013-2014,Warli Painting,Handicraft,"India (Maharashtra, Gujarat, Dadara &
+ Nagar Haveli, Daman Diu)"
+209,240,2013-2014,Kolhapur Jaggery,Agricultural,Maharashtra
+210,244,2013-2014,Thewa Art Work,Handicraft,Rajasthan
+211,371,2013-2014,Shaphee Lanphee,Handicraft,Manipur
+212,372,2013-2014,Wangkhei Phee,Handicraft,Manipur
+213,373,2013-2014,Moirang Phee,Handicraft,Manipur
+214,381 & 413,2013-2014,Kangra Paintings,Handicraft,Himachal Pradesh
+215,385,2013-2014,Nagpur Orange,Agricultural,"India
+ (Maharashtra & Madhya Pradesh)"
+216,399,2014-2015,Leather Toys of Indore (Logo),Handicraft,Madhya Pradesh
+217,212,2014-2015,Bangalore Rose Onion,Agricultural,Karnataka
+218,389,2014-2015,Meerut Scissors,Manufactured,Uttar Pradesh
+219,178,2014-2015,Khurja Pottery,Handicraft,Uttar Pradesh
+220,374,2014-2015,Naga Tree Tomato,Agricultural,Nagaland
+221,375,2014-2015,Arunachal Orange,Agricultural,Arunachal Pradesh
+222,376,2014-2015,Sikkim Large Cardamom,Agricultural,Sikkim
+223,377,2014-2015,Mizo Chilli,Agricultural,Mizoram
+224,382,2014-2015,Joynagar Moa,Food Stuff,West Bengal
+225,397,2014-2015,Banaras Gulabi Meenakari Craft,Handicraft,Uttar Pradesh
+226,435,2014-2015,Assam Karbi Anglong Ginger,Agricultural,Assam
+227,436,2014-2015,Tripura Queen Pineapple,Agricultural,Tripura
+228,479,2014-2015,Chengalikodan Nendran Banana,Agricultural,Kerala
+229,434,2014-2015,Ratlami Sev,Food Stuff,Madhya Pradesh
+230,438,2014-2015,Tezpur Litchi,Agricultural,Assam
+231,465,2014-2015,Khasi Mandarin,Agricultural,Meghalaya
+232,466,2014-2015,Kachai Lemon,Agricultural,Manipur
+233,405,2014-2015,Makrana Marble,Natural Goods,Rajasthan
+234,457,2014-2015,Varanasi Wooden Lacquerware & Toys,Handicraft,Uttar Pradesh
+235,458,2014-2015,Mirzapur Handmade Dari,Handicraft,Uttar Pradesh
+236,437,2015-2016,Memong Narang,Agricultural,Meghalaya
+237,459,2015-2016,Nizamabad Black Pottery,Handicrafts,Uttar Pradesh
+238,145,2015-2016,Basmati,Agricultural,"India (Punjab / Haryana / Himachal Pradesh / Delhi / Uttarkhand / Uttar Pradesh / Jammu &
+ Kashmir)"
+239,505,2015-2016,Bagh Prints of Madhya Pradesh (Logo ),Handicrafts,Madhya Pradesh
+240,507,2015-2016,Sankheda Furniture (Logo),Handicrafts,Gujarat
+241,509,2015-2016,Kutch Embroidery (Logo),Handicrafts,Gujarat
+242,510,2015-2016,Karnataka Bronzeware (Logo),Handicrafts,Karnataka
+243,511,2015-2016,Ganjifa Cards of Mysore (Logo),Handicrafts,Karnataka
+244,512,2015-2016,Navalgund Durries (Logo),Handicrafts,Karnataka
+245,513,2015-2016,Thanjavur Art Plate (Logo),Handicrafts,Tamil Nadu
+246,514,2015-2016,Swamimalai Bronze Icons (Logo),Handicrafts,Tamil Nadu
+247,515,2015-2016,Temple Jewellery of Nagercoil (Logo),Handicrafts,Tamil Nadu
+248,470,2015-2016,Ajara Ghansal Rice,Agricultural,Maharashtra
+249,472,2015-2016,Mangalwedha Jowar,Agricultural,Maharashtra
+250,474,2015-2016,Sindhudurg & Ratnagiri Kokum,Agricultural,Maharashtra
+251,508,2015-2016,Agates of Cambay (Logo),Handicrafts,Gujarat
+252,210,2015-2016,Guledgudd Khana,Handicrafts,Karnataka
+253,224,2015-2016,Udupi Sarees,Handicrafts,Karnataka
+254,402,2015-2016,Kuthampally Dhoties & Set Mundu,Handicrafts,Kerala
+255,476,2015-2016,Waghya Ghevada,Agricultural,Maharashtra
+256,477,2015-2016,Navapur Tur Dal,Agricultural,Maharashtra
+257,489,2015-2016,Vengurla Cashew,Agricultural,Maharashtra
+258,491,2015-2016,Lasalgaon Onion,Agricultural,Maharashtra
+259,516,2015-2016,Maddalam of Palakkad (Logo),Handicrafts,Kerala
+260,517,2015-2016,Brass Broidered Coconut Shell Craft of Kerala (Logo),Handicrafts,Kerala
+261,518,2015-2016,Screw Pine Craft of Kerala (Logo),Handicrafts,Kerala
+262,490,2016-2017,Sangli Raisins,Agricultural,Maharashtra
+263,351,2016-2017,Parmigiano Reggiano,Manufactured,Italy
+264,398,2016-2017,Banaras Metal Repouse Craft,Handicrafts,Uttar Pradesh
+265,494,2016-2017,Beed Custard Apple,Agricultural,Maharashtra
+266,495,2016-2017,Jalna Sweet Orange,Agricultural,Maharashtra
+267,520,2016-2017,Uttarakhand Tejpat,Agricultural,Uttarakhand
+268,471,2016-2017,Waigaon Turmeric,Agricultural,Maharashtra
+269,500,2016-2017,Purandar Fig,Agricultural,Maharashtra
+270,501,2016-2017,Jalgaon Bharit Brinjal,Agricultural,Maharashtra
+271,502,2016-2017,Solapur Pomegranate,Agricultural,Maharashtra
+272,527,2016-2017,Kashmiri Hand Knotted Carpet,Handicrafts,Jammu & Kashmir
+273,221,2016-2017,Jamnagari Bandhani,Handicrafts,Gujarat
+274,503,2016-2017,Prosecco,Manufactured,Italy
+275,532,2016-2017,Mysore Silk (Logo),Handicrafts,Karnataka
+276,177,2016-2017,Varanasi Glass beads,Handicrafts,Uttar Pradesh
+277,349,2016-2017,Asiago,Food Stuff,Italy
+278,473,2016-2017,Bhiwapur Chilli,Agricultural,Maharashtra
+279,478,2016-2017,Ambemohar Rice,Agricultural,Maharashtra
+280,493,2016-2017,Dahanu Gholvad Chikoo,Agricultural,Maharashtra
+281,498,2016-2017,Jalgaon Banana,Agricultural,Maharashtra
+282,499,2016-2017,Marathwada Kesar Mango,Agricultural,Maharashtra
+283,390,2016-2017,Karvath Kati Sarees & Fabrics,Handicrafts,Maharashtra
+284,537,2016-2017,Applique (Khatwa) Work of Bihar (Logo),Handicrafts,Bihar
+285,539,2016-2017,Molela Clay Work of Rajasthan (Logo),Handicrafts,Rajasthan
+286,433,2016-2017,Bandar Laddu,Food Stuff,Andhra Pradesh
+287,439,2016-2017,Joha Rice of Assam,Agricultural,Assam
+288,522,2016-2017,Udayagiri Wooden Cutlery,Handicrafts,Andhra Pradesh
+289,525,2016-2017,Bardhaman Sitabhog,Food Stuff,West Bengal
+290,526,2016-2017,Bardhaman Mihidana,Food Stuff,West Bengal
+291,536,2016-2017,Sikki Grass Products of Bihar (Logo),Handicrafts,Bihar
+292,538,2016-2017,Sujini Embroidery Work of Bihar(Logo),Handicrafts,Bihar
+293,540,2016-2017,Blue Pottery of Jaipur (Logo),Handicrafts,Rajasthan
+294,541,2016-2017,Kathputlis of Rajasthan (Logo),Handicrafts,Rajasthan
+295,241,2017-2018,Banaganapalle Mangoes,Agricultural,"India
+ (Telangana & Andhra Pradesh"
+296,562,2017-2018,Pochampally Ikat (Logo),Handicrafts,Telangana
+297,531,2017-2018,Gobindobhog Rice,Agricultural,West Bengal
+298,481,2017-2018,Durgi Stone Carvings,Handicrafts,Andhra Pradesh
+299,482,2017-2018,Etikoppaka Toys,Handicrafts,Andhra Pradesh
+300,530,2017-2018,Tulapanji Rice,Agricultural,West Bengal
+301,542,2017-2018,Chakshesang Shawl,Handicrafts,Nagaland
+302,426,2017-2018,Mahabalipuram Stone Sculpture,Handicrafts,Tamil Nadu
+303,533,2017-2018,Banglar Rasogolla,Food Stuff,West Bengal
+304,534,2017-2018,Lamphun Brocade Thai Silk,Handicrafts,Thailand
+305,543,2017-2018,Nilambur Teak,Agricultural,Kerala
+306,453,2017-2018,Bankura Panchmura Terracotta Craft,Handicraft,West Bengal
+307,519,2017-2018,Pokaran Pottery,Handicraft,Rajasthan
+308,521,2017-2018,Adilabad Dokra,Handicraft,Telangana
+309,523,2017-2018,Warangal Durries,Handicraft,Telangana
+310,524,2017-2018,Allagadda Stone Carving,Handicraft,Andhra Pradesh
+311,551,2017-2018,Bhagalpuri Zardalu,Agricultural,Bihar
+312,553,2017-2018,Katarni Rice,Agricultural,Bihar
+313,554,2017-2018,Magahi Paan,Agricultural,Bihar
+314,555,2017-2018,Ghazipur Wall-hanging,Handicraft,Uttar Pradesh
+315,556,2017-2018,Varanasi Soft Stone Jali Work,Handicraft,Uttar Pradesh
+316,563,2017-2018,Bengal Dokra,Handicraft,West Bengal
+317,564,2017-2018,Bengal Patachitra,Handicraft,West Bengal
+318,565,2017-2018,Purulia Chau Mask,Handicraft,West Bengal
+319,566,2017-2018,Wooden Mask of Kushmandi,Handicraft,West Bengal
+320,567,2017-2018,Madur kathi,Handicraft,West Bengal
+321,378,2018-2019,Jhabua Kadaknath Black Chicken Meat,Food Stuff,Madhya Pradesh
+322,558,2018-2019,Boka Chaul,Agricultural,Assam
+323,350 & 577,2018-2019,Grana Padano,Manufactured,Italy
+324,139,2018-2019,Alphonso,Agricultural,Maharashtra
+325,380,2018-2019,RajKot Patola,Handicraft,Gujarat
+326,552,2018-2019,Shahi Litchi of Bihar,Agricultural,Bihar
+327,496,2018-2019,Sangli Turmeric,Agricultural,Maharashtra
+328,585,2018-2019,Pethapur Printing Blocks,Handicraft,Gujarat
+329,169,2018-2019,Kolhapuri Chappal,Handicraft,India (Karnataka & Maharashtra)
+330,584,2018-2019,Silao Khaja,Food Stuff,Bihar
+331,604,2018-2019,Coorg Arabica Coffee,Agricultural,Karnataka
+332,605,2018-2019,Wayanaad Robusta Coffee,Agricultural,Kerala
+333,606,2018-2019,Chikmagalur Arabica Coffee,Agricultural,Karnataka
+334,607,2018-2019,Araku Valley Arabica Coffee,Agricultural,"India
+ (Andhra Pradesh & Odisha)"
+335,608,2018-2019,Bababudangiris Arabica Coffee,Agricultural,Karnataka
+336,432,2018-2019,Himachali Kala Zeera,Agricultural,Himachal Pradesh
+337,464,2018-2019,Sirsi Supari,Agricultural,Karnataka
+338,468,2018-2019,Himachali Chulli Oil,Manufactured,Himachal Pradesh
+339,557,2018-2019,Chunar Balua Patthar,Natural,Uttar Pradesh
+340,231,2018-2019,Erode Manjal (Erode Turmeric),Agricultural,Tamil Nadu
+341,613,2018-2019,Marayoor Jaggery (Marayoor Sharkara),Agricultural,Kerala
+342,480,2018-2019,Thirubuvanam Silk Sarees,Handicraft,Tamil Nadu
+343,611,2018-2019,Jeeraphool,Agricultural,Chhattisgarh
+344,610,2019-2020,Kandhamal Haladi,Agricultural,Odisha
+345,612,2019-2020,Odisha Rasagola,Food Stuff,Odisha
+346,616,2019-2020,Kodaikanal Malai Poondu,Agricultural,Tamil Nadu
+347,586,2019-2020,Pawndum,Handicraft,Mizoram
+348,587,2019-2020,Ngotekherh,Handicraft,Mizoram
+349,588,2019-2020,Hmaram,Handicraft,Mizoram
+350,550,2019-2020,Palani Panchamirtham,Food Stuff,Tamil Nadu
+351,582,2019-2020,Tawlhlohpuan,Handicraft,Mizoram
+352,583,2019-2020,Mizo Puanchei,Handicraft,Mizoram
+353,593,2019-2020,Gulbarga Tur Dal,Agricultural,Karnataka
+354,641,2019-2020,Tirur Betel Leaf (Tirur Vettila),Agricultural,Kerala
+355,345,2019-2020,Irish Whiskey,Manufactured,Ireland
+356,618,2019-2020,Khola Chilli,Agricultural,Goa
+357,625,2019-2020,Idu Mishmi Textiles,Handicraft,Arunachal Pradesh
+358,400,2019-2020,Dindigul Locks,Handicraft,Tamil Nadu
+359,422,2019-2020,Kandangi Saree,Handicraft,Tamil Nadu
+360,403,2019-2020,Srivilliputtur Palkova,Food Stuff,Tamil Nadu
+361,609,2019-2020,Kaji Nemu,Agricultural,Assam
+362,572,2019-2020,Chokuwa Rice of Assam,Agricultural,Assam
+363,486,2019-2020,Kovilpatti Kadalai Mittai,Food Stuff,Tamil Nadu
+364,602,2019-2020,Chak - Hao,Agricultural,India (Manipur & Nagaland)
+365,619,2019-2020,Gorakhpur Terracotta,Handicraft,Uttar Pradesh
+366,635,2020-2021,Kashmir Saffron,Agricultural,Jammu & Kashmir
+367,423,2020-2021,Thanjavur Netti Works,Handicraft,Tamil Nadu
+368,429,2020-2021,Arumbavur Wood Carvings,Handicraft,Tamil Nadu
+369,599,2020-2021,Telia Rumal,Handicraft,Telangana
+370,658,2020-2021,Sohrai – Khovar Painting,Handicraft,Jharkhand
+371,621,2021-2022,Chunar Glaze Pottery,Handicraft,Uttar Pradesh
+372,628,2021-2022,Sojat Mehndi,Agricultural,Rajasthan
+373,424,2021-2022,Karuppur Kalamkari Paintings,Handicraft,Tamil Nadu
+374,431,2021-2022,Kallakurichi Wood Carving,Handicraft,Tamil Nadu
+375,589,2021-2022,Bhotia Dann of Uttarakhand,Handicraft,Uttarakhand
+376,643,2021-2022,Judima,Manufactured,Assam
+377,263,2021-2022,Chios Mastiha,Manufactured,Greece
+378,347,2021-2022,Gorgonzola,Food Stuff,Italy
+379,366,2021-2022,Brunello Di Montalcino,Manufactured,Italy
+380,367,2021-2022,Lambrusco Di Sorbara,Manufactured,Italy
+381,368,2021-2022,Lambrusco Grasparossa Di Castelvetro,Manufactured,Italy
+382,663,2021-2022,Balaghat Chinnor,Agricultural,Madhya Pradesh
+383,660,2021-2022,Kuttiattoor Mango (Kuttiattoor Manga),Agricultural,Kerala
+384,362,2021-2022,Montepulciano D’abruzzo,Manufactured,Italy
+385,644,2021-2022,Pithora,Handicraft,Gujarat
+386,656,2021-2022,Manjusha Art,Handicraft,Bihar
+387,642,2021-2022,Harmal Chilli,Agricultural,Goa
+388,662,2021-2022,Edayur Chilli,Agricultural,Kerala
+389,648,2021-2022,Uttarakhand Aipan,Handicraft,Uttarakhand
+390,651,2021-2022,Munsyari Razma,Agricultural,Uttarakhand
+391,652,2021-2022,Uttarakhand Ringal Craft,Handicraft,Uttarakhand
+392,653,2021-2022,Uttarakhand Tamta Product,Handicraft,Uttarakhand
+393,654,2021-2022,Uttarakhand Thulma,Handicraft,Uttarakhand
+394,680,2021-2022,Myndoli Banana,Agricultural,Goa
+395,620,2021-2022,Banaras Zardozi,Handicraft,Uttar Pradesh
+396,622,2021-2022,Mirzapur Pital Bartan,Handicraft,Uttar Pradesh
+397,623,2021-2022,Banaras Wood Carving,Handicraft,Uttar Pradesh
+398,624,2021-2022,Banaras Hand Block Print,Handicraft,Uttar Pradesh
+399,650,2021-2022,Kumaon Chyura Oil,Agricultural,Uttarakhand
+400,655,2021-2022,Goan Khaje,Food Stuff,Goa
+401,206,2021-2022,Rataul Mango,Agricultural,Uttar Pradesh
+402,590,2021-2022,Tamenglong Orange,Agricultural,Manipur
+403,614,2021-2022,Chamba Chappal,Handicraft,Himachal Pradesh
+404,645,2021-2022,Mau Saree,Handicraft,Uttar Pradesh
+405,647,2021-2022,Lahauli Knitted Socks & Gloves,Handicraft,Himachal Pradesh
+406,675,2021-2022,Kanniyakumari Clove,Agricultural,Tamil Nadu
+407,592,2021-2022,Hathei Chilli,Agricultural,Manipur
+408,640,2021-2022,Naga Cucumber,Agricultural,Nagaland
+409,251,2021-2022,Žatecký chmel’,Manufactured,Czech Republic
+410,253,2021-2022,Münchener Bier,Manufactured,Germany
+411,401,2021-2022,Mahoba Desawari Pan,Agricultural,"India
+ (Uttar Pradesh and Madhya Pradesh)"
+412,355,2021-2022,Toscano,Manufactured,Italy
+413,629 & 630,2021-2022,Mizo Ginger,Agricultural,Mizoram
+414,636,2021-2022,Dalle Khursani,Agricultural,"India
+ (Sikkim and West Bengal)"
+415,353,2021-2022,Conegliano Valdobbiadene Prosecco,Manufactured,Italy
+416,356,2021-2022,Franciacorta,Manufactured,Italy
+417,361,2021-2022,Chianti,Manufactured,Italy
+418,262,2021-2022,Bayerisches Bier,Manufactured,Germany
+419,344,2021-2022,Irish Cream / Irish Cream Liqueur,Manufactured,Ireland
+420,467,2021-2022,Narasinghapettai Nagaswaram,Handicraft,Tamil Nadu
+421,696,2022-2023,Mithila Makhana,Agricultural,Bihar
+422,284,2022-2023,Brandy De Jerez,Manufactured,Spain
+423,346,2022-2023,Provolone Valpadana,Manufactured,Italy
+424,685,2022-2023,Alibag White Onion,Agricultural,Maharashtra
+425,686,2022-2023,Attappady Aattukombu Avara,Agricultural,Kerala
+426,687,2022-2023,Attappady Thuvara,Agricultural,Kerala
+427,736,2022-2023,Onattukara Ellu,Agricultural,Kerala
+428,749,2022-2023,Kanthalloor Vattavada Veluthulli,Agricultural,Kerala
+429,752,2022-2023,Kodungallur Pottuvellari,Agricultural,Kerala
+430,706,2022-2023,Tandur Redgram,Agricultural,Telangana
+431,729,2022-2023,Ladakh Raktsey Karpo Apricot,Agricultural,Ladakh (UT)
+432,594,2022-2023,Gamosa of Assam,Handicraft,Assam
+433,250,2022-2023,Českobudějovické Pivo,Manufactured,Czech Republic
+434,354,2022-2023,Vino Nobile Di Montepulciano,Manufactured,Italy
+435,669,2022-2023,Nagri Dubraj,Agricultural,Chhattisgarh
+436,681,2022-2023,Morena Gajak,Food Stuff,Madhya Pradesh
+437,707,2022-2023,Rewa Sunderja Mango,Agricultural,Madhya Pradesh
+438,699,2022-2023,Sharbati Gehu,Agricultural,Madhya Pradesh
+439,701,2022-2023,Gond Painting of Madhya Pradesh,Handicraft,Madhya Pradesh
+440,715,2022-2023,Adamchini Chawal,Agricultural,Uttar Pradesh
+441,720,2022-2023,Ramnathapuram Mundu Chilli,Agricultural,Tamil Nadu
+442,788,2022-2023,Vellore Spiny Brinjal,Agricultural,Tamil Nadu
+443,428,2022-2023,Myladi Stone Carvings,Handicraft,Tamil Nadu
+444,488,2022-2023,Manapparai Murukku,Food Stuff,Tamil Nadu
+445,529,2022-2023,Ooty Varkey,Food Stuff,Tamil Nadu
+446,561,2022-2023,Manamadurai Pottery,Handicraft,Tamil Nadu
+447,574,2022-2023,Thaikkal Rattan Craft,Handicraft,Tamil Nadu
+448,664,2022-2023,Aligarh Tala,Handicraft,Uttar Pradesh
+449,665,2022-2023,Bakhira Brassware,Handicraft,Uttar Pradesh
+450,666,2022-2023,Banda Shazar Patthar craft,Handicraft,Uttar Pradesh
+451,667,2022-2023,Nagina Wood Craft,Handicraft,Uttar Pradesh
+452,668,2022-2023,Pratapgarh Aonla,Agricultural,Uttar Pradesh
+453,672,2022-2023,Hathras Hing,Food Stuff,Uttar Pradesh
+454,689,2022-2023,Chilean Pisco,Manufactured,Chile
+455,694,2022-2023,Mata ni Pachhedi,Handicraft,Gujarat
+456,697,2022-2023,Wrought Iron Crafts of Dindori,Handicraft,Madhya Pradesh
+457,700,2022-2023,Ujjain Batik Print,Handicraft,Madhya Pradesh
+458,708,2022-2023,Gwalior Handmade Carpet,Handicraft,Madhya Pradesh
+459,709,2022-2023,Waraseoni Handloom Saree & Fabrics,Handicraft,Madhya Pradesh
+460,710,2022-2023,Jabalpur Stone Craft,Handicraft,Madhya Pradesh
+461,711,2022-2023,Salem Sago (Javvarisi),Food Stuff,Tamil Nadu
+462,716,2022-2023,Banaras Langda Aam (Mango),Agricultural,Uttar Pradesh
+463,717,2022-2023,Ramnagar Bhanta (Brinjal),Agricultural,Uttar Pradesh
+464,719,2022-2023,Authoor Vetrilai,Agricultural,Tamil Nadu
+465,723,2022-2023,Muzaffarnagar Gur (Jaggery),Food Stuff,Uttar Pradesh
+466,726,2022-2023,Pashmina Wool of Ladakh,Handicraft,Ladakh (UT)
+467,730,2022-2023,Banaras Pan (Betel Leaf),Agricultural,Uttar Pradesh
+468,734,2022-2023,Cumbum Panneer Thratchai,Agricultural,Tamil Nadu
+469,745,2022-2023,Indi Limbe,Agricultural,Karnataka
+470,755,2022-2023,Basohli Painting,Handicraft,Jammu & Kashmir (UT)
+471,766,2022-2023,Negamam Cotton Saree,Handicraft,Tamil Nadu
+472,771,2022-2023,Ladakh Shingskos (Wood Carving),Handicraft,Ladakh (UT)
+473,789,2022-2023,Sholavandan Vetrilai,Agricultural,Tamil Nadu
+474,800,2022-2023,Marthandam Honey,Natural,Tamil Nadu
+475,843,2022-2023,Kari Ishad Mango,Agricultural,Karnataka
+476,671,2023-2024,Mahoba Gaura Patthar Hastashlip,Handicraft,Uttar Pradesh
+477,673,2023-2024,Mainpuri Tarkashi,Handicraft,Uttar Pradesh
+478,674,2023-2024,Sambhal Horn Craft,Handicraft,Uttar Pradesh

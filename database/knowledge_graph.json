@@ -1,67 +1,5591 @@
 {
   "nodes": [
-    { "id": "region-bihar", "label": "Bihar", "type": "State" },
-    { "id": "region-rajasthan", "label": "Rajasthan", "type": "State" },
-    { "id": "region-gujarat", "label": "Gujarat", "type": "State" },
-    { "id": "region-up", "label": "Uttar Pradesh", "type": "State" },
-    { "id": "region-kashmir", "label": "Kashmir", "type": "State" },
-    { "id": "region-ap", "label": "Andhra Pradesh", "type": "State" },
-    
-    { "id": "craft-madhubani", "label": "Madhubani Painting", "type": "ArtForm" },
-    { "id": "craft-bluepottery", "label": "Jaipur Blue Pottery", "type": "ArtForm" },
-    { "id": "craft-bandhani", "label": "Bandhani Tie-Dye", "type": "ArtForm" },
-    { "id": "craft-filigree", "label": "Silver Filigree", "type": "ArtForm" },
-    { "id": "craft-pashmina", "label": "Pashmina Weaving", "type": "ArtForm" },
-    { "id": "craft-kalamkari", "label": "Kalamkari Painting", "type": "ArtForm" },
-    
-    { "id": "material-colors", "label": "Natural Vegetable Dyes", "type": "Material" },
-    { "id": "material-clay", "label": "Multani Mitti & Quartz", "type": "Material" },
-    { "id": "material-wool", "label": "Changthangi Cashmere Wool", "type": "Material" },
-    { "id": "material-silver", "label": "Pure Chandi / Silver Alloy", "type": "Material" },
-    { "id": "material-cotton", "label": "Khadi Cotton", "type": "Material" },
-    
-    { "id": "gi-madhubani", "label": "GI Tag: Madhubani Painting", "type": "GITag" },
-    { "id": "gi-bluepottery", "label": "GI Tag: Jaipur Blue Pottery", "type": "GITag" },
-    { "id": "gi-pashmina", "label": "GI Tag: Kashmir Pashmina", "type": "GITag" },
-    { "id": "gi-kalamkari", "label": "GI Tag: Srikalahasti Kalamkari", "type": "GITag" },
-    
-    { "id": "fest-diwali", "label": "Diwali", "type": "Festival" },
-    { "id": "fest-karwa", "label": "Karwa Chauth", "type": "Festival" },
-    { "id": "fest-durga", "label": "Durga Puja", "type": "Festival" },
-    { "id": "fest-eid", "label": "Eid-ul-Fitr", "type": "Festival" },
-    
-    { "id": "comm-mithila", "label": "Mithila Women Collective", "type": "Community" },
-    { "id": "comm-weaver", "label": "Kashmiri Handloom Guild", "type": "Community" },
-    { "id": "comm-potter", "label": "Jaipur Kumbhar Society", "type": "Community" }
+    {
+      "id": "comm-mithila",
+      "label": "Mithila Women Collective",
+      "type": "Community"
+    },
+    {
+      "id": "comm-potter",
+      "label": "Jaipur Kumbhar Society",
+      "type": "Community"
+    },
+    {
+      "id": "comm-weaver",
+      "label": "Kashmiri Handloom Guild",
+      "type": "Community"
+    },
+    {
+      "id": "craft-adilabad-dokra",
+      "label": "Adilabad Dokra",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-agates-of-cambay",
+      "label": "Agates of Cambay",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-agates-of-cambay-logo",
+      "label": "Agates of Cambay (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-agra-durrie",
+      "label": "Agra Durrie",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-aligarh-tala",
+      "label": "Aligarh Tala",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-allagadda-stone-carving",
+      "label": "Allagadda Stone Carving",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-alleppey-coir",
+      "label": "Alleppey Coir",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-andhra-pradesh-leather-puppetry",
+      "label": "Andhra Pradesh Leather Puppetry",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-applique-khatwa-work-of-bihar",
+      "label": "Applique (Khatwa) Work of Bihar",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-applique-khatwa-work-of-bihar-logo",
+      "label": "Applique (Khatwa) Work of Bihar (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-arani-silk",
+      "label": "Arani Silk",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-aranmula-kannadi",
+      "label": "Aranmula Kannadi",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-arumbavur-wood-carvings",
+      "label": "Arumbavur Wood Carvings",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bagh-prints-of-madhya-pradesh",
+      "label": "Bagh Prints of Madhya Pradesh",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bagh-prints-of-madhya-pradesh-logo",
+      "label": "Bagh Prints of Madhya Pradesh (Logo )",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bagru-hand-block-print",
+      "label": "Bagru Hand Block Print",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bakhira-brassware",
+      "label": "Bakhira Brassware",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-balaramapuram-sarees-and-fine-cotton-fabrics",
+      "label": "Balaramapuram Sarees and Fine Cotton Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-baluchari-saree",
+      "label": "Baluchari Saree",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-banaras-brocades-and-sarees",
+      "label": "Banaras Brocades and Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-banaras-brocades-and-sarees-logo",
+      "label": "Banaras Brocades and Sarees (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-banaras-gulabi-meenakari-craft",
+      "label": "Banaras Gulabi Meenakari Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-banaras-hand-block-print",
+      "label": "Banaras Hand Block Print",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-banaras-metal-repouse-craft",
+      "label": "Banaras Metal Repouse Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-banaras-wood-carving",
+      "label": "Banaras Wood Carving",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-banaras-zardozi",
+      "label": "Banaras Zardozi",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-banda-shazar-patthar-craft",
+      "label": "Banda Shazar Patthar craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bandhani",
+      "label": "Bandhani Tie-Dye",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bankura-panchmura-terracotta-craft",
+      "label": "Bankura Panchmura Terracotta Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-basohli-painting",
+      "label": "Basohli Painting",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bastar-dhokra",
+      "label": "Bastar Dhokra",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bastar-dhokra-logo",
+      "label": "Bastar Dhokra (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bastar-iron-craft",
+      "label": "Bastar Iron Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bastar-wooden-craft",
+      "label": "Bastar Wooden Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bell-metal-ware-of-datia-and-tikamgarh",
+      "label": "Bell Metal Ware of Datia and Tikamgarh",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bell-metal-ware-of-datia-and-tikamgarh-logo",
+      "label": "Bell Metal Ware of Datia and Tikamgarh (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bengal-dokra",
+      "label": "Bengal Dokra",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bengal-patachitra",
+      "label": "Bengal Patachitra",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-berhampur-patta-phoda-kumbha-saree-joda",
+      "label": "Berhampur Patta (Phoda Kumbha) Saree & Joda",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bhagalpur-silk",
+      "label": "Bhagalpur Silk",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bhavani-jamakkalam",
+      "label": "Bhavani Jamakkalam",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bhotia-dann-of-uttarakhand",
+      "label": "Bhotia Dann of Uttarakhand",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bidriware",
+      "label": "Bidriware",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-blue-pottery-of-jaipur",
+      "label": "Blue Pottery of Jaipur",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-blue-pottery-of-jaipur-logo",
+      "label": "Blue Pottery of Jaipur (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bluepottery",
+      "label": "Jaipur Blue Pottery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bobbili-veena",
+      "label": "Bobbili Veena",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-bomkai-saree-fabrics",
+      "label": "Bomkai Saree & Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-brass-broidered-coconut-shell-craft-of-kerala-logo",
+      "label": "Brass Broidered Coconut Shell Craft of Kerala (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-brass-broidered-coconut-shell-crafts-of-kerala",
+      "label": "Brass Broidered Coconut Shell Crafts of Kerala",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-budithi-bell-brass-metal-craft",
+      "label": "Budithi Bell & Brass Metal Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-cannanore-home-furnishings",
+      "label": "Cannanore Home Furnishings",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-chakshesang-shawl",
+      "label": "Chakshesang Shawl",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-chamba-chappal",
+      "label": "Chamba Chappal",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-chamba-rumal",
+      "label": "Chamba Rumal",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-champa-silk-saree-and-fabrics",
+      "label": "Champa Silk Saree And Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-chanderi-sarees",
+      "label": "Chanderi Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-channapatna-toys-dolls",
+      "label": "Channapatna Toys & Dolls",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-chendamangalam-dhoties-set-mundu",
+      "label": "Chendamangalam Dhoties & Set Mundu",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-cheriyal-paintings",
+      "label": "Cheriyal Paintings",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-chettinad-kottan",
+      "label": "Chettinad Kottan",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-chunar-glaze-pottery",
+      "label": "Chunar Glaze Pottery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-dhalapathar-parda-fabrics",
+      "label": "Dhalapathar Parda & Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-dhaniakhali-saree",
+      "label": "Dhaniakhali Saree",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-dharmavaram-handloom-pattu-sarres-and-paavadas",
+      "label": "Dharmavaram Handloom Pattu Sarres And Paavadas",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-dindigul-locks",
+      "label": "Dindigul Locks",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-durgi-stone-carvings",
+      "label": "Durgi Stone Carvings",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-etikoppaka-toys",
+      "label": "Etikoppaka Toys",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-farrukhabad-prints",
+      "label": "Farrukhabad Prints",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-filigree",
+      "label": "Silver Filigree",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-firozabad-glass",
+      "label": "Firozabad Glass",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-gadwal-sarees",
+      "label": "Gadwal Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-gamosa-of-assam",
+      "label": "Gamosa of Assam",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-ganjifa-cards-of-mysore",
+      "label": "Ganjifa Cards of Mysore",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-ganjifa-cards-of-mysore-logo",
+      "label": "Ganjifa Cards of Mysore (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-ghazipur-wall-hanging",
+      "label": "Ghazipur Wall-hanging",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-gond-painting-of-madhya-pradesh",
+      "label": "Gond Painting of Madhya Pradesh",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-gopalpur-tussar-fabrics",
+      "label": "Gopalpur Tussar Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-gorakhpur-terracotta",
+      "label": "Gorakhpur Terracotta",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-guledgudd-khana",
+      "label": "Guledgudd Khana",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-gwalior-handmade-carpet",
+      "label": "Gwalior Handmade Carpet",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-habaspuri-saree-fabrics",
+      "label": "Habaspuri Saree & Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-hand-made-carpet-of-bhadohi",
+      "label": "Hand Made Carpet of Bhadohi",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-hmaram",
+      "label": "Hmaram",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-idu-mishmi-textiles",
+      "label": "Idu Mishmi Textiles",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-ilkal-sarees",
+      "label": "Ilkal Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-jabalpur-stone-craft",
+      "label": "Jabalpur Stone Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-jamnagari-bandhani",
+      "label": "Jamnagari Bandhani",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kachchh-shawls",
+      "label": "Kachchh Shawls",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kalamkari",
+      "label": "Kalamkari Painting",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kallakurichi-wood-carving",
+      "label": "Kallakurichi Wood Carving",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kancheepuram-silk",
+      "label": "Kancheepuram Silk",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kandangi-saree",
+      "label": "Kandangi Saree",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kangra-paintings",
+      "label": "Kangra Paintings",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kani-shawl",
+      "label": "Kani Shawl",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kanpur-saddlery",
+      "label": "Kanpur Saddlery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-karnataka-bronzeware",
+      "label": "Karnataka Bronzeware",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-karnataka-bronzeware-logo",
+      "label": "Karnataka Bronzeware (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-karuppur-kalamkari-paintings",
+      "label": "Karuppur Kalamkari Paintings",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-karvath-kati-sarees-fabrics",
+      "label": "Karvath Kati Sarees & Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kasaragod-sarees",
+      "label": "Kasaragod Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kashmir-paper-machie",
+      "label": "Kashmir Paper Machie",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kashmir-pashmina",
+      "label": "Kashmir Pashmina",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kashmir-sozani-craft",
+      "label": "Kashmir Sozani Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kashmir-walnut-wood-carving",
+      "label": "Kashmir Walnut Wood Carving",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kashmiri-hand-knotted-carpet",
+      "label": "Kashmiri Hand Knotted Carpet",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kasuti-embroidery",
+      "label": "Kasuti Embroidery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kathputlis-of-rajasthan",
+      "label": "Kathputlis of Rajasthan",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kathputlis-of-rajasthan-logo",
+      "label": "Kathputlis of Rajasthan (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-khandua-saree-and-fabrics",
+      "label": "Khandua Saree and Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-khatamband",
+      "label": "Khatamband",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-khurja-pottery",
+      "label": "Khurja Pottery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kinhal-toys",
+      "label": "Kinhal Toys",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kinnauri-shawl",
+      "label": "Kinnauri Shawl",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kolhapuri-chappal",
+      "label": "Kolhapuri Chappal",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-konark-stone-carving",
+      "label": "Konark Stone carving",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kondapalli-bommallu",
+      "label": "Kondapalli Bommallu",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kota-doria",
+      "label": "Kota Doria",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kota-doria-logo",
+      "label": "Kota Doria (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kotpad-handloom-fabric",
+      "label": "Kotpad Handloom fabric",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kovai-kora-cotton-sarees",
+      "label": "Kovai Kora Cotton Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kullu-shawl",
+      "label": "Kullu Shawl",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kullu-shawl-logo",
+      "label": "Kullu ShawL (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kutch-embroidery",
+      "label": "Kutch Embroidery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kutch-embroidery-logo",
+      "label": "Kutch Embroidery (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kuthampally-dhoties-set-mundu",
+      "label": "Kuthampally Dhoties & Set Mundu",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-kuthampully-sarees",
+      "label": "Kuthampully Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-ladakh-shingskos-wood-carving",
+      "label": "Ladakh Shingskos (Wood Carving)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-lahauli-knitted-socks-gloves",
+      "label": "Lahauli Knitted Socks & Gloves",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-lamphun-brocade-thai-silk",
+      "label": "Lamphun Brocade Thai Silk",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-leather-toys-of-indore",
+      "label": "Leather Toys of Indore",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-leather-toys-of-indore-logo",
+      "label": "Leather Toys of Indore (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-lucknow-chikan-craft",
+      "label": "Lucknow Chikan Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-lucknow-zardozi",
+      "label": "Lucknow Zardozi",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-machilipatnam-kalamkari",
+      "label": "Machilipatnam Kalamkari",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-maddalam-of-palakkad",
+      "label": "Maddalam of Palakkad",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-maddalam-of-palakkad-logo",
+      "label": "Maddalam of Palakkad (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-madhubani",
+      "label": "Madhubani Painting",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-madhubani-paintings",
+      "label": "Madhubani Paintings",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-madur-kathi",
+      "label": "Madur kathi",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-madurai-sungudi",
+      "label": "Madurai Sungudi",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mahabalipuram-stone-sculpture",
+      "label": "Mahabalipuram Stone Sculpture",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-maheshwar-sarees-fabrics",
+      "label": "Maheshwar Sarees & Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mahoba-gaura-patthar-hastashlip",
+      "label": "Mahoba Gaura Patthar Hastashlip",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mainpuri-tarkashi",
+      "label": "Mainpuri Tarkashi",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-manamadurai-pottery",
+      "label": "Manamadurai Pottery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mangalagiri-sarees-and-fabrics",
+      "label": "Mangalagiri Sarees and Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-manjusha-art",
+      "label": "Manjusha Art",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mata-ni-pachhedi",
+      "label": "Mata ni Pachhedi",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mau-saree",
+      "label": "Mau Saree",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mirzapur-handmade-dari",
+      "label": "Mirzapur Handmade Dari",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mirzapur-pital-bartan",
+      "label": "Mirzapur Pital Bartan",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mizo-puanchei",
+      "label": "Mizo Puanchei",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-moirang-phee",
+      "label": "Moirang Phee",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-molakalmuru-sarees",
+      "label": "Molakalmuru Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-molela-clay-work",
+      "label": "Molela Clay Work",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-molela-clay-work-of-rajasthan-logo",
+      "label": "Molela Clay Work of Rajasthan (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-moradabad-metal-craft",
+      "label": "Moradabad Metal Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-muga-silk-of-assam",
+      "label": "Muga Silk of Assam",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-muga-silk-of-assam-logo",
+      "label": "Muga Silk of Assam (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-myladi-stone-carvings",
+      "label": "Myladi Stone Carvings",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mysore-rosewood-inlay",
+      "label": "Mysore Rosewood Inlay",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mysore-silk",
+      "label": "Mysore Silk",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mysore-silk-logo",
+      "label": "Mysore Silk (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-mysore-traditional-paintings",
+      "label": "Mysore Traditional Paintings",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-nachiarkoil-kuthuvilakku-nachiarkoil-lamp",
+      "label": "Nachiarkoil Kuthuvilakku (\"Nachiarkoil Lamp\")",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-nagina-wood-craft",
+      "label": "Nagina Wood Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-nakshi-kantha",
+      "label": "Nakshi Kantha",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-narasinghapettai-nagaswaram",
+      "label": "Narasinghapettai Nagaswaram",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-narayanpet-handloom-sarees",
+      "label": "Narayanpet Handloom Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-navalgund-durries",
+      "label": "Navalgund Durries",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-navalgund-durries-logo",
+      "label": "Navalgund Durries (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-negamam-cotton-saree",
+      "label": "Negamam Cotton Saree",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-ngotekherh",
+      "label": "Ngotekherh",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-nirmal-furniture",
+      "label": "Nirmal Furniture",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-nirmal-paintings",
+      "label": "Nirmal Paintings",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-nirmal-toys-and-craft",
+      "label": "Nirmal Toys and Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-nizamabad-black-pottery",
+      "label": "Nizamabad Black Pottery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-orissa-ikat",
+      "label": "Orissa Ikat",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-orissa-pattachitra",
+      "label": "Orissa Pattachitra",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-orissa-pattachitra-logo",
+      "label": "Orissa Pattachitra (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-paithani-sarees-and-fabrics",
+      "label": "Paithani Sarees and Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-pashmina",
+      "label": "Pashmina Weaving",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-pashmina-wool-of-ladakh",
+      "label": "Pashmina Wool of Ladakh",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-patan-patola",
+      "label": "Patan Patola",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-pattamadai-pai-pattamadai-mat",
+      "label": "Pattamadai Pai (\"Pattamadai Mat\")",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-pawndum",
+      "label": "Pawndum",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-payyannur-pavithra-ring",
+      "label": "Payyannur Pavithra Ring",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-pembarthi-metal-craft",
+      "label": "Pembarthi Metal Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-pethapur-printing-blocks",
+      "label": "Pethapur Printing Blocks",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-phulkari",
+      "label": "Phulkari",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-pipli-applique-work",
+      "label": "Pipli Applique Work",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-pithora",
+      "label": "Pithora",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-pochampalli-ikat",
+      "label": "Pochampalli Ikat",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-pochampally-ikat-logo",
+      "label": "Pochampally Ikat (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-pokaran-pottery",
+      "label": "Pokaran Pottery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-puneri-pagadi",
+      "label": "Puneri Pagadi",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-purulia-chau-mask",
+      "label": "Purulia Chau Mask",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-rajkot-patola",
+      "label": "RajKot Patola",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-saharanpur-wood-craft",
+      "label": "Saharanpur Wood Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-salem-fabric",
+      "label": "Salem Fabric",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-salem-silk-known-as-salem-venpattu",
+      "label": "Salem Silk known as Salem Venpattu",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-sambalpuri-bandha-saree-fabrics",
+      "label": "Sambalpuri Bandha Saree & Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-sambhal-horn-craft",
+      "label": "Sambhal Horn Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-sandur-lambani-embroidery",
+      "label": "Sandur Lambani Embroidery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-sanganeri-hand-block-printing",
+      "label": "Sanganeri Hand Block Printing",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-sankheda-furniture",
+      "label": "Sankheda Furniture",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-sankheda-furniture-logo",
+      "label": "Sankheda Furniture (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-santiniketan-leather-goods",
+      "label": "Santiniketan Leather Goods",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-santipore-saree",
+      "label": "Santipore Saree",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-screw-pine-craft-of-kerala",
+      "label": "Screw Pine Craft of Kerala",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-screw-pine-craft-of-kerala-logo",
+      "label": "Screw Pine Craft of Kerala (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-shaphee-lanphee",
+      "label": "Shaphee Lanphee",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-siddipet-gollabama",
+      "label": "Siddipet Gollabama",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-sikki-grass-products-of-bihar",
+      "label": "Sikki Grass Products of Bihar",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-sikki-grass-products-of-bihar-logo",
+      "label": "Sikki Grass Products of Bihar (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-silver-filigree-of-karimnagar",
+      "label": "Silver Filigree of Karimnagar",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-sohrai-khovar-painting",
+      "label": "Sohrai – Khovar Painting",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-solapur-chaddar",
+      "label": "Solapur Chaddar",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-solapur-terry-towel",
+      "label": "Solapur Terry Towel",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-srikalahasthi-kalamkari",
+      "label": "Srikalahasthi Kalamkari",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-sujini-embroidery-work-of-bihar",
+      "label": "Sujini Embroidery Work of Bihar",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-sujini-embroidery-work-of-bihar-logo",
+      "label": "Sujini Embroidery Work of Bihar(Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-surat-zari-craft",
+      "label": "Surat Zari Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-swamimalai-bronze-icons",
+      "label": "Swamimalai Bronze Icons",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-swamimalai-bronze-icons-logo",
+      "label": "Swamimalai Bronze Icons (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-tangaliya-shawl",
+      "label": "Tangaliya Shawl",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-tawlhlohpuan",
+      "label": "Tawlhlohpuan",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-telia-rumal",
+      "label": "Telia Rumal",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-temple-jewellery-of-nagercoil",
+      "label": "Temple Jewellery of Nagercoil",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-temple-jewellery-of-nagercoil-logo",
+      "label": "Temple Jewellery of Nagercoil (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-thaikkal-rattan-craft",
+      "label": "Thaikkal Rattan Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-thanjavur-art-plate",
+      "label": "Thanjavur Art Plate",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-thanjavur-art-plate-logo",
+      "label": "Thanjavur Art Plate (Logo)",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-thanjavur-doll",
+      "label": "Thanjavur Doll",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-thanjavur-netti-works",
+      "label": "Thanjavur Netti Works",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-thanjavur-paintings",
+      "label": "Thanjavur Paintings",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-thanjavur-veenai",
+      "label": "Thanjavur Veenai",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-thewa-art-work",
+      "label": "Thewa Art Work",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-thirubuvanam-silk-sarees",
+      "label": "Thirubuvanam Silk Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-tirukanur-papier-mache-craft",
+      "label": "Tirukanur Papier Mache Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-toda-embroidery",
+      "label": "Toda Embroidery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-udayagiri-wooden-cutlery",
+      "label": "Udayagiri Wooden Cutlery",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-udupi-sarees",
+      "label": "Udupi Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-ujjain-batik-print",
+      "label": "Ujjain Batik Print",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-uppada-jamdani-sarees",
+      "label": "Uppada Jamdani Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-uttarakhand-aipan",
+      "label": "Uttarakhand Aipan",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-uttarakhand-ringal-craft",
+      "label": "Uttarakhand Ringal Craft",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-uttarakhand-tamta-product",
+      "label": "Uttarakhand Tamta Product",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-uttarakhand-thulma",
+      "label": "Uttarakhand Thulma",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-varanasi-glass-beads",
+      "label": "Varanasi Glass beads",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-varanasi-soft-stone-jali-work",
+      "label": "Varanasi Soft Stone Jali Work",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-varanasi-wooden-lacquerware-toys",
+      "label": "Varanasi Wooden Lacquerware & Toys",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-venkatagiri-sarees",
+      "label": "Venkatagiri Sarees",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-villianur-terracotta-works",
+      "label": "Villianur Terracotta Works",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-wangkhei-phee",
+      "label": "Wangkhei Phee",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-warangal-durries",
+      "label": "Warangal Durries",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-waraseoni-handloom-saree-fabrics",
+      "label": "Waraseoni Handloom Saree & Fabrics",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-warli-painting",
+      "label": "Warli Painting",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-wooden-mask-of-kushmandi",
+      "label": "Wooden Mask of Kushmandi",
+      "type": "ArtForm"
+    },
+    {
+      "id": "craft-wrought-iron-crafts-of-dindori",
+      "label": "Wrought Iron Crafts of Dindori",
+      "type": "ArtForm"
+    },
+    {
+      "id": "fest-diwali",
+      "label": "Diwali",
+      "type": "Festival"
+    },
+    {
+      "id": "fest-durga",
+      "label": "Durga Puja",
+      "type": "Festival"
+    },
+    {
+      "id": "fest-eid",
+      "label": "Eid-ul-Fitr",
+      "type": "Festival"
+    },
+    {
+      "id": "fest-karwa",
+      "label": "Karwa Chauth",
+      "type": "Festival"
+    },
+    {
+      "id": "gi-adilabad-dokra",
+      "label": "GI Tag: Adilabad Dokra",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-agates-of-cambay",
+      "label": "GI Tag: Agates of Cambay",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-agates-of-cambay-logo",
+      "label": "GI Tag: Agates of Cambay (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-agra-durrie",
+      "label": "GI Tag: Agra Durrie",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-aligarh-tala",
+      "label": "GI Tag: Aligarh Tala",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-allagadda-stone-carving",
+      "label": "GI Tag: Allagadda Stone Carving",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-alleppey-coir",
+      "label": "GI Tag: Alleppey Coir",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-andhra-pradesh-leather-puppetry",
+      "label": "GI Tag: Andhra Pradesh Leather Puppetry",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-applique-khatwa-work-of-bihar",
+      "label": "GI Tag: Applique (Khatwa) Work of Bihar",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-applique-khatwa-work-of-bihar-logo",
+      "label": "GI Tag: Applique (Khatwa) Work of Bihar (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-arani-silk",
+      "label": "GI Tag: Arani Silk",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-aranmula-kannadi",
+      "label": "GI Tag: Aranmula Kannadi",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-arumbavur-wood-carvings",
+      "label": "GI Tag: Arumbavur Wood Carvings",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bagh-prints-of-madhya-pradesh",
+      "label": "GI Tag: Bagh Prints of Madhya Pradesh",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bagh-prints-of-madhya-pradesh-logo",
+      "label": "GI Tag: Bagh Prints of Madhya Pradesh (Logo )",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bagru-hand-block-print",
+      "label": "GI Tag: Bagru Hand Block Print",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bakhira-brassware",
+      "label": "GI Tag: Bakhira Brassware",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-balaramapuram-sarees-and-fine-cotton-fabrics",
+      "label": "GI Tag: Balaramapuram Sarees and Fine Cotton Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-baluchari-saree",
+      "label": "GI Tag: Baluchari Saree",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-banaras-brocades-and-sarees",
+      "label": "GI Tag: Banaras Brocades and Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-banaras-brocades-and-sarees-logo",
+      "label": "GI Tag: Banaras Brocades and Sarees (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-banaras-gulabi-meenakari-craft",
+      "label": "GI Tag: Banaras Gulabi Meenakari Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-banaras-hand-block-print",
+      "label": "GI Tag: Banaras Hand Block Print",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-banaras-metal-repouse-craft",
+      "label": "GI Tag: Banaras Metal Repouse Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-banaras-wood-carving",
+      "label": "GI Tag: Banaras Wood Carving",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-banaras-zardozi",
+      "label": "GI Tag: Banaras Zardozi",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-banda-shazar-patthar-craft",
+      "label": "GI Tag: Banda Shazar Patthar craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bankura-panchmura-terracotta-craft",
+      "label": "GI Tag: Bankura Panchmura Terracotta Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-basohli-painting",
+      "label": "GI Tag: Basohli Painting",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bastar-dhokra",
+      "label": "GI Tag: Bastar Dhokra",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bastar-dhokra-logo",
+      "label": "GI Tag: Bastar Dhokra (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bastar-iron-craft",
+      "label": "GI Tag: Bastar Iron Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bastar-wooden-craft",
+      "label": "GI Tag: Bastar Wooden Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bell-metal-ware-of-datia-and-tikamgarh",
+      "label": "GI Tag: Bell Metal Ware of Datia and Tikamgarh",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bell-metal-ware-of-datia-and-tikamgarh-logo",
+      "label": "GI Tag: Bell Metal Ware of Datia and Tikamgarh (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bengal-dokra",
+      "label": "GI Tag: Bengal Dokra",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bengal-patachitra",
+      "label": "GI Tag: Bengal Patachitra",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-berhampur-patta-phoda-kumbha-saree-joda",
+      "label": "GI Tag: Berhampur Patta (Phoda Kumbha) Saree & Joda",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bhagalpur-silk",
+      "label": "GI Tag: Bhagalpur Silk",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bhavani-jamakkalam",
+      "label": "GI Tag: Bhavani Jamakkalam",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bhotia-dann-of-uttarakhand",
+      "label": "GI Tag: Bhotia Dann of Uttarakhand",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bidriware",
+      "label": "GI Tag: Bidriware",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-blue-pottery-of-jaipur",
+      "label": "GI Tag: Blue Pottery of Jaipur",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-blue-pottery-of-jaipur-logo",
+      "label": "GI Tag: Blue Pottery of Jaipur (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bluepottery",
+      "label": "GI Tag: Jaipur Blue Pottery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bobbili-veena",
+      "label": "GI Tag: Bobbili Veena",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-bomkai-saree-fabrics",
+      "label": "GI Tag: Bomkai Saree & Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-brass-broidered-coconut-shell-craft-of-kerala-logo",
+      "label": "GI Tag: Brass Broidered Coconut Shell Craft of Kerala (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-brass-broidered-coconut-shell-crafts-of-kerala",
+      "label": "GI Tag: Brass Broidered Coconut Shell Crafts of Kerala",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-budithi-bell-brass-metal-craft",
+      "label": "GI Tag: Budithi Bell & Brass Metal Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-cannanore-home-furnishings",
+      "label": "GI Tag: Cannanore Home Furnishings",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-chakshesang-shawl",
+      "label": "GI Tag: Chakshesang Shawl",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-chamba-chappal",
+      "label": "GI Tag: Chamba Chappal",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-chamba-rumal",
+      "label": "GI Tag: Chamba Rumal",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-champa-silk-saree-and-fabrics",
+      "label": "GI Tag: Champa Silk Saree And Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-chanderi-sarees",
+      "label": "GI Tag: Chanderi Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-channapatna-toys-dolls",
+      "label": "GI Tag: Channapatna Toys & Dolls",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-chendamangalam-dhoties-set-mundu",
+      "label": "GI Tag: Chendamangalam Dhoties & Set Mundu",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-cheriyal-paintings",
+      "label": "GI Tag: Cheriyal Paintings",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-chettinad-kottan",
+      "label": "GI Tag: Chettinad Kottan",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-chunar-glaze-pottery",
+      "label": "GI Tag: Chunar Glaze Pottery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-dhalapathar-parda-fabrics",
+      "label": "GI Tag: Dhalapathar Parda & Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-dhaniakhali-saree",
+      "label": "GI Tag: Dhaniakhali Saree",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-dharmavaram-handloom-pattu-sarres-and-paavadas",
+      "label": "GI Tag: Dharmavaram Handloom Pattu Sarres And Paavadas",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-dindigul-locks",
+      "label": "GI Tag: Dindigul Locks",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-durgi-stone-carvings",
+      "label": "GI Tag: Durgi Stone Carvings",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-etikoppaka-toys",
+      "label": "GI Tag: Etikoppaka Toys",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-farrukhabad-prints",
+      "label": "GI Tag: Farrukhabad Prints",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-firozabad-glass",
+      "label": "GI Tag: Firozabad Glass",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-gadwal-sarees",
+      "label": "GI Tag: Gadwal Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-gamosa-of-assam",
+      "label": "GI Tag: Gamosa of Assam",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-ganjifa-cards-of-mysore",
+      "label": "GI Tag: Ganjifa Cards of Mysore",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-ganjifa-cards-of-mysore-logo",
+      "label": "GI Tag: Ganjifa Cards of Mysore (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-ghazipur-wall-hanging",
+      "label": "GI Tag: Ghazipur Wall-hanging",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-gond-painting-of-madhya-pradesh",
+      "label": "GI Tag: Gond Painting of Madhya Pradesh",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-gopalpur-tussar-fabrics",
+      "label": "GI Tag: Gopalpur Tussar Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-gorakhpur-terracotta",
+      "label": "GI Tag: Gorakhpur Terracotta",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-guledgudd-khana",
+      "label": "GI Tag: Guledgudd Khana",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-gwalior-handmade-carpet",
+      "label": "GI Tag: Gwalior Handmade Carpet",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-habaspuri-saree-fabrics",
+      "label": "GI Tag: Habaspuri Saree & Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-hand-made-carpet-of-bhadohi",
+      "label": "GI Tag: Hand Made Carpet of Bhadohi",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-hmaram",
+      "label": "GI Tag: Hmaram",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-idu-mishmi-textiles",
+      "label": "GI Tag: Idu Mishmi Textiles",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-ilkal-sarees",
+      "label": "GI Tag: Ilkal Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-jabalpur-stone-craft",
+      "label": "GI Tag: Jabalpur Stone Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-jamnagari-bandhani",
+      "label": "GI Tag: Jamnagari Bandhani",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kachchh-shawls",
+      "label": "GI Tag: Kachchh Shawls",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kalamkari",
+      "label": "GI Tag: Srikalahasti Kalamkari",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kallakurichi-wood-carving",
+      "label": "GI Tag: Kallakurichi Wood Carving",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kancheepuram-silk",
+      "label": "GI Tag: Kancheepuram Silk",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kandangi-saree",
+      "label": "GI Tag: Kandangi Saree",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kangra-paintings",
+      "label": "GI Tag: Kangra Paintings",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kani-shawl",
+      "label": "GI Tag: Kani Shawl",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kanpur-saddlery",
+      "label": "GI Tag: Kanpur Saddlery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-karnataka-bronzeware",
+      "label": "GI Tag: Karnataka Bronzeware",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-karnataka-bronzeware-logo",
+      "label": "GI Tag: Karnataka Bronzeware (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-karuppur-kalamkari-paintings",
+      "label": "GI Tag: Karuppur Kalamkari Paintings",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-karvath-kati-sarees-fabrics",
+      "label": "GI Tag: Karvath Kati Sarees & Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kasaragod-sarees",
+      "label": "GI Tag: Kasaragod Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kashmir-paper-machie",
+      "label": "GI Tag: Kashmir Paper Machie",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kashmir-pashmina",
+      "label": "GI Tag: Kashmir Pashmina",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kashmir-sozani-craft",
+      "label": "GI Tag: Kashmir Sozani Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kashmir-walnut-wood-carving",
+      "label": "GI Tag: Kashmir Walnut Wood Carving",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kashmiri-hand-knotted-carpet",
+      "label": "GI Tag: Kashmiri Hand Knotted Carpet",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kasuti-embroidery",
+      "label": "GI Tag: Kasuti Embroidery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kathputlis-of-rajasthan",
+      "label": "GI Tag: Kathputlis of Rajasthan",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kathputlis-of-rajasthan-logo",
+      "label": "GI Tag: Kathputlis of Rajasthan (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-khandua-saree-and-fabrics",
+      "label": "GI Tag: Khandua Saree and Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-khatamband",
+      "label": "GI Tag: Khatamband",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-khurja-pottery",
+      "label": "GI Tag: Khurja Pottery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kinhal-toys",
+      "label": "GI Tag: Kinhal Toys",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kinnauri-shawl",
+      "label": "GI Tag: Kinnauri Shawl",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kolhapuri-chappal",
+      "label": "GI Tag: Kolhapuri Chappal",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-konark-stone-carving",
+      "label": "GI Tag: Konark Stone carving",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kondapalli-bommallu",
+      "label": "GI Tag: Kondapalli Bommallu",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kota-doria",
+      "label": "GI Tag: Kota Doria",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kota-doria-logo",
+      "label": "GI Tag: Kota Doria (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kotpad-handloom-fabric",
+      "label": "GI Tag: Kotpad Handloom fabric",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kovai-kora-cotton-sarees",
+      "label": "GI Tag: Kovai Kora Cotton Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kullu-shawl",
+      "label": "GI Tag: Kullu Shawl",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kullu-shawl-logo",
+      "label": "GI Tag: Kullu ShawL (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kutch-embroidery",
+      "label": "GI Tag: Kutch Embroidery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kutch-embroidery-logo",
+      "label": "GI Tag: Kutch Embroidery (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kuthampally-dhoties-set-mundu",
+      "label": "GI Tag: Kuthampally Dhoties & Set Mundu",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-kuthampully-sarees",
+      "label": "GI Tag: Kuthampully Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-ladakh-shingskos-wood-carving",
+      "label": "GI Tag: Ladakh Shingskos (Wood Carving)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-lahauli-knitted-socks-gloves",
+      "label": "GI Tag: Lahauli Knitted Socks & Gloves",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-lamphun-brocade-thai-silk",
+      "label": "GI Tag: Lamphun Brocade Thai Silk",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-leather-toys-of-indore",
+      "label": "GI Tag: Leather Toys of Indore",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-leather-toys-of-indore-logo",
+      "label": "GI Tag: Leather Toys of Indore (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-lucknow-chikan-craft",
+      "label": "GI Tag: Lucknow Chikan Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-lucknow-zardozi",
+      "label": "GI Tag: Lucknow Zardozi",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-machilipatnam-kalamkari",
+      "label": "GI Tag: Machilipatnam Kalamkari",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-maddalam-of-palakkad",
+      "label": "GI Tag: Maddalam of Palakkad",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-maddalam-of-palakkad-logo",
+      "label": "GI Tag: Maddalam of Palakkad (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-madhubani",
+      "label": "GI Tag: Madhubani Painting",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-madhubani-paintings",
+      "label": "GI Tag: Madhubani Paintings",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-madur-kathi",
+      "label": "GI Tag: Madur kathi",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-madurai-sungudi",
+      "label": "GI Tag: Madurai Sungudi",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mahabalipuram-stone-sculpture",
+      "label": "GI Tag: Mahabalipuram Stone Sculpture",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-maheshwar-sarees-fabrics",
+      "label": "GI Tag: Maheshwar Sarees & Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mahoba-gaura-patthar-hastashlip",
+      "label": "GI Tag: Mahoba Gaura Patthar Hastashlip",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mainpuri-tarkashi",
+      "label": "GI Tag: Mainpuri Tarkashi",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-manamadurai-pottery",
+      "label": "GI Tag: Manamadurai Pottery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mangalagiri-sarees-and-fabrics",
+      "label": "GI Tag: Mangalagiri Sarees and Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-manjusha-art",
+      "label": "GI Tag: Manjusha Art",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mata-ni-pachhedi",
+      "label": "GI Tag: Mata ni Pachhedi",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mau-saree",
+      "label": "GI Tag: Mau Saree",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mirzapur-handmade-dari",
+      "label": "GI Tag: Mirzapur Handmade Dari",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mirzapur-pital-bartan",
+      "label": "GI Tag: Mirzapur Pital Bartan",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mizo-puanchei",
+      "label": "GI Tag: Mizo Puanchei",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-moirang-phee",
+      "label": "GI Tag: Moirang Phee",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-molakalmuru-sarees",
+      "label": "GI Tag: Molakalmuru Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-molela-clay-work",
+      "label": "GI Tag: Molela Clay Work",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-molela-clay-work-of-rajasthan-logo",
+      "label": "GI Tag: Molela Clay Work of Rajasthan (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-moradabad-metal-craft",
+      "label": "GI Tag: Moradabad Metal Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-muga-silk-of-assam",
+      "label": "GI Tag: Muga Silk of Assam",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-muga-silk-of-assam-logo",
+      "label": "GI Tag: Muga Silk of Assam (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-myladi-stone-carvings",
+      "label": "GI Tag: Myladi Stone Carvings",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mysore-rosewood-inlay",
+      "label": "GI Tag: Mysore Rosewood Inlay",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mysore-silk",
+      "label": "GI Tag: Mysore Silk",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mysore-silk-logo",
+      "label": "GI Tag: Mysore Silk (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-mysore-traditional-paintings",
+      "label": "GI Tag: Mysore Traditional Paintings",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-nachiarkoil-kuthuvilakku-nachiarkoil-lamp",
+      "label": "GI Tag: Nachiarkoil Kuthuvilakku (\"Nachiarkoil Lamp\")",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-nagina-wood-craft",
+      "label": "GI Tag: Nagina Wood Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-nakshi-kantha",
+      "label": "GI Tag: Nakshi Kantha",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-narasinghapettai-nagaswaram",
+      "label": "GI Tag: Narasinghapettai Nagaswaram",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-narayanpet-handloom-sarees",
+      "label": "GI Tag: Narayanpet Handloom Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-navalgund-durries",
+      "label": "GI Tag: Navalgund Durries",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-navalgund-durries-logo",
+      "label": "GI Tag: Navalgund Durries (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-negamam-cotton-saree",
+      "label": "GI Tag: Negamam Cotton Saree",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-ngotekherh",
+      "label": "GI Tag: Ngotekherh",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-nirmal-furniture",
+      "label": "GI Tag: Nirmal Furniture",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-nirmal-paintings",
+      "label": "GI Tag: Nirmal Paintings",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-nirmal-toys-and-craft",
+      "label": "GI Tag: Nirmal Toys and Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-nizamabad-black-pottery",
+      "label": "GI Tag: Nizamabad Black Pottery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-orissa-ikat",
+      "label": "GI Tag: Orissa Ikat",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-orissa-pattachitra",
+      "label": "GI Tag: Orissa Pattachitra",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-orissa-pattachitra-logo",
+      "label": "GI Tag: Orissa Pattachitra (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-paithani-sarees-and-fabrics",
+      "label": "GI Tag: Paithani Sarees and Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-pashmina",
+      "label": "GI Tag: Kashmir Pashmina",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-pashmina-wool-of-ladakh",
+      "label": "GI Tag: Pashmina Wool of Ladakh",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-patan-patola",
+      "label": "GI Tag: Patan Patola",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-pattamadai-pai-pattamadai-mat",
+      "label": "GI Tag: Pattamadai Pai (\"Pattamadai Mat\")",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-pawndum",
+      "label": "GI Tag: Pawndum",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-payyannur-pavithra-ring",
+      "label": "GI Tag: Payyannur Pavithra Ring",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-pembarthi-metal-craft",
+      "label": "GI Tag: Pembarthi Metal Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-pethapur-printing-blocks",
+      "label": "GI Tag: Pethapur Printing Blocks",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-phulkari",
+      "label": "GI Tag: Phulkari",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-pipli-applique-work",
+      "label": "GI Tag: Pipli Applique Work",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-pithora",
+      "label": "GI Tag: Pithora",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-pochampalli-ikat",
+      "label": "GI Tag: Pochampalli Ikat",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-pochampally-ikat-logo",
+      "label": "GI Tag: Pochampally Ikat (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-pokaran-pottery",
+      "label": "GI Tag: Pokaran Pottery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-puneri-pagadi",
+      "label": "GI Tag: Puneri Pagadi",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-purulia-chau-mask",
+      "label": "GI Tag: Purulia Chau Mask",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-rajkot-patola",
+      "label": "GI Tag: RajKot Patola",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-saharanpur-wood-craft",
+      "label": "GI Tag: Saharanpur Wood Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-salem-fabric",
+      "label": "GI Tag: Salem Fabric",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-salem-silk-known-as-salem-venpattu",
+      "label": "GI Tag: Salem Silk known as Salem Venpattu",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-sambalpuri-bandha-saree-fabrics",
+      "label": "GI Tag: Sambalpuri Bandha Saree & Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-sambhal-horn-craft",
+      "label": "GI Tag: Sambhal Horn Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-sandur-lambani-embroidery",
+      "label": "GI Tag: Sandur Lambani Embroidery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-sanganeri-hand-block-printing",
+      "label": "GI Tag: Sanganeri Hand Block Printing",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-sankheda-furniture",
+      "label": "GI Tag: Sankheda Furniture",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-sankheda-furniture-logo",
+      "label": "GI Tag: Sankheda Furniture (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-santiniketan-leather-goods",
+      "label": "GI Tag: Santiniketan Leather Goods",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-santipore-saree",
+      "label": "GI Tag: Santipore Saree",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-screw-pine-craft-of-kerala",
+      "label": "GI Tag: Screw Pine Craft of Kerala",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-screw-pine-craft-of-kerala-logo",
+      "label": "GI Tag: Screw Pine Craft of Kerala (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-shaphee-lanphee",
+      "label": "GI Tag: Shaphee Lanphee",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-siddipet-gollabama",
+      "label": "GI Tag: Siddipet Gollabama",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-sikki-grass-products-of-bihar",
+      "label": "GI Tag: Sikki Grass Products of Bihar",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-sikki-grass-products-of-bihar-logo",
+      "label": "GI Tag: Sikki Grass Products of Bihar (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-silver-filigree-of-karimnagar",
+      "label": "GI Tag: Silver Filigree of Karimnagar",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-sohrai-khovar-painting",
+      "label": "GI Tag: Sohrai – Khovar Painting",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-solapur-chaddar",
+      "label": "GI Tag: Solapur Chaddar",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-solapur-terry-towel",
+      "label": "GI Tag: Solapur Terry Towel",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-srikalahasthi-kalamkari",
+      "label": "GI Tag: Srikalahasthi Kalamkari",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-sujini-embroidery-work-of-bihar",
+      "label": "GI Tag: Sujini Embroidery Work of Bihar",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-sujini-embroidery-work-of-bihar-logo",
+      "label": "GI Tag: Sujini Embroidery Work of Bihar(Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-surat-zari-craft",
+      "label": "GI Tag: Surat Zari Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-swamimalai-bronze-icons",
+      "label": "GI Tag: Swamimalai Bronze Icons",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-swamimalai-bronze-icons-logo",
+      "label": "GI Tag: Swamimalai Bronze Icons (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-tangaliya-shawl",
+      "label": "GI Tag: Tangaliya Shawl",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-tawlhlohpuan",
+      "label": "GI Tag: Tawlhlohpuan",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-telia-rumal",
+      "label": "GI Tag: Telia Rumal",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-temple-jewellery-of-nagercoil",
+      "label": "GI Tag: Temple Jewellery of Nagercoil",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-temple-jewellery-of-nagercoil-logo",
+      "label": "GI Tag: Temple Jewellery of Nagercoil (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-thaikkal-rattan-craft",
+      "label": "GI Tag: Thaikkal Rattan Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-thanjavur-art-plate",
+      "label": "GI Tag: Thanjavur Art Plate",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-thanjavur-art-plate-logo",
+      "label": "GI Tag: Thanjavur Art Plate (Logo)",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-thanjavur-doll",
+      "label": "GI Tag: Thanjavur Doll",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-thanjavur-netti-works",
+      "label": "GI Tag: Thanjavur Netti Works",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-thanjavur-paintings",
+      "label": "GI Tag: Thanjavur Paintings",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-thanjavur-veenai",
+      "label": "GI Tag: Thanjavur Veenai",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-thewa-art-work",
+      "label": "GI Tag: Thewa Art Work",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-thirubuvanam-silk-sarees",
+      "label": "GI Tag: Thirubuvanam Silk Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-tirukanur-papier-mache-craft",
+      "label": "GI Tag: Tirukanur Papier Mache Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-toda-embroidery",
+      "label": "GI Tag: Toda Embroidery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-udayagiri-wooden-cutlery",
+      "label": "GI Tag: Udayagiri Wooden Cutlery",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-udupi-sarees",
+      "label": "GI Tag: Udupi Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-ujjain-batik-print",
+      "label": "GI Tag: Ujjain Batik Print",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-uppada-jamdani-sarees",
+      "label": "GI Tag: Uppada Jamdani Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-uttarakhand-aipan",
+      "label": "GI Tag: Uttarakhand Aipan",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-uttarakhand-ringal-craft",
+      "label": "GI Tag: Uttarakhand Ringal Craft",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-uttarakhand-tamta-product",
+      "label": "GI Tag: Uttarakhand Tamta Product",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-uttarakhand-thulma",
+      "label": "GI Tag: Uttarakhand Thulma",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-varanasi-glass-beads",
+      "label": "GI Tag: Varanasi Glass beads",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-varanasi-soft-stone-jali-work",
+      "label": "GI Tag: Varanasi Soft Stone Jali Work",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-varanasi-wooden-lacquerware-toys",
+      "label": "GI Tag: Varanasi Wooden Lacquerware & Toys",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-venkatagiri-sarees",
+      "label": "GI Tag: Venkatagiri Sarees",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-villianur-terracotta-works",
+      "label": "GI Tag: Villianur Terracotta Works",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-wangkhei-phee",
+      "label": "GI Tag: Wangkhei Phee",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-warangal-durries",
+      "label": "GI Tag: Warangal Durries",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-waraseoni-handloom-saree-fabrics",
+      "label": "GI Tag: Waraseoni Handloom Saree & Fabrics",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-warli-painting",
+      "label": "GI Tag: Warli Painting",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-wooden-mask-of-kushmandi",
+      "label": "GI Tag: Wooden Mask of Kushmandi",
+      "type": "GITag"
+    },
+    {
+      "id": "gi-wrought-iron-crafts-of-dindori",
+      "label": "GI Tag: Wrought Iron Crafts of Dindori",
+      "type": "GITag"
+    },
+    {
+      "id": "material-clay",
+      "label": "Multani Mitti & Quartz",
+      "type": "Material"
+    },
+    {
+      "id": "material-colors",
+      "label": "Natural Vegetable Dyes",
+      "type": "Material"
+    },
+    {
+      "id": "material-cotton",
+      "label": "Khadi Cotton",
+      "type": "Material"
+    },
+    {
+      "id": "material-silver",
+      "label": "Pure Chandi / Silver Alloy",
+      "type": "Material"
+    },
+    {
+      "id": "material-wool",
+      "label": "Changthangi Cashmere Wool",
+      "type": "Material"
+    },
+    {
+      "id": "region-ap",
+      "label": "Andhra Pradesh",
+      "type": "State"
+    },
+    {
+      "id": "region-arunachal-pradesh",
+      "label": "Arunachal Pradesh",
+      "type": "State"
+    },
+    {
+      "id": "region-assam",
+      "label": "Assam",
+      "type": "State"
+    },
+    {
+      "id": "region-bihar",
+      "label": "Bihar",
+      "type": "State"
+    },
+    {
+      "id": "region-chattisgarh",
+      "label": "Chattisgarh",
+      "type": "State"
+    },
+    {
+      "id": "region-chhattisgarh",
+      "label": "Chhattisgarh",
+      "type": "State"
+    },
+    {
+      "id": "region-dadara",
+      "label": "Dadara",
+      "type": "State"
+    },
+    {
+      "id": "region-daman-diu",
+      "label": "Daman Diu",
+      "type": "State"
+    },
+    {
+      "id": "region-gujarat",
+      "label": "Gujarat",
+      "type": "State"
+    },
+    {
+      "id": "region-haryana",
+      "label": "Haryana",
+      "type": "State"
+    },
+    {
+      "id": "region-himachal-pradesh",
+      "label": "Himachal Pradesh",
+      "type": "State"
+    },
+    {
+      "id": "region-jammu",
+      "label": "Jammu",
+      "type": "State"
+    },
+    {
+      "id": "region-jharkhand",
+      "label": "Jharkhand",
+      "type": "State"
+    },
+    {
+      "id": "region-karnataka",
+      "label": "Karnataka",
+      "type": "State"
+    },
+    {
+      "id": "region-kashmir",
+      "label": "Kashmir",
+      "type": "State"
+    },
+    {
+      "id": "region-kerala",
+      "label": "Kerala",
+      "type": "State"
+    },
+    {
+      "id": "region-ladakh",
+      "label": "Ladakh",
+      "type": "State"
+    },
+    {
+      "id": "region-madhya-pradesh",
+      "label": "Madhya Pradesh",
+      "type": "State"
+    },
+    {
+      "id": "region-maharashtra",
+      "label": "Maharashtra",
+      "type": "State"
+    },
+    {
+      "id": "region-manipur",
+      "label": "Manipur",
+      "type": "State"
+    },
+    {
+      "id": "region-mizoram",
+      "label": "Mizoram",
+      "type": "State"
+    },
+    {
+      "id": "region-nagaland",
+      "label": "Nagaland",
+      "type": "State"
+    },
+    {
+      "id": "region-nagar-haveli",
+      "label": "Nagar Haveli",
+      "type": "State"
+    },
+    {
+      "id": "region-odisha",
+      "label": "Odisha",
+      "type": "State"
+    },
+    {
+      "id": "region-pondicherry",
+      "label": "Pondicherry",
+      "type": "State"
+    },
+    {
+      "id": "region-punjab",
+      "label": "Punjab",
+      "type": "State"
+    },
+    {
+      "id": "region-rajasthan",
+      "label": "Rajasthan",
+      "type": "State"
+    },
+    {
+      "id": "region-tamil-nadu",
+      "label": "Tamil Nadu",
+      "type": "State"
+    },
+    {
+      "id": "region-telangana",
+      "label": "Telangana",
+      "type": "State"
+    },
+    {
+      "id": "region-thailand",
+      "label": "Thailand",
+      "type": "State"
+    },
+    {
+      "id": "region-up",
+      "label": "Uttar Pradesh",
+      "type": "State"
+    },
+    {
+      "id": "region-ut",
+      "label": "UT",
+      "type": "State"
+    },
+    {
+      "id": "region-uttarakhand",
+      "label": "Uttarakhand",
+      "type": "State"
+    },
+    {
+      "id": "region-west-bengal",
+      "label": "West Bengal",
+      "type": "State"
+    }
   ],
   "edges": [
-    { "source": "craft-madhubani", "target": "region-bihar", "relation": "ORIGINATES_IN" },
-    { "source": "craft-madhubani", "target": "material-colors", "relation": "USES_MATERIAL" },
-    { "source": "craft-madhubani", "target": "gi-madhubani", "relation": "HAS_CERTIFICATE" },
-    { "source": "craft-madhubani", "target": "comm-mithila", "relation": "CRAFTED_BY" },
-    { "source": "craft-madhubani", "target": "fest-durga", "relation": "TRADITIONALLY_MADE_FOR" },
-    
-    { "source": "craft-bluepottery", "target": "region-rajasthan", "relation": "ORIGINATES_IN" },
-    { "source": "craft-bluepottery", "target": "material-clay", "relation": "USES_MATERIAL" },
-    { "source": "craft-bluepottery", "target": "gi-bluepottery", "relation": "HAS_CERTIFICATE" },
-    { "source": "craft-bluepottery", "target": "comm-potter", "relation": "CRAFTED_BY" },
-    { "source": "craft-bluepottery", "target": "fest-diwali", "relation": "TRADITIONALLY_MADE_FOR" },
-    
-    { "source": "craft-pashmina", "target": "region-kashmir", "relation": "ORIGINATES_IN" },
-    { "source": "craft-pashmina", "target": "material-wool", "relation": "USES_MATERIAL" },
-    { "source": "craft-pashmina", "target": "gi-pashmina", "relation": "HAS_CERTIFICATE" },
-    { "source": "craft-pashmina", "target": "comm-weaver", "relation": "CRAFTED_BY" },
-    
-    { "source": "craft-kalamkari", "target": "region-ap", "relation": "ORIGINATES_IN" },
-    { "source": "craft-kalamkari", "target": "material-colors", "relation": "USES_MATERIAL" },
-    { "source": "craft-kalamkari", "target": "gi-kalamkari", "relation": "HAS_CERTIFICATE" },
-    { "source": "craft-kalamkari", "target": "material-cotton", "relation": "USES_MATERIAL" },
-    
-    { "source": "craft-bandhani", "target": "region-gujarat", "relation": "ORIGINATES_IN" },
-    { "source": "craft-bandhani", "target": "material-cotton", "relation": "USES_MATERIAL" },
-    { "source": "craft-bandhani", "target": "fest-karwa", "relation": "TRADITIONALLY_MADE_FOR" },
-    
-    { "source": "craft-filigree", "target": "region-gujarat", "relation": "ORIGINATES_IN" },
-    { "source": "craft-filigree", "target": "material-silver", "relation": "USES_MATERIAL" }
+    {
+      "source": "craft-adilabad-dokra",
+      "target": "gi-adilabad-dokra",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-adilabad-dokra",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-agates-of-cambay",
+      "target": "gi-agates-of-cambay",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-agates-of-cambay",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-agates-of-cambay-logo",
+      "target": "gi-agates-of-cambay-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-agates-of-cambay-logo",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-agra-durrie",
+      "target": "gi-agra-durrie",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-agra-durrie",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-aligarh-tala",
+      "target": "gi-aligarh-tala",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-aligarh-tala",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-allagadda-stone-carving",
+      "target": "gi-allagadda-stone-carving",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-allagadda-stone-carving",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-alleppey-coir",
+      "target": "gi-alleppey-coir",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-alleppey-coir",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-andhra-pradesh-leather-puppetry",
+      "target": "gi-andhra-pradesh-leather-puppetry",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-andhra-pradesh-leather-puppetry",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-applique-khatwa-work-of-bihar",
+      "target": "gi-applique-khatwa-work-of-bihar",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-applique-khatwa-work-of-bihar",
+      "target": "region-bihar",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-applique-khatwa-work-of-bihar-logo",
+      "target": "gi-applique-khatwa-work-of-bihar-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-applique-khatwa-work-of-bihar-logo",
+      "target": "region-bihar",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-arani-silk",
+      "target": "gi-arani-silk",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-arani-silk",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-aranmula-kannadi",
+      "target": "gi-aranmula-kannadi",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-aranmula-kannadi",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-arumbavur-wood-carvings",
+      "target": "gi-arumbavur-wood-carvings",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-arumbavur-wood-carvings",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bagh-prints-of-madhya-pradesh",
+      "target": "gi-bagh-prints-of-madhya-pradesh",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bagh-prints-of-madhya-pradesh",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bagh-prints-of-madhya-pradesh-logo",
+      "target": "gi-bagh-prints-of-madhya-pradesh-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bagh-prints-of-madhya-pradesh-logo",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bagru-hand-block-print",
+      "target": "gi-bagru-hand-block-print",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bagru-hand-block-print",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bakhira-brassware",
+      "target": "gi-bakhira-brassware",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bakhira-brassware",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-balaramapuram-sarees-and-fine-cotton-fabrics",
+      "target": "gi-balaramapuram-sarees-and-fine-cotton-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-balaramapuram-sarees-and-fine-cotton-fabrics",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-baluchari-saree",
+      "target": "gi-baluchari-saree",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-baluchari-saree",
+      "target": "region-west-bengal",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-banaras-brocades-and-sarees",
+      "target": "gi-banaras-brocades-and-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-banaras-brocades-and-sarees",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-banaras-brocades-and-sarees-logo",
+      "target": "gi-banaras-brocades-and-sarees-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-banaras-brocades-and-sarees-logo",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-banaras-gulabi-meenakari-craft",
+      "target": "gi-banaras-gulabi-meenakari-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-banaras-gulabi-meenakari-craft",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-banaras-hand-block-print",
+      "target": "gi-banaras-hand-block-print",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-banaras-hand-block-print",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-banaras-metal-repouse-craft",
+      "target": "gi-banaras-metal-repouse-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-banaras-metal-repouse-craft",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-banaras-wood-carving",
+      "target": "gi-banaras-wood-carving",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-banaras-wood-carving",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-banaras-zardozi",
+      "target": "gi-banaras-zardozi",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-banaras-zardozi",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-banda-shazar-patthar-craft",
+      "target": "gi-banda-shazar-patthar-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-banda-shazar-patthar-craft",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bandhani",
+      "target": "fest-karwa",
+      "relation": "TRADITIONALLY_MADE_FOR"
+    },
+    {
+      "source": "craft-bandhani",
+      "target": "material-cotton",
+      "relation": "USES_MATERIAL"
+    },
+    {
+      "source": "craft-bandhani",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bankura-panchmura-terracotta-craft",
+      "target": "gi-bankura-panchmura-terracotta-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bankura-panchmura-terracotta-craft",
+      "target": "region-west-bengal",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-basohli-painting",
+      "target": "gi-basohli-painting",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-basohli-painting",
+      "target": "region-jammu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-basohli-painting",
+      "target": "region-kashmir",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-basohli-painting",
+      "target": "region-ut",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bastar-dhokra",
+      "target": "gi-bastar-dhokra",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bastar-dhokra",
+      "target": "region-chattisgarh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bastar-dhokra-logo",
+      "target": "gi-bastar-dhokra-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bastar-dhokra-logo",
+      "target": "region-chhattisgarh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bastar-iron-craft",
+      "target": "gi-bastar-iron-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bastar-iron-craft",
+      "target": "region-chattisgarh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bastar-wooden-craft",
+      "target": "gi-bastar-wooden-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bastar-wooden-craft",
+      "target": "region-chattisgarh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bell-metal-ware-of-datia-and-tikamgarh",
+      "target": "gi-bell-metal-ware-of-datia-and-tikamgarh",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bell-metal-ware-of-datia-and-tikamgarh",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bell-metal-ware-of-datia-and-tikamgarh-logo",
+      "target": "gi-bell-metal-ware-of-datia-and-tikamgarh-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bell-metal-ware-of-datia-and-tikamgarh-logo",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bengal-dokra",
+      "target": "gi-bengal-dokra",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bengal-dokra",
+      "target": "region-west-bengal",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bengal-patachitra",
+      "target": "gi-bengal-patachitra",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bengal-patachitra",
+      "target": "region-west-bengal",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-berhampur-patta-phoda-kumbha-saree-joda",
+      "target": "gi-berhampur-patta-phoda-kumbha-saree-joda",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-berhampur-patta-phoda-kumbha-saree-joda",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bhagalpur-silk",
+      "target": "gi-bhagalpur-silk",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bhagalpur-silk",
+      "target": "region-bihar",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bhavani-jamakkalam",
+      "target": "gi-bhavani-jamakkalam",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bhavani-jamakkalam",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bhotia-dann-of-uttarakhand",
+      "target": "gi-bhotia-dann-of-uttarakhand",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bhotia-dann-of-uttarakhand",
+      "target": "region-uttarakhand",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bidriware",
+      "target": "gi-bidriware",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bidriware",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-blue-pottery-of-jaipur",
+      "target": "gi-blue-pottery-of-jaipur",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-blue-pottery-of-jaipur",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-blue-pottery-of-jaipur-logo",
+      "target": "gi-blue-pottery-of-jaipur-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-blue-pottery-of-jaipur-logo",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bluepottery",
+      "target": "comm-potter",
+      "relation": "CRAFTED_BY"
+    },
+    {
+      "source": "craft-bluepottery",
+      "target": "fest-diwali",
+      "relation": "TRADITIONALLY_MADE_FOR"
+    },
+    {
+      "source": "craft-bluepottery",
+      "target": "gi-bluepottery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bluepottery",
+      "target": "material-clay",
+      "relation": "USES_MATERIAL"
+    },
+    {
+      "source": "craft-bluepottery",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bobbili-veena",
+      "target": "gi-bobbili-veena",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bobbili-veena",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-bomkai-saree-fabrics",
+      "target": "gi-bomkai-saree-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-bomkai-saree-fabrics",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-brass-broidered-coconut-shell-craft-of-kerala-logo",
+      "target": "gi-brass-broidered-coconut-shell-craft-of-kerala-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-brass-broidered-coconut-shell-craft-of-kerala-logo",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-brass-broidered-coconut-shell-crafts-of-kerala",
+      "target": "gi-brass-broidered-coconut-shell-crafts-of-kerala",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-brass-broidered-coconut-shell-crafts-of-kerala",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-budithi-bell-brass-metal-craft",
+      "target": "gi-budithi-bell-brass-metal-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-budithi-bell-brass-metal-craft",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-cannanore-home-furnishings",
+      "target": "gi-cannanore-home-furnishings",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-cannanore-home-furnishings",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-chakshesang-shawl",
+      "target": "gi-chakshesang-shawl",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-chakshesang-shawl",
+      "target": "region-nagaland",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-chamba-chappal",
+      "target": "gi-chamba-chappal",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-chamba-chappal",
+      "target": "region-himachal-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-chamba-rumal",
+      "target": "gi-chamba-rumal",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-chamba-rumal",
+      "target": "region-himachal-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-champa-silk-saree-and-fabrics",
+      "target": "gi-champa-silk-saree-and-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-champa-silk-saree-and-fabrics",
+      "target": "region-chhattisgarh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-chanderi-sarees",
+      "target": "gi-chanderi-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-chanderi-sarees",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-channapatna-toys-dolls",
+      "target": "gi-channapatna-toys-dolls",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-channapatna-toys-dolls",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-chendamangalam-dhoties-set-mundu",
+      "target": "gi-chendamangalam-dhoties-set-mundu",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-chendamangalam-dhoties-set-mundu",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-cheriyal-paintings",
+      "target": "gi-cheriyal-paintings",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-cheriyal-paintings",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-chettinad-kottan",
+      "target": "gi-chettinad-kottan",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-chettinad-kottan",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-chunar-glaze-pottery",
+      "target": "gi-chunar-glaze-pottery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-chunar-glaze-pottery",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-dhalapathar-parda-fabrics",
+      "target": "gi-dhalapathar-parda-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-dhalapathar-parda-fabrics",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-dhaniakhali-saree",
+      "target": "gi-dhaniakhali-saree",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-dhaniakhali-saree",
+      "target": "region-west-bengal",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-dharmavaram-handloom-pattu-sarres-and-paavadas",
+      "target": "gi-dharmavaram-handloom-pattu-sarres-and-paavadas",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-dharmavaram-handloom-pattu-sarres-and-paavadas",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-dindigul-locks",
+      "target": "gi-dindigul-locks",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-dindigul-locks",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-durgi-stone-carvings",
+      "target": "gi-durgi-stone-carvings",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-durgi-stone-carvings",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-etikoppaka-toys",
+      "target": "gi-etikoppaka-toys",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-etikoppaka-toys",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-farrukhabad-prints",
+      "target": "gi-farrukhabad-prints",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-farrukhabad-prints",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-filigree",
+      "target": "material-silver",
+      "relation": "USES_MATERIAL"
+    },
+    {
+      "source": "craft-filigree",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-firozabad-glass",
+      "target": "gi-firozabad-glass",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-firozabad-glass",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-gadwal-sarees",
+      "target": "gi-gadwal-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-gadwal-sarees",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-gamosa-of-assam",
+      "target": "gi-gamosa-of-assam",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-gamosa-of-assam",
+      "target": "region-assam",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-ganjifa-cards-of-mysore",
+      "target": "gi-ganjifa-cards-of-mysore",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-ganjifa-cards-of-mysore",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-ganjifa-cards-of-mysore-logo",
+      "target": "gi-ganjifa-cards-of-mysore-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-ganjifa-cards-of-mysore-logo",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-ghazipur-wall-hanging",
+      "target": "gi-ghazipur-wall-hanging",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-ghazipur-wall-hanging",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-gond-painting-of-madhya-pradesh",
+      "target": "gi-gond-painting-of-madhya-pradesh",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-gond-painting-of-madhya-pradesh",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-gopalpur-tussar-fabrics",
+      "target": "gi-gopalpur-tussar-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-gopalpur-tussar-fabrics",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-gorakhpur-terracotta",
+      "target": "gi-gorakhpur-terracotta",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-gorakhpur-terracotta",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-guledgudd-khana",
+      "target": "gi-guledgudd-khana",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-guledgudd-khana",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-gwalior-handmade-carpet",
+      "target": "gi-gwalior-handmade-carpet",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-gwalior-handmade-carpet",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-habaspuri-saree-fabrics",
+      "target": "gi-habaspuri-saree-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-habaspuri-saree-fabrics",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-hand-made-carpet-of-bhadohi",
+      "target": "gi-hand-made-carpet-of-bhadohi",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-hand-made-carpet-of-bhadohi",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-hmaram",
+      "target": "gi-hmaram",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-hmaram",
+      "target": "region-mizoram",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-idu-mishmi-textiles",
+      "target": "gi-idu-mishmi-textiles",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-idu-mishmi-textiles",
+      "target": "region-arunachal-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-ilkal-sarees",
+      "target": "gi-ilkal-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-ilkal-sarees",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-jabalpur-stone-craft",
+      "target": "gi-jabalpur-stone-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-jabalpur-stone-craft",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-jamnagari-bandhani",
+      "target": "gi-jamnagari-bandhani",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-jamnagari-bandhani",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kachchh-shawls",
+      "target": "gi-kachchh-shawls",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kachchh-shawls",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kalamkari",
+      "target": "gi-kalamkari",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kalamkari",
+      "target": "material-colors",
+      "relation": "USES_MATERIAL"
+    },
+    {
+      "source": "craft-kalamkari",
+      "target": "material-cotton",
+      "relation": "USES_MATERIAL"
+    },
+    {
+      "source": "craft-kalamkari",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kallakurichi-wood-carving",
+      "target": "gi-kallakurichi-wood-carving",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kallakurichi-wood-carving",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kancheepuram-silk",
+      "target": "gi-kancheepuram-silk",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kancheepuram-silk",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kandangi-saree",
+      "target": "gi-kandangi-saree",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kandangi-saree",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kangra-paintings",
+      "target": "gi-kangra-paintings",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kangra-paintings",
+      "target": "region-himachal-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kani-shawl",
+      "target": "gi-kani-shawl",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kani-shawl",
+      "target": "region-jammu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kani-shawl",
+      "target": "region-kashmir",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kanpur-saddlery",
+      "target": "gi-kanpur-saddlery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kanpur-saddlery",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-karnataka-bronzeware",
+      "target": "gi-karnataka-bronzeware",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-karnataka-bronzeware",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-karnataka-bronzeware-logo",
+      "target": "gi-karnataka-bronzeware-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-karnataka-bronzeware-logo",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-karuppur-kalamkari-paintings",
+      "target": "gi-karuppur-kalamkari-paintings",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-karuppur-kalamkari-paintings",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-karvath-kati-sarees-fabrics",
+      "target": "gi-karvath-kati-sarees-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-karvath-kati-sarees-fabrics",
+      "target": "region-maharashtra",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kasaragod-sarees",
+      "target": "gi-kasaragod-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kasaragod-sarees",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kashmir-paper-machie",
+      "target": "gi-kashmir-paper-machie",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kashmir-paper-machie",
+      "target": "region-jammu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kashmir-paper-machie",
+      "target": "region-kashmir",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kashmir-pashmina",
+      "target": "gi-kashmir-pashmina",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kashmir-pashmina",
+      "target": "region-jammu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kashmir-pashmina",
+      "target": "region-kashmir",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kashmir-sozani-craft",
+      "target": "gi-kashmir-sozani-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kashmir-sozani-craft",
+      "target": "region-jammu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kashmir-sozani-craft",
+      "target": "region-kashmir",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kashmir-walnut-wood-carving",
+      "target": "gi-kashmir-walnut-wood-carving",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kashmir-walnut-wood-carving",
+      "target": "region-jammu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kashmir-walnut-wood-carving",
+      "target": "region-kashmir",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kashmiri-hand-knotted-carpet",
+      "target": "gi-kashmiri-hand-knotted-carpet",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kashmiri-hand-knotted-carpet",
+      "target": "region-jammu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kashmiri-hand-knotted-carpet",
+      "target": "region-kashmir",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kasuti-embroidery",
+      "target": "gi-kasuti-embroidery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kasuti-embroidery",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kathputlis-of-rajasthan",
+      "target": "gi-kathputlis-of-rajasthan",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kathputlis-of-rajasthan",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kathputlis-of-rajasthan-logo",
+      "target": "gi-kathputlis-of-rajasthan-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kathputlis-of-rajasthan-logo",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-khandua-saree-and-fabrics",
+      "target": "gi-khandua-saree-and-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-khandua-saree-and-fabrics",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-khatamband",
+      "target": "gi-khatamband",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-khatamband",
+      "target": "region-jammu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-khatamband",
+      "target": "region-kashmir",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-khurja-pottery",
+      "target": "gi-khurja-pottery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-khurja-pottery",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kinhal-toys",
+      "target": "gi-kinhal-toys",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kinhal-toys",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kinnauri-shawl",
+      "target": "gi-kinnauri-shawl",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kinnauri-shawl",
+      "target": "region-himachal-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kolhapuri-chappal",
+      "target": "gi-kolhapuri-chappal",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kolhapuri-chappal",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kolhapuri-chappal",
+      "target": "region-maharashtra",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-konark-stone-carving",
+      "target": "gi-konark-stone-carving",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-konark-stone-carving",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kondapalli-bommallu",
+      "target": "gi-kondapalli-bommallu",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kondapalli-bommallu",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kota-doria",
+      "target": "gi-kota-doria",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kota-doria",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kota-doria-logo",
+      "target": "gi-kota-doria-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kota-doria-logo",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kotpad-handloom-fabric",
+      "target": "gi-kotpad-handloom-fabric",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kotpad-handloom-fabric",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kovai-kora-cotton-sarees",
+      "target": "gi-kovai-kora-cotton-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kovai-kora-cotton-sarees",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kullu-shawl",
+      "target": "gi-kullu-shawl",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kullu-shawl",
+      "target": "region-himachal-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kullu-shawl-logo",
+      "target": "gi-kullu-shawl-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kullu-shawl-logo",
+      "target": "region-himachal-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kutch-embroidery",
+      "target": "gi-kutch-embroidery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kutch-embroidery",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kutch-embroidery-logo",
+      "target": "gi-kutch-embroidery-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kutch-embroidery-logo",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kuthampally-dhoties-set-mundu",
+      "target": "gi-kuthampally-dhoties-set-mundu",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kuthampally-dhoties-set-mundu",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-kuthampully-sarees",
+      "target": "gi-kuthampully-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-kuthampully-sarees",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-ladakh-shingskos-wood-carving",
+      "target": "gi-ladakh-shingskos-wood-carving",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-ladakh-shingskos-wood-carving",
+      "target": "region-ladakh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-ladakh-shingskos-wood-carving",
+      "target": "region-ut",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-lahauli-knitted-socks-gloves",
+      "target": "gi-lahauli-knitted-socks-gloves",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-lahauli-knitted-socks-gloves",
+      "target": "region-himachal-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-lamphun-brocade-thai-silk",
+      "target": "gi-lamphun-brocade-thai-silk",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-lamphun-brocade-thai-silk",
+      "target": "region-thailand",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-leather-toys-of-indore",
+      "target": "gi-leather-toys-of-indore",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-leather-toys-of-indore",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-leather-toys-of-indore-logo",
+      "target": "gi-leather-toys-of-indore-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-leather-toys-of-indore-logo",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-lucknow-chikan-craft",
+      "target": "gi-lucknow-chikan-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-lucknow-chikan-craft",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-lucknow-zardozi",
+      "target": "gi-lucknow-zardozi",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-lucknow-zardozi",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-machilipatnam-kalamkari",
+      "target": "gi-machilipatnam-kalamkari",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-machilipatnam-kalamkari",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-maddalam-of-palakkad",
+      "target": "gi-maddalam-of-palakkad",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-maddalam-of-palakkad",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-maddalam-of-palakkad-logo",
+      "target": "gi-maddalam-of-palakkad-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-maddalam-of-palakkad-logo",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-madhubani",
+      "target": "comm-mithila",
+      "relation": "CRAFTED_BY"
+    },
+    {
+      "source": "craft-madhubani",
+      "target": "fest-durga",
+      "relation": "TRADITIONALLY_MADE_FOR"
+    },
+    {
+      "source": "craft-madhubani",
+      "target": "gi-madhubani",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-madhubani",
+      "target": "material-colors",
+      "relation": "USES_MATERIAL"
+    },
+    {
+      "source": "craft-madhubani",
+      "target": "region-bihar",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-madhubani-paintings",
+      "target": "gi-madhubani-paintings",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-madhubani-paintings",
+      "target": "region-bihar",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-madur-kathi",
+      "target": "gi-madur-kathi",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-madur-kathi",
+      "target": "region-west-bengal",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-madurai-sungudi",
+      "target": "gi-madurai-sungudi",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-madurai-sungudi",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mahabalipuram-stone-sculpture",
+      "target": "gi-mahabalipuram-stone-sculpture",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mahabalipuram-stone-sculpture",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-maheshwar-sarees-fabrics",
+      "target": "gi-maheshwar-sarees-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-maheshwar-sarees-fabrics",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mahoba-gaura-patthar-hastashlip",
+      "target": "gi-mahoba-gaura-patthar-hastashlip",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mahoba-gaura-patthar-hastashlip",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mainpuri-tarkashi",
+      "target": "gi-mainpuri-tarkashi",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mainpuri-tarkashi",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-manamadurai-pottery",
+      "target": "gi-manamadurai-pottery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-manamadurai-pottery",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mangalagiri-sarees-and-fabrics",
+      "target": "gi-mangalagiri-sarees-and-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mangalagiri-sarees-and-fabrics",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-manjusha-art",
+      "target": "gi-manjusha-art",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-manjusha-art",
+      "target": "region-bihar",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mata-ni-pachhedi",
+      "target": "gi-mata-ni-pachhedi",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mata-ni-pachhedi",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mau-saree",
+      "target": "gi-mau-saree",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mau-saree",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mirzapur-handmade-dari",
+      "target": "gi-mirzapur-handmade-dari",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mirzapur-handmade-dari",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mirzapur-pital-bartan",
+      "target": "gi-mirzapur-pital-bartan",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mirzapur-pital-bartan",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mizo-puanchei",
+      "target": "gi-mizo-puanchei",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mizo-puanchei",
+      "target": "region-mizoram",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-moirang-phee",
+      "target": "gi-moirang-phee",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-moirang-phee",
+      "target": "region-manipur",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-molakalmuru-sarees",
+      "target": "gi-molakalmuru-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-molakalmuru-sarees",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-molela-clay-work",
+      "target": "gi-molela-clay-work",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-molela-clay-work",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-molela-clay-work-of-rajasthan-logo",
+      "target": "gi-molela-clay-work-of-rajasthan-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-molela-clay-work-of-rajasthan-logo",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-moradabad-metal-craft",
+      "target": "gi-moradabad-metal-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-moradabad-metal-craft",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-muga-silk-of-assam",
+      "target": "gi-muga-silk-of-assam",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-muga-silk-of-assam",
+      "target": "region-assam",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-muga-silk-of-assam-logo",
+      "target": "gi-muga-silk-of-assam-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-muga-silk-of-assam-logo",
+      "target": "region-assam",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-myladi-stone-carvings",
+      "target": "gi-myladi-stone-carvings",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-myladi-stone-carvings",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mysore-rosewood-inlay",
+      "target": "gi-mysore-rosewood-inlay",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mysore-rosewood-inlay",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mysore-silk",
+      "target": "gi-mysore-silk",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mysore-silk",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mysore-silk-logo",
+      "target": "gi-mysore-silk-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mysore-silk-logo",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-mysore-traditional-paintings",
+      "target": "gi-mysore-traditional-paintings",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-mysore-traditional-paintings",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-nachiarkoil-kuthuvilakku-nachiarkoil-lamp",
+      "target": "gi-nachiarkoil-kuthuvilakku-nachiarkoil-lamp",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-nachiarkoil-kuthuvilakku-nachiarkoil-lamp",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-nagina-wood-craft",
+      "target": "gi-nagina-wood-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-nagina-wood-craft",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-nakshi-kantha",
+      "target": "gi-nakshi-kantha",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-nakshi-kantha",
+      "target": "region-west-bengal",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-narasinghapettai-nagaswaram",
+      "target": "gi-narasinghapettai-nagaswaram",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-narasinghapettai-nagaswaram",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-narayanpet-handloom-sarees",
+      "target": "gi-narayanpet-handloom-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-narayanpet-handloom-sarees",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-navalgund-durries",
+      "target": "gi-navalgund-durries",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-navalgund-durries",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-navalgund-durries-logo",
+      "target": "gi-navalgund-durries-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-navalgund-durries-logo",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-negamam-cotton-saree",
+      "target": "gi-negamam-cotton-saree",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-negamam-cotton-saree",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-ngotekherh",
+      "target": "gi-ngotekherh",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-ngotekherh",
+      "target": "region-mizoram",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-nirmal-furniture",
+      "target": "gi-nirmal-furniture",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-nirmal-furniture",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-nirmal-paintings",
+      "target": "gi-nirmal-paintings",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-nirmal-paintings",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-nirmal-toys-and-craft",
+      "target": "gi-nirmal-toys-and-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-nirmal-toys-and-craft",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-nizamabad-black-pottery",
+      "target": "gi-nizamabad-black-pottery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-nizamabad-black-pottery",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-orissa-ikat",
+      "target": "gi-orissa-ikat",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-orissa-ikat",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-orissa-pattachitra",
+      "target": "gi-orissa-pattachitra",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-orissa-pattachitra",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-orissa-pattachitra-logo",
+      "target": "gi-orissa-pattachitra-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-orissa-pattachitra-logo",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-paithani-sarees-and-fabrics",
+      "target": "gi-paithani-sarees-and-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-paithani-sarees-and-fabrics",
+      "target": "region-maharashtra",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pashmina",
+      "target": "comm-weaver",
+      "relation": "CRAFTED_BY"
+    },
+    {
+      "source": "craft-pashmina",
+      "target": "gi-pashmina",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-pashmina",
+      "target": "material-wool",
+      "relation": "USES_MATERIAL"
+    },
+    {
+      "source": "craft-pashmina",
+      "target": "region-kashmir",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pashmina-wool-of-ladakh",
+      "target": "gi-pashmina-wool-of-ladakh",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-pashmina-wool-of-ladakh",
+      "target": "region-ladakh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pashmina-wool-of-ladakh",
+      "target": "region-ut",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-patan-patola",
+      "target": "gi-patan-patola",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-patan-patola",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pattamadai-pai-pattamadai-mat",
+      "target": "gi-pattamadai-pai-pattamadai-mat",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-pattamadai-pai-pattamadai-mat",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pawndum",
+      "target": "gi-pawndum",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-pawndum",
+      "target": "region-mizoram",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-payyannur-pavithra-ring",
+      "target": "gi-payyannur-pavithra-ring",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-payyannur-pavithra-ring",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pembarthi-metal-craft",
+      "target": "gi-pembarthi-metal-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-pembarthi-metal-craft",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pethapur-printing-blocks",
+      "target": "gi-pethapur-printing-blocks",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-pethapur-printing-blocks",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-phulkari",
+      "target": "gi-phulkari",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-phulkari",
+      "target": "region-haryana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-phulkari",
+      "target": "region-punjab",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-phulkari",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pipli-applique-work",
+      "target": "gi-pipli-applique-work",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-pipli-applique-work",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pithora",
+      "target": "gi-pithora",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-pithora",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pochampalli-ikat",
+      "target": "gi-pochampalli-ikat",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-pochampalli-ikat",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pochampally-ikat-logo",
+      "target": "gi-pochampally-ikat-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-pochampally-ikat-logo",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-pokaran-pottery",
+      "target": "gi-pokaran-pottery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-pokaran-pottery",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-puneri-pagadi",
+      "target": "gi-puneri-pagadi",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-puneri-pagadi",
+      "target": "region-maharashtra",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-purulia-chau-mask",
+      "target": "gi-purulia-chau-mask",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-purulia-chau-mask",
+      "target": "region-west-bengal",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-rajkot-patola",
+      "target": "gi-rajkot-patola",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-rajkot-patola",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-saharanpur-wood-craft",
+      "target": "gi-saharanpur-wood-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-saharanpur-wood-craft",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-salem-fabric",
+      "target": "gi-salem-fabric",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-salem-fabric",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-salem-silk-known-as-salem-venpattu",
+      "target": "gi-salem-silk-known-as-salem-venpattu",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-salem-silk-known-as-salem-venpattu",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-sambalpuri-bandha-saree-fabrics",
+      "target": "gi-sambalpuri-bandha-saree-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-sambalpuri-bandha-saree-fabrics",
+      "target": "region-odisha",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-sambhal-horn-craft",
+      "target": "gi-sambhal-horn-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-sambhal-horn-craft",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-sandur-lambani-embroidery",
+      "target": "gi-sandur-lambani-embroidery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-sandur-lambani-embroidery",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-sanganeri-hand-block-printing",
+      "target": "gi-sanganeri-hand-block-printing",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-sanganeri-hand-block-printing",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-sankheda-furniture",
+      "target": "gi-sankheda-furniture",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-sankheda-furniture",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-sankheda-furniture-logo",
+      "target": "gi-sankheda-furniture-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-sankheda-furniture-logo",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-santiniketan-leather-goods",
+      "target": "gi-santiniketan-leather-goods",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-santiniketan-leather-goods",
+      "target": "region-west-bengal",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-santipore-saree",
+      "target": "gi-santipore-saree",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-santipore-saree",
+      "target": "region-west-bengal",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-screw-pine-craft-of-kerala",
+      "target": "gi-screw-pine-craft-of-kerala",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-screw-pine-craft-of-kerala",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-screw-pine-craft-of-kerala-logo",
+      "target": "gi-screw-pine-craft-of-kerala-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-screw-pine-craft-of-kerala-logo",
+      "target": "region-kerala",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-shaphee-lanphee",
+      "target": "gi-shaphee-lanphee",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-shaphee-lanphee",
+      "target": "region-manipur",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-siddipet-gollabama",
+      "target": "gi-siddipet-gollabama",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-siddipet-gollabama",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-sikki-grass-products-of-bihar",
+      "target": "gi-sikki-grass-products-of-bihar",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-sikki-grass-products-of-bihar",
+      "target": "region-bihar",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-sikki-grass-products-of-bihar-logo",
+      "target": "gi-sikki-grass-products-of-bihar-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-sikki-grass-products-of-bihar-logo",
+      "target": "region-bihar",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-silver-filigree-of-karimnagar",
+      "target": "gi-silver-filigree-of-karimnagar",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-silver-filigree-of-karimnagar",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-sohrai-khovar-painting",
+      "target": "gi-sohrai-khovar-painting",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-sohrai-khovar-painting",
+      "target": "region-jharkhand",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-solapur-chaddar",
+      "target": "gi-solapur-chaddar",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-solapur-chaddar",
+      "target": "region-maharashtra",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-solapur-terry-towel",
+      "target": "gi-solapur-terry-towel",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-solapur-terry-towel",
+      "target": "region-maharashtra",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-srikalahasthi-kalamkari",
+      "target": "gi-srikalahasthi-kalamkari",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-srikalahasthi-kalamkari",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-sujini-embroidery-work-of-bihar",
+      "target": "gi-sujini-embroidery-work-of-bihar",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-sujini-embroidery-work-of-bihar",
+      "target": "region-bihar",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-sujini-embroidery-work-of-bihar-logo",
+      "target": "gi-sujini-embroidery-work-of-bihar-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-sujini-embroidery-work-of-bihar-logo",
+      "target": "region-bihar",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-surat-zari-craft",
+      "target": "gi-surat-zari-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-surat-zari-craft",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-swamimalai-bronze-icons",
+      "target": "gi-swamimalai-bronze-icons",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-swamimalai-bronze-icons",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-swamimalai-bronze-icons-logo",
+      "target": "gi-swamimalai-bronze-icons-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-swamimalai-bronze-icons-logo",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-tangaliya-shawl",
+      "target": "gi-tangaliya-shawl",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-tangaliya-shawl",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-tawlhlohpuan",
+      "target": "gi-tawlhlohpuan",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-tawlhlohpuan",
+      "target": "region-mizoram",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-telia-rumal",
+      "target": "gi-telia-rumal",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-telia-rumal",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-temple-jewellery-of-nagercoil",
+      "target": "gi-temple-jewellery-of-nagercoil",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-temple-jewellery-of-nagercoil",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-temple-jewellery-of-nagercoil-logo",
+      "target": "gi-temple-jewellery-of-nagercoil-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-temple-jewellery-of-nagercoil-logo",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-thaikkal-rattan-craft",
+      "target": "gi-thaikkal-rattan-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-thaikkal-rattan-craft",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-thanjavur-art-plate",
+      "target": "gi-thanjavur-art-plate",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-thanjavur-art-plate",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-thanjavur-art-plate-logo",
+      "target": "gi-thanjavur-art-plate-logo",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-thanjavur-art-plate-logo",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-thanjavur-doll",
+      "target": "gi-thanjavur-doll",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-thanjavur-doll",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-thanjavur-netti-works",
+      "target": "gi-thanjavur-netti-works",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-thanjavur-netti-works",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-thanjavur-paintings",
+      "target": "gi-thanjavur-paintings",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-thanjavur-paintings",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-thanjavur-veenai",
+      "target": "gi-thanjavur-veenai",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-thanjavur-veenai",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-thewa-art-work",
+      "target": "gi-thewa-art-work",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-thewa-art-work",
+      "target": "region-rajasthan",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-thirubuvanam-silk-sarees",
+      "target": "gi-thirubuvanam-silk-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-thirubuvanam-silk-sarees",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-tirukanur-papier-mache-craft",
+      "target": "gi-tirukanur-papier-mache-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-tirukanur-papier-mache-craft",
+      "target": "region-pondicherry",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-toda-embroidery",
+      "target": "gi-toda-embroidery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-toda-embroidery",
+      "target": "region-tamil-nadu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-udayagiri-wooden-cutlery",
+      "target": "gi-udayagiri-wooden-cutlery",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-udayagiri-wooden-cutlery",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-udupi-sarees",
+      "target": "gi-udupi-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-udupi-sarees",
+      "target": "region-karnataka",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-ujjain-batik-print",
+      "target": "gi-ujjain-batik-print",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-ujjain-batik-print",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-uppada-jamdani-sarees",
+      "target": "gi-uppada-jamdani-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-uppada-jamdani-sarees",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-uttarakhand-aipan",
+      "target": "gi-uttarakhand-aipan",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-uttarakhand-aipan",
+      "target": "region-uttarakhand",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-uttarakhand-ringal-craft",
+      "target": "gi-uttarakhand-ringal-craft",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-uttarakhand-ringal-craft",
+      "target": "region-uttarakhand",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-uttarakhand-tamta-product",
+      "target": "gi-uttarakhand-tamta-product",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-uttarakhand-tamta-product",
+      "target": "region-uttarakhand",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-uttarakhand-thulma",
+      "target": "gi-uttarakhand-thulma",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-uttarakhand-thulma",
+      "target": "region-uttarakhand",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-varanasi-glass-beads",
+      "target": "gi-varanasi-glass-beads",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-varanasi-glass-beads",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-varanasi-soft-stone-jali-work",
+      "target": "gi-varanasi-soft-stone-jali-work",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-varanasi-soft-stone-jali-work",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-varanasi-wooden-lacquerware-toys",
+      "target": "gi-varanasi-wooden-lacquerware-toys",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-varanasi-wooden-lacquerware-toys",
+      "target": "region-up",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-venkatagiri-sarees",
+      "target": "gi-venkatagiri-sarees",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-venkatagiri-sarees",
+      "target": "region-ap",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-villianur-terracotta-works",
+      "target": "gi-villianur-terracotta-works",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-villianur-terracotta-works",
+      "target": "region-pondicherry",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-wangkhei-phee",
+      "target": "gi-wangkhei-phee",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-wangkhei-phee",
+      "target": "region-manipur",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-warangal-durries",
+      "target": "gi-warangal-durries",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-warangal-durries",
+      "target": "region-telangana",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-waraseoni-handloom-saree-fabrics",
+      "target": "gi-waraseoni-handloom-saree-fabrics",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-waraseoni-handloom-saree-fabrics",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-warli-painting",
+      "target": "gi-warli-painting",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-warli-painting",
+      "target": "region-dadara",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-warli-painting",
+      "target": "region-daman-diu",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-warli-painting",
+      "target": "region-gujarat",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-warli-painting",
+      "target": "region-maharashtra",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-warli-painting",
+      "target": "region-nagar-haveli",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-wooden-mask-of-kushmandi",
+      "target": "gi-wooden-mask-of-kushmandi",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-wooden-mask-of-kushmandi",
+      "target": "region-west-bengal",
+      "relation": "ORIGINATES_IN"
+    },
+    {
+      "source": "craft-wrought-iron-crafts-of-dindori",
+      "target": "gi-wrought-iron-crafts-of-dindori",
+      "relation": "HAS_CERTIFICATE"
+    },
+    {
+      "source": "craft-wrought-iron-crafts-of-dindori",
+      "target": "region-madhya-pradesh",
+      "relation": "ORIGINATES_IN"
+    }
   ]
 }
