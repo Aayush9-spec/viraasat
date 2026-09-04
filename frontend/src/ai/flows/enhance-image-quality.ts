@@ -67,7 +67,7 @@ const enhanceImageQualityFlow = ai.defineFlow(
     }
     try {
       const response = await ai.generate({
-        model: 'googleai/gemini-3.6-flash',
+        model: 'googleai/gemini-2.5-flash',
         prompt: [
           {media: {url: input.imageUri}},
           {text: 'Enhance the quality of this image. Improve clarity, reduce noise, and sharpen details. Return the enhanced image as a data URI.'},

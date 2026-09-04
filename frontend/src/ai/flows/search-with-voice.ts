@@ -68,6 +68,11 @@ const searchWithVoiceFlow = ai.defineFlow(
     const { output } = await searchWithVoicePrompt({
       audioDataUri: input.audioDataUri,
     });
-    return output!;
+    if (!output || !output.transcription?.trim()) {
+      throw new Error(
+        'Speech service returned no transcription. Check GEMINI_API_KEY and try again.'
+      );
+    }
+    return output;
   }
 );

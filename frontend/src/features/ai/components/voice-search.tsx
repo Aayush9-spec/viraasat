@@ -1,6 +1,25 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+
+// Minimal Web Speech API typings (not in TS DOM lib for all targets).
+interface WebSpeechResult {
+  transcript: string;
+}
+interface WebSpeechResultList {
+  [index: number]: { [index: number]: WebSpeechResult } | undefined;
+  length: number;
+}
+interface WebSpeechRecognizer {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((event: { results?: WebSpeechResultList }) => void) | null;
+  onerror: ((event: { error: string }) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mic, Search, Loader2 } from 'lucide-react';
@@ -25,6 +44,13 @@ export default function VoiceSearch() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const { toast } = useToast();
+
+  // Release the microphone if the component unmounts mid-recording.
+  useEffect(() => {
+    return () => {
+      mediaRecorderRef.current?.stream.getTracks().forEach(track => track.stop());
+    };
+  }, []);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,40 +124,134 @@ export default function VoiceSearch() {
     }
   };
 
-  const handleStop = async () => {
-    const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
-    const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
-    const reader = new FileReader();
-    reader.readAsDataURL(audioBlob);
-    reader.onloadend = async () => {
-      const base64Audio = reader.result as string;
-      try {
-        const result = await searchWithVoice({ audioDataUri: base64Audio });
-        setSearchQuery(result.transcription);
+  const stopTracks = () => {
+    mediaRecorderRef.current?.stream.getTracks().forEach(track => track.stop());
+  };
 
-        // conversational commerce: get product suggestions
-        const suggestions = await suggestProducts({ query: result.transcription });
+  /** Shared follow-up for any successful transcription: AI suggestions, else shop search. */
+  const processTranscription = async (transcription: string) => {
+    const query = transcription.trim();
+    if (!query) {
+      toast({ variant: 'destructive', title: 'Empty Result', description: 'Heard nothing — please try speaking again.' });
+      return;
+    }
+    setSearchQuery(query);
 
-        if (suggestions.productIds.length > 0) {
-          const matchedProducts = products.filter(p => suggestions.productIds.includes(p.id));
-          setSuggestedProducts(matchedProducts);
-          setSuggestionExplanation(suggestions.explanation);
-          setShowResults(true);
-        }
+    try {
+      // conversational commerce: get product suggestions
+      const suggestions = await suggestProducts({ query });
 
+      if (suggestions.productIds.length > 0) {
+        const matchedProducts = products.filter(p => suggestions.productIds.includes(p.id));
+        setSuggestedProducts(matchedProducts);
+        setSuggestionExplanation(suggestions.explanation);
+        setShowResults(true);
         toast({
           title: 'Voice processed!',
-          description: `Found cultural matches for: "${result.transcription}"`
+          description: `Found cultural matches for: "${query}"`
         });
+        return;
+      }
+    } catch (error) {
+      // AI suggestions are best-effort; fall through to plain shop search.
+      console.error('AI Suggestion error:', error);
+    }
+
+    router.push(`/shop?q=${encodeURIComponent(query)}`);
+  };
+
+  /** On-device fallback when the server transcription flow is unavailable. */
+  const transcribeWithBrowserSpeech = (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const w = window as unknown as {
+        SpeechRecognition?: new () => WebSpeechRecognizer;
+        webkitSpeechRecognition?: new () => WebSpeechRecognizer;
+      };
+      const Recognition = w.SpeechRecognition ?? w.webkitSpeechRecognition;
+      if (!Recognition) {
+        reject(new Error('Browser speech recognition is not supported.'));
+        return;
+      }
+      const recognition = new Recognition();
+      recognition.lang = 'hi-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      recognition.onresult = (event) => {
+        const transcript = event.results?.[0]?.[0]?.transcript ?? '';
+        resolve(transcript);
+      };
+      recognition.onerror = (event) => {
+        reject(new Error(`Microphone transcription failed (${event.error}).`));
+      };
+      recognition.onend = () => {
+        // If the service ended with no result, resolve empty so callers can prompt a retry.
+        resolve('');
+      };
+      try {
+        recognition.start();
+      } catch (err) {
+        reject(err instanceof Error ? err : new Error('Could not start speech recognition.'));
+      }
+    });
+  };
+
+  const handleStop = async () => {
+    const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
+    const chunks = audioChunksRef.current;
+    audioChunksRef.current = [];
+    const totalBytes = chunks.reduce((sum, c) => sum + c.size, 0);
+
+    const finish = () => {
+      setIsProcessing(false);
+      stopTracks();
+    };
+
+    // Guard: tapped mic without speaking (or no data) — don't call the AI with empty audio.
+    if (chunks.length === 0 || totalBytes === 0) {
+      toast({ variant: 'destructive', title: 'No Audio Captured', description: 'Please hold the mic and speak your query.' });
+      finish();
+      return;
+    }
+
+    const audioBlob = new Blob(chunks, { type: mimeType });
+    const reader = new FileReader();
+    reader.onerror = () => {
+      toast({ variant: 'destructive', title: 'Voice Search Failed', description: 'Could not read the recording.' });
+      finish();
+    };
+    reader.onloadend = async () => {
+      if (typeof reader.result !== 'string' || !reader.result.includes(',')) {
+        toast({ variant: 'destructive', title: 'Voice Search Failed', description: 'Recording was unreadable — please try again.' });
+        finish();
+        return;
+      }
+      try {
+        const result = await searchWithVoice({ audioDataUri: reader.result });
+        await processTranscription(result.transcription);
       } catch (error) {
         console.error('Voice search error:', error);
-        toast({ variant: 'destructive', title: 'Voice Search Failed', description: 'Could not process your query.' });
+        // Fall back to on-device transcription before giving up entirely.
+        try {
+          toast({ title: 'Server Busy', description: 'Trying on-device transcription…' });
+          const fallback = await transcribeWithBrowserSpeech();
+          if (fallback.trim()) {
+            await processTranscription(fallback);
+          } else {
+            throw new Error('No speech detected.');
+          }
+        } catch (fallbackError) {
+          console.error('Voice fallback error:', fallbackError);
+          const detail =
+            error instanceof Error && error.message
+              ? error.message
+              : 'Could not process your query.';
+          toast({ variant: 'destructive', title: 'Voice Search Failed', description: detail });
+        }
       } finally {
-        setIsProcessing(false);
-        audioChunksRef.current = [];
-        mediaRecorderRef.current?.stream.getTracks().forEach(track => track.stop());
+        finish();
       }
     };
+    reader.readAsDataURL(audioBlob);
   };
 
   const toggleRecording = () => {
