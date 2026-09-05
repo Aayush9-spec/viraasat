@@ -17,7 +17,7 @@ import { Show, UserButton, SignInButton, SignUpButton } from "@clerk/nextjs";
 
 import { useUserRole } from "@/hooks/use-user-role";
 
-const AIAssistant = dynamic(() => import('@/features/ai/components/ai-assistant').then(mod => mod.AIAssistant), { ssr: false });
+const AIAssistant = dynamic(() => import('@/features/ai/components/ai-assistant').then(mod => ({ default: mod.AIAssistant })), { ssr: false });
 
 export function MainContent({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();

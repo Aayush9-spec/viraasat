@@ -91,3 +91,6 @@ export function Carousel3DWrapper() {
         </ErrorBoundary>
     );
 }
+
+export default Carousel3DWrapper;
+

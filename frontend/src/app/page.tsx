@@ -88,9 +88,10 @@ export default function Marketplace() {
 if (error) {
   return <div className="flex h-screen items-center justify-center text-red-500">{error}</div>;
 }
-const regionInfo = Array.from(new Set(allProducts.map(p => p.region))).map(region => ({
+const validProducts = (allProducts || []).filter(p => p && p.region);
+const regionInfo = Array.from(new Set(validProducts.map(p => p.region))).map(region => ({
   name: region,
-  count: allProducts.filter(p => p.region === region).length,
+  count: validProducts.filter(p => p.region === region).length,
 }));
 return (
     <div className="relative min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-primary/30">
