@@ -9,7 +9,7 @@ jest.mock('@/components/carousel-3d-wrapper', () => ({
 }));
 
 const Carousel = dynamic(
-  () => import('@/components/carousel-3d-wrapper'),
+  () => import('@/components/carousel-3d-wrapper') as any,
   { ssr: false, loading: () => <div>Loading…</div> }
 );
 

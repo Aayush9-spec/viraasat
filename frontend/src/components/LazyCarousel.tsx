@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState, useRef } from 'react';
 
-const Carousel3DWrapper = dynamic(() => import('./carousel-3d-wrapper'), {
+const Carousel3DWrapper = dynamic(() => import('./carousel-3d-wrapper') as any, {
   ssr: false,
   loading: () => <div className="h-64 flex items-center justify-center">Loading…</div>,
 });

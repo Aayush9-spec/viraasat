@@ -18,20 +18,14 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, variant = 'mission' }: ProductCardProps) {
   const artisan = artisans.find(a => a.id === product.artisanId);
-  const { addToCart } = useCart();
+  const { addItem } = useCart();
   const { toast } = useToast();
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.images[0],
-      quantity: 1,
-    });
+    addItem(product);
     toast({
       title: "Added to Cart 🛍️",
       description: `${product.name} (₹${product.price.toLocaleString('en-IN')}) is now in your cart.`,

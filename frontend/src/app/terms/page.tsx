@@ -7,6 +7,14 @@ export const metadata: Metadata = {
   description: 'The terms that govern your use of the Viraasat marketplace.',
 };
 
+// TODO(legal): This document is a reasonable template but is NOT a substitute
+// for review by a qualified Indian lawyer licensed in your operating
+// jurisdiction. Before accepting real payments or listings, have counsel
+// validate: payment terms, artisan liability, dispute resolution, applicable
+// consumer-protection law (e.g. the Consumer Protection Act, 2019), and any
+// state-level e-commerce rules. See docs/csam-compliance.md and
+// docs/disaster-recovery.md for related compliance touchpoints.
+
 const sections = [
   {
     title: '1. Acceptance of Terms',

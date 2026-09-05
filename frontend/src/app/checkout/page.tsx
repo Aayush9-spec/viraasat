@@ -42,14 +42,35 @@ export default function CheckoutPage() {
     const [zip, setZip] = useState('');
     const [phone, setPhone] = useState('');
 
+    const validateForm = () => {
+        if (!firstName.trim() || !lastName.trim()) {
+            toast({ title: "Name Required", description: "Please enter your first and last name.", variant: "destructive" });
+            return false;
+        }
+        if (!address1.trim() || !city.trim() || !stateName.trim() || !zip.trim()) {
+            toast({ title: "Address Incomplete", description: "Please fill out address line 1, city, state, and ZIP code.", variant: "destructive" });
+            return false;
+        }
+        if (!phone.trim()) {
+            toast({ title: "Phone Required", description: "Please provide a valid contact number.", variant: "destructive" });
+            return false;
+        }
+        return true;
+    };
+
     const handleRazorpayPayment = async () => {
+        if (!validateForm()) return;
         setIsProcessing(true);
         try {
-            const response = await fetch(`${BACKEND_URL}/api/razorpay/order`, {
+            const response = await fetch('/api/razorpay', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: total, currency: 'INR' }),
             });
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || 'Failed to create order');
+            }
             const order = await response.json();
 
             const options = {
@@ -59,11 +80,27 @@ export default function CheckoutPage() {
                 name: "Viraasat",
                 description: "Purchase from Viraasat",
                 order_id: order.id,
-                handler: async function (response: any) {
+                handler: async function (razorpayResp: any) {
                     try {
+                        // Verify signature server-side
+                        const verifyResp = await fetch('/api/razorpay', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                razorpay_order_id: razorpayResp.razorpay_order_id,
+                                razorpay_payment_id: razorpayResp.razorpay_payment_id,
+                                razorpay_signature: razorpayResp.razorpay_signature,
+                            }),
+                        });
+                        const verifyResult = await verifyResp.json();
+                        if (!verifyResult.verified) {
+                            toast({ title: "Payment Verification Failed", description: "Invalid signature returned.", variant: "destructive" });
+                            return;
+                        }
+
                         const orderData = {
                             userId: user?.id || 'customer-1',
-                            customerName: `${firstName} ${lastName}`.trim() || 'Anonymous Buyer',
+                            customerName: `${firstName} ${lastName}`.trim(),
                             items: cartItems.map(item => ({
                                 productId: item.id,
                                 productName: item.name,
@@ -75,14 +112,14 @@ export default function CheckoutPage() {
                             orderDate: new Date().toISOString(),
                             status: 'Processing',
                             shippingAddress: {
-                                addressLine1: address1 || 'No Address Line 1',
+                                addressLine1: address1,
                                 addressLine2: address2 || '',
-                                city: city || 'Unknown City',
-                                state: stateName || 'Unknown State',
-                                zipCode: zip || '000000',
+                                city: city,
+                                state: stateName,
+                                zipCode: zip,
                                 country: 'India'
                             },
-                            paymentId: response.razorpay_payment_id
+                            paymentId: razorpayResp.razorpay_payment_id
                         };
                         
                         if (db) {
@@ -95,14 +132,14 @@ export default function CheckoutPage() {
                     clearCart();
                     toast({
                         title: "Acquisition Confirmed!",
-                        description: `Payment ID: ${response.razorpay_payment_id}. Your masterpiece has been added to your collection.`,
+                        description: `Payment ID: ${razorpayResp.razorpay_payment_id}. Your masterpiece has been added to your collection.`,
                     });
                     router.push('/orders');
                 },
                 prefill: {
-                    name: "Customer Name",
-                    email: "customer@example.com",
-                    contact: "9999999999"
+                    name: `${firstName} ${lastName}`.trim() || user?.fullName || "Customer",
+                    email: user?.primaryEmailAddress?.emailAddress || "customer@example.com",
+                    contact: phone || "9999999999"
                 },
                 theme: {
                     color: "#F37254"
@@ -110,13 +147,13 @@ export default function CheckoutPage() {
             };
 
             const rzp = new Razorpay(options);
-            rzp.on('payment.failed', function (response: any) {
-                alert('Payment Failed: ' + response.error.description);
+            rzp.on('payment.failed', function (resp: any) {
+                toast({ title: "Payment Failed", description: resp.error.description, variant: "destructive" });
             });
             rzp.open();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Payment Error:", error);
-            alert("Payment initiation failed. Please try again.");
+            toast({ title: "Payment Initiation Error", description: error.message || "Please try again later.", variant: "destructive" });
         } finally {
             setIsProcessing(false);
         }
@@ -150,22 +187,22 @@ export default function CheckoutPage() {
                         <div className="space-y-6">
                             <div className="bg-card/50 backdrop-blur-sm border rounded-xl p-6 shadow-sm">
                                 <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
-                                <form className="space-y-4">
+                                <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <Input placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-background/50" />
-                                        <Input placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-background/50" />
+                                        <Input placeholder="First Name *" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-background/50" required />
+                                        <Input placeholder="Last Name *" value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-background/50" required />
                                     </div>
-                                    <Input placeholder="Address Line 1" value={address1} onChange={(e) => setAddress1(e.target.value)} className="bg-background/50" />
+                                    <Input placeholder="Address Line 1 *" value={address1} onChange={(e) => setAddress1(e.target.value)} className="bg-background/50" required />
                                     <Input placeholder="Address Line 2 (Optional)" value={address2} onChange={(e) => setAddress2(e.target.value)} className="bg-background/50" />
                                     <div className="grid grid-cols-2 gap-4">
-                                        <Input placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} className="bg-background/50" />
-                                        <Input placeholder="State / Province" value={stateName} onChange={(e) => setStateName(e.target.value)} className="bg-background/50" />
+                                        <Input placeholder="City *" value={city} onChange={(e) => setCity(e.target.value)} className="bg-background/50" required />
+                                        <Input placeholder="State / Province *" value={stateName} onChange={(e) => setStateName(e.target.value)} className="bg-background/50" required />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <Input placeholder="ZIP / Postal Code" value={zip} onChange={(e) => setZip(e.target.value)} className="bg-background/50" />
+                                        <Input placeholder="ZIP / Postal Code *" value={zip} onChange={(e) => setZip(e.target.value)} className="bg-background/50" required />
                                         <Input placeholder="Country" defaultValue="India" readOnly className="bg-muted" />
                                     </div>
-                                    <Input placeholder="Phone Number" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-background/50" />
+                                    <Input placeholder="Phone Number *" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-background/50" required />
                                 </form>
                             </div>
 
@@ -212,11 +249,11 @@ export default function CheckoutPage() {
                                     </TabsContent>
                                     <TabsContent value="upi">
                                         <div className="space-y-6">
-                                            <p className="text-sm text-muted-foreground">Select your preferred UPI app or enter your UPI ID.</p>
+                                            <p className="text-sm text-muted-foreground">Select your preferred UPI app or click below to launch secure payment.</p>
                                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                                <Button variant="outline" className="h-16 hover:border-primary/50 hover:bg-primary/5 transition-all"><GooglePayLogo /></Button>
-                                                <Button variant="outline" className="h-16 hover:border-primary/50 hover:bg-primary/5 transition-all"><PhonePeLogo /></Button>
-                                                <Button variant="outline" className="h-16 hover:border-primary/50 hover:bg-primary/5 transition-all"><PaytmLogo /></Button>
+                                                <Button variant="outline" onClick={handleRazorpayPayment} className="h-16 hover:border-primary/50 hover:bg-primary/5 transition-all"><GooglePayLogo /></Button>
+                                                <Button variant="outline" onClick={handleRazorpayPayment} className="h-16 hover:border-primary/50 hover:bg-primary/5 transition-all"><PhonePeLogo /></Button>
+                                                <Button variant="outline" onClick={handleRazorpayPayment} className="h-16 hover:border-primary/50 hover:bg-primary/5 transition-all"><PaytmLogo /></Button>
                                                 <Button variant="outline" className={`h-16 flex-col gap-1 transition-all ${showQr ? 'border-primary bg-primary/5' : 'hover:border-primary/50 hover:bg-primary/5'}`} onClick={() => setShowQr(!showQr)}>
                                                     <QrCode className="h-5 w-5" />
                                                     <span className="text-[10px]">Scan QR</span>
@@ -239,27 +276,22 @@ export default function CheckoutPage() {
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center space-x-2">
-                                                <Separator className="flex-1" /> <span className="text-xs text-muted-foreground font-medium">OR ENTER VPA</span> <Separator className="flex-1" />
-                                            </div>
-                                            <Input placeholder="Enter your UPI ID (e.g. yourname@oksbi)" className="bg-background/50" />
-                                            <div className="flex gap-2">
-                                                <Button className="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20 transition-transform active:scale-95">
-                                                    Verify & Pay ₹{total.toFixed(2)}
-                                                </Button>
-                                            </div>
+                                            <Button onClick={handleRazorpayPayment} disabled={isProcessing} className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20">
+                                                Proceed to UPI Payment (₹{total.toFixed(2)})
+                                            </Button>
                                         </div>
                                     </TabsContent>
                                     <TabsContent value="card">
-                                        <div className="space-y-4">
-                                            <Input placeholder="Card Number" className="bg-background/50" />
-                                            <Input placeholder="Name on Card" className="bg-background/50" />
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <Input placeholder="Expiry Date (MM/YY)" className="bg-background/50" />
-                                                <Input placeholder="CVV" className="bg-background/50" />
+                                        <div className="text-center py-6 space-y-4">
+                                            <div className="p-4 bg-primary/5 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
+                                                <CreditCard className="w-8 h-8 text-primary" />
                                             </div>
-                                            <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20 mt-4">
-                                                Pay ₹{total.toFixed(2)}
+                                            <h3 className="font-semibold text-lg">PCI-DSS Compliant Card Checkout</h3>
+                                            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                                                For your security, card details are entered directly into Razorpay's encrypted PCI-DSS Level 1 compliant gateway.
+                                            </p>
+                                            <Button onClick={handleRazorpayPayment} disabled={isProcessing} className="w-full max-w-xs bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20">
+                                                Pay ₹{total.toFixed(2)} via Card
                                             </Button>
                                         </div>
                                     </TabsContent>
@@ -268,9 +300,9 @@ export default function CheckoutPage() {
                                             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-building-2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /><path d="M10 6h4" /><path d="M10 10h4" /><path d="M10 14h4" /><path d="M10 18h4" /></svg>
                                             </div>
-                                            <p className="text-muted-foreground">You will be redirected to our secure payment gateway to select your bank.</p>
-                                            <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20 mt-2">
-                                                Proceed to Payment
+                                            <p className="text-muted-foreground">Select your bank securely in the Razorpay payment modal.</p>
+                                            <Button onClick={handleRazorpayPayment} disabled={isProcessing} className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20 mt-2">
+                                                Proceed to Net Banking
                                             </Button>
                                         </div>
                                     </TabsContent>

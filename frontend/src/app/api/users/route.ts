@@ -12,7 +12,7 @@ function readUsers() {
 }
 
 // Helper to write users
-function writeUsers(users) {
+function writeUsers(users: any[]) {
   fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
 }
 
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     }
 
     // Assign a new ID (simple incremental approach)
-    const maxId = users.length > 0 ? Math.max(...users.map((u) => Number(u.id.split("-")[1]))) : 0;
+    const maxId = users.length > 0 ? Math.max(...users.map((u: any) => Number(u.id.split("-")[1]))) : 0;
     const newId = `user-${maxId + 1}`;
 
     const newUser = {

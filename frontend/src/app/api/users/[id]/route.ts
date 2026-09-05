@@ -15,13 +15,14 @@ function writeUsers(users: unknown[]) {
 }
 
 // GET - fetch a single user by id
-export function GET(
+export async function GET(
   _request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const users = readUsers();
-    const user = users.find((u: { id: string }) => u.id === params.id);
+    const user = users.find((u: { id: string }) => u.id === id);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -34,12 +35,13 @@ export function GET(
 // PATCH - update a user
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const users = readUsers();
-    const index = users.findIndex((u: { id: string }) => u.id === params.id);
+    const index = users.findIndex((u: { id: string }) => u.id === id);
     if (index === -1) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -52,13 +54,14 @@ export async function PATCH(
 }
 
 // DELETE - remove a user
-export function DELETE(
+export async function DELETE(
   _request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const users = readUsers();
-    const index = users.findIndex((u: { id: string }) => u.id === params.id);
+    const index = users.findIndex((u: { id: string }) => u.id === id);
     if (index === -1) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }

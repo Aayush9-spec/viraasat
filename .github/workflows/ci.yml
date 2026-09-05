@@ -1,3 +1,5 @@
+# CI workflow for Viraasat
+# Runs frontend lint + typecheck, the axe a11y suite, and backend smoke tests.
 name: CI
 
 on:
@@ -7,7 +9,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  frontend:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -24,5 +26,57 @@ jobs:
         run: npm run lint
       - name: Typecheck
         run: npm run typecheck
-      - name: Test
-        run: npm test
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      - name: Accessibility scan (axe)
+        run: npm run test:a11y -- --project=chromium
+      - name: Keyboard smoke test
+        run: npm run test:keyboard -- --project=chromium
+
+  translation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check for untranslated keys
+        run: node scripts/check-translations.mjs
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+      - name: Backend smoke test
+        env:
+          REQUIRE_AUTH: false
+          ALLOWED_ORIGINS: http://localhost:9002
+          GOOGLE_CLOUD_VISION_ENABLED: false
+        run: |
+          source venv/bin/activate
+          pip install -e .
+          PYTHONPATH=. python3 -c "
+          from fastapi.testclient import TestClient
+          from main import app
+          with TestClient(app) as c:
+              assert c.get('/health').status_code == 200
+              assert c.get('/api/forecast-demand?region=Rajasthan&category=Pottery').status_code == 200
+              assert c.get('/api/knowledge-graph/search?query=Pottery').status_code == 200
+              print('backend smoke test passed')
+          "

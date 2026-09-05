@@ -5,7 +5,7 @@ test('translation function renders text correctly', () => {
   const { rerender } = render(
     <LanguageProvider>
       <div>
-        <span data-testid="translated-text">'home.hero.title'</span>
+        <span data-testid="translated-text">&apos;home.hero.title&apos;</span>
       </div>
     </LanguageProvider>
   );

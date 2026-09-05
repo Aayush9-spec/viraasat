@@ -7,6 +7,13 @@ export const metadata: Metadata = {
   description: 'When and how Viraasat issues refunds for damaged, defective, or misdescribed items.',
 };
 
+// TODO(legal): India's Consumer Protection (E-commerce) Rules, 2024 require a
+// 7-day (or 14-day) return window for most categories. This 15-day policy is
+// a starting point but must be reviewed for: marketplace liability vs.
+// direct seller liability, artisan-withdrawal handling, foreign-exchange /
+// cross-border refund mechanics, and compliance with the RBI's e-commerce
+// payment guidelines. Validate with counsel before processing real refunds.
+
 const sections = [
   {
     title: '1. 7-Day Return Window',

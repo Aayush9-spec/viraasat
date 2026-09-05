@@ -7,6 +7,13 @@ export const metadata: Metadata = {
   description: 'How Viraasat collects, uses, and protects your personal information.',
 };
 
+// TODO(legal): This policy must be validated against the Digital Personal
+// Data Protection Act, 2023 (India) and equivalent laws in every jurisdiction
+// where you serve users. Pay special attention to: cross-border data transfers
+// to Firebase Hosting, consent flows for analytics, cookie/DNT disclosures,
+// and retention schedules per jurisdiction. Do not ship for production until
+// reviewed by qualified counsel.
+
 const sections = [
   {
     title: '1. What we collect',
