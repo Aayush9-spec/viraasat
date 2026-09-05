@@ -67,8 +67,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_d29ya2FibGUtaGFnZmlzaC04ODQ4LmNsZXJrLmFjY291bnRzLmRldiQ';
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey={clerkKey}>
       <html lang="en" suppressHydrationWarning className={`${inter.variable} ${cormorant.variable}`}>
         <head>
           <meta property="og:image" content="/viraasat-hero-cream.png" />

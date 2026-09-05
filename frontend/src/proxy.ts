@@ -1,5 +1,12 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 
+if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = 'pk_test_d29ya2FibGUtaGFnZmlzaC04ODQ4LmNsZXJrLmFjY291bnRzLmRldiQ';
+}
+if (!process.env.CLERK_SECRET_KEY) {
+  process.env.CLERK_SECRET_KEY = 'sk_test_G5grBClURqKvrtmyatpYFw11amIxqBgWuFz5mbnDwo';
+}
+
 export default clerkMiddleware();
 
 export const config = {

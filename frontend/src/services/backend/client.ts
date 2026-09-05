@@ -1,4 +1,4 @@
-export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://viraasat-backend-f0c1.onrender.com';
 
 export class BackendClient {
   static async get(endpoint: string, init?: RequestInit) {
