@@ -11,6 +11,10 @@
 
 Never commit `.env` or `.env.local` files. Both are gitignored. Use `*.example` files as templates.
 
+> **No hardcoded fallback keys exist in the source.** Missing keys now disable the affected feature
+> instead of silently injecting test credentials — configure every key you depend on, or that
+> feature (auth, payments, AI) will not work in that environment.
+
 ## Setup checklist
 
 ### 1. Clerk (auth)
@@ -18,7 +22,10 @@ Never commit `.env` or `.env.local` files. Both are gitignored. Use `*.example` 
 - Enable Email/Password and any social providers
 - Set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` in **both** Vercel and Render
 - Add `https://YOUR_VERCEL_DOMAIN.vercel.app` to allowed origins
-- Copy the JWT signing key (`CLERK_JWT_KEY`) into Render for backend verification
+- Backend JWT verification is **JWKS-based**. Set `CLERK_ISSUER` (the `*.clerk.accounts.dev` URL, no trailing slash) in Render. `CLERK_JWKS_URL` is optional and defaults to `{CLERK_ISSUER}/.well-known/jwks.json`.
+- Set `REQUIRE_AUTH=true` in every non-development Render environment so `/api/blockchain/*`, `/api/fraud/*`, and `/api/moderate-image` reject unauthenticated requests.
+- `CLERK_JWT_KEY` is deprecated — no code reads it; removal is safe.
+- Set `CLERK_WEBHOOK_SIGNING_SECRET` for the `user.created/updated/deleted` sync webhook.
 
 ### 2. Firebase
 - Create project at <https://console.firebase.google.com>
