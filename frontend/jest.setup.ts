@@ -19,3 +19,26 @@ Object.defineProperty(global, 'IntersectionObserver', {
   configurable: true,
   value: MockIntersectionObserver,
 });
+
+// Clerk needs a browser + provider; unit tests provide neither. Sign-in
+// state defaults to an anonymous, signed-out user.
+jest.mock('@clerk/nextjs', () => ({
+  useUser: () => ({ isLoaded: true, isSignedIn: false, user: null }),
+  useAuth: () => ({
+    isLoaded: true,
+    isSignedIn: false,
+    userId: null,
+    getToken: () => Promise.resolve(null),
+  }),
+  ClerkProvider: ({ children }: { children: React.ReactNode }) => children,
+  Show: ({ children, fallback }: { children: React.ReactNode; fallback?: React.ReactNode }) =>
+    fallback ?? children,
+  SignInButton: () => null,
+  SignUpButton: () => null,
+  UserButton: () => null,
+}));
+
+// Fluid cache clear between tests (firestore hooks cache product lookups).
+afterEach(() => {
+  window.localStorage.clear();
+});
