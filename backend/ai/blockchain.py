@@ -5,7 +5,10 @@ Chains of blocks are stored in the configured persistence layer
 shared across multiple workers (when using a networked backend).
 """
 import hashlib
+import json
+import os
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Dict, List
 
 DIFFICULTY = 3  # Proof-of-work target prefix length
@@ -35,6 +38,33 @@ def _store():
     from app.services.storage import get_store
 
     return get_store()
+
+
+_SEED_LEDGER_PATH = Path(__file__).resolve().parent.parent.parent / "database" / "blockchain_ledger.json"
+_seed_cache: Dict[str, List[Dict]] = {}
+
+
+def _load_seed_ledger() -> Dict[str, List[Dict]]:
+    global _seed_cache
+    if _seed_cache:
+        return _seed_cache
+    try:
+        with open(_SEED_LEDGER_PATH, "r") as f:
+            _seed_cache = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        _seed_cache = {}
+    return _seed_cache
+
+
+def get_existing_ledger(product_id: str) -> List[Dict] | None:
+    """Return the existing ledger for *product_id*, or None if not found."""
+    store = _store()
+    chain = store.get_ledger(product_id)
+    if chain:
+        return chain
+    # Fallback: check the seed JSON file (pre-populated genesis chains).
+    seed = _load_seed_ledger()
+    return seed.get(product_id)
 
 
 def get_or_create_ledger(product_id: str) -> List[Dict]:
