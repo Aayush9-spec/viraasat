@@ -5,13 +5,13 @@ import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
-import { products } from '@/lib/data';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { useCart } from '@/context/cart-context';
+import { useWishlist } from '@/context/wishlist-context';
 
 export default function WishlistPage() {
   const { addItem } = useCart();
-  const wishlistProducts = products.slice(0, 3); // Sample wishlist items
+  const { wishlist, removeFromWishlist } = useWishlist();
 
   return (
     <ProtectedRoute allowedRoles={['buyer']}>
@@ -25,7 +25,7 @@ export default function WishlistPage() {
           </p>
         </div>
 
-        {wishlistProducts.length === 0 ? (
+        {wishlist.length === 0 ? (
           <Card className="text-center py-12">
             <CardContent className="space-y-4">
               <Heart className="h-12 w-12 text-muted-foreground mx-auto opacity-40" />
@@ -37,7 +37,7 @@ export default function WishlistPage() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {wishlistProducts.map((product) => (
+            {wishlist.map((product) => (
               <Card key={product.id} className="group overflow-hidden flex flex-col justify-between">
                 <div>
                   <div className="relative aspect-square overflow-hidden bg-muted">
@@ -57,12 +57,18 @@ export default function WishlistPage() {
                 </div>
                 <CardFooter className="flex gap-2 pt-2">
                   <Button
-                    onClick={() => addItem(product as any)}
+                    onClick={() => addItem(product)}
                     className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
                   >
                     <ShoppingBag className="h-4 w-4" /> Move to Cart
                   </Button>
-                  <Button variant="outline" size="icon" className="text-muted-foreground hover:text-destructive">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="text-muted-foreground hover:text-destructive"
+                    onClick={() => removeFromWishlist(product.id)}
+                    aria-label={`Remove ${product.name} from wishlist`}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </CardFooter>
