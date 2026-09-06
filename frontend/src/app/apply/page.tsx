@@ -32,6 +32,10 @@ import { ViraasatLogo } from '@/components/viraasat-logo';
 import { UploadCloud } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import { db } from '@/services/firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { sendApplyReceipt } from '@/lib/notifications/email';
 
 const applicationSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
@@ -46,6 +50,7 @@ const applicationSchema = z.object({
 export default function ArtisanApplicationPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof applicationSchema>>({
     resolver: zodResolver(applicationSchema),
@@ -60,18 +65,48 @@ export default function ArtisanApplicationPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof applicationSchema>) {
+  async function onSubmit(values: z.infer<typeof applicationSchema>) {
+    if (!user) {
+      toast({
+        variant: 'destructive',
+        title: 'Sign in required',
+        description: 'Please sign in to submit an application.',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
-    console.log(values);
-    toast({
-      title: 'Application Submitted!',
-      description: 'Our team will review it and get back to you in 5-7 business days.',
-    });
-    // In a real app, you would submit this to your backend
-    setTimeout(() => {
+    try {
+      if (db) {
+        await addDoc(collection(db, 'artisanApplications'), {
+          applicantId: user.id,
+          ...values,
+          status: 'pending',
+          submittedAt: serverTimestamp(),
+        });
+      }
+      await sendApplyReceipt({
+        to: values.email,
+        name: values.fullName,
+        craft: values.craft,
+      });
+      toast({
+        title: 'Application Submitted!',
+        description: 'Our team will review it and get back to you in 5-7 business days.',
+      });
+      setTimeout(() => {
         router.push('/');
         setIsSubmitting(false);
-    }, 3000);
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to submit application:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Submission failed',
+        description: 'Something went wrong. Please try again.',
+      });
+      setIsSubmitting(false);
+    }
   }
 
   return (
