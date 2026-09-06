@@ -16,8 +16,6 @@ import { useToast } from '@/hooks/use-toast';
 import { GooglePayLogo, PaytmLogo, PhonePeLogo, RazorpayLogo } from '@/components/payment-icons';
 import { QrCode, ShoppingCart, CreditCard, ShieldCheck } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
-import { db } from '@/services/firebase/firestore';
-import { collection, addDoc } from 'firebase/firestore';
 
 const SHIPPING_OPTIONS = [
   { id: 'standard', label: 'Standard', price: 0, eta: '5–7 business days' },
@@ -70,10 +68,26 @@ export default function CheckoutPage() {
         if (!validateForm()) return;
         setIsProcessing(true);
         try {
+            const idempotencyKey = globalThis.crypto.randomUUID();
             const response = await fetch('/api/razorpay', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: total, currency: 'INR' }),
+                body: JSON.stringify({
+                    items: cartItems.map((item) => ({ productId: item.id, quantity: item.quantity })),
+                    shippingOption,
+                    idempotencyKey,
+                    shipping: {
+                        fullName: `${firstName} ${lastName}`.trim(),
+                        email: user?.primaryEmailAddress?.emailAddress || '',
+                        addressLine1: address1,
+                        addressLine2: address2 || '',
+                        city: city,
+                        state: stateName,
+                        zipCode: zip,
+                        country: 'India',
+                        phoneNumber: phone,
+                    },
+                }),
             });
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
@@ -106,77 +120,20 @@ export default function CheckoutPage() {
                             return;
                         }
 
-                        type OrderRecord = {
-                            userId: string;
-                            customerName: string;
-                            items: {
-                                productId: string;
-                                productName: string;
-                                quantity: number;
-                                unitPrice: number;
-                                itemImageUrl: string;
-                            }[];
-                            subtotal: number;
-                            shippingFee: number;
-                            tax: number;
-                            totalAmount: number;
-                            orderDate: string;
-                            status: string;
-                            shippingAddress: {
-                                addressLine1: string;
-                                addressLine2: string;
-                                city: string;
-                                state: string;
-                                zipCode: string;
-                                country: string;
-                            };
-                            razorpayOrderId: string;
-                            paymentId: any;
-                            uid?: string;
-                        };
-
-                        const orderData: OrderRecord = {
-                            userId: user?.id || 'customer-1',
-                            customerName: `${firstName} ${lastName}`.trim(),
+                        sessionStorage.setItem('viraasat-last-order', JSON.stringify({
+                            orderId: order.id,
+                            paymentId: razorpayResp.razorpay_payment_id,
                             items: cartItems.map(item => ({
                                 productId: item.id,
                                 productName: item.name,
                                 quantity: item.quantity,
                                 unitPrice: item.price,
-                                itemImageUrl: item.images[0] || ''
                             })),
-                            subtotal: subtotal,
-                            shippingFee: shipping,
-                            tax: gst,
-                            totalAmount: total,
-                            orderDate: new Date().toISOString(),
-                            status: 'Processing',
-                            shippingAddress: {
-                                addressLine1: address1,
-                                addressLine2: address2 || '',
-                                city: city,
-                                state: stateName,
-                                zipCode: zip,
-                                country: 'India'
-                            },
-                            razorpayOrderId: order.id,
-                            paymentId: razorpayResp.razorpay_payment_id
-                        };
-                        
-                        if (db) {
-                            const docRef = await addDoc(collection(db, "orders"), orderData);
-                            orderData.uid = docRef.id;
-                        }
-
-                        sessionStorage.setItem('viraasat-last-order', JSON.stringify({
-                            orderId: order.id,
-                            paymentId: razorpayResp.razorpay_payment_id,
-                            items: orderData.items,
                             subtotal,
                             shippingFee: shipping,
                             tax: gst,
                             total,
-                            customerName: orderData.customerName,
+                            customerName: `${firstName} ${lastName}`.trim(),
                         }));
                     } catch (e) {
                         console.error("Failed to save order to Firestore:", e);
