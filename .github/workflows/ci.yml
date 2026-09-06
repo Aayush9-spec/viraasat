@@ -26,6 +26,8 @@ jobs:
         run: npm run lint
       - name: Typecheck
         run: npm run typecheck
+      - name: Unit tests (Jest)
+        run: npm run test:unit
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
       - name: Accessibility scan (axe)
@@ -63,14 +65,24 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-      - name: Backend smoke test
+          pip install -r requirements-dev.txt
+      - name: Run test suite (pytest)
+        env:
+          REQUIRE_AUTH: false
+          ALLOWED_ORIGINS: http://localhost:9002
+          GOOGLE_CLOUD_VISION_ENABLED: false
+          DATABASE_URL: memory://
+        run: |
+          source venv/bin/activate
+          pip install -e .
+          python3 -m pytest
+      - name: Backend API smoke test
         env:
           REQUIRE_AUTH: false
           ALLOWED_ORIGINS: http://localhost:9002
           GOOGLE_CLOUD_VISION_ENABLED: false
         run: |
           source venv/bin/activate
-          pip install -e .
           PYTHONPATH=. python3 -c "
           from fastapi.testclient import TestClient
           from main import app
