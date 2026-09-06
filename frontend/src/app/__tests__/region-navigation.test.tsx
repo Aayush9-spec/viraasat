@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { LanguageProvider } from '@/context/language-context';
 import { CartProvider } from '@/context/cart-context';
+import { WishlistProvider } from '@/context/wishlist-context';
 
 // Mock next/navigation (Marketplace calls useRouter at the top level)
 jest.mock('next/navigation', () => ({
@@ -15,7 +16,9 @@ test('region links point at the correct shop URLs', async () => {
   render(
     <LanguageProvider>
       <CartProvider>
-        <Marketplace />
+        <WishlistProvider>
+          <Marketplace />
+        </WishlistProvider>
       </CartProvider>
     </LanguageProvider>
   );
