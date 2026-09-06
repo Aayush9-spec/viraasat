@@ -82,11 +82,12 @@
             "name": "Browse Products",
             "short_name": "Products",
             "description": "Browse artisan products",
-            "url": "/products",
+            "url": "/shop",
             "icons": [
                 {
                     "src": "/icons/icon-96x96.png",
-                    "sizes": "96x96"
+                    "sizes": "96x96",
+                    "type": "image/png"
                 }
             ]
         },
@@ -98,7 +99,8 @@
             "icons": [
                 {
                     "src": "/icons/icon-96x96.png",
-                    "sizes": "96x96"
+                    "sizes": "96x96",
+                    "type": "image/png"
                 }
             ]
         }
