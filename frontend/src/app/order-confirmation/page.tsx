@@ -22,19 +22,53 @@ interface LastOrder {
 }
 
 function OrderConfirmationContent() {
-  const params = useSearchParams();
-  const orderId = params.get('order_id');
-  const paymentId = params.get('payment_id');
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get('order_id');
+  const paymentId = searchParams.get('payment_id');
   const [order, setOrder] = useState<LastOrder | null>(null);
 
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem('viraasat-last-order');
-      if (raw) setOrder(JSON.parse(raw));
-    } catch (e) {
-      console.error('Failed to read last order summary', e);
+    let cancelled = false;
+
+    async function loadFromServer() {
+      if (!orderId) return false;
+      try {
+        const res = await fetch(`/api/razorpay?order_id=${encodeURIComponent(orderId)}`);
+        if (!res.ok) return false;
+        const data = await res.json();
+        if (cancelled) return true;
+        setOrder({
+          orderId: data.razorpayOrderId ?? orderId,
+          paymentId: data.paymentId ?? paymentId ?? undefined,
+          items: data.items ?? [],
+          subtotal: data.subtotal ?? 0,
+          shippingFee: data.shippingFee ?? 0,
+          tax: data.tax ?? 0,
+          total: data.totalAmount ?? 0,
+          customerName: data.shippingAddress?.fullName,
+        });
+        return true;
+      } catch {
+        return false;
+      }
     }
-  }, []);
+
+    async function load() {
+      const fromServer = await loadFromServer();
+      if (fromServer || cancelled) return;
+      try {
+        const raw = sessionStorage.getItem('viraasat-last-order');
+        if (raw && !cancelled) setOrder(JSON.parse(raw));
+      } catch (e) {
+        console.error('Failed to read last order summary', e);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [orderId, paymentId]);
 
   const items = order?.items ?? [];
   const subtotal = order?.subtotal ?? 0;
