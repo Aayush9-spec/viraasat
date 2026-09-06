@@ -6,6 +6,7 @@ from app.api.deps import get_current_user, require_role
 from ai.pricing import PricePredictionInput, calculate_predicted_price
 from ai.forecasting import calculate_demand_forecast
 from ai.graph import traverse_knowledge_graph
+from ai.search import semantic_product_search
 from ai.blockchain import get_or_create_ledger, perform_transfer_ownership
 from ai.fraud import ReviewAnomalyInput, detect_review_fraud
 
@@ -34,6 +35,12 @@ async def forecast_demand(request: Request, region: str, category: str):
 @_limiter.limit("60/minute")
 async def search_knowledge_graph(request: Request, query: str):
     return traverse_knowledge_graph(query)
+
+
+@api_router.get("/search/semantic")
+@_limiter.limit("60/minute")
+async def semantic_search(request: Request, q: str):
+    return semantic_product_search(q)
 
 
 # ---- Authenticated (blockchain reads) ----
