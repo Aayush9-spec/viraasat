@@ -17,11 +17,12 @@ import {
 } from '@/components/ui/carousel';
 import { Separator } from '@/components/ui/separator';
 import { ViraasatLogo } from '@/components/viraasat-logo';
+import { ReviewsSection } from './reviews-section';
 import { useCart } from '@/context/cart-context';
 import { useToast } from '@/hooks/use-toast';
+import { useBackend } from '@/hooks/use-backend';
 import type { Product } from '@/lib/types';
 import { translateText } from '@/ai/flows/translate-text';
-import { BACKEND_URL } from '@/services/backend/client';
 import {
   Select,
   SelectContent,
@@ -36,6 +37,8 @@ import { useEffect } from 'react';
 export function ProductDetailPageClient({ product }: { product: Product }) {
   const { addItem } = useCart();
   const { toast } = useToast();
+  const backend = useBackend();
+  const { get: backendGet } = backend;
   const [translatedDesc, setTranslatedDesc] = useState('');
   const [translateLang, setTranslateLang] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
@@ -46,13 +49,8 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
     async function fetchProvenance() {
       setLoadingProvenance(true);
       try {
-        const res = await fetch(`${BACKEND_URL}/api/blockchain/provenance/${product.id}`);
-        if (res.ok) {
-          const data = await res.json();
-          setProvenance(data.ledger_chain || []);
-        } else {
-          throw new Error('Failed to fetch');
-        }
+        const data = await backendGet<{ ledger_chain?: any[] }>(`/api/blockchain/provenance/${product.id}`);
+        setProvenance(data.ledger_chain || []);
       } catch (err) {
         console.warn('Blockchain backend offline, using simulated provenance ledger.');
         setProvenance([
@@ -65,7 +63,7 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
       }
     }
     fetchProvenance();
-  }, [product.id, product.artisanName, product.region]);
+  }, [product.id, product.artisanName, product.region, backendGet]);
 
   const TRANSLATE_LANGUAGES = [
     { value: 'Hindi', label: 'हिन्दी' },
@@ -439,6 +437,9 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
                     ))}
             </div>
         </section>
+
+        {/* Reviews & Ratings */}
+        <ReviewsSection product={product} />
       </main>
     </div>
   );
