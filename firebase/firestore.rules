@@ -21,6 +21,11 @@ service cloud.firestore {
     function isAdmin() {
       return hasRole('admin');
     }
+    // A client may only assign a non-admin role to itself. The 'admin' role
+    // must be provisioned server-side (Clerk custom claim / backend pipeline).
+    function isSelfAssignedRole(role) {
+      return role == 'buyer' || role == 'artisan';
+    }
 
     // ---- Users ----
     // Users can create their own doc on signup, read their own, update their own.
@@ -29,8 +34,14 @@ service cloud.firestore {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId)
         && request.resource.data.uid == userId
-        && request.resource.data.keys().hasAll(['uid', 'email', 'role']);
-      allow update: if isOwner(userId) || isAdmin();
+        && request.resource.data.keys().hasAll(['uid', 'email', 'role'])
+        && isSelfAssignedRole(request.resource.data.role);
+      // Owners may update their own doc, but cannot escalate themselves to admin.
+      allow update: if isAdmin() || (
+        isOwner(userId)
+        && (request.resource.data.role == resource.data.role
+            || isSelfAssignedRole(request.resource.data.role))
+      );
       allow delete: if isAdmin();
 
       // Wishlist subcollection
@@ -83,6 +94,17 @@ service cloud.firestore {
       allow create: if isSignedIn()
         && request.resource.data.applicantId == request.auth.uid;
       allow read, update, delete: if isAdmin();
+    }
+
+    // ---- Newsletter subscriptions ----
+    // Signed-in users may subscribe with a validated email; only admin can list/delete.
+    match /newsletter/{subId} {
+      allow create: if isSignedIn()
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 5
+        && request.resource.data.userId == request.auth.uid;
+      allow read, delete: if isAdmin();
+      allow update: if false;
     }
 
     // ---- Knowledge graph / catalogue read-only data ----
