@@ -7,7 +7,7 @@ from ai.pricing import PricePredictionInput, calculate_predicted_price
 from ai.forecasting import calculate_demand_forecast
 from ai.graph import traverse_knowledge_graph
 from ai.search import semantic_product_search
-from ai.blockchain import get_or_create_ledger, perform_transfer_ownership
+from ai.blockchain import get_existing_ledger, get_or_create_ledger, is_chain_valid, perform_transfer_ownership
 from ai.fraud import ReviewAnomalyInput, detect_review_fraud
 
 api_router = APIRouter()
@@ -51,13 +51,27 @@ async def get_provenance(
     product_id: str,
     user: dict = Depends(get_current_user),
 ):
-    ledger = get_or_create_ledger(product_id)
+    ledger = get_existing_ledger(product_id)
+    if not ledger:
+        return {
+            "product_id": product_id,
+            "ledger_chain": [],
+            "authenticity_score": 0,
+            "provenance_status": "Unverified",
+            "blockchain_network": "Viraasat Ledger Mainnet (Proof of Work)",
+            "requested_by": user.get("userId"),
+        }
+
+    chain_valid = is_chain_valid(ledger)
+    chain_length = len(ledger)
+    score = min(95, 60 + (chain_length * 10)) if chain_valid else 0
+
     return {
         "product_id": product_id,
         "ledger_chain": ledger,
-        "authenticity_score": 98.6,
-        "provenance_status": "Verified Genuine",
-        "blockchain_network": "Viraasat Ledger Mainnet (Proof of Authority)",
+        "authenticity_score": score,
+        "provenance_status": "Verified (PoW)" if chain_valid else "Unverified",
+        "blockchain_network": "Viraasat Ledger Mainnet (Proof of Work)",
         "requested_by": user.get("userId"),
     }
 
@@ -72,6 +86,10 @@ async def transfer_ownership(
     tx_value: float,
     user: dict = Depends(require_role("artisan", "admin")),
 ):
+    existing = get_existing_ledger(product_id)
+    if not existing:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="No provenance chain for this product")
     return perform_transfer_ownership(product_id, new_owner, tx_value)
 
 
