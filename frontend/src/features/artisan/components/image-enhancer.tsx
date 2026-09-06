@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { enhanceImageQuality } from '@/ai/flows/enhance-image-quality';
 import { moderateImage } from '@/services/backend/moderation';
+import { useAuth } from '@clerk/nextjs';
 
 interface ImageEnhancerProps {
   images: string[];
@@ -20,6 +21,7 @@ export default function ImageEnhancer({ images, setImages }: ImageEnhancerProps)
   const [isModerating, setIsModerating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { getToken } = useAuth();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -55,7 +57,8 @@ export default function ImageEnhancer({ images, setImages }: ImageEnhancerProps)
 
     setIsModerating(true);
     try {
-      const verdict = await moderateImage(originalFile);
+      const token = await getToken();
+      const verdict = await moderateImage(originalFile, token);
       if (!verdict.allow) {
         toast({
           variant: 'destructive',
