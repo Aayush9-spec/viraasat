@@ -7,8 +7,10 @@ import { cn } from '@/lib/utils';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { artisans } from '@/lib/data';
 import { useCart } from '@/context/cart-context';
+import { useWishlist } from '@/context/wishlist-context';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useProductReviews } from '@/hooks/use-product-reviews';
+import { Star } from 'lucide-react';
 import styles from './product-card.module.css';
 
 interface ProductCardProps {
@@ -20,7 +22,9 @@ export default function ProductCard({ product, variant = 'mission' }: ProductCar
   const artisan = artisans.find(a => a.id === product.artisanId);
   const { addItem } = useCart();
   const { toast } = useToast();
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const { rating, loading: ratingLoading } = useProductReviews(product.id);
+  const wishlisted = isWishlisted(product.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -35,11 +39,11 @@ export default function ProductCard({ product, variant = 'mission' }: ProductCar
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsWishlisted(prev => !prev);
+    toggleWishlist(product);
     toast({
-      title: !isWishlisted ? "Saved to Wishlist ❤️" : "Removed from Wishlist",
-      description: !isWishlisted 
-        ? `${product.name} saved to your heritage wishlist.` 
+      title: !wishlisted ? "Saved to Wishlist ❤️" : "Removed from Wishlist",
+      description: !wishlisted
+        ? `${product.name} saved to your heritage wishlist.`
         : `${product.name} removed from your wishlist.`,
     });
   };
@@ -61,7 +65,7 @@ export default function ProductCard({ product, variant = 'mission' }: ProductCar
             className="absolute top-3 left-3 z-30 p-2 rounded-full bg-background/70 backdrop-blur-md text-foreground hover:text-red-500 transition-colors shadow-md"
             title="Add to Wishlist"
           >
-            <Heart className={cn("h-4 w-4 transition-transform active:scale-125", isWishlisted && "fill-red-500 text-red-500")} />
+            <Heart className={cn("h-4 w-4 transition-transform active:scale-125", wishlisted && "fill-red-500 text-red-500")} />
           </button>
 
           <div className={styles.glass}>
@@ -78,6 +82,13 @@ export default function ProductCard({ product, variant = 'mission' }: ProductCar
           <div className={styles.content}>
             <span className={styles.title}>{product.name}</span>
             <span className={styles.text}>{artisan?.shopName || 'Artisan'}</span>
+            {!ratingLoading && rating.count > 0 && (
+              <span className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-amber-700">
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                {rating.avg.toFixed(1)}
+                <span className="font-normal text-muted-foreground">({rating.count})</span>
+              </span>
+            )}
           </div>
 
           <div className={styles.bottom}>
