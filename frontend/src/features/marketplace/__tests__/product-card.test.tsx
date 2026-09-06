@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { CartProvider } from '@/context/cart-context';
+import { WishlistProvider } from '@/context/wishlist-context';
 import ProductCard from '@/features/marketplace/components/product-card';
 import { Product } from '@/types/product';
 import userEvent from '@testing-library/user-event';
@@ -25,7 +26,9 @@ const mockProduct: Product = {
 test('renders product information', () => {
   render(
     <CartProvider>
+      <WishlistProvider>
       <ProductCard product={mockProduct} variant="grid" />
+    </WishlistProvider>
     </CartProvider>
   );
   expect(screen.getByText(/Test Vase/i)).toBeInTheDocument();
@@ -36,7 +39,9 @@ test('clicking card navigates to product page', async () => {
   const user = userEvent.setup();
   render(
     <CartProvider>
+      <WishlistProvider>
       <ProductCard product={mockProduct} variant="grid" />
+    </WishlistProvider>
     </CartProvider>
   );
   const link = screen.getByRole('link');
