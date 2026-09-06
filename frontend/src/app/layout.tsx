@@ -17,6 +17,7 @@ import PWALifecycle from '@/components/common/pwa-lifecycle';
 import OnlineStatus from '@/components/common/online-status';
 import { ClerkProvider } from '@clerk/nextjs';
 import { AuthSync } from '@/components/auth-sync';
+import { FirebaseAuthProvider } from '@/context/firebase-auth-context';
 
 const inter = {
   variable: 'font-sans',
@@ -87,27 +88,29 @@ export default function RootLayout({
             }}
           />
           <PWALifecycle />
-          <AuthSync />
-          <LanguageProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="clay"
-              enableSystem
-              disableTransitionOnChange
-              themes={['light', 'dark', 'sapphire', 'emerald', 'sunset', 'clay']}
-            >
-              <CartProvider>
-                <WishlistProvider>
-                  <Background3D />
-                  <MainContent>
-                    {children}
-                  </MainContent>
-                  <InstallPrompt />
-                  <OnlineStatus />
-                </WishlistProvider>
-              </CartProvider>
-            </ThemeProvider>
-          </LanguageProvider>
+          <FirebaseAuthProvider>
+            <AuthSync />
+            <LanguageProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="clay"
+                enableSystem
+                disableTransitionOnChange
+                themes={['light', 'dark', 'sapphire', 'emerald', 'sunset', 'clay']}
+              >
+                <CartProvider>
+                  <WishlistProvider>
+                    <Background3D />
+                    <MainContent>
+                      {children}
+                    </MainContent>
+                    <InstallPrompt />
+                    <OnlineStatus />
+                  </WishlistProvider>
+                </CartProvider>
+              </ThemeProvider>
+            </LanguageProvider>
+          </FirebaseAuthProvider>
           <Toaster />
         </body>
       </html>
