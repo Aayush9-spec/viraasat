@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 
-import { BACKEND_URL } from '@/services/backend/client';
+import { useBackend } from '@/hooks/use-backend';
 
 export function BusinessAdvisor() {
   const [region, setRegion] = useState('Rajasthan');
@@ -15,19 +15,15 @@ export function BusinessAdvisor() {
   const [forecast, setForecast] = useState<any[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const { get: backendGet } = useBackend();
 
   useEffect(() => {
     async function fetchForecast() {
       setLoading(true);
       try {
-        const res = await fetch(`${BACKEND_URL}/api/forecast-demand?region=${region}&category=${category}`);
-        if (res.ok) {
-          const data = await res.json();
-          setForecast(data.time_series || []);
-          setWarnings(data.warnings || []);
-        } else {
-          throw new Error();
-        }
+        const data = await backendGet<{ time_series?: any[]; warnings?: string[] }>(`/api/forecast-demand?region=${region}&category=${category}`);
+        setForecast(data.time_series || []);
+        setWarnings(data.warnings || []);
       } catch (err) {
         // Fallback simulated demand forecast
         setForecast([
@@ -53,7 +49,7 @@ export function BusinessAdvisor() {
       }
     }
     fetchForecast();
-  }, [region, category]);
+  }, [region, category, backendGet]);
 
   return (
     <div className="space-y-6 text-left">
