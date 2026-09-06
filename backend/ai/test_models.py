@@ -60,23 +60,13 @@ def test_fraud():
 
 def test_blockchain():
     print("\n--- Testing Blockchain Provenance Engine ---")
-    product_id = "test-prod-100"
-    
-    # 1. Clean old test ledger
-    import json
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    ledger_path = os.path.abspath(os.path.join(current_dir, "../../database/blockchain_ledger.json"))
-    if os.path.exists(ledger_path):
-        try:
-            with open(ledger_path, "r") as f:
-                db = json.load(f)
-            if product_id in db:
-                del db[product_id]
-            with open(ledger_path, "w") as f:
-                json.dump(db, f)
-        except Exception:
-            pass
-            
+    import time
+
+    # A unique product id per run keeps this deterministic under both the
+    # SQLite default and the in-memory store used by pytest (never pollutes
+    # the committed seed ledger).
+    product_id = f"test-prod-{int(time.time() * 1000)}"
+
     # 2. Get/create chain
     ledger = get_or_create_ledger(product_id)
     print(f"Genesis blockchain created. Length: {len(ledger)}")
