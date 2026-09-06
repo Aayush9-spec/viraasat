@@ -11,7 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from 'next/link';
 import { useRazorpay } from 'react-razorpay';
-import { BACKEND_URL } from '@/services/backend/client';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { GooglePayLogo, PaytmLogo, PhonePeLogo, RazorpayLogo } from '@/components/payment-icons';
@@ -20,14 +19,23 @@ import { useUser } from '@clerk/nextjs';
 import { db } from '@/services/firebase/firestore';
 import { collection, addDoc } from 'firebase/firestore';
 
+const SHIPPING_OPTIONS = [
+  { id: 'standard', label: 'Standard', price: 0, eta: '5–7 business days' },
+  { id: 'express', label: 'Express', price: 149, eta: '2–3 business days' },
+];
+
+const GST_RATE = Number(process.env.NEXT_PUBLIC_GST_RATE ?? 0.18);
+
 export default function CheckoutPage() {
     const { cartItems, getCartTotal, clearCart } = useCart();
     const router = useRouter();
     const { toast } = useToast();
     const { user } = useUser();
     const subtotal = getCartTotal();
-    const shipping: number = 0; // Assuming free shipping for now
-    const total = subtotal + shipping;
+    const [shippingOption, setShippingOption] = useState('standard');
+    const shipping = SHIPPING_OPTIONS.find((opt) => opt.id === shippingOption)?.price ?? 0;
+    const gst = Math.round(subtotal * GST_RATE * 100) / 100;
+    const total = subtotal + shipping + gst;
     const [showQr, setShowQr] = useState(false);
     const { Razorpay, isLoading } = useRazorpay();
     const [isProcessing, setIsProcessing] = useState(false);
@@ -74,7 +82,7 @@ export default function CheckoutPage() {
             const order = await response.json();
 
             const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_1234567890',
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? '',
                 amount: order.amount,
                 currency: order.currency,
                 name: "Viraasat",
@@ -98,7 +106,36 @@ export default function CheckoutPage() {
                             return;
                         }
 
-                        const orderData = {
+                        type OrderRecord = {
+                            userId: string;
+                            customerName: string;
+                            items: {
+                                productId: string;
+                                productName: string;
+                                quantity: number;
+                                unitPrice: number;
+                                itemImageUrl: string;
+                            }[];
+                            subtotal: number;
+                            shippingFee: number;
+                            tax: number;
+                            totalAmount: number;
+                            orderDate: string;
+                            status: string;
+                            shippingAddress: {
+                                addressLine1: string;
+                                addressLine2: string;
+                                city: string;
+                                state: string;
+                                zipCode: string;
+                                country: string;
+                            };
+                            razorpayOrderId: string;
+                            paymentId: any;
+                            uid?: string;
+                        };
+
+                        const orderData: OrderRecord = {
                             userId: user?.id || 'customer-1',
                             customerName: `${firstName} ${lastName}`.trim(),
                             items: cartItems.map(item => ({
@@ -108,6 +145,9 @@ export default function CheckoutPage() {
                                 unitPrice: item.price,
                                 itemImageUrl: item.images[0] || ''
                             })),
+                            subtotal: subtotal,
+                            shippingFee: shipping,
+                            tax: gst,
                             totalAmount: total,
                             orderDate: new Date().toISOString(),
                             status: 'Processing',
@@ -119,12 +159,25 @@ export default function CheckoutPage() {
                                 zipCode: zip,
                                 country: 'India'
                             },
+                            razorpayOrderId: order.id,
                             paymentId: razorpayResp.razorpay_payment_id
                         };
                         
                         if (db) {
-                            await addDoc(collection(db, "orders"), orderData);
+                            const docRef = await addDoc(collection(db, "orders"), orderData);
+                            orderData.uid = docRef.id;
                         }
+
+                        sessionStorage.setItem('viraasat-last-order', JSON.stringify({
+                            orderId: order.id,
+                            paymentId: razorpayResp.razorpay_payment_id,
+                            items: orderData.items,
+                            subtotal,
+                            shippingFee: shipping,
+                            tax: gst,
+                            total,
+                            customerName: orderData.customerName,
+                        }));
                     } catch (e) {
                         console.error("Failed to save order to Firestore:", e);
                     }
@@ -134,7 +187,7 @@ export default function CheckoutPage() {
                         title: "Acquisition Confirmed!",
                         description: `Payment ID: ${razorpayResp.razorpay_payment_id}. Your masterpiece has been added to your collection.`,
                     });
-                    router.push('/orders');
+                    router.push(`/order-confirmation?order_id=${order.id}&payment_id=${razorpayResp.razorpay_payment_id}`);
                 },
                 prefill: {
                     name: `${firstName} ${lastName}`.trim() || user?.fullName || "Customer",
@@ -204,6 +257,40 @@ export default function CheckoutPage() {
                                     </div>
                                     <Input placeholder="Phone Number *" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-background/50" required />
                                 </form>
+                            </div>
+
+                            <div className="bg-card/50 backdrop-blur-sm border rounded-xl p-6 shadow-sm">
+                                <h2 className="text-xl font-semibold mb-4">Shipping Method</h2>
+                                <div className="space-y-3">
+                                    {SHIPPING_OPTIONS.map((opt) => (
+                                        <label
+                                            key={opt.id}
+                                            className={`flex items-center justify-between gap-4 border rounded-lg p-4 cursor-pointer transition-colors ${
+                                                shippingOption === opt.id
+                                                    ? 'border-primary bg-primary/5'
+                                                    : 'border-border hover:border-primary/30'
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <input
+                                                    type="radio"
+                                                    name="shipping"
+                                                    value={opt.id}
+                                                    checked={shippingOption === opt.id}
+                                                    onChange={() => setShippingOption(opt.id)}
+                                                    className="accent-primary"
+                                                />
+                                                <div>
+                                                    <p className="font-medium text-sm">{opt.label}</p>
+                                                    <p className="text-xs text-muted-foreground">{opt.eta}</p>
+                                                </div>
+                                            </div>
+                                            <span className="font-semibold text-sm">
+                                                {opt.price === 0 ? 'Free' : `₹${opt.price}`}
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
 
                             <div className="bg-card/50 backdrop-blur-sm border rounded-xl p-6 shadow-sm">
@@ -288,7 +375,7 @@ export default function CheckoutPage() {
                                             </div>
                                             <h3 className="font-semibold text-lg">PCI-DSS Compliant Card Checkout</h3>
                                             <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                                                For your security, card details are entered directly into Razorpay's encrypted PCI-DSS Level 1 compliant gateway.
+                                                For your security, card details are entered directly into Razorpay&rsquo;s encrypted PCI-DSS Level 1 compliant gateway.
                                             </p>
                                             <Button onClick={handleRazorpayPayment} disabled={isProcessing} className="w-full max-w-xs bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-lg shadow-lg shadow-primary/20">
                                                 Pay ₹{total.toFixed(2)} via Card
@@ -348,8 +435,8 @@ export default function CheckoutPage() {
                                     <span className="text-green-600 font-medium">{shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-muted-foreground">Tax</span>
-                                    <span>₹0.00</span>
+                                    <span className="text-muted-foreground">Tax (GST {Math.round(GST_RATE * 100)}%)</span>
+                                    <span>₹{gst.toFixed(2)}</span>
                                 </div>
                             </div>
                             <Separator className="my-6" />
