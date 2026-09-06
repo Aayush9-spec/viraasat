@@ -1,6 +1,6 @@
 import { Product } from './product';
 
-export type UserRole = 'buyer' | 'artisan';
+export type UserRole = 'buyer' | 'artisan' | 'admin';
 
 export type User = {
   id: string;
