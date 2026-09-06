@@ -22,7 +22,7 @@ export default function Error({
       </div>
       <h1 className="text-3xl font-bold tracking-tight mb-2">Something went wrong</h1>
       <p className="text-muted-foreground max-w-md mb-8">
-        An unexpected error occurred. Don't worry, our team has been notified.
+        An unexpected error occurred. Don&rsquo;t worry, our team has been notified.
       </p>
       <div className="flex flex-wrap gap-4 justify-center">
         <Button onClick={() => reset()} variant="default">
