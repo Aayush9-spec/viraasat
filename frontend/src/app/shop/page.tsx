@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import ProductCard from '@/features/marketplace/components/product-card';
 import { ProductService } from '@/features/marketplace/product-service';
 import { categories } from '@/lib/data';
@@ -19,6 +19,7 @@ import { Product } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { BACKEND_URL } from '@/services/backend/client';
 
 import { ProductGridSkeleton } from '@/components/ui/product-skeleton';
@@ -33,14 +34,31 @@ const regions = [
 ];
 
 export default function ShopPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <ShopPageContent />
+    </Suspense>
+  );
+}
+
+function ShopPageContent() {
+  const params = useSearchParams();
+  const router = useRouter();
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState('newest');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
+    const raw = params.get('category');
+    return raw ? raw.split(',').filter(Boolean) : [];
+  });
+  const [selectedRegions, setSelectedRegions] = useState<string[]>(() => {
+    const raw = params.get('region');
+    return raw ? raw.split(',').filter(Boolean) : [];
+  });
+  const [searchQuery, setSearchQuery] = useState(() => params.get('q') || '');
+  const [sortOrder, setSortOrder] = useState(() => params.get('sort') || 'newest');
   const [semanticScores, setSemanticScores] = useState<Record<string, number>>({});
+  const hasMounted = useRef(false);
 
   useEffect(() => {
     async function loadProducts() {
@@ -91,6 +109,22 @@ export default function ShopPage() {
     
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
+
+  // Keep the URL in sync with the active filters (skip the initial mount so we
+  // don't rewrite the URL the user arrived with).
+  useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
+    }
+    const next = new URLSearchParams();
+    if (searchQuery) next.set('q', searchQuery);
+    if (selectedCategories.length > 0) next.set('category', selectedCategories.join(','));
+    if (selectedRegions.length > 0) next.set('region', selectedRegions.join(','));
+    if (sortOrder !== 'newest') next.set('sort', sortOrder);
+    const qs = next.toString();
+    router.replace(qs ? `/shop?${qs}` : '/shop', { scroll: false });
+  }, [searchQuery, selectedCategories, selectedRegions, sortOrder, router]);
 
   const filterAndSortProducts = useCallback(() => {
     let tempProducts = [...allProducts];
