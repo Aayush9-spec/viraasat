@@ -38,8 +38,8 @@ import { generateProductInsights } from '@/ai/flows/generate-product-insights';
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
 import { analyzeImage } from '@/ai/flows/analyze-image';
 import { useToast } from '@/hooks/use-toast';
+import { useBackend } from '@/hooks/use-backend';
 import { Badge } from '@/components/ui/badge';
-import { BACKEND_URL } from '@/services/backend/client';
 import { db } from '@/services/firebase/firestore';
 import { collection, addDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
@@ -63,6 +63,7 @@ interface ProductFormProps {
 export function ProductForm({ product }: ProductFormProps) {
   const { user } = useUser();
   const { toast } = useToast();
+  const { post: backendPost } = useBackend();
   const [images, setImages] = useState<string[]>(product?.images || []);
   const [features, setFeatures] = useState<string[]>(product?.aiInsights?.keyFeatures || []);
   const [styleTags, setStyleTags] = useState<string[]>(
@@ -94,26 +95,19 @@ export function ProductForm({ product }: ProductFormProps) {
     setIsPredictingPrice(true);
     try {
       const values = form.getValues();
-      const res = await fetch(`${BACKEND_URL}/api/predict-price`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          category: values.category || 'Home Decor',
-          material: values.material || 'Natural Vegetable Dyes',
-          labor_hours: Number(values.laborHours) || 5,
-          size_sqft: Number(values.sizeSqft) || 1,
-          is_organic: true
-        })
+      const data = await backendPost<{ recommended_price: number }>('/api/predict-price', {
+        category: values.category || 'Home Decor',
+        material: values.material || 'Natural Vegetable Dyes',
+        labor_hours: Number(values.laborHours) || 5,
+        size_sqft: Number(values.sizeSqft) || 1,
+        is_organic: true,
       });
-      if (res.ok) {
-        const data = await res.json();
-        setPricingInfo(data);
-        form.setValue('price', data.recommended_price);
+      setPricingInfo(data);
+      form.setValue('price', data.recommended_price);
         toast({
           title: "AI Suggested Price Applied!",
           description: `Suggested price: ₹${data.recommended_price} based on labor & materials.`
         });
-      }
     } catch (err) {
       console.error(err);
       toast({
