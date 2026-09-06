@@ -94,7 +94,8 @@ vercel rollback --yes
 5. Compare response times and contents to production. Document any drift.
 6. Time the full RTO (from "initiate restore" to "traffic serving").
 
-A runbook template lives at `docs/dr-drill-template.md` (TODO: create on next drill).
+A runbook template lives at `docs/dr-drill-template.md`. Copy it to
+`dr-drill-YYYY-MM-DD.md` at the start of each drill and fill in timings/results.
 
 ## What is NOT backed up
 
