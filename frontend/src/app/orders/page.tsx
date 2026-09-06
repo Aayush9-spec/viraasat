@@ -33,7 +33,7 @@ export default function OrdersPage() {
 
     const q = query(
       collection(db, "orders"),
-      where("userId", "==", user.id)
+      where("buyerId", "==", user.id)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
