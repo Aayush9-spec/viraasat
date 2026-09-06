@@ -5,15 +5,26 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter, usePathname } from 'next/navigation';
 import { db } from '@/lib/firebase/client';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { useFirebaseAuth } from '@/context/firebase-auth-context';
 
 export function AuthSync() {
   const { user, isSignedIn, isLoaded } = useUser();
+  const firebaseAuth = useFirebaseAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     async function syncUser() {
-      if (!isLoaded || !isSignedIn || !user || !db) return;
+      if (
+        !isLoaded ||
+        !isSignedIn ||
+        !user ||
+        !db ||
+        !firebaseAuth.ready ||
+        !firebaseAuth.signedIn
+      ) {
+        return;
+      }
 
       try {
         const userRef = doc(db, 'users', user.id);
@@ -97,7 +108,7 @@ export function AuthSync() {
     }
 
     syncUser();
-  }, [user, isSignedIn, isLoaded, pathname, router]);
+  }, [user, isSignedIn, isLoaded, pathname, router, firebaseAuth.ready, firebaseAuth.signedIn]);
 
   return null;
 }
