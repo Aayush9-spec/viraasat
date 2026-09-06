@@ -1,11 +1,16 @@
 import { auth, currentUser as clerkCurrentUser } from "@clerk/nextjs/server";
 import { getUser } from "@/lib/firebase/users";
+import { getServerUser } from "@/lib/firebase/server-user";
 import { User } from "@/types/user";
 
 export async function getCurrentUser(): Promise<User | null> {
   try {
     const { userId } = await auth();
     if (!userId) return null;
+
+    // Privileged read via Firebase Admin (works server-side regardless of auth state).
+    const serverUser = await getServerUser(userId);
+    if (serverUser) return serverUser;
 
     const userDoc = await getUser(userId);
     if (userDoc) return userDoc;
