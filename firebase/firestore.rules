@@ -107,6 +107,28 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // ---- Artisan profiles ----
+    // Public read. Owner or admin can create/update.
+    match /artisans/{artisanId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && request.resource.data.artisanId == request.auth.uid;
+      allow update: if isSignedIn()
+        && (resource.data.artisanId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ---- Contact submissions ----
+    // Signed-in users may submit; only admin can read.
+    match /contactSubmissions/{submissionId} {
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
     // ---- Knowledge graph / catalogue read-only data ----
     match /crafts/{craftId} {
       allow read: if true;
