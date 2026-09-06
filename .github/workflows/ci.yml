@@ -74,7 +74,6 @@ jobs:
           DATABASE_URL: memory://
         run: |
           source venv/bin/activate
-          pip install -e .
           python3 -m pytest
       - name: Backend API smoke test
         env:
