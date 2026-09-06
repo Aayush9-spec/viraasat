@@ -1,12 +1,16 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { db } from '@/services/firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { sendContactReceipt } from '@/lib/notifications/email';
 import { Mail, MapPin, Send } from 'lucide-react';
 
 const channel = {
@@ -17,6 +21,7 @@ const channel = {
 
 export default function ContactPage() {
   const { toast } = useToast();
+  const { user } = useUser();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [topic, setTopic] = useState('General enquiry');
@@ -25,16 +30,50 @@ export default function ContactPage() {
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
+
+    if (!user) {
+      toast({
+        variant: 'destructive',
+        title: 'Sign in required',
+        description: 'Please sign in to send us a message.',
+      });
+      return;
+    }
+
     setSending(true);
-    await new Promise((resolve) => setTimeout(resolve, 700));
-    setSending(false);
-    setName('');
-    setEmail('');
-    setMessage('');
-    toast({
-      title: 'Message sent',
-      description: `Thanks, ${name || 'friend'}! We'll reply to ${email || 'your email'} within 24 hours.`,
-    });
+    try {
+      if (db) {
+        await addDoc(collection(db, 'contactSubmissions'), {
+          userId: user.id,
+          name: name.trim(),
+          email: email.trim(),
+          topic,
+          message: message.trim(),
+          createdAt: serverTimestamp(),
+        });
+      }
+      await sendContactReceipt({
+        to: email.trim(),
+        name: name.trim(),
+        topic,
+      });
+      setName('');
+      setEmail('');
+      setMessage('');
+      toast({
+        title: 'Message sent',
+        description: `Thanks, ${name || 'friend'}! We'll reply to ${email || 'your email'} within 24 hours.`,
+      });
+    } catch (error) {
+      console.error('Failed to submit contact form:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Submission failed',
+        description: 'Something went wrong. Please try again.',
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
