@@ -16,6 +16,7 @@ import dynamic from 'next/dynamic';
 import { Show, UserButton, SignInButton, SignUpButton } from "@clerk/nextjs";
 
 import { useUserRole } from "@/hooks/use-user-role";
+import { NewsletterForm } from "./newsletter-form";
 
 const AIAssistant = dynamic(() => import('@/features/ai/components/ai-assistant').then(mod => ({ default: mod.AIAssistant })), { ssr: false });
 
@@ -111,9 +112,9 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                           <Link href="/orders" className="text-lg font-medium hover:text-primary transition-colors">
                             {t('nav.orders')}
                           </Link>
-                          <a href="#" className="text-lg font-medium hover:text-primary transition-colors">
+                          <Link href="/journal" className="text-lg font-medium hover:text-primary transition-colors">
                             {t('nav.journal')}
-                          </a>
+                          </Link>
                         </nav>
                         <div className="border-t pt-6">
                           <Show 
@@ -207,14 +208,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
               <h3 className="font-serif text-primary tracking-wider uppercase text-sm mb-6">Newsletter</h3>
               <p className="text-foreground/50 text-sm mb-4">Subscribe to receive updates on new arrivals and special offers.</p>
               <div className="flex bg-background rounded-md border border-border focus-within:border-primary transition-colors p-1">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="bg-transparent border-none text-sm text-foreground placeholder:text-muted-foreground focus:ring-0 flex-1 px-3"
-                />
-                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground h-8">
-                  Join
-                </Button>
+                <NewsletterForm />
               </div>
             </div>
           </div>
