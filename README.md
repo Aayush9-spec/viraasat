@@ -184,6 +184,22 @@ firebase deploy --only firestore:rules,firestore:indexes,storage
 # Backend:  http://localhost:8000  (docs at /docs)
 ```
 
+### Testing
+
+```bash
+# Frontend: lint, typecheck, unit tests (Jest 30)
+cd frontend
+npm run lint
+npm run typecheck
+npm run test:unit          # jest --runInBand
+
+# Backend: pytest (forces in-memory store; never touches prod SQLite)
+cd ../backend
+venv/bin/python -m pytest  # or: python3 -m pytest
+```
+
+Both suites are wired into CI (`.github/workflows/ci.yml`).
+
 ### Production Deployment
 
 See [`docs/deployment.md`](docs/deployment.md).
@@ -211,8 +227,14 @@ Key rules:
 
 ## 🛣 Roadmap
 
-- [ ] ToS / Privacy / Refund pages
-- [ ] Image moderation on artisan uploads
+- [x] ToS / Privacy / Refund pages
+- [x] Image moderation on artisan uploads
+- [x] Product reviews with aggregate ratings
+- [x] Semantic search (backend + `/shop` URL-param filtering)
+- [x] Wishlist (localStorage + Firestore sync)
+- [x] Static pages: About, Artisans, Journal, Journal articles, FAQ, Shipping, Contact
+- [x] Category landing pages (`/category/<slug>`, 7 categories)
+- [x] Admin moderation dashboard (`/admin`)
 - [ ] Real-time chat (buyer ↔ artisan) with abuse guard
 - [ ] Multi-region Render workers with Redis-backed rate limits
 - [ ] i18n for artisan flows (Hindi, Tamil, Bengali)
