@@ -60,7 +60,7 @@ export function ReviewsSection({ product }: { product: Product }) {
           user.primaryEmailAddress?.emailAddress ||
           'Anonymous',
         reviewerAvatar: user.imageUrl || '',
-        rating: selectedRating,
+        rating: Math.round(selectedRating),
         comment: comment.trim(),
         createdAt: serverTimestamp(),
       });
