@@ -36,11 +36,11 @@ jobs:
         run: npm run test:keyboard -- --project=chromium
       - name: Check for leaked secrets
         run: |
-          if grep -r "pk_test_.*sk_test_" . --include="*.ts" --include="*.tsx" --include="*.js" --include="*.mjs" --include="*.json" 2>/dev/null | grep -v node_modules | grep -v ".next" | grep -v ".git"; then
-            echo "⚠️  Potential Clerk test keys found in source - ensure these are replaced before deployment"
-          fi
-          if grep -r "sk-" . --include="*.ts" --include="*.tsx" --include="*.js" --include="*.mjs" --include="*.json" 2>/dev/null | grep -v node_modules | grep -v ".next" | grep -v ".git" | grep -v "test" | grep -v "__tests__"; then
+          if grep -rnE "(pk_|sk_)[a-zA-Z0-9_-]+" . --include="*.ts" --include="*.tsx" --include="*.js" --include="*.mjs" --include="*.json" 2>/dev/null | grep -v node_modules | grep -v ".next" | grep -v ".git" | grep -v "test\.__tests__"; then
             echo "⚠️  Potential secret keys found in source - rotate before deployment"
+          fi
+          if grep -rnE "sk_live_|sk_test_" . --include="*.ts" --include="*.tsx" --include="*.js" --include="*.mjs" --include="*.json" 2>/dev/null | grep -v node_modules | grep -v ".next" | grep -v ".git" | grep -v "test\.__tests__"; then
+            echo "⚠️  Live/test Clerk keys found in source - ensure these are replaced before deployment"
           fi
 
   translation:

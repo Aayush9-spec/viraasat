@@ -69,7 +69,7 @@ service cloud.firestore {
         allow read: if true;
         allow create: if isSignedIn()
           && request.resource.data.reviewerId == request.auth.uid
-          && request.resource.data.rating is int
+          && typeof request.resource.data.rating === 'number'
           && request.resource.data.rating >= 1
           && request.resource.data.rating <= 5;
         allow update, delete: if isSignedIn()
