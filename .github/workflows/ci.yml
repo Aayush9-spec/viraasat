@@ -34,12 +34,20 @@ jobs:
         run: npm run test:a11y -- --project=chromium
       - name: Keyboard smoke test
         run: npm run test:keyboard -- --project=chromium
+      - name: Check for leaked secrets
+        run: |
+          if grep -r "pk_test_.*sk_test_" . --include="*.ts" --include="*.tsx" --include="*.js" --include="*.mjs" --include="*.json" 2>/dev/null | grep -v node_modules | grep -v ".next" | grep -v ".git"; then
+            echo "⚠️  Potential Clerk test keys found in source - ensure these are replaced before deployment"
+          fi
+          if grep -r "sk-" . --include="*.ts" --include="*.tsx" --include="*.js" --include="*.mjs" --include="*.json" 2>/dev/null | grep -v node_modules | grep -v ".next" | grep -v ".git" | grep -v "test" | grep -v "__tests__"; then
+            echo "⚠️  Potential secret keys found in source - rotate before deployment"
+          fi
 
   translation:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./.
+        working-directory: .
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
@@ -66,12 +74,25 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
+      - name: Validate env config
+        run: |
+          source venv/bin/activate
+          if [ -z "${REQUIRE_AUTH}" ]; then
+            echo "⚠️  REQUIRE_AUTH not set - defaults to development behavior"
+          fi
+          if [ "${REQUIRE_AUTH}" = "true" ] && [ "${ENVIRONMENT}" = "production" ]; then
+            echo "✓ REQUIRE_AUTH=true in production mode"
+          fi
+          if [ -z "${ALLOWED_ORIGINS}" ]; then
+            echo "⚠️  ALLOWED_ORIGINS not set"
+          fi
       - name: Run test suite (pytest)
         env:
           REQUIRE_AUTH: false
           ALLOWED_ORIGINS: http://localhost:9002
           GOOGLE_CLOUD_VISION_ENABLED: false
           DATABASE_URL: memory://
+          ENVIRONMENT: development
         run: |
           source venv/bin/activate
           python3 -m pytest
@@ -80,6 +101,7 @@ jobs:
           REQUIRE_AUTH: false
           ALLOWED_ORIGINS: http://localhost:9002
           GOOGLE_CLOUD_VISION_ENABLED: false
+          ENVIRONMENT: development
         run: |
           source venv/bin/activate
           PYTHONPATH=. python3 -c "
