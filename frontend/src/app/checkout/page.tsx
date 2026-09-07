@@ -16,6 +16,8 @@ import { useToast } from '@/hooks/use-toast';
 import { GooglePayLogo, PaytmLogo, PhonePeLogo, RazorpayLogo } from '@/components/payment-icons';
 import { QrCode, ShoppingCart, CreditCard, ShieldCheck } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
+import Script from 'next/script';
+
 
 const SHIPPING_OPTIONS = [
   { id: 'standard', label: 'Standard', price: 0, eta: '5–7 business days' },
@@ -24,7 +26,22 @@ const SHIPPING_OPTIONS = [
 
 const GST_RATE = Number(process.env.NEXT_PUBLIC_GST_RATE ?? 0.18);
 
+const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+        if (typeof window !== 'undefined' && (window as any).Razorpay) {
+            resolve(true);
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+    });
+};
+
 export default function CheckoutPage() {
+
     const { cartItems, getCartTotal, clearCart } = useCart();
     const router = useRouter();
     const { toast } = useToast();
@@ -68,45 +85,71 @@ export default function CheckoutPage() {
         if (!validateForm()) return;
         setIsProcessing(true);
         try {
+            const loaded = await loadRazorpayScript();
+            if (!loaded) {
+                toast({ title: "SDK Load Error", description: "Could not load Razorpay SDK. Please check your network connection.", variant: "destructive" });
+                setIsProcessing(false);
+                return;
+            }
+
             const idempotencyKey = globalThis.crypto.randomUUID();
-            const response = await fetch('/api/razorpay', {
+
+            const amountInPaise = Math.max(100, Math.round(total * 100));
+
+            // Call create-order endpoint
+            let response = await fetch('/api/create-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    items: cartItems.map((item) => ({ productId: item.id, quantity: item.quantity })),
-                    shippingOption,
-                    idempotencyKey,
-                    shipping: {
-                        fullName: `${firstName} ${lastName}`.trim(),
-                        email: user?.primaryEmailAddress?.emailAddress || '',
-                        addressLine1: address1,
-                        addressLine2: address2 || '',
-                        city: city,
-                        state: stateName,
-                        zipCode: zip,
-                        country: 'India',
-                        phoneNumber: phone,
-                    },
+                    amount: amountInPaise,
+                    currency: 'INR',
+                    receipt: `rcpt_${Date.now()}`,
                 }),
             });
+
+            if (!response.ok) {
+                // Fallback to /api/razorpay if /api/create-order is unavailable
+                response = await fetch('/api/razorpay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items: cartItems.map((item) => ({ productId: item.id, quantity: item.quantity })),
+                        shippingOption,
+                        idempotencyKey,
+                        shipping: {
+                            fullName: `${firstName} ${lastName}`.trim(),
+                            email: user?.primaryEmailAddress?.emailAddress || '',
+                            addressLine1: address1,
+                            addressLine2: address2 || '',
+                            city: city,
+                            state: stateName,
+                            zipCode: zip,
+                            country: 'India',
+                            phoneNumber: phone,
+                        },
+                    }),
+                });
+            }
+
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
                 throw new Error(errData.error || 'Failed to create order');
             }
             const order = await response.json();
+            const orderId = order.order_id || order.id;
 
             const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? '',
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_TZ710mgL66w46A',
                 amount: order.amount,
-                currency: order.currency,
+                currency: order.currency || 'INR',
                 name: "Viraasat",
                 description: "Purchase from Viraasat",
-                order_id: order.id,
+                order_id: orderId,
                 handler: async function (razorpayResp: any) {
                     try {
-                        // Verify signature server-side
-                        const verifyResp = await fetch('/api/razorpay', {
-                            method: 'PUT',
+                        // Verify payment signature server-side
+                        let verifyResp = await fetch('/api/verify-payment', {
+                            method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 razorpay_order_id: razorpayResp.razorpay_order_id,
@@ -114,14 +157,31 @@ export default function CheckoutPage() {
                                 razorpay_signature: razorpayResp.razorpay_signature,
                             }),
                         });
-                        const verifyResult = await verifyResp.json();
+                        
+                        let verifyResult: any = {};
+                        if (verifyResp.ok) {
+                            verifyResult = await verifyResp.json();
+                        } else {
+                            const fallbackVerify = await fetch('/api/razorpay', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    razorpay_order_id: razorpayResp.razorpay_order_id,
+                                    razorpay_payment_id: razorpayResp.razorpay_payment_id,
+                                    razorpay_signature: razorpayResp.razorpay_signature,
+                                }),
+                            });
+                            verifyResult = await fallbackVerify.json();
+                        }
+
                         if (!verifyResult.verified) {
-                            toast({ title: "Payment Verification Failed", description: "Invalid signature returned.", variant: "destructive" });
+                            toast({ title: "Payment Verification Failed", description: verifyResult.error || "Invalid signature returned.", variant: "destructive" });
+                            setIsProcessing(false);
                             return;
                         }
 
                         sessionStorage.setItem('viraasat-last-order', JSON.stringify({
-                            orderId: order.id,
+                            orderId: orderId,
                             paymentId: razorpayResp.razorpay_payment_id,
                             items: cartItems.map(item => ({
                                 productId: item.id,
@@ -136,7 +196,7 @@ export default function CheckoutPage() {
                             customerName: `${firstName} ${lastName}`.trim(),
                         }));
                     } catch (e) {
-                        console.error("Failed to save order to Firestore:", e);
+                        console.error("Failed to save/verify order:", e);
                     }
 
                     clearCart();
@@ -144,7 +204,17 @@ export default function CheckoutPage() {
                         title: "Acquisition Confirmed!",
                         description: `Payment ID: ${razorpayResp.razorpay_payment_id}. Your masterpiece has been added to your collection.`,
                     });
-                    router.push(`/order-confirmation?order_id=${order.id}&payment_id=${razorpayResp.razorpay_payment_id}`);
+                    router.push(`/order-confirmation?order_id=${orderId}&payment_id=${razorpayResp.razorpay_payment_id}`);
+                },
+                modal: {
+                    ondismiss: function () {
+                        setIsProcessing(false);
+                        toast({
+                            title: "Payment Cancelled",
+                            description: "You closed the payment modal before completing transaction.",
+                            variant: "default",
+                        });
+                    },
                 },
                 prefill: {
                     name: `${firstName} ${lastName}`.trim() || user?.fullName || "Customer",
@@ -156,18 +226,20 @@ export default function CheckoutPage() {
                 }
             };
 
-            const rzp = new Razorpay(options);
+            const RazorpayClass = (window as any).Razorpay || Razorpay;
+            const rzp = new RazorpayClass(options);
             rzp.on('payment.failed', function (resp: any) {
-                toast({ title: "Payment Failed", description: resp.error.description, variant: "destructive" });
+                setIsProcessing(false);
+                toast({ title: "Payment Failed", description: resp.error?.description || "Payment failed", variant: "destructive" });
             });
             rzp.open();
         } catch (error: any) {
             console.error("Payment Error:", error);
             toast({ title: "Payment Initiation Error", description: error.message || "Please try again later.", variant: "destructive" });
-        } finally {
             setIsProcessing(false);
         }
     };
+
 
     if (cartItems.length === 0) {
         return (
@@ -183,8 +255,10 @@ export default function CheckoutPage() {
 
     return (
         <div className="min-h-screen bg-background relative">
+            <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
             {/* Background elements are handled by Background3D now */}
             <div className="h-4" /> {/* Spacing after global navbar */}
+
             <main className="container mx-auto px-4 py-8 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Payment Details Section */}
