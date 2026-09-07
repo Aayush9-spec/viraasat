@@ -18,3 +18,5 @@ sentry-sdk[fastapi]==2.68.1
 firebase-admin==7.5.0
 google-cloud-vision==3.10.0
 python-multipart==0.0.31
+razorpay==2.0.1
+
