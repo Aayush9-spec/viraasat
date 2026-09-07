@@ -4,21 +4,32 @@
 
 **Viraasat** (Heritage) is an AI-powered digital marketplace that bridges India's traditional artisans with a global audience. We use **Google AI (Gemini, Cloud Vision, Speech-to-Text)** and a serverless data layer (Firebase + FastAPI) to turn a phone photo and a voice memo into a professionally listed, blockchain-provenanced product.
 
+<div align="center">
+
+[![GitHub repo](https://img.shields.io/badge/GitHub-Repository-black?logo=github)](https://github.com/Aayush9-spec/viraasat)
+[![Backend Status](https://img.shields.io/badge/Backend-FastAPI%20on%20Render-green?logo=python)](https://viraasat-backend-f0c1.onrender.com/health)
+[![Frontend Status](https://img.shields.io/badge/Frontend-Next.js%2016%20on%20Vercel-blue?logo=vercel)](https://viraasat-eta.vercel.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?logo=appveyor)](https://github.com/Aayush9-spec/viraasat/blob/main/LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/Aayush9-spec/viraasat/ci.yml?logo=github)](https://github.com/Aayush9-spec/viraasat/actions/workflows/ci.yml)
+
+</div>
+
 ---
 
 ## 📑 Table of Contents
 
-- [The Problem](#-the-problem)
-- [Our Solution](#-our-solution-ai-first-empowerment)
-- [Tech Stack](#-tech-stack)
-- [System Architecture](#-system-architecture)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
+- [🛑 The Problem](#-the-problem)
+- [💡 Our Solution: AI-First Empowerment](#-our-solution-ai-first-empowerment)
+- [🛠 Tech Stack](#-tech-stack)
+- [🏗 System Architecture](#-system-architecture)
+- [🗂 Project Structure](#-project-structure)
+- [⚙️ Getting Started](#-getting-started)
   - [Prerequisites](#prerequisites)
   - [Local Development](#local-development)
   - [Production Deployment](#production-deployment)
-- [Security & Secrets](#-security--secrets)
-- [License](#-license)
+- [🔒 Security & Secrets](#-security--secrets)
+- [🛣 Roadmap](#-roadmap)
+- [🙏 Acknowledgements](#-acknowledgements)
 
 ---
 
@@ -37,18 +48,20 @@
 
 ## 💡 Our Solution: AI-First Empowerment
 
-### For artisans
-- **AI image enhancement** (Google Cloud Vision) to turn phone photos into studio-quality listings.
-- **Voice-to-text** (Google Speech-to-Text) so artisans can describe products in their own language.
-- **AI-refined copy** (Vertex AI / Gemini) for SEO-ready, emotional narratives.
-- **Blockchain provenance** for every product (custom Proof-of-Authority ledger).
-- **ML-based pricing & demand forecasting** to suggest fair prices and stock at the right time.
+### For Artisans
 
-### For buyers
-- "Meet the Creator" profiles with cultural context.
-- AI product analyzer (feature extraction, styling tips, authenticity cues).
-- Secure cart, checkout (Razorpay), and order tracking.
-- Knowledge-graph-powered discovery of regional crafts and GI tags.
+- **AI image enhancement** (Google Cloud Vision) to turn phone photos into studio-quality listings
+- **Voice-to-text** (Google Speech-to-Text) so artisans can describe products in their own language
+- **AI-refined copy** (Gemini) for SEO-ready, emotional narratives
+- **Blockchain provenance** for every product (custom Proof-of-Work ledger)
+- **ML-based pricing & demand forecasting** to suggest fair prices and stock at the right time
+
+### For Buyers
+
+- "Meet the Creator" profiles with cultural context
+- AI product analyzer (feature extraction, styling tips, authenticity cues)
+- Secure cart, checkout (Razorpay), and order tracking
+- Knowledge-graph-powered discovery of regional crafts and GI tags
 
 ---
 
@@ -71,35 +84,36 @@
 
 ## 🏗 System Architecture
 
-```
-                ┌─────────────────────────────────────────┐
-                │              Browser (PWA)             │
-                │   Next.js 16 • React 19 • Clerk • SW    │
-                └──────────────┬──────────────────────────┘
-                               │ Clerk session JWT
-              ┌────────────────┼─────────────────┐
-              │                │                 │
-              ▼                ▼                 ▼
-       Firebase Auth     Firestore (rules)   FastAPI (Render)
-       + Storage         (composite indexes)  • Pricing ML
+```text
+                 ┌─────────────────────────────────────────┐
+                 │              Browser (PWA)              │
+                 │   Next.js 16 • React 19 • Clerk • SW    │
+                 └──────────────┬──────────────────────────┘
+                                │ Clerk session JWT
+               ┌────────────────┼─────────────────┐
+               │                │                 │
+               ▼                ▼                 ▼
+        Firebase Auth     Firestore (rules)   FastAPI (Render)
+        + Storage         (composite indexes)  • Pricing ML
                                               • Forecasting
                                               • Fraud detect
                                               • Knowledge graph
                                               • Provenance ledger
                                               • Rate-limited
                                               • Sentry-instrumented
-                              ▲
-                              │ Razorpay webhooks
-                              │
-                        ┌─────┴──────┐
-                        │  Razorpay  │
-                        └────────────┘
+                      ▲
+                      │ Razorpay webhooks
+                      │
+                ┌─────┴──────┐
+                │  Razorpay  │
+                └────────────┘
 ```
 
-- **Serverless writes** (products, orders, reviews) go through Firestore with security rules.
-- **Heavy AI / ML** (pricing, forecasting, KG, blockchain) is offloaded to FastAPI on Render.
-- **Payments** are confirmed via Razorpay webhooks (HMAC-verified) hitting the Next.js API route.
-- **Auth sync**: Clerk `user.created` / `user.updated` webhooks materialize matching Firestore user docs.
+**Data Flow:**
+- **Serverless writes** (products, orders, reviews) go through Firestore with security rules
+- **Heavy AI / ML** (pricing, forecasting, KG, blockchain) is offloaded to FastAPI on Render
+- **Payments** are confirmed via Razorpay webhooks (HMAC-verified) hitting the Next.js API route
+- **Auth sync**: Clerk `user.created` / `user.updated` webhooks materialize matching Firestore user docs
 
 ---
 
@@ -121,20 +135,17 @@ viraasat/
 │   │   └── manifest.json
 │   ├── scripts/build-sw.js  # rewrites sw.js CACHE_NAME per build
 │   └── eslint.config.mjs    # ESLint 9 flat config (Next 16)
-│
 ├── backend/                 # FastAPI service
 │   ├── main.py              # app factory, CORS, Sentry, slowapi
 │   ├── app/
 │   │   ├── api/             # router + auth deps (Clerk JWT)
 │   │   └── services/        # storage layer (SQLite / Firestore / memory)
 │   └── ai/                  # ML models + knowledge graph + blockchain
-│
 ├── firebase/                # security rules + deploy config
 │   ├── firebase.json
 │   ├── firestore.rules
 │   ├── storage.rules
 │   └── firestore.indexes.json
-│
 ├── database/                # seed JSON + trained .pkl models
 ├── docs/                    # architecture, deployment, secrets
 ├── scripts/                 # firebase deploy helper
@@ -156,8 +167,8 @@ viraasat/
 
 ```bash
 # 1. Clone
-git clone https://github.com/Aayush9-spec/viraasat_.git
-cd viraasat_
+git clone https://github.com/Aayush9-spec/viraasat.git
+cd viraasat
 
 # 2. Frontend
 cd frontend
@@ -196,28 +207,32 @@ npm run test:unit          # jest --runInBand
 # Backend: pytest (forces in-memory store; never touches prod SQLite)
 cd ../backend
 venv/bin/python -m pytest  # or: python3 -m pytest
-```
 
 Both suites are wired into CI (`.github/workflows/ci.yml`).
+```
 
 ### Production Deployment
 
-See [`docs/deployment.md`](docs/deployment.md).
+| Service | Platform | Config Env Vars |
+| --- | --- | --- |
+| **Frontend** | Vercel | `NEXT_PUBLIC_*`, `GEMINI_API_KEY`, `CLERK_*`, `NEXT_PUBLIC_BACKEND_URL` |
+| **Backend** | Render | `ALLOWED_ORIGINS`, `CLERK_*`, `RAZORPAY_*`, `SENTRY_DSN`, `DATABASE_URL` |
+| **Firebase** | Firebase Console | `firebase deploy --only firestore:rules,firestore:indexes,storage` |
+| **Razorpay** | Dashboard | Webhook: `https://YOUR_DOMAIN/api/razorpay/webhook` + `RAZORPAY_WEBHOOK_SECRET` |
 
-- **Frontend** → Vercel. Set all `NEXT_PUBLIC_*`, `GEMINI_API_KEY`, `CLERK_*`, and `NEXT_PUBLIC_BACKEND_URL` env vars. `npm run build` runs `prebuild` automatically (injects SW build id).
-- **Backend** → Render Web Service. Root directory `backend/`, start command `uvicorn main:app --host 0.0.0.0 --port $PORT`. Set `ALLOWED_ORIGINS`, `CLERK_*`, `RAZORPAY_*`, `SENTRY_DSN`, `DATABASE_URL`.
-- **Firebase** → run `firebase deploy --only firestore:rules,firestore:indexes,storage`.
-- **Razorpay** → add webhook `https://YOUR_DOMAIN/api/razorpay/webhook` with events `payment.captured`, `payment.failed`, `refund.processed`. Set `RAZORPAY_WEBHOOK_SECRET` in Vercel.
+> **Deployed URLs:**
+> - Frontend: `https://viraasat-eta.vercel.app`
+> - Backend: `https://viraasat-backend-f0c1.onrender.com/health` → `{"status":"ok"}`
 
 ---
 
 ## 🔒 Security & Secrets
 
-> ⚠️ **All previously committed env files have been removed.** Treat every key in the git history as compromised. Rotate Clerk, Firebase, Gemini, and Razorpay keys before launch.
+⚠️ **All previously committed env files have been removed.** Treat every key in the git history as compromised. Rotate Clerk, Firebase, Gemini, and Razorpay keys before launch.
 
 See [`docs/secrets.md`](docs/secrets.md) for the full setup checklist, including which env var goes where (Vercel vs Render) and what to do if a key leaks.
 
-Key rules:
+**Key rules:**
 - Never commit `.env` or `.env.local`. Both are gitignored; templates are in `*.example`.
 - Set `REQUIRE_AUTH=true` and `ALLOWED_ORIGINS` in **every** non-development environment.
 - Use `DATABASE_URL=firestore://PROJECT_ID` to share the ledger across multiple Render workers.
@@ -247,8 +262,6 @@ Key rules:
 - **Google AI / Gemini** for the intelligence layer.
 - **Clerk** for frictionless auth.
 - **The artisans** who inspire this work.
-
----
 
 <p align="center">
 <b>Handcrafted stories deserve a global audience. 🌍✨</b>
