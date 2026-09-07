@@ -10,6 +10,8 @@ from slowapi.util import get_remote_address
 from app.api.router import api_router
 from app.api.webhooks import router as webhooks_router
 from app.api.moderation import router as moderation_router
+from app.api.razorpay import router as razorpay_router
+
 
 load_dotenv()
 
@@ -69,6 +71,8 @@ app.include_router(api_router, prefix="/api")
 # under the same /api prefix without going through the rate limiter.
 app.include_router(webhooks_router, prefix="/api")
 app.include_router(moderation_router, prefix="/api")
+app.include_router(razorpay_router, prefix="/api")
+
 
 
 @app.get("/")
