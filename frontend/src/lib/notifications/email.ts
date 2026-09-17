@@ -74,7 +74,7 @@ export async function sendContactReceipt(params: {
 }): Promise<boolean> {
   const html = `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
-      <h2 style="color:#5e2c18">We收到您的消息</h2>
+      <h2 style="color:#5e2c18">We&#8217;ve received your message</h2>
       <p>Hi ${params.name},</p>
       <p>We've received your message about <strong>${params.topic}</strong> and will reply within 24 hours.</p>
       <p style="color:#666">If your matter is urgent, please email us directly at <a href="mailto:care@viraasat.in">care@viraasat.in</a>.</p>

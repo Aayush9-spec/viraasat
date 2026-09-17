@@ -1,0 +1,64 @@
+# Keeps only the most recent N Production deployments; deletes the rest.
+# Runs after every push to main and can be triggered manually.
+#
+# GitHub deployments must be in an "inactive" state before they can be deleted.
+# This workflow first marks old deployments inactive, then deletes them.
+name: Cleanup Old Deployments
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      keep_count:
+        description: 'Number of recent deployments to keep'
+        required: false
+        default: '5'
+
+permissions:
+  deployments: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete stale deployments
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const KEEP = parseInt(core.getInput('keep_count') || '${{ inputs.keep_count || 5 }}');
+
+            const { data: deployments } = await github.rest.repos.listDeployments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+
+            // Deployments are newest-first; skip the ones we want to keep.
+            const toDelete = deployments.slice(KEEP);
+            core.info(`Total deployments: ${deployments.length}. Keeping ${KEEP}, deleting ${toDelete.length}.`);
+
+            let deleted = 0;
+            for (const dep of toDelete) {
+              try {
+                // A deployment must be inactive before it can be deleted.
+                await github.rest.repos.createDeploymentStatus({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  deployment_id: dep.id,
+                  state: 'inactive',
+                  description: 'Marked inactive for cleanup',
+                });
+                await github.rest.repos.deleteDeployment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  deployment_id: dep.id,
+                });
+                deleted++;
+                core.info(`Deleted deployment ${dep.id} (${dep.environment}, ${dep.created_at})`);
+              } catch (err) {
+                core.warning(`Could not delete deployment ${dep.id}: ${err.message}`);
+              }
+            }
+            core.info(`Cleanup complete — deleted ${deleted} deployments.`);

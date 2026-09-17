@@ -1,8 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import ProductCard from '@/features/marketplace/components/product-card';
-import { ProductService } from '@/features/marketplace/product-service';
-import { categories } from '@/lib/data';
+import { ProductService, watchCategories } from '@/features/marketplace/product-service';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -21,17 +20,10 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { BACKEND_URL } from '@/services/backend/client';
+import { useProducts } from '@/hooks/use-products';
+import { categories as staticCategories, regions as staticRegions } from '@/lib/data';
 
 import { ProductGridSkeleton } from '@/components/ui/product-skeleton';
-
-const regions = [
-  'Rajasthan',
-  'Kutch',
-  'Uttar Pradesh',
-  'Varanasi',
-  'Kashmir',
-  'Andhra Pradesh',
-];
 
 export default function ShopPage() {
   return (
@@ -47,23 +39,38 @@ function ShopPageContent() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
-    const raw = params.get('category');
-    return raw ? raw.split(',').filter(Boolean) : [];
-  });
-  const [selectedRegions, setSelectedRegions] = useState<string[]>(() => {
-    const raw = params.get('region');
-    return raw ? raw.split(',').filter(Boolean) : [];
-  });
-  const [searchQuery, setSearchQuery] = useState(() => params.get('q') || '');
-  const [sortOrder, setSortOrder] = useState(() => params.get('sort') || 'newest');
-  const [semanticScores, setSemanticScores] = useState<Record<string, number>>({});
-  const hasMounted = useRef(false);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [regions, setRegions] = useState<string[]>([]);
+
+  const { products: liveProducts, loading: productsLoading } = useProducts();
+
+  // Build the effective category/region lists: prefer Firestore, fall back to
+  // static seed while loading or on error.
+  const effectiveCategories = categories.length > 0 ? categories : staticCategories;
+  const effectiveRegions = regions.length > 0 ? regions : staticRegions;
+
+  // Seed categories + regions from Firestore with static fallback.
+  useEffect(() => {
+    let cancelled = false;
+    ProductService.getAllCategories().then((cats) => {
+      if (!cancelled) setCategories(cats);
+    });
+    ProductService.getAllRegions().then((regs) => {
+      if (!cancelled) setRegions(regs);
+    });
+    const unsub = watchCategories((liveCats) => {
+      if (!cancelled) setCategories(liveCats);
+    });
+    return () => {
+      cancelled = true;
+      unsub();
+    };
+  }, []);
 
   useEffect(() => {
     async function loadProducts() {
       try {
-        const items = await ProductService.getAllProducts();
+        const items = liveProducts;
         const local = localStorage.getItem('viraasat_local_products');
         let finalItems = [...items];
         if (local) {
@@ -82,8 +89,23 @@ function ShopPageContent() {
         setLoading(false);
       }
     }
-    loadProducts();
-  }, []);
+    if (!productsLoading) {
+      loadProducts();
+    }
+  }, [liveProducts, productsLoading]);
+
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
+    const raw = params.get('category');
+    return raw ? raw.split(',').filter(Boolean) : [];
+  });
+  const [selectedRegions, setSelectedRegions] = useState<string[]>(() => {
+    const raw = params.get('region');
+    return raw ? raw.split(',').filter(Boolean) : [];
+  });
+  const [searchQuery, setSearchQuery] = useState(() => params.get('q') || '');
+  const [sortOrder, setSortOrder] = useState(() => params.get('sort') || 'newest');
+  const [semanticScores, setSemanticScores] = useState<Record<string, number>>({});
+  const hasMounted = useRef(false);
 
   useEffect(() => {
     if (!searchQuery) {
@@ -147,12 +169,11 @@ function ShopPageContent() {
       tempProducts = tempProducts.filter(p => selectedCategories.includes(p.category));
     }
 
-    // Regional Filter
+    // Regional Filter — match against the dedicated region field
     if (selectedRegions.length > 0) {
       tempProducts = tempProducts.filter(p =>
         selectedRegions.some(region =>
-          p.description.toLowerCase().includes(region.toLowerCase()) ||
-          p.tagline.toLowerCase().includes(region.toLowerCase())
+          (p.region ?? '').toLowerCase() === region.toLowerCase()
         )
       );
     }
@@ -184,7 +205,7 @@ function ShopPageContent() {
       <div className="space-y-4">
         <h3 className="text-xs font-bold uppercase tracking-widest text-primary/60 border-b border-primary/10 pb-2">Craft Categories</h3>
         <div className="space-y-2">
-          {categories.map((cat) => (
+          {effectiveCategories.map((cat) => (
             <div key={cat} className="flex items-center space-x-3 group cursor-pointer" onClick={() => {
               setSelectedCategories(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
             }}>
@@ -198,7 +219,7 @@ function ShopPageContent() {
       <div className="space-y-4">
         <h3 className="text-xs font-bold uppercase tracking-widest text-primary/60 border-b border-primary/10 pb-2">Regional Heritage</h3>
         <div className="space-y-2">
-          {regions.map((region) => (
+          {effectiveRegions.map((region) => (
             <div key={region} className="flex items-center space-x-3 group cursor-pointer" onClick={() => {
               setSelectedRegions(prev => prev.includes(region) ? prev.filter(r => r !== region) : [...prev, region]);
             }}>

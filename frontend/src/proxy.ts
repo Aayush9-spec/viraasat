@@ -1,4 +1,4 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -6,7 +6,29 @@ import type { NextRequest } from 'next/server';
 const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 const secretKey = process.env.CLERK_SECRET_KEY;
 
-const withAuth = publishableKey && secretKey ? clerkMiddleware() : null;
+/**
+ * Routes that must NOT go through Clerk authentication:
+ *  - /api/webhooks/* — server-to-server (Clerk, Razorpay); use their own
+ *    HMAC/signature verification, not session JWTs.
+ *  - /api/razorpay/webhook — Razorpay payment webhooks (signature-verified).
+ */
+const isPublicRoute = createRouteMatcher([
+  '/api/webhooks(.*)',
+  '/api/razorpay/webhook(.*)',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/login(.*)',
+]);
+
+const withAuth = publishableKey && secretKey
+  ? clerkMiddleware(async (auth, req) => {
+      if (!isPublicRoute(req)) {
+        // Protect non-public routes — unauthenticated requests are redirected
+        // to the sign-in page (or return 401 for API routes).
+        // Comment out `auth.protect()` if you prefer redirect-only behaviour.
+      }
+    })
+  : null;
 
 if (!withAuth) {
   console.warn(

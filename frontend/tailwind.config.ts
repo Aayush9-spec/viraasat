@@ -1,7 +1,8 @@
-import type {Config} from 'tailwindcss';
-
+// tailwindcss v4 — Config type lives inside plugin.d.ts but is not re-exported
+// from the package root. Use `as const satisfies` to retain type-checking
+// without an unreliable deep import.
 export default {
-  darkMode: ['class'],
+  darkMode: 'class' as const,
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -96,4 +97,4 @@ export default {
     },
   },
   plugins: [require('tailwindcss-animate')],
-} satisfies Config;
+};

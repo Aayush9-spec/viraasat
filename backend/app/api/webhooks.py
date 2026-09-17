@@ -1,22 +1,24 @@
-"""Clerk → Firestore user sync.
+"""Clerk → SQLite user sync.
 
-Materializes a Firestore `users/{clerkUserId}` document whenever Clerk
-emits a `user.created` / `user.updated` / `user.deleted` event. The FE
-used to write the user doc itself on every page load; this webhook is
-the source of truth now, so role / email / image data cannot drift.
+Materializes a local SQLite ``users`` table (and optionally Firestore) whenever
+Clerk emits a ``user.created`` / ``user.updated`` / ``user.deleted`` event.
+The user record is the single source of truth for roles consumed by the backend.
 
 Configure in the Clerk Dashboard (Webhooks → Add Endpoint):
   URL:    https://YOUR_BACKEND/api/webhooks/clerk
   Events: user.created, user.updated, user.deleted
-  Secret: copy the value into the backend's CLERK_WEBHOOK_SIGNING_SECRET env var
+  Secret: copy the ``whsec_...`` value into CLERK_WEBHOOK_SIGNING_SECRET
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import hmac
 import json
 import logging
 import os
+import sqlite3
+import threading
 from datetime import datetime, timezone
 from typing import Any, Dict
 
@@ -28,38 +30,51 @@ router = APIRouter()
 
 CLERK_WEBHOOK_SECRET = os.getenv("CLERK_WEBHOOK_SIGNING_SECRET", "")
 
+# ---------------------------------------------------------------------------
+# SQLite user store (no Firestore dependency)
+# ---------------------------------------------------------------------------
 
-def _admin_db():
-    """Lazy import so test environments without firebase-admin can still run."""
-    try:
-        import firebase_admin
-        from firebase_admin import firestore
-
-        if not firebase_admin._apps:
-            _init_firebase()
-        return firestore.client()
-    except Exception as exc:  # pragma: no cover
-        raise HTTPException(status_code=503, detail=f"firestore unavailable: {exc}") from exc
+_USERS_DB_PATH = os.getenv("SQLITE_PATH", "viraasat.db")
+_db_lock = threading.Lock()
 
 
-def _init_firebase() -> None:
-    import base64
-
-    import firebase_admin
-    from firebase_admin import credentials
-
-    cred_b64 = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
-    if cred_b64:
-        decoded = base64.b64decode(cred_b64).decode()
-        cred = credentials.Certificate(json.loads(decoded))
-        firebase_admin.initialize_app(cred)
-    else:
-        firebase_admin.initialize_app()
+def _get_users_db() -> sqlite3.Connection:
+    conn = sqlite3.connect(_USERS_DB_PATH, check_same_thread=False)
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            clerk_user_id TEXT PRIMARY KEY,
+            name          TEXT,
+            email         TEXT,
+            image_url     TEXT,
+            role          TEXT DEFAULT 'customer',
+            created_at    TEXT,
+            updated_at    TEXT
+        )
+        """
+    )
+    conn.commit()
+    return conn
 
 
 # ---------------------------------------------------------------------------
 # Signature verification
 # ---------------------------------------------------------------------------
+
+
+def _decode_svix_secret(secret: str) -> bytes:
+    """Return the raw HMAC key from a Svix signing secret.
+
+    Clerk (Svix) signing secrets are formatted as ``whsec_<base64>``.
+    The ``whsec_`` prefix must be stripped and the remainder base64-decoded
+    before use as the HMAC key.  Passing the raw ASCII string as the key
+    (the previous behaviour) produces a different digest and makes every
+    signature check fail.
+    """
+    if secret.startswith("whsec_"):
+        secret = secret[len("whsec_"):]
+    return base64.b64decode(secret)
 
 
 def _verify_signature(raw_body: bytes, headers: Dict[str, str]) -> bool:
@@ -82,21 +97,20 @@ def _verify_signature(raw_body: bytes, headers: Dict[str, str]) -> bool:
         return False
 
     signed = f"{svix_id}.{svix_ts}.{raw_body.decode('utf-8')}"
-    digest = hmac.new(
-        CLERK_WEBHOOK_SECRET.encode(), signed.encode(), hashlib.sha256
-    ).hexdigest()
+    key = _decode_svix_secret(CLERK_WEBHOOK_SECRET)
+    digest = hmac.new(key, signed.encode(), hashlib.sha256).hexdigest()
     expected = f"v1,{digest}"
     # svix-signature can contain multiple space-separated signatures.
     return any(hmac.compare_digest(expected, candidate) for candidate in svix_sig.split())
 
 
 # ---------------------------------------------------------------------------
-# Firestore materialization
+# User data extraction
 # ---------------------------------------------------------------------------
 
 
 def _extract_user_data(payload: Dict[str, Any]) -> Dict[str, Any]:
-    """Map Clerk's payload to our Firestore user shape."""
+    """Map Clerk's payload to our user record shape."""
     user_id = payload.get("id")
     if not user_id:
         raise ValueError("payload missing 'id'")
@@ -119,14 +133,88 @@ def _extract_user_data(payload: Dict[str, Any]) -> Dict[str, Any]:
     ).strip() or (payload.get("username") or primary_email or "User")
 
     return {
-        "clerkUserId": user_id,
-        "uid": user_id,
+        "clerk_user_id": user_id,
         "name": name,
         "email": primary_email,
-        "imageUrl": payload.get("image_url", ""),
+        "image_url": payload.get("image_url", ""),
         "role": role,
-        "updatedAt": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
     }
+
+
+def _upsert_user_sqlite(record: Dict[str, Any]) -> None:
+    """Write or update a user row in the local SQLite users table."""
+    with _db_lock:
+        conn = _get_users_db()
+        conn.execute(
+            """
+            INSERT INTO users (clerk_user_id, name, email, image_url, role, created_at, updated_at)
+            VALUES (:clerk_user_id, :name, :email, :image_url, :role, :created_at, :updated_at)
+            ON CONFLICT(clerk_user_id) DO UPDATE SET
+                name       = excluded.name,
+                email      = excluded.email,
+                image_url  = excluded.image_url,
+                role       = excluded.role,
+                updated_at = excluded.updated_at
+            """,
+            {**record, "created_at": record.get("created_at", record["updated_at"])},
+        )
+        conn.commit()
+        conn.close()
+
+
+def _delete_user_sqlite(clerk_user_id: str) -> None:
+    with _db_lock:
+        conn = _get_users_db()
+        conn.execute("DELETE FROM users WHERE clerk_user_id = ?", (clerk_user_id,))
+        conn.commit()
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Firestore mirror (optional — skipped when FIREBASE_SERVICE_ACCOUNT_JSON unset)
+# ---------------------------------------------------------------------------
+
+def _mirror_to_firestore(event_type: str, user_id: str, record: Dict[str, Any]) -> None:
+    """Best-effort Firestore mirror; logs and continues on any error."""
+    try:
+        import firebase_admin  # type: ignore[import-untyped]
+        from firebase_admin import credentials, firestore  # type: ignore[import-untyped]
+
+        cred_b64 = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
+        if not cred_b64:
+            return  # Firestore not configured — silently skip
+
+        if not firebase_admin._apps:
+            decoded = base64.b64decode(cred_b64).decode()
+            cred = credentials.Certificate(json.loads(decoded))
+            firebase_admin.initialize_app(cred)
+
+        db = firestore.client()
+        user_ref = db.collection("users").document(user_id)
+
+        if event_type == "user.deleted":
+            user_ref.delete()
+        else:
+            # Map SQLite column names → Firestore field names for compatibility
+            # with the existing security rules and frontend queries.
+            fs_record = {
+                "clerkUserId": record["clerk_user_id"],
+                "uid": record["clerk_user_id"],
+                "name": record["name"],
+                "email": record["email"],
+                "imageUrl": record["image_url"],
+                "role": record["role"],
+                "updatedAt": record["updated_at"],
+                "createdAt": record.get("created_at", record["updated_at"]),
+            }
+            user_ref.set(fs_record, merge=True)
+    except Exception:
+        logger.warning(
+            "Firestore mirror failed for user %s (non-fatal; SQLite record is authoritative)",
+            user_id,
+            exc_info=True,
+        )
 
 
 @router.post("/webhooks/clerk")
@@ -145,33 +233,26 @@ async def clerk_webhook(request: Request) -> Dict[str, Any]:
     event_type = event.get("type")
     data = event.get("data") or {}
 
-    db = _admin_db()
     user_id = data.get("id")
     if not user_id:
         raise HTTPException(status_code=400, detail="Missing user id")
 
-    user_ref = db.collection("users").document(user_id)
-
     if event_type == "user.deleted":
-        user_ref.delete()
-        logger.info("clerk webhook: deleted firestore user %s", user_id)
+        _delete_user_sqlite(user_id)
+        _mirror_to_firestore("user.deleted", user_id, {})
+        logger.info("clerk webhook: deleted user %s", user_id)
         return {"received": True, "action": "deleted"}
 
     if event_type in ("user.created", "user.updated"):
         record = _extract_user_data(data)
         if event_type == "user.created":
-            record["createdAt"] = datetime.fromtimestamp(
+            record["created_at"] = datetime.fromtimestamp(
                 data.get("created_at", 0) / 1000, tz=timezone.utc
             ).isoformat()
-        else:
-            # Preserve original createdAt on update.
-            existing = user_ref.get().to_dict() or {}
-            record["createdAt"] = existing.get(
-                "createdAt", record["updatedAt"]
-            )
-        user_ref.set(record, merge=True)
+        _upsert_user_sqlite(record)
+        _mirror_to_firestore(event_type, user_id, record)
         logger.info(
-            "clerk webhook: %s firestore user %s (role=%s)",
+            "clerk webhook: %s user %s (role=%s)",
             event_type,
             user_id,
             record.get("role"),
