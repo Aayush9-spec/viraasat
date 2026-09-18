@@ -7,16 +7,15 @@ export default function CustomerSignUpPage() {
                 <h1 className="text-3xl font-heading text-primary mb-2">Create your Account</h1>
                 <p className="text-muted-foreground">Start your journey into authentic heritage and crafts</p>
             </div>
-            <SignUp 
+            <SignUp
                 appearance={{
                     elements: {
                         formButtonPrimary: 'bg-primary hover:bg-primary/90 text-primary-foreground',
                         card: 'border-2 shadow-lg rounded-2xl',
-                    }
+                    },
                 }}
-                routing="hash"
                 forceRedirectUrl="/shop"
-                unsafeMetadata={{ role: 'customer' }}
+                unsafeMetadata={{ role: 'buyer' }}
                 signInUrl="/login/customer"
             />
         </div>

@@ -7,15 +7,14 @@ export default function ArtisanSignUpPage() {
                 <h1 className="text-3xl font-heading text-primary mb-2">Become a Viraasat Artisan</h1>
                 <p className="text-muted-foreground">Join our global community and showcase your craft</p>
             </div>
-            <SignUp 
+            <SignUp
                 appearance={{
                     elements: {
                         formButtonPrimary: 'bg-primary hover:bg-primary/90 text-primary-foreground',
                         card: 'border-2 shadow-lg rounded-2xl',
-                    }
+                    },
                 }}
-                routing="hash"
-                forceRedirectUrl="/dashboard"
+                forceRedirectUrl="/artisan/dashboard"
                 unsafeMetadata={{ role: 'artisan' }}
                 signInUrl="/login/artisan"
             />

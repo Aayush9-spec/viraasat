@@ -1,9 +1,10 @@
-import { SignUp } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
-export default function SignUpPage() {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <SignUp />
-    </div>
-  );
+/**
+ * Clerk's catch-all sign-up route (/sign-up/...).
+ * Used by Clerk's email verification and magic-link flows.
+ * Forward to the branded /signup page so users get role selection.
+ */
+export default function SignUpCatchAll() {
+  redirect("/signup");
 }

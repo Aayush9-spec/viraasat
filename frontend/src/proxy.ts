@@ -13,11 +13,31 @@ const secretKey = process.env.CLERK_SECRET_KEY;
  *  - /api/razorpay/webhook — Razorpay payment webhooks (signature-verified).
  */
 const isPublicRoute = createRouteMatcher([
+  // Webhook routes — use HMAC signature verification, not Clerk session JWTs
   '/api/webhooks(.*)',
   '/api/razorpay/webhook(.*)',
+  // Auth pages — must be reachable before the user has a session
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/login(.*)',
+  '/signup(.*)',
+  '/select-role(.*)',
+  // Public-facing pages
+  '/',
+  '/shop(.*)',
+  '/product(.*)',
+  '/products(.*)',
+  '/category(.*)',
+  '/artisans(.*)',
+  '/about(.*)',
+  '/contact(.*)',
+  '/journal(.*)',
+  '/faq(.*)',
+  '/shipping(.*)',
+  '/terms(.*)',
+  '/privacy(.*)',
+  '/refund(.*)',
+  '/offline(.*)',
 ]);
 
 const withAuth = publishableKey && secretKey

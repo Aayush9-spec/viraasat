@@ -28,33 +28,38 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
         return;
       }
 
+      // Resolve role: Firestore is the source of truth; fall back to Clerk
+      // unsafeMetadata so dashboards never blank-out when Firestore is offline.
+      let role: UserRole | null = null;
+
       try {
         const userDoc = await getUser(user.id);
-        const role = userDoc?.role || (user.unsafeMetadata?.role as UserRole);
-
-        if (!role) {
-          router.push('/select-role');
-          return;
-        }
-
-        const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
-
-        if (!rolesArray.includes(role)) {
-          // Redirect unauthorized user to their own dashboard
-          if (role === 'artisan') {
-            router.push('/artisan/dashboard');
-          } else {
-            router.push('/dashboard');
-          }
-          return;
-        }
-
-        setIsAuthorized(true);
+        role = userDoc?.role ?? (user.unsafeMetadata?.role as UserRole) ?? null;
       } catch (err) {
-        console.error('Error verifying route protection:', err);
-      } finally {
-        setCheckingAuth(false);
+        // Firestore unavailable — degrade gracefully using the role stored
+        // in Clerk's unsafeMetadata (set at sign-up / role-selection time).
+        console.warn('ProtectedRoute: Firestore unavailable, falling back to unsafeMetadata.role', err);
+        role = (user.unsafeMetadata?.role as UserRole) ?? null;
       }
+
+      if (!role) {
+        // No role anywhere — send to role selection
+        router.push('/select-role');
+        setCheckingAuth(false);
+        return;
+      }
+
+      const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+
+      if (!rolesArray.includes(role)) {
+        // Redirect the user to their own dashboard
+        router.push(role === 'artisan' ? '/artisan/dashboard' : '/dashboard');
+        setCheckingAuth(false);
+        return;
+      }
+
+      setIsAuthorized(true);
+      setCheckingAuth(false);
     }
 
     checkUserAuthorization();

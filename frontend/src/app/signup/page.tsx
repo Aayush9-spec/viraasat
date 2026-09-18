@@ -18,8 +18,8 @@ export default function SignUpPage() {
             card: 'border-2 shadow-lg rounded-2xl',
           },
         }}
-        routing="hash"
         fallbackRedirectUrl="/select-role"
+        signInUrl="/login"
       />
     </div>
   );

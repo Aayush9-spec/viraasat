@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag, Store, Sparkles, CheckCircle2, Loader2 } from 'lucide-react';
-import { watchUser } from '@/lib/firebase/users';
 import { UserRole } from '@/types/user';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -29,10 +28,11 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
     setError(null);
 
     try {
-      // Source of truth for role lives in Clerk (unsafeMetadata). Updating it
-      // here causes Clerk to fire a `user.updated` webhook, which our backend
-      // webhook handler (`/api/webhooks/clerk`) materializes into the
-      // Firestore user doc. The FE never writes to Firestore directly.
+      // Write the role into Clerk's unsafeMetadata. This is the authoritative
+      // source of truth on the client. The backend webhook (`/api/webhooks/clerk`)
+      // will eventually materialise this into Firestore and SQLite asynchronously —
+      // we don't need to wait for it here. The destination page reads role from
+      // unsafeMetadata as a fallback, so it will always see the correct value.
       await user.update({
         unsafeMetadata: {
           ...user.unsafeMetadata,
@@ -45,33 +45,10 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
       }
 
       if (redirectOnSelect) {
-        // Wait briefly for the Clerk → backend webhook to materialize the
-        // role into Firestore so the destination page reads the right role
-        // on first paint. Bail out after 3s and proceed anyway; the
-        // destination page will read fresh data on its own.
-        await new Promise<void>((resolve) => {
-          const timeout = setTimeout(resolve, 3000);
-          const unsubscribe = watchUser(
-            user.id,
-            (firestoreUser) => {
-              if (firestoreUser?.role === role) {
-                clearTimeout(timeout);
-                unsubscribe();
-                resolve();
-              }
-            },
-            () => {
-              clearTimeout(timeout);
-              resolve();
-            },
-          );
-        });
-
-        if (role === 'artisan') {
-          router.push('/artisan/dashboard');
-        } else {
-          router.push('/dashboard');
-        }
+        // Redirect immediately — no need to poll Firestore.
+        // ProtectedRoute and useUserRole both fall back to unsafeMetadata.role
+        // when Firestore is unavailable, so the page will render correctly.
+        router.push(role === 'artisan' ? '/artisan/dashboard' : '/dashboard');
         router.refresh();
       }
     } catch (err: unknown) {

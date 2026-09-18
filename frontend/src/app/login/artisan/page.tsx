@@ -7,15 +7,14 @@ export default function ArtisanLoginPage() {
                 <h1 className="text-3xl font-heading text-primary mb-2">Artisan Portal</h1>
                 <p className="text-muted-foreground">Sign in to manage your workshop and orders</p>
             </div>
-            <SignIn 
+            <SignIn
                 appearance={{
                     elements: {
                         formButtonPrimary: 'bg-primary hover:bg-primary/90 text-primary-foreground',
                         card: 'border-2 shadow-lg rounded-2xl',
-                    }
+                    },
                 }}
-                routing="hash"
-                forceRedirectUrl="/dashboard"
+                forceRedirectUrl="/artisan/dashboard"
                 signUpUrl="/signup/artisan"
             />
         </div>

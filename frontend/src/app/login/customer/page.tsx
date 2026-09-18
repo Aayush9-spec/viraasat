@@ -7,14 +7,13 @@ export default function CustomerLoginPage() {
                 <h1 className="text-3xl font-heading text-primary mb-2">Welcome Back</h1>
                 <p className="text-muted-foreground">Sign in to explore authentic heritage crafts</p>
             </div>
-            <SignIn 
+            <SignIn
                 appearance={{
                     elements: {
                         formButtonPrimary: 'bg-primary hover:bg-primary/90 text-primary-foreground',
                         card: 'border-2 shadow-lg rounded-2xl',
-                    }
+                    },
                 }}
-                routing="hash"
                 forceRedirectUrl="/shop"
                 signUpUrl="/signup/customer"
             />
