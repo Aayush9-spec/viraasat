@@ -154,7 +154,7 @@
     "refundIssued": {
       "subject": "Refund issued for order #{orderId}",
       "heading": "Your refund has been issued",
-      "body": "We refunded \u20b9{amount} for order #{orderId}.",
+      "body": "We refunded ₹{amount} for order #{orderId}.",
       "cta": "View refund details"
     },
     "verificationApproved": {

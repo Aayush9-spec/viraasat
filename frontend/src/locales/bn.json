@@ -53,121 +53,121 @@
     "copyright": "© 2024 বিরাসাত। সর্বস্বত্ব সংরক্ষিত। হাতে তৈরি কমনীয়তার প্রতি শ্রদ্ধা।"
   },
   "errors": {
-    "generic": "Something went wrong. Please try again.",
-    "network": "Network error. Please check your connection and retry.",
-    "notFound": "We couldn't find what you were looking for.",
-    "unauthorized": "Please sign in to continue.",
-    "forbidden": "You don't have permission to do that.",
-    "validation": "Please check the highlighted fields and try again.",
-    "imageTooLarge": "This image is too large. Please upload an image under 10 MB.",
-    "imageTooSmall": "This image is too small. Please upload a real photograph.",
-    "imageUnsupported": "Unsupported file type. Please upload a JPEG, PNG, or WebP image.",
-    "imageRejected": "This image was rejected by our content policy. Please upload a different image.",
-    "moderationUnavailable": "Image moderation is temporarily unavailable. Please try again in a few minutes.",
-    "moderationCheckFailed": "We couldn't verify your image. Please try again.",
-    "paymentFailed": "Payment could not be processed. Please try a different method or contact your bank.",
-    "refundWindowClosed": "Refund window has closed. Please contact support for help.",
-    "stockUnavailable": "Sorry, this item is no longer in stock.",
-    "addressRequired": "Please enter a shipping address to continue."
+    "generic": "কোনও ভুল হয়েছে। অনুগ্রহ্য করে আবার চেষ্টা করুন।",
+    "network": "নেটওয়ার্ক ত্রুটি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+    "notFound": "আমরা আপনি যা খুঁজছেন তা পাইনি।",
+    "unauthorized": "অনুগ্রহ্য করে চালিয়ে যেতে সাইন ইন করুন।",
+    "forbidden": "আপনার এটি করার অনুমতি নেই।",
+    "validation": "অনুগ্রহ্য করে হাইলাইট করা ক্ষেত্রগুলি পরীক্ষা করুন এবং আবার চেষ্টা করুন।",
+    "imageTooLarge": "এই ছবিটি খুব বড়। অনুগ্রহ্য করে 10 এমবিএ এর কম একটি ছবি আপলোড করুন।",
+    "imageTooSmall": "এই ছবিটি খুব ছোট। অনুগ্রহ্য করে একটি বাস্তব ছবি আপলোড করুন।",
+    "imageUnsupported": "অসমর্থিত ফাইল ধরন। অনুগ্রহ্য করে JPEG, PNG, বা WebP ছবি আপলোড করুন।",
+    "imageRejected": "আমাদের কন্টেন্ট নীতি অনুযায়ী এই ছবিটি প্রত্যাখ্যাত। অনুগ্রহ্য করে একটি ভিন্ন ছবি আপলোড করুন।",
+    "moderationUnavailable": "ছবি মডারেশন এখন অস্থায়ীভাবে অনুপলব্ধ। কিছু মিনিট পরে আবার চেষ্টা করুন।",
+    "moderationCheckFailed": "আমরা আপনার ছবিটি যাচাই করতে পারিনি। অনুগ্রহ্য করে আবার চেষ্টা করুন।",
+    "paymentFailed": "পেমেন্ট প্রক্রিয়া করা যায়নি। অনুগ্রহ্য করে একটি ভিন্ন পদ্ধতি চেষ্টা করুন অথবা আপনার ব্যালেন্স ফোনের জন্য।",
+    "refundWindowClosed": "রিফান্ডের সময়সীমা শেষ হয়ে গেছে। সহায়তা পেতে সাপোর্টের সাথে যোগাযোগ করুন।",
+    "stockUnavailable": "দুঃখিত বলে জানাই যে এই আইটেমটি এখন স্টকে নেই।",
+    "addressRequired": "অনুগ্রহ্য করে চালিয়ে যেতে একটি শিপিং ঠিকানা লিখুন।"
   },
   "checkout": {
-    "title": "Checkout",
-    "empty": "Your cart is empty.",
-    "subtotal": "Subtotal",
-    "shipping": "Shipping",
-    "total": "Total",
-    "placeOrder": "Pay",
-    "processing": "Processing...",
-    "byProceeding": "By proceeding, you agree to our {terms}, {privacy}, and {refunds}.",
-    "success": "Order placed successfully. Thank you!",
-    "failed": "We couldn't place your order. Please try again."
+    "title": "চেকআউট",
+    "empty": "আপনার কার্ট খালি।",
+    "subtotal": "সাবটোটাল",
+    "shipping": "শিপিং",
+    "total": "মোট",
+    "placeOrder": "পরিশোধ করুন",
+    "processing": "প্রক্রিয়া করা হচ্ছে...",
+    "byProceeding": "চলে যাওয়ার মাধ্যমে, আপনি আমাদের {terms}, {privacy}, এবং {refunds} সম্মত হচ্ছেন।",
+    "success": "অর্ডার সফলভাবে দেওয়ানো হয়েছে। ধন্যবাদ!",
+    "failed": "আমরা আপনার অর্ডার দিতে পারিনি। অনুগ্রহ্য করে আবার চেষ্টা করুন।"
   },
   "orders": {
-    "title": "Your Acquisitions",
-    "empty": "No acquisitions yet.",
-    "emptyDescription": "Your journey through India's cultural gallery is just beginning.",
+    "title": "আপনার কেনাকাটা",
+    "empty": "এখনো কোনও কেনাকাটা নেই।",
+    "emptyDescription": "ভারতের সংস্কৃতির গ্যালারিতে আপনার যাত্রা এখনই শুরু হয়েছে।",
     "status": {
-      "pending": "Pending",
-      "paid": "Paid",
-      "shipped": "Shipped",
-      "delivered": "Delivered",
-      "cancelled": "Cancelled",
-      "refunded": "Refunded"
+      "pending": "মুক্ত",
+      "paid": "পরিশোধিত",
+      "shipped": "পাঠানো হয়েছে",
+      "delivered": "ডেলিভার করা হয়েছে",
+      "cancelled": "বাতিল করা হয়েছে",
+      "refunded": "রিফান্ড করা হয়েছে"
     },
-    "refund": "Request Refund",
-    "refundDescription": "Refunds are available within 7 days of delivery."
+    "refund": "রিফান্ড চাওয়া",
+    "refundDescription": "ডেলিভারির ৭ দিনের মধ্যে রিফান্ড উপলব্ধ।"
   },
   "moderation": {
-    "checking": "Checking image...",
-    "rejected": "Image rejected",
-    "flagged": "This image was flagged by our content moderation. Please upload a different image."
+    "checking": "ছবি পরীক্ষা করা হচ্ছে...",
+    "rejected": "ছবি প্রত্যাখ্যাত",
+    "flagged": "আমাদের কন্টেন্ট মডারেশন এই ছবিটিকে ফ্ল্যাগ করেছে। অনুগ্রহ্য করে একটি ভিন্ন ছবি আপলোড করুন।"
   },
   "chat": {
-    "placeholder": "Ask about Indian crafts, materials, or products...",
-    "send": "Send",
-    "listening": "Listening...",
-    "transcribing": "Transcribing...",
-    "refused": "I'm sorry, I can't help with that.",
-    "rateLimited": "You've reached today's message limit. Please try again tomorrow.",
-    "error": "The chat service is temporarily unavailable. Please try again.",
-    "agentBuyer": "Buyer Agent",
-    "agentCultural": "Cultural Research Agent",
-    "agentInventory": "Inventory Agent",
-    "agentSafety": "Safety"
+    "placeholder": "ভারতীয় হস্তশিল্প, উপাদান বা পণ্য সম্পর্কে জিজ্ঞাসা করুন...",
+    "send": "পাঠান",
+    "listening": "শুনছি...",
+    "transcribing": "রূপান্তর করা হচ্ছে...",
+    "refused": "আমি দুঃখিত, আমি তাতে সাহায্য চাই না। আমি ভারতীয় ঐতিহ্য, এই মার্কেটপ্লেস এবং এখানে তালিকাভুক্ত পণ্য সম্পর্কে প্রশ্ন উত্তর দিতে পারি।",
+    "rateLimited": "আপনি আজ আপনার বার্তা সীমাটি অতিক্রম করেছেন। কাল আবার চেষ্টা করুন।",
+    "error": "চ্যাট পরিষেবা এখন সাময়িকভাবে অনুপল্ব। অনুগ্রহ্য করে আবার চেষ্টা করুন।",
+    "agentBuyer": "কেনাকারী এজেন্ট",
+    "agentCultural": "সাংস্কৃতিক গবেষণা এজেন্ট",
+    "agentInventory": "ইনভেন্টরি এজেন্ট",
+    "agentSafety": "নিরাপত্তা"
   },
   "legal": {
-    "termsTitle": "Terms of Service",
-    "privacyTitle": "Privacy Policy",
-    "refundTitle": "Refund Policy",
-    "lastUpdated": "Last updated: {date}",
-    "back": "Back to Viraasat"
+    "termsTitle": "সেবা শর্তাবলী",
+    "privacyTitle": "গোপনীয়তা নীতি",
+    "refundTitle": "রিফান্ড নীতি",
+    "lastUpdated": "সর্বশেষ আপডেট: {date}",
+    "back": "বিরাসাতে ফিরে"
   },
   "admin": {
-    "dashboard": "Admin dashboard",
-    "users": "Users",
-    "products": "Products",
-    "orders": "Orders",
-    "applications": "Artisan applications",
-    "fraudQueue": "Fraud review queue",
-    "approve": "Approve",
-    "reject": "Reject",
-    "suspend": "Suspend",
-    "verify": "Verify"
+    "dashboard": "অ্যাডমিন ড্যাশবোর্ড",
+    "users": "ব্যবহারকর্তারা",
+    "products": "পণ্য",
+    "orders": "অর্ডার",
+    "applications": "কারিগর আবেদন",
+    "fraudQueue": "বিভত রিভিউ কিউ",
+    "approve": "অনুমোদন",
+    "reject": "প্রত্যাখ্যাত",
+    "suspend": "সস্পেন্ড",
+    "verify": "যাচাই করুন"
   },
   "artisan": {
-    "apply": "Apply to become an artisan",
-    "dashboard": "Workshop dashboard",
-    "products": "Your products",
-    "orders": "Incoming orders",
-    "analytics": "Analytics",
-    "uploadImage": "Upload high-quality image",
-    "imageRejected": "This image was rejected by content moderation.",
-    "kYCRequired": "Please complete identity verification before listing products."
+    "apply": "কারিগর হিসাবে আবেদন করুন",
+    "dashboard": "ওয়ার্কশপ ড্যাশবোর্ড",
+    "products": "আপনার পণ্য",
+    "orders": "আসছে অর্ডার",
+    "analytics": "বিশ্লেষণ",
+    "uploadImage": "উচ্চ মানের ছবি আপলোড করুন",
+    "imageRejected": "এই ছবিটি কন্টেন্ট মডারেশন দ্বারে প্রত্যাখ্যাত হয়েছে। অনুগ্রহ্য করে একটি ভিন্ন নির্বাচন করুন।",
+    "kYCRequired": "পণ্য তালিকাভুক্ত করার আগে পরিচয় যাচাই করুন।"
   },
   "emails": {
     "orderConfirmation": {
-      "subject": "Order #{orderId} confirmed",
-      "heading": "Thank you for your order",
-      "body": "We've received your order #{orderId}.",
-      "cta": "View your order"
+      "subject": "অর্ডার #{orderId} নিশ্চিত",
+      "heading": "আপনার অর্ডারের জন্য ধন্যবাদ",
+      "body": "আমরা আপনার অর্ডার #{orderId} গ্রহণ করেছে। আমরা আপনাকে জানাব যখন এটি পাঠানো হয়।",
+      "cta": "আপনার অর্ডার দেখুন"
     },
     "refundIssued": {
-      "subject": "Refund issued for order #{orderId}",
-      "heading": "Your refund has been issued",
-      "body": "We refunded \u20b9{amount} for order #{orderId}.",
-      "cta": "View refund details"
+      "subject": "অর্ডার #{orderId} এর জন্য রিফান্ড ইস্যু করা হয়েছে",
+      "heading": "আপনার রিফান্ড ইস্যু হয়েছে",
+      "body": "আমরা অর্ডার #{orderId} এর জন্য ₹{amount} রিফান্ড করেছে। এটি আপনার অ্যাকাউন্টে 5-7 কর্মদিবসের মধ্যে প্রদর্শন করবে।",
+      "cta": "রিফান্ড বিবরণী দেখুন"
     },
     "verificationApproved": {
-      "subject": "Your artisan application was approved",
-      "heading": "Welcome to Viraasat",
-      "body": "Your workshop has been verified.",
-      "cta": "Open your dashboard"
+      "subject": "আপনার কারিগর আবেদন অনুমোদিত হয়েছে",
+      "heading": "বিরাসাতে স্বাগতম",
+      "body": "আপনার শিল্পীশালা যাচাই করা হয়েছে। আপনি এখন মার্কেটপ্লেসে পণ্য তালিকাভুক্ত করতে পারেন।",
+      "cta": "আপনার ড্যাশবোর্ড খুলুন"
     },
     "verificationRejected": {
-      "subject": "Your artisan application needs more information",
-      "heading": "Additional information needed",
-      "body": "We weren't able to verify your workshop.",
-      "cta": "Update application"
+      "subject": "আপনার কারিগর আবেদন আরও তথ্য প্রয়োজন",
+      "heading": "অতিরিক্ত তথ্য প্রয়োজন",
+      "body": "আমরা আপনার শিল্পীশালা যাচাই করতে পারিনি যে নথিপত্র আপনি প্রদান করেছেন। অনুগ্রহ্য করে এই ইমেলটির প্রতিউত্তর দিয়ে অনুরোধ করা তথ্য পাঠান।",
+      "cta": "আবেদন আপডেট করুন"
     }
   }
 }

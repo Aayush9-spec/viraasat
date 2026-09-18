@@ -62,7 +62,7 @@ def _get_firebase_app() -> Any:
         import firebase_admin  # type: ignore[import-untyped]
         from firebase_admin import credentials  # type: ignore[import-untyped]
 
-        creds_dict = json.loads(raw)
+        creds_dict = _parse_firebase_credential(raw)
         cred = credentials.Certificate(creds_dict)
         _firebase_admin_app = firebase_admin.initialize_app(cred)
         return _firebase_admin_app
@@ -92,6 +92,22 @@ async def _resolve_role_from_firestore(uid: str) -> Optional[str]:
     except Exception:
         logger.debug("Firestore role lookup failed for uid %s", uid, exc_info=True)
         return None
+
+
+def _parse_firebase_credential(raw: str) -> Dict[str, Any]:
+    """Parse a FIREBASE_SERVICE_ACCOUNT_JSON env value into a dict.
+
+    The secret is base64-encoded per docs/secrets.md, but some deployments
+    paste raw JSON. We try base64-decode first, then fall back to raw JSON.
+    """
+    try:
+        import base64
+
+        decoded = base64.b64decode(raw).decode()
+        return json.loads(decoded)
+    except Exception:
+        # Likely already raw JSON.
+        return json.loads(raw)
 
 
 async def _get_jwks() -> Dict[str, Any]:

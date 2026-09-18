@@ -1,57 +1,27 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { heritageChatFlow } from '@/ai/flows/chat';
-
-// Simple in-process per-user daily budget for the Gemini-backed chat flow.
-// Process-local only — fine for single-instance Vercel deployments. For
-// multi-instance or serverless concurrency, swap to a shared store
-// (Upstash Redis, Firestore counter, Vercel KV).
-const DAILY_LIMIT = Number(process.env.CHAT_DAILY_LIMIT ?? 30);
-const usage = new Map<string, { count: number; resetAt: number }>();
-
-function currentWindow() {
-  const now = Date.now();
-  const start = new Date();
-  start.setUTCHours(0, 0, 0, 0);
-  return { dayStart: start.getTime(), now };
-}
-
-function checkAndIncrement(userId: string): { allowed: boolean; remaining: number; resetAt: number } {
-  const { dayStart, now } = currentWindow();
-  const entry = usage.get(userId);
-  if (!entry || entry.resetAt !== dayStart) {
-    usage.set(userId, { count: 1, resetAt: dayStart });
-    return { allowed: true, remaining: DAILY_LIMIT - 1, resetAt: dayStart };
-  }
-  if (entry.count >= DAILY_LIMIT) {
-    return { allowed: false, remaining: 0, resetAt: dayStart };
-  }
-  entry.count += 1;
-  return { allowed: true, remaining: DAILY_LIMIT - entry.count, resetAt: dayStart };
-}
+import { checkChatBudgetAsync } from '@/lib/rate-limit';
 
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
     if (!userId) {
-      // Stable error code; the FE maps it to a localized message.
       return NextResponse.json({ error: 'unauthorized', errorCode: 'CHAT_UNAUTHORIZED' }, { status: 401 });
     }
 
-    const budget = checkAndIncrement(userId);
+    const budget = await checkChatBudgetAsync(userId);
     if (!budget.allowed) {
       return NextResponse.json(
         {
           error: 'rate_limited',
           errorCode: 'CHAT_RATE_LIMITED',
-          resetAt: new Date(budget.resetAt + 24 * 60 * 60 * 1000).toISOString(),
+          resetAt: new Date(budget.resetAt).toISOString(),
         },
         {
           status: 429,
           headers: {
-            'Retry-After': String(
-              Math.ceil((budget.resetAt + 24 * 60 * 60 * 1000 - Date.now()) / 1000),
-            ),
+            'Retry-After': String(Math.ceil((budget.resetAt - Date.now()) / 1000)),
           },
         },
       );

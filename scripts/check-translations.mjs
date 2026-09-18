@@ -48,7 +48,7 @@ function diff(en, locale) {
 function main() {
   const en = readJson(ENGLISH);
   const flatEn = flatten(en);
-  const files = readdirSync(LOCALES_DIR).filter((f) => f.endsWith('.json'));
+  const files = readdirSync(LOCALES_DIR).filter((f) => f.endsWith('.json') && !f.startsWith('._'));
   let hasFailures = false;
 
   for (const file of files) {
