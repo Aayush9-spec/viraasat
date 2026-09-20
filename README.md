@@ -80,7 +80,7 @@
 | **Observability** | Sentry (FE + BE) |
 | **PWA** | Custom service worker (precache, stale-while-revalidate, versioned) |
 
----
+--- 
 
 ## 🏗 System Architecture
 
