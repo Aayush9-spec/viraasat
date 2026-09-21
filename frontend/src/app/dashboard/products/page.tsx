@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from "next/link"
 import Image from "next/image"
 import { PlusCircle, MoreHorizontal } from "lucide-react"
-import { db } from '@/services/firebase/firestore';
-import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore';
+import { supabase } from '@/services/supabase';
 import type { Product } from "@/lib/types";
 
 import { Button } from "@/components/ui/button"
@@ -40,22 +39,26 @@ export default function ProductsPage() {
   const [dbProducts, setDbProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    if (!db || !user) return;
+    if (!user) return;
 
-    const q = query(
-      collection(db, "products"),
-      where("artisanId", "==", user.id),
-    );
+    supabase
+      .from('products')
+      .select('*')
+      .eq('artisan_id', user.id)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        if (data) setDbProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
+      });
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedProducts: Product[] = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Product));
-      setDbProducts(fetchedProducts);
-    });
+    const channel = supabase
+      .channel(`dashboard-prods-${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products', filter: `artisan_id=eq.${user.id}` }, async () => {
+        const { data } = await supabase.from('products').select('*').eq('artisan_id', user.id);
+        if (data) setDbProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
+      })
+      .subscribe();
 
-    return () => unsubscribe();
+    return () => { void supabase.removeChannel(channel); };
   }, [user]);
 
   // Combine static and db products

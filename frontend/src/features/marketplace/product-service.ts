@@ -1,163 +1,145 @@
 import { products, categories as staticCategories, regions as staticRegions } from '@/lib/data';
 import type { Product } from '@/lib/types';
-import { db } from '@/services/firebase/firestore';
-import { collection, getDocs, doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { supabase } from '@/services/supabase';
 
 export class ProductService {
   static async getAllProducts(): Promise<Product[]> {
     try {
-      if (!db || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) return products;
-      
-      const timeoutPromise = new Promise<Product[]>((_, reject) =>
-        setTimeout(() => reject(new Error("Firestore timeout")), 1200)
-      );
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      const fetchPromise = (async () => {
-        const querySnapshot = await getDocs(collection(db, "products"));
-        const dbProducts = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Product[];
+      if (error) throw error;
 
-        const merged = [...dbProducts];
-        products.forEach(staticProd => {
-          if (!merged.some(p => p.id === staticProd.id)) {
-            merged.push(staticProd);
-          }
-        });
-        return merged;
-      })();
+      const dbProducts = (data ?? []).map((row) => ({
+        id: row.id,
+        artisanId: row.artisan_id,
+        name: row.name,
+        category: row.category,
+        description: row.description,
+        price: row.price,
+        stock: row.stock,
+        images: row.images ?? [],
+        region: row.region,
+        aiInsights: row.ai_insights,
+        createdAt: row.created_at,
+      })) as Product[];
 
-      return await Promise.race([fetchPromise, timeoutPromise]);
+      const merged = [...dbProducts];
+      products.forEach((staticProd) => {
+        if (!merged.some((p) => p.id === staticProd.id)) {
+          merged.push(staticProd);
+        }
+      });
+      return merged;
     } catch (e) {
-      console.warn("Failed to fetch products from Firestore, falling back to static:", e);
+      console.warn('Failed to fetch products from Supabase, falling back to static:', e);
       return products;
     }
   }
 
   static async getProductById(id: string): Promise<Product | undefined> {
     try {
-      if (db && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
-        const docRef = doc(db, "products", id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          return { id: docSnap.id, ...docSnap.data() } as Product;
-        }
-      }
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+
+      return {
+        id: data.id,
+        artisanId: data.artisan_id,
+        name: data.name,
+        category: data.category,
+        description: data.description,
+        price: data.price,
+        stock: data.stock,
+        images: data.images ?? [],
+        region: data.region,
+        aiInsights: data.ai_insights,
+        createdAt: data.created_at,
+      } as Product;
     } catch (e) {
-      console.warn(`Failed to fetch product ${id} from Firestore:`, e);
+      console.warn(`Failed to fetch product ${id} from Supabase:`, e);
+      return products.find((p) => p.id === id);
     }
-    return products.find(p => p.id === id);
   }
 
   static async getProductsByCategory(category: string): Promise<Product[]> {
     const all = await this.getAllProducts();
-    return all.filter(p => p.category.toLowerCase() === category.toLowerCase());
+    return all.filter((p) => p.category.toLowerCase() === category.toLowerCase());
   }
 
   static async searchProducts(query: string): Promise<Product[]> {
     const q = query.toLowerCase();
     const all = await this.getAllProducts();
-    return all.filter(p => 
-      p.name.toLowerCase().includes(q) || 
-      p.description.toLowerCase().includes(q) || 
-      p.region.toLowerCase().includes(q)
+    return all.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.region.toLowerCase().includes(q),
     );
   }
 
-  /**
-   * Fetch dynamic categories from Firestore with a static fallback.
-   * The Firestore `categories` collection stores docs like:
-   *   { name: "Jewelry", slug: "jewelry", region: "pan-india" }
-   */
   static async getAllCategories(): Promise<string[]> {
     try {
-      if (!db || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) return staticCategories;
+      const { data, error } = await supabase
+        .from('products')
+        .select('category');
 
-      const timeoutPromise = new Promise<string[]>((_, reject) =>
-        setTimeout(() => reject(new Error("Firestore timeout")), 1200),
-      );
+      if (error) throw error;
 
-      const fetchPromise = (async () => {
-        const snap = await getDocs(collection(db, 'categories'));
-        const dbCats = snap.docs
-          .map((d) => d.data())
-          .filter((d) => typeof d.name === 'string')
-          .map((d) => d.name as string)
-          .sort();
-        if (dbCats.length === 0) return staticCategories;
-        return dbCats;
-      })();
-
-      return await Promise.race([fetchPromise, timeoutPromise]);
+      const cats = [...new Set((data ?? []).map((r) => r.category).filter(Boolean))].sort();
+      return cats.length > 0 ? cats : staticCategories;
     } catch (e) {
-      console.warn('Failed to fetch categories from Firestore, falling back to static:', e);
+      console.warn('Failed to fetch categories from Supabase, falling back to static:', e);
       return staticCategories;
     }
   }
 
-  /**
-   * Fetch dynamic regions from Firestore with a static fallback.
-   * The Firestore `regions` collection stores docs like:
-   *   { name: "Rajasthan", slug: "rajasthan" }
-   */
   static async getAllRegions(): Promise<string[]> {
     try {
-      if (!db || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) return staticRegions;
+      const { data, error } = await supabase
+        .from('products')
+        .select('region');
 
-      const timeoutPromise = new Promise<string[]>((_, reject) =>
-        setTimeout(() => reject(new Error("Firestore timeout")), 1200),
-      );
+      if (error) throw error;
 
-      const fetchPromise = (async () => {
-        const snap = await getDocs(collection(db, 'regions'));
-        const dbRegions = snap.docs
-          .map((d) => d.data())
-          .filter((d) => typeof d.name === 'string')
-          .map((d) => d.name as string)
-          .sort();
-        if (dbRegions.length === 0) return staticRegions;
-        return dbRegions;
-      })();
-
-      return await Promise.race([fetchPromise, timeoutPromise]);
+      const regions = [...new Set((data ?? []).map((r) => r.region).filter(Boolean))].sort();
+      return regions.length > 0 ? regions : staticRegions;
     } catch (e) {
-      console.warn('Failed to fetch regions from Firestore, falling back to static:', e);
+      console.warn('Failed to fetch regions from Supabase, falling back to static:', e);
       return staticRegions;
     }
   }
 }
 
 /**
- * Real-time subscription to the `categories` collection.
- * Returns a cleanup function. `onChange` fires whenever the collection
- * changes or on the first snapshot.
+ * Real-time subscription to the products table (category changes).
+ * Returns a cleanup function.
  */
 export function watchCategories(
   onChange: (categories: string[]) => void,
   onError?: (err: Error) => void,
 ): () => void {
-  if (!db || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
-    onChange(staticCategories);
-    return () => {};
-  }
+  // Initial fetch
+  ProductService.getAllCategories().then(onChange).catch((e) => onError?.(e instanceof Error ? e : new Error(String(e))));
 
-  const unsub = onSnapshot(
-    collection(db, 'categories'),
-    (snap) => {
-      const cats = snap.docs
-        .map((d) => d.data())
-        .filter((d) => typeof d.name === 'string')
-        .map((d) => d.name as string)
-        .sort();
-      onChange(cats.length > 0 ? cats : staticCategories);
-    },
-    (err) => {
-      console.warn('Categories listener error, falling back to static:', err);
-      onChange(staticCategories);
-      onError?.(err);
-    },
-  );
+  // Realtime subscription
+  const channel = supabase
+    .channel('products-categories')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
+      try {
+        const cats = await ProductService.getAllCategories();
+        onChange(cats);
+      } catch (e) {
+        onError?.(e instanceof Error ? e : new Error(String(e)));
+      }
+    })
+    .subscribe();
 
-  return unsub;
+  return () => { void supabase.removeChannel(channel); };
 }

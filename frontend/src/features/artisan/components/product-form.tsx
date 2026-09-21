@@ -40,8 +40,7 @@ import { analyzeImage } from '@/ai/flows/analyze-image';
 import { useToast } from '@/hooks/use-toast';
 import { useBackend } from '@/hooks/use-backend';
 import { Badge } from '@/components/ui/badge';
-import { db } from '@/services/firebase/firestore';
-import { collection, addDoc } from 'firebase/firestore';
+import { supabase } from '@/services/supabase';
 import { useRouter } from 'next/navigation';
 import { Sparkles, Trash2, X, Wand2, Loader2, Cpu, Clock, Scale, Coins } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
@@ -192,12 +191,17 @@ export function ProductForm({ product }: ProductFormProps) {
         localProducts.push(newProduct);
         localStorage.setItem('viraasat_local_products', JSON.stringify(localProducts));
 
-        if (db) {
-          await addDoc(collection(db, "products"), productData);
-        } else {
-          console.warn("Firebase DB not initialized. Product saved locally only.");
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
+        const { error } = await supabase.from('products').insert({
+          artisan_id: productData.artisanId,
+          name: productData.name,
+          description: productData.description,
+          category: productData.category,
+          price: productData.price,
+          stock: productData.stock,
+          images: productData.images,
+          ai_insights: productData.aiInsights,
+        });
+        if (error) console.error('Supabase product insert failed:', error);
       }
 
       toast({

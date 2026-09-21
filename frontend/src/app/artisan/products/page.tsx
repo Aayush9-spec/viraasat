@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PlusCircle, MoreHorizontal } from 'lucide-react';
-import { db } from '@/lib/firebase/client';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { supabase } from '@/services/supabase';
 import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,15 +19,25 @@ export default function ArtisanProductsPage() {
   const [dbProducts, setDbProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    if (!db || !user) return;
-    const q = query(collection(db, 'products'), where('artisanId', '==', user.id));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetched: Product[] = snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() } as Product)
-      );
-      setDbProducts(fetched);
-    });
-    return () => unsubscribe();
+    if (!user) return;
+
+    supabase
+      .from('products')
+      .select('*')
+      .eq('artisan_id', user.id)
+      .then(({ data }) => {
+        if (data) setDbProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
+      });
+
+    const channel = supabase
+      .channel(`artisan-prods-${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products', filter: `artisan_id=eq.${user.id}` }, async () => {
+        const { data } = await supabase.from('products').select('*').eq('artisan_id', user.id);
+        if (data) setDbProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
+      })
+      .subscribe();
+
+    return () => { void supabase.removeChannel(channel); };
   }, [user]);
 
   const staticArtisanProducts = products.filter(

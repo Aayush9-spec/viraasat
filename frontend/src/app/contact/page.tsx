@@ -8,8 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { db } from '@/services/firebase/firestore';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { supabase } from '@/services/supabase';
 import { sendContactReceipt } from '@/lib/notifications/email';
 import { Mail, MapPin, Send } from 'lucide-react';
 
@@ -42,16 +41,13 @@ export default function ContactPage() {
 
     setSending(true);
     try {
-      if (db) {
-        await addDoc(collection(db, 'contactSubmissions'), {
-          userId: user.id,
-          name: name.trim(),
-          email: email.trim(),
-          topic,
-          message: message.trim(),
-          createdAt: serverTimestamp(),
-        });
-      }
+      await supabase.from('contact_submissions').insert({
+        user_id: user.id,
+        name: name.trim(),
+        email: email.trim(),
+        topic,
+        message: message.trim(),
+      });
       await sendContactReceipt({
         to: email.trim(),
         name: name.trim(),

@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react';
 import Image from 'next/image';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Star } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { db } from '@/services/firebase/firestore';
+import { supabase } from '@/services/supabase';
 import { useProductReviews } from '@/hooks/use-product-reviews';
 import type { Product } from '@/lib/types';
 
@@ -41,29 +40,21 @@ export function ReviewsSection({ product }: { product: Product }) {
       });
       return;
     }
-    if (!db) {
-      toast({
-        variant: 'destructive',
-        title: 'Reviews unavailable',
-        description: 'The review service is not available right now.',
-      });
-      return;
-    }
-
     setSubmitting(true);
     try {
-      await addDoc(collection(db, 'products', product.id, 'reviews'), {
-        reviewerId: user.id,
-        reviewerName:
+      const { error } = await supabase.from('reviews').insert({
+        product_id: product.id,
+        reviewer_id: user.id,
+        reviewer_name:
           user.fullName ||
           user.username ||
           user.primaryEmailAddress?.emailAddress ||
           'Anonymous',
-        reviewerAvatar: user.imageUrl || '',
+        reviewer_avatar: user.imageUrl || '',
         rating: Math.round(selectedRating),
         comment: comment.trim(),
-        createdAt: serverTimestamp(),
       });
+      if (error) throw error;
       setSelectedRating(0);
       setComment('');
       toast({

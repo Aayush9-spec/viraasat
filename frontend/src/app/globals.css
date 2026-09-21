@@ -1,76 +1,75 @@
 @import '@clerk/ui/themes/shadcn.css';
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 
+  --font-sans: 'Inter', sans-serif;
+  --font-heading: 'Cormorant Garamond', serif;
+}
 
 @layer base {
   :root {
     --background: 30 30% 99%;
-    /* Premium Paper White */
     --foreground: 20 40% 12%;
-    /* Dark Umber/Clay Text */
-
     --card: 0 0% 100%;
     --card-foreground: 20 40% 12%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 20 40% 12%;
-
     --primary: 25 50% 35%;
-    /* Rich Terracotta Clay */
     --primary-foreground: 30 30% 99%;
-
     --secondary: 28 30% 95%;
-    /* Soft Clay tint */
     --secondary-foreground: 20 40% 12%;
-
     --muted: 28 20% 92%;
     --muted-foreground: 25 20% 45%;
-
     --accent: 20 70% 50%;
-    /* Burnt Orange/Clay Accent */
     --accent-foreground: 0 0% 98%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-
     --border: 25 30% 88%;
     --input: 25 30% 88%;
     --ring: 25 50% 35%;
-
     --radius: 0rem;
-    /* Sharp, architectural edges for premium heritage feel */
   }
 
   .dark {
     --background: 20 40% 8%;
-    /* Deep Umber Dark */
     --foreground: 30 30% 98%;
-
     --card: 20 40% 10%;
     --card-foreground: 30 30% 98%;
-
     --popover: 20 40% 10%;
     --popover-foreground: 30 30% 98%;
-
     --primary: 25 60% 45%;
-    /* Bright Clay */
     --primary-foreground: 20 40% 8%;
-
     --secondary: 20 40% 15%;
     --secondary-foreground: 30 30% 98%;
-
     --muted: 20 40% 15%;
     --muted-foreground: 25 20% 65%;
-
     --accent: 20 70% 55%;
     --accent-foreground: 20 40% 8%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 30 30% 98%;
-
     --border: 20 40% 20%;
     --input: 20 40% 20%;
     --ring: 25 60% 45%;
@@ -79,28 +78,20 @@
   .sapphire {
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
-
     --card: 222 47% 11%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 217 91% 60%;
     --primary-foreground: 222 47.4% 11.2%;
-
     --secondary: 217 32% 17%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217 32% 17%;
     --muted-foreground: 215 20.2% 65.1%;
-
     --accent: 217 32% 17%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 217 32% 17%;
     --input: 217 32% 17%;
     --ring: 217 91% 60%;
@@ -109,28 +100,20 @@
   .emerald {
     --background: 140 20% 98%;
     --foreground: 140 20% 10%;
-
     --card: 140 20% 98%;
     --card-foreground: 140 20% 10%;
-
     --popover: 140 20% 98%;
     --popover-foreground: 140 20% 10%;
-
     --primary: 142 76% 36%;
     --primary-foreground: 355.7 100% 97.3%;
-
     --secondary: 140 20% 94%;
     --secondary-foreground: 140 20% 10%;
-
     --muted: 140 20% 94%;
     --muted-foreground: 140 10% 45%;
-
     --accent: 140 30% 85%;
     --accent-foreground: 142 76% 36%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-
     --border: 140 20% 90%;
     --input: 140 20% 90%;
     --ring: 142 76% 36%;
@@ -139,28 +122,20 @@
   .sunset {
     --background: 20 20% 98%;
     --foreground: 20 20% 10%;
-
     --card: 20 20% 98%;
     --card-foreground: 20 20% 10%;
-
     --popover: 20 20% 98%;
     --popover-foreground: 20 20% 10%;
-
     --primary: 12 90% 55%;
     --primary-foreground: 20 10% 98%;
-
     --secondary: 20 20% 94%;
     --secondary-foreground: 20 20% 10%;
-
     --muted: 20 20% 94%;
     --muted-foreground: 20 10% 45%;
-
     --accent: 35 90% 60%;
     --accent-foreground: 20 20% 10%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-
     --border: 20 20% 90%;
     --input: 20 20% 90%;
     --ring: 12 90% 55%;
@@ -168,30 +143,21 @@
 
   .clay {
     --background: 30 40% 99%;
-    /* Pure White + Clay vibe */
     --foreground: 20 40% 12%;
-
     --card: 0 0% 100%;
     --card-foreground: 20 40% 12%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 20 40% 12%;
-
     --primary: 25 50% 35%;
     --primary-foreground: 30 40% 99%;
-
     --secondary: 28 30% 95%;
     --secondary-foreground: 20 40% 12%;
-
     --muted: 28 20% 92%;
     --muted-foreground: 25 20% 45%;
-
     --accent: 20 70% 50%;
     --accent-foreground: 30 40% 99%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 30 40% 99%;
-
     --border: 25 30% 88%;
     --input: 25 30% 88%;
     --ring: 25 50% 35%;
@@ -205,15 +171,15 @@
 
   body {
     @apply text-foreground;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-sans);
   }
 
   .font-heading {
-    font-family: var(--font-heading), serif;
+    font-family: var(--font-heading);
   }
 
   .font-sans {
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-sans);
   }
 }
 
@@ -264,124 +230,52 @@
   }
 }
 
-/* Animations */
 @keyframes breathing-gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @keyframes slow-spin {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 @keyframes reverse-spin {
-  from {
-    transform: rotate(360deg);
-  }
-
-  to {
-    transform: rotate(0deg);
-  }
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
 }
 
 @keyframes tumble {
-  0% {
-    transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-  }
-
-  33% {
-    transform: translate(-50%, -50%) rotateX(120deg) rotateY(120deg) rotateZ(10deg);
-  }
-
-  66% {
-    transform: translate(-50%, -50%) rotateX(240deg) rotateY(240deg) rotateZ(-10deg);
-  }
-
-  100% {
-    transform: translate(-50%, -50%) rotateX(360deg) rotateY(360deg) rotateZ(0deg);
-  }
+  0% { transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  33% { transform: translate(-50%, -50%) rotateX(120deg) rotateY(120deg) rotateZ(10deg); }
+  66% { transform: translate(-50%, -50%) rotateX(240deg) rotateY(240deg) rotateZ(-10deg); }
+  100% { transform: translate(-50%, -50%) rotateX(360deg) rotateY(360deg) rotateZ(0deg); }
 }
 
 @keyframes float-1 {
-
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-
-  50% {
-    transform: translate(20px, -20px);
-  }
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -20px); }
 }
 
 @keyframes float-2 {
-
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-
-  50% {
-    transform: translate(-30px, 15px);
-  }
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-30px, 15px); }
 }
 
 @keyframes float-3 {
-
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-
-  50% {
-    transform: translate(15px, 25px);
-  }
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(15px, 25px); }
 }
 
-.animate-slow-spin {
-  animation: slow-spin 60s linear infinite;
-}
+.animate-slow-spin { animation: slow-spin 60s linear infinite; }
+.animate-reverse-spin { animation: reverse-spin 40s linear infinite; }
+.animate-spin-slow { animation: slow-spin 30s linear infinite; }
+.animate-tumble { animation: tumble 20s linear infinite; }
+.animate-float-1 { animation: float-1 10s ease-in-out infinite; }
+.animate-float-2 { animation: float-2 15s ease-in-out infinite alternate; }
+.animate-float-3 { animation: float-3 12s ease-in-out infinite alternate; }
 
-.animate-reverse-spin {
-  animation: reverse-spin 40s linear infinite;
-}
-
-.animate-spin-slow {
-  animation: slow-spin 30s linear infinite;
-}
-
-.animate-tumble {
-  animation: tumble 20s linear infinite;
-}
-
-.animate-float-1 {
-  animation: float-1 10s ease-in-out infinite;
-}
-
-.animate-float-2 {
-  animation: float-2 15s ease-in-out infinite alternate;
-}
-
-.animate-float-3 {
-  animation: float-3 12s ease-in-out infinite alternate;
-}
-
-/* Keep previous parallax styles just in case */
 .hero-parallax-group {
   perspective: 300px;
 }
@@ -401,23 +295,20 @@
     opacity: 0;
     transform: translate3d(0, 40px, 0);
   }
-
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }
 }
 
-/* Hide Scrollbar */
 ::-webkit-scrollbar {
   display: none;
 }
 
 * {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
-
 
 @layer utilities {
   .clay-shadow {

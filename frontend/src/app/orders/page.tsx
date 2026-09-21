@@ -3,8 +3,7 @@
 import { orders, products } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { db } from '@/services/firebase/firestore';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { supabase } from '@/services/supabase';
 import { Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,29 +25,31 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!db || !user) {
-      setLoading(false);
-      return;
-    }
+    if (!user) { setLoading(false); return; }
 
-    const q = query(
-      collection(db, "orders"),
-      where("buyerId", "==", user.id)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedOrders = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setDbOrders(fetchedOrders);
-      setLoading(false);
-    }, (err) => {
-      console.error("Firestore orders failed:", err);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    supabase
+      .from('orders')
+      .select('id, buyer_id, total_amount, status, created_at, order_items(product_id, product_name, quantity, unit_price)')
+      .eq('buyer_id', user.id)
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) { console.error('Orders fetch failed:', error); }
+        setDbOrders((data ?? []).map((r) => ({
+          id: r.id,
+          buyerId: r.buyer_id,
+          artisanId: '',
+          totalAmount: r.total_amount,
+          status: r.status,
+          paymentStatus: 'Paid',
+          orderDate: r.created_at,
+          updatedAt: r.created_at,
+          shippingAddress: { fullName: '', addressLine1: '', city: '', state: '', zipCode: '', country: '' },
+          items: (r.order_items ?? []).map((i: { product_id: string; product_name: string; quantity: number; unit_price: number }) => ({
+            productId: i.product_id, productName: i.product_name, quantity: i.quantity, unitPrice: i.unit_price, itemImageUrl: '',
+          })),
+        })));
+        setLoading(false);
+      });
   }, [user]);
 
   // Combine static and db orders

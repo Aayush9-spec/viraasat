@@ -12,8 +12,7 @@ import {
   Archive,
   ExternalLink,
 } from 'lucide-react';
-import { db } from '@/lib/firebase/client';
-import { collection, onSnapshot, query, orderBy, updateDoc, doc } from 'firebase/firestore';
+import { supabase } from '@/services/supabase';
 import type { Product } from '@/lib/types';
 import { useUserRole } from '@/hooks/use-user-role';
 import { useUser } from '@clerk/nextjs';
@@ -43,12 +42,25 @@ export default function AdminDashboardPage() {
   const [busy, setBusy] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!db || !user) return;
-    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setProducts(snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as DbProduct));
-    });
-    return () => unsubscribe();
+    if (!user) return;
+
+    supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        if (data) setProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as DbProduct[]);
+      });
+
+    const channel = supabase
+      .channel('admin-products')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
+        const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+        if (data) setProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as DbProduct[]);
+      })
+      .subscribe();
+
+    return () => { void supabase.removeChannel(channel); };
   }, [user]);
 
   if (loading || (user && role === null)) {
@@ -83,15 +95,13 @@ export default function AdminDashboardPage() {
   };
 
   const moderate = async (product: DbProduct, verdict: 'approved' | 'flagged') => {
-    if (!db || !user) return;
+    if (!user) return;
     setBusy(product.id);
     try {
-      await updateDoc(doc(db, 'products', product.id), {
+      await supabase.from('products').update({
         moderation: verdict,
         status: verdict === 'approved' ? 'active' : 'archived',
-        updatedAt: new Date().toISOString(),
-        ...(verdict === 'approved' ? {} : { moderationNote: 'Flagged by content moderation review' }),
-      });
+      }).eq('id', product.id);
       toast({
         title: verdict === 'approved' ? 'Listing approved' : 'Listing flagged',
         description: verdict === 'approved'

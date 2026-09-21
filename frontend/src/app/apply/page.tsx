@@ -33,8 +33,7 @@ import { UploadCloud } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { db } from '@/services/firebase/firestore';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { supabase } from '@/services/supabase';
 import { sendApplyReceipt } from '@/lib/notifications/email';
 
 const applicationSchema = z.object({
@@ -77,14 +76,17 @@ export default function ArtisanApplicationPage() {
 
     setIsSubmitting(true);
     try {
-      if (db) {
-        await addDoc(collection(db, 'artisanApplications'), {
-          applicantId: user.id,
-          ...values,
+      await supabase.from('artisan_applications').insert({
+          applicant_id: user.id,
+          full_name: values.fullName,
+          workshop_name: values.workshopName,
+          email: values.email,
+          phone: values.phone,
+          pincode: values.pincode,
+          state: values.state,
+          craft: values.craft,
           status: 'pending',
-          submittedAt: serverTimestamp(),
         });
-      }
       await sendApplyReceipt({
         to: values.email,
         name: values.fullName,

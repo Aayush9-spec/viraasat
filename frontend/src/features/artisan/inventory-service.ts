@@ -1,20 +1,23 @@
 import type { Product } from '@/lib/types';
-import { db } from '@/services/firebase/firestore';
-import { doc, updateDoc } from 'firebase/firestore';
+import { supabase } from '@/services/supabase';
 
 export class InventoryService {
   static async updateStock(productId: string, newStock: number): Promise<boolean> {
     try {
-      const docRef = doc(db, 'products', productId);
-      await updateDoc(docRef, { stock: newStock });
+      const { error } = await supabase
+        .from('products')
+        .update({ stock: newStock })
+        .eq('id', productId);
+
+      if (error) throw error;
       return true;
     } catch (e) {
-      console.warn("Firestore offline, stock updated locally in memory.");
+      console.warn('Supabase offline, stock update failed.', e);
       return false;
     }
   }
 
   static getLowStockItems(productsList: Product[], threshold: number = 5): Product[] {
-    return productsList.filter(p => p.stock <= threshold);
+    return productsList.filter((p) => p.stock <= threshold);
   }
 }

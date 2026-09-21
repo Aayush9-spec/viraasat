@@ -6,8 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Package, ShoppingCart, TrendingUp, Sparkles, Plus, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
+import { supabase } from '@/services/supabase';
 import { Product } from '@/lib/types';
 import { products as staticProducts } from '@/lib/data';
 
@@ -16,13 +15,25 @@ export default function ArtisanDashboardPage() {
   const [myProducts, setMyProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    if (!db || !user) return;
-    const q = query(collection(db, 'products'), where('artisanId', '==', user.id));
-    const unsub = onSnapshot(q, (snap) => {
-      const prods = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Product));
-      setMyProducts(prods);
-    });
-    return () => unsub();
+    if (!user) return;
+
+    supabase
+      .from('products')
+      .select('*')
+      .eq('artisan_id', user.id)
+      .then(({ data }) => {
+        if (data) setMyProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
+      });
+
+    const channel = supabase
+      .channel(`artisan-products-${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products', filter: `artisan_id=eq.${user.id}` }, async () => {
+        const { data } = await supabase.from('products').select('*').eq('artisan_id', user.id);
+        if (data) setMyProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
+      })
+      .subscribe();
+
+    return () => { void supabase.removeChannel(channel); };
   }, [user]);
 
   const allProducts = [...myProducts, ...staticProducts.filter((p) => p.artisanId === (user?.id || 'artisan-1'))];

@@ -37,7 +37,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    "/var/folders/rp/jl8w39gn4xbc2fb_w24vsrx00000gn/T/viraasat-next/types/**/*.ts",
+    "/var/folders/rp/jl8w39gn4xbc2fb_w24vsrx00000gn/T/viraasat-next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
