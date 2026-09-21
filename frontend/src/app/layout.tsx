@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ViraasatLogo } from '@/components/viraasat-logo';
@@ -16,8 +17,8 @@ import InstallPrompt from '@/components/common/install-prompt';
 import PWALifecycle from '@/components/common/pwa-lifecycle';
 import OnlineStatus from '@/components/common/online-status';
 import { ClerkProvider } from '@clerk/nextjs';
+import { shadcn } from '@clerk/ui/themes';
 import { AuthSync } from '@/components/auth-sync';
-import { FirebaseAuthProvider } from '@/context/firebase-auth-context';
 
 const inter = {
   variable: 'font-sans',
@@ -70,15 +71,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
-      <html lang="en" suppressHydrationWarning className={`${inter.variable} ${cormorant.variable}`}>
-        <head>
-          <meta property="og:image" content="/viraasat-hero-cream.png" />
-          <link rel="icon" href="/viraasat-logo-full.png" />
-          <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        </head>
-        <body className="font-sans antialiased text-foreground" suppressHydrationWarning>
-          <script
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${cormorant.variable}`}>
+      <head>
+        <meta property="og:image" content="/viraasat-hero-cream.png" />
+        <link rel="icon" href="/viraasat-logo-full.png" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+      </head>
+      <body className="font-sans antialiased text-foreground" suppressHydrationWarning>
+        <ClerkProvider 
+          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+          appearance={{ theme: shadcn }}
+        >
+          <Script
+            id="sw-build-id"
+            strategy="beforeInteractive"
             dangerouslySetInnerHTML={{
               __html: `window.__SW_BUILD_ID__=${JSON.stringify(
                 process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ||
@@ -88,9 +94,8 @@ export default function RootLayout({
             }}
           />
           <PWALifecycle />
-          <FirebaseAuthProvider>
-            <AuthSync />
-            <LanguageProvider>
+          <AuthSync />
+          <LanguageProvider>
               <ThemeProvider
                 attribute="class"
                 defaultTheme="clay"
@@ -109,11 +114,10 @@ export default function RootLayout({
                   </WishlistProvider>
                 </CartProvider>
               </ThemeProvider>
-            </LanguageProvider>
-          </FirebaseAuthProvider>
+          </LanguageProvider>
           <Toaster />
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

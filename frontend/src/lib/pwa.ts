@@ -21,7 +21,38 @@ function getBuildId(): string {
 export function registerServiceWorker() {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
 
-  window.addEventListener('load', () => {
+  // In development mode, unregister existing service workers to prevent Turbopack chunk load conflicts.
+  if (process.env.NODE_ENV === 'development') {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const reg of registrations) {
+        reg.unregister();
+      }
+    });
+    return;
+  }
+
+  window.addEventListener('load', async () => {
+    // Evict any old SW that might be caching /_next/ chunks (causes ChunkLoadError).
+    // The new SW explicitly passes /_next/ through to the network, so cached
+    // stale chunks from a previous build can never be served again.
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const reg of regs) {
+      const sw = reg.active || reg.installing || reg.waiting;
+      if (sw) {
+        // Fetch the current SW script and check if it contains the /_next/ bypass.
+        // If not, it's the old version — unregister it so the new one installs fresh.
+        try {
+          const res = await fetch(SW_PATH, { cache: 'no-store' });
+          const text = await res.text();
+          if (!text.includes('/_next/')) {
+            await reg.unregister();
+          }
+        } catch {
+          // network error — leave existing SW in place
+        }
+      }
+    }
+
     const url = `${SW_PATH}?v=${getBuildId()}`;
     navigator.serviceWorker
       .register(url)

@@ -7,7 +7,7 @@
 // the new SW within a minute (the periodic update() check) and stop
 // serving HTML/JS bundles from a previous build.
 
-const CACHE_NAME = "viraasat-58504132";
+const CACHE_NAME = "viraasat-a5863e90";
 
 const PRECACHE_ASSETS = [
   '/',
@@ -18,7 +18,7 @@ const PRECACHE_ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(self.CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS)),
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS)),
   );
   // Take over open clients immediately. The registration URL carries a
   // ?v= hash that changes per deploy, so this only runs when there is
@@ -32,7 +32,7 @@ self.addEventListener('activate', (event) => {
       const keys = await caches.keys();
       await Promise.all(
         keys
-          .filter((k) => k.startsWith('viraasat-') && k !== self.CACHE_NAME)
+          .filter((k) => (k.startsWith('viraasat-') && k !== CACHE_NAME) || k === 'undefined')
           .map((k) => caches.delete(k)),
       );
       await self.clients.claim();
@@ -53,13 +53,20 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Next.js chunks/static: always network-only — never cache these.
+  // Stale chunks after a rebuild cause ChunkLoadError and Resource constructor errors.
+  if (url.pathname.startsWith('/_next/')) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
   // HTML navigations: network-first, fall back to cache, then /offline.
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
         .then((response) => {
           const clone = response.clone();
-          caches.open(self.CACHE_NAME).then((c) => c.put(request, clone));
+          caches.open(CACHE_NAME).then((c) => c.put(request, clone));
           return response;
         })
         .catch(() =>
@@ -76,7 +83,7 @@ self.addEventListener('fetch', (event) => {
         .then((response) => {
           if (response && response.status === 200 && response.type !== 'error') {
             const clone = response.clone();
-            caches.open(self.CACHE_NAME).then((c) => c.put(request, clone));
+            caches.open(CACHE_NAME).then((c) => c.put(request, clone));
           }
           return response;
         })
