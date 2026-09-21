@@ -10,14 +10,7 @@ import React, {
 } from 'react';
 import type { Product } from '@/lib/types';
 import { useUser } from '@clerk/nextjs';
-import { db } from '@/services/firebase/firestore';
-import {
-  collection,
-  doc,
-  setDoc,
-  deleteDoc,
-  onSnapshot,
-} from 'firebase/firestore';
+import { supabase } from '@/services/supabase';
 
 interface WishlistContextType {
   wishlist: Product[];
@@ -54,40 +47,58 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }
   }, [wishlist, hasLoaded]);
 
-  // When signed in, treat Firestore users/{uid}/wishlist as the source of truth.
+  // When signed in, load wishlist from Supabase and subscribe to realtime changes.
   useEffect(() => {
-    if (!isSignedIn || !user || !db) return;
-    const wishlistRef = collection(db, 'users', user.id, 'wishlist');
+    if (!isSignedIn || !user) return;
+    const userId = user.id;
 
-    const unsubscribe = onSnapshot(
-      wishlistRef,
-      (snapshot) => {
-        const items: Product[] = [];
-        snapshot.forEach((docSnap) => {
-          items.push(docSnap.data() as Product);
-        });
-        setWishlist(items);
-      },
-      (error) => {
-        console.error('Wishlist sync failed:', error);
-      },
-    );
+    async function loadWishlist() {
+      const { data, error } = await supabase
+        .from('wishlists')
+        .select('product_id, products(*)')
+        .eq('user_id', userId);
+      if (error) {
+        console.warn('[Wishlist] Load failed (RLS or network):', error.message ?? error);
+        return;
+      }
+      const items = (data ?? [])
+        .map((row) => row.products as unknown as Product)
+        .filter(Boolean);
+      setWishlist(items);
+    }
 
-    return () => unsubscribe();
+    loadWishlist();
+
+    // Realtime subscription
+    const channel = supabase
+      .channel(`wishlist-${userId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'wishlists', filter: `user_id=eq.${userId}` },
+        () => { void loadWishlist(); },
+      )
+      .subscribe();
+
+    return () => { void supabase.removeChannel(channel); };
   }, [isSignedIn, user]);
 
   const persistRemote = useCallback(
     async (productId: string, data: Product | null) => {
-      if (!isSignedIn || !user || !db) return;
-      const ref = doc(db, 'users', user.id, 'wishlist', productId);
+      if (!isSignedIn || !user) return;
       try {
         if (data) {
-          await setDoc(ref, data);
+          await supabase
+            .from('wishlists')
+            .upsert({ user_id: user.id, product_id: productId });
         } else {
-          await deleteDoc(ref);
+          await supabase
+            .from('wishlists')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('product_id', productId);
         }
       } catch (error) {
-        console.error('Failed to sync wishlist to Firestore:', error);
+        console.error('Failed to sync wishlist to Supabase:', error);
       }
     },
     [isSignedIn, user],

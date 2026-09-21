@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '@/services/firebase/firestore';
+import { supabase } from '@/services/supabase';
 
 export interface Review {
   id: string;
@@ -29,18 +28,28 @@ export function useProductReviews(productId: string): {
 
   useEffect(() => {
     let active = true;
+
     async function load() {
-      if (!db) {
-        setLoading(false);
-        return;
-      }
       try {
-        const reviewsRef = collection(db, 'products', productId, 'reviews');
-        const q = query(reviewsRef, orderBy('createdAt', 'desc'));
-        const snapshot = await getDocs(q);
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('*')
+          .eq('product_id', productId)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
         if (!active) return;
+
         setReviews(
-          snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Review),
+          (data ?? []).map((row) => ({
+            id: row.id,
+            reviewerId: row.reviewer_id,
+            reviewerName: row.reviewer_name,
+            reviewerAvatar: row.reviewer_avatar,
+            rating: row.rating,
+            comment: row.comment,
+            createdAt: row.created_at,
+          })),
         );
       } catch (e) {
         console.warn('Failed to load reviews', e);
@@ -48,15 +57,13 @@ export function useProductReviews(productId: string): {
         if (active) setLoading(false);
       }
     }
+
     load();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [productId]);
 
   const count = reviews.length;
-  const avg =
-    count === 0 ? 0 : reviews.reduce((sum, r) => sum + r.rating, 0) / count;
+  const avg = count === 0 ? 0 : reviews.reduce((sum, r) => sum + r.rating, 0) / count;
 
   return { rating: { avg, count, reviews }, loading };
 }

@@ -3,36 +3,13 @@
 import { useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter, usePathname } from 'next/navigation';
-import { db } from '@/lib/firebase/client';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { useFirebaseAuth } from '@/context/firebase-auth-context';
+import { supabase } from '@/services/supabase';
 
 const LS_ROLE_KEY = 'viraasat_session_role';
 const LS_UID_KEY  = 'viraasat_session_uid';
 
-/**
- * Reads the role from three sources in priority order:
- *   1. Firestore users/{uid}.role  (authoritative — written by backend webhook)
- *   2. Clerk unsafeMetadata.role   (set at sign-up / role-selection)
- *   3. localStorage viraasat_session_role (session cache for offline resilience)
- */
-function resolveRole(
-  firestoreRole: string | undefined,
-  metaRole: string | undefined,
-  uid: string,
-): string | null {
-  const role = firestoreRole || metaRole || localStorage.getItem(LS_ROLE_KEY) || null;
-  if (role && localStorage.getItem(LS_UID_KEY) !== uid) {
-    // Different user — clear stale cache
-    localStorage.removeItem(LS_ROLE_KEY);
-    return firestoreRole || metaRole || null;
-  }
-  return role;
-}
-
 export function AuthSync() {
   const { user, isSignedIn, isLoaded } = useUser();
-  const firebaseAuth = useFirebaseAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -47,104 +24,56 @@ export function AuthSync() {
       const imageUrl = user.imageUrl || '';
       const metaRole = user.unsafeMetadata?.role as string | undefined;
 
-      // ─── PATH A: Firebase identity bridge ready — use Firestore ────────────
-      if (db && firebaseAuth.ready && firebaseAuth.signedIn) {
-        try {
-          const userRef = doc(db, 'users', user.id);
-          const userSnap = await getDoc(userRef);
+      try {
+        // Check if user row already exists (PGRST116 = not found, that's fine)
+        const { data: existing } = await supabase
+          .from('users')
+          .select('id, role')
+          .eq('id', user.id)
+          .maybeSingle();
 
-          if (userSnap.exists()) {
-            const existing = userSnap.data();
-            const firestoreRole = existing.role as string | undefined;
+        // Resolve role — never downgrade an existing role
+        const supabaseRole = existing?.role as string | undefined;
+        const role = supabaseRole || metaRole || localStorage.getItem(LS_ROLE_KEY) || null;
 
-            // Resolve final role (never downgrade a role that's already set)
-            const role = firestoreRole || metaRole;
+        if (role) {
+          localStorage.setItem(LS_ROLE_KEY, role);
+          localStorage.setItem(LS_UID_KEY, user.id);
 
-            if (role) {
-              // Cache role in localStorage for offline resilience
-              localStorage.setItem(LS_ROLE_KEY, role);
-              localStorage.setItem(LS_UID_KEY, user.id);
-
-              await setDoc(
-                userRef,
-                {
-                  clerkUserId: user.id,
-                  uid: user.id,
-                  name: name || existing.name,
-                  email: email || existing.email,
-                  imageUrl: imageUrl || existing.imageUrl,
-                  role,
-                  updatedAt: now,
-                  lastLogin: now,
-                },
-                { merge: true },
-              );
-            } else {
-              // Document exists but role is missing everywhere → role selection
-              if (
-                pathname !== '/select-role' &&
-                !pathname.startsWith('/login') &&
-                !pathname.startsWith('/signup')
-              ) {
-                router.push('/select-role');
-              }
-            }
-          } else {
-            // No Firestore doc yet (webhook hasn't fired)
-            const role = metaRole;
-            if (role === 'artisan' || role === 'buyer') {
-              localStorage.setItem(LS_ROLE_KEY, role);
-              localStorage.setItem(LS_UID_KEY, user.id);
-              await setDoc(userRef, {
-                clerkUserId: user.id,
-                uid: user.id,
-                name,
-                email,
-                imageUrl,
-                role,
-                createdAt: now,
-                updatedAt: now,
-                lastLogin: now,
-              });
-            } else if (
-              pathname !== '/select-role' &&
-              !pathname.startsWith('/login') &&
-              !pathname.startsWith('/signup')
-            ) {
-              router.push('/select-role');
-            }
+          await supabase.from('users').upsert({
+            id: user.id,
+            email,
+            display_name: name,
+            avatar_url: imageUrl,
+            role,
+          });
+        } else {
+          // No role anywhere — redirect to role selection
+          if (
+            pathname !== '/select-role' &&
+            !pathname.startsWith('/login') &&
+            !pathname.startsWith('/signup')
+          ) {
+            router.push('/select-role');
           }
-        } catch (error) {
-          console.error('[AuthSync] Firestore write error:', error);
         }
-        return;
-      }
+      } catch (error) {
+        console.error('[AuthSync] Supabase sync error:', error);
 
-      // ─── PATH B: Firebase not configured / identity bridge failed ──────────
-      // Fall back to Clerk unsafeMetadata + localStorage so the session still
-      // works without a Firebase service account.
-      if (firebaseAuth.ready && !firebaseAuth.signedIn) {
+        // Fallback: use Clerk metadata + localStorage so the session still works
         const cachedRole = localStorage.getItem(LS_ROLE_KEY);
         const cachedUid  = localStorage.getItem(LS_UID_KEY);
 
-        // If metaRole is set, cache it for this session
         if (metaRole === 'artisan' || metaRole === 'buyer') {
           if (cachedUid !== user.id) {
-            // New user — refresh cache
             localStorage.setItem(LS_ROLE_KEY, metaRole);
             localStorage.setItem(LS_UID_KEY, user.id);
           }
-          // Role is available — no redirect needed; protected pages use
-          // unsafeMetadata fallback in ProtectedRoute.
           return;
         }
 
-        // No role in metadata — check localStorage cache
-        if (cachedRole && cachedUid === user.id) {
-          return; // Role is cached from a previous session
-        }
+        if (cachedRole && cachedUid === user.id) return;
 
-        // Truly no role — redirect to role selection
         if (
           pathname !== '/select-role' &&
           !pathname.startsWith('/login') &&
@@ -156,7 +85,7 @@ export function AuthSync() {
     }
 
     syncUser();
-  }, [user, isSignedIn, isLoaded, pathname, router, firebaseAuth.ready, firebaseAuth.signedIn]);
+  }, [user, isSignedIn, isLoaded, pathname, router]);
 
   return null;
 }

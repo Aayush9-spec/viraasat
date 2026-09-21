@@ -1,20 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
-import {
-  collection,
-  onSnapshot,
-  query,
-  orderBy,
-  limit,
-  QuerySnapshot,
-  DocumentData,
-  enableNetwork,
-  disableNetwork,
-} from 'firebase/firestore';
-import { db } from '@/services/firebase/firestore';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/services/supabase';
 import type { Product } from '@/lib/types';
-import { products } from '@/lib/data';
-
-const FIRESTORE_TIMEOUT = 15000;
+import { products as staticProducts } from '@/lib/data';
 
 export interface ProductsResult {
   products: Product[];
@@ -23,18 +10,20 @@ export interface ProductsResult {
   isOnline: boolean;
 }
 
+function mapRow(r: Record<string, unknown>): Product {
+  return {
+    ...(r as Product),
+    artisanId: r.artisan_id as string,
+    createdAt: r.created_at as string,
+    aiInsights: r.ai_insights as Product['aiInsights'],
+  };
+}
+
 /**
- * Real-time subscription to the `products` Firestore collection.
- *
- * Falls back to the static seed list from `lib/data.ts` when:
- *  - Firebase is not configured (no projectId)
- *  - Firestore is unreachable (offline, timeout, or network error)
- *
- * The fallback is logged so ops can detect stale-data mode in prod.
+ * Real-time subscription to the `products` Supabase table.
+ * Falls back to the static seed list from `lib/data.ts` on error.
  */
-export function useProducts(
-  opts: { max?: number } = {},
-): ProductsResult {
+export function useProducts(opts: { max?: number } = {}): ProductsResult {
   const [state, setState] = useState<ProductsResult>({
     products: [],
     loading: true,
@@ -45,81 +34,41 @@ export function useProducts(
   const { max = 100 } = opts;
 
   useEffect(() => {
-    if (!db || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
-      setState({
-        products: products,
-        loading: false,
-        error: null,
-        isOnline: false,
+    // Initial fetch
+    supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(max)
+      .then(({ data, error }) => {
+        if (error) {
+          console.warn('Supabase products unavailable — falling back to static seed.', error);
+          setState({ products: staticProducts, loading: false, error, isOnline: false });
+          return;
+        }
+        setState({ products: (data ?? []).map(mapRow), loading: false, error: null, isOnline: true });
       });
-      return;
-    }
 
-    let cancelled = false;
-    let timeoutId: NodeJS.Timeout;
+    // Realtime subscription
+    const channel = supabase
+      .channel('products-list')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(max);
+        if (!error && data) {
+          setState({ products: data.map(mapRow), loading: false, error: null, isOnline: true });
+        }
+      })
+      .subscribe();
 
-    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'), limit(max));
-
-    let resolved = false;
-    const failOpen = () => {
-      if (resolved || cancelled) return;
-      resolved = true;
-      clearTimeout(timeoutId);
-      console.warn('Firestore products unavailable — falling back to static seed.');
-      setState({
-        products: products,
-        loading: false,
-        error: null,
-        isOnline: false,
-      });
-    };
-
-    timeoutId = setTimeout(failOpen, FIRESTORE_TIMEOUT);
-
-    const unsub = onSnapshot(
-      q,
-      (snap: QuerySnapshot<DocumentData, DocumentData>) => {
-        if (cancelled) return;
-        clearTimeout(timeoutId);
-        resolved = true;
-
-        const dbProducts = snap.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Product[];
-
-        setState({
-          products: dbProducts,
-          loading: false,
-          error: null,
-          isOnline: true,
-        });
-      },
-      (err) => {
-        console.warn('Firestore products listener error:', err);
-        failOpen();
-      },
-    );
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timeoutId);
-      unsub();
-    };
+    return () => { void supabase.removeChannel(channel); };
   }, [max]);
 
   return state;
 }
 
-/**
- * Force Firestore back online after a network reconnection.
- * Exported for manual retry from UI ("Retry" button).
- */
-export const resumeFirestore = async (): Promise<void> => {
-  if (!db) return;
-  try {
-    await enableNetwork(db);
-  } catch (err) {
-    console.warn('Could not resume Firestore network:', err);
-  }
-};
+/** No-op kept for API compatibility — Supabase handles reconnections automatically. */
+export const resumeFirestore = async (): Promise<void> => {};
