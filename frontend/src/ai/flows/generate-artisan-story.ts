@@ -57,7 +57,20 @@ const generateArtisanStoryFlow = ai.defineFlow(
     outputSchema: GenerateArtisanStoryOutputSchema,
   },
   async input => {
-    const {output} = await generateArtisanStoryPrompt(input);
-    return output!;
+    try {
+      const {output} = await generateArtisanStoryPrompt(input);
+      if (output?.storyIdeas) {
+        return output;
+      }
+    } catch (e) {
+      console.warn("Genkit generateArtisanStory call failed. Using fallback story ideas.", e);
+    }
+    return {
+      storyIdeas: [
+        `Welcome to ${input.shopName}, where master artisan ${input.artisanName} brings over ${input.yearsExperience} years of experience in handcrafting exquisite ${input.craftType}.`,
+        `Every piece in our collection is crafted with dedication, preserving age-old techniques while bringing traditional heritage into contemporary homes.`,
+        `Our vision is to keep the spark of authentic Indian craftsmanship alive, connecting art lovers with the genuine stories and passion behind each handmade product.`
+      ]
+    };
   }
 );

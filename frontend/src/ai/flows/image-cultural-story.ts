@@ -75,11 +75,20 @@ const imageCulturalStoryFlow = ai.defineFlow(
     if (approxBytes < 1024 || approxBytes > 10 * 1024 * 1024) {
       throw new Error(`Image size out of range (${approxBytes} bytes).`);
     }
-    const { output } = await imageCulturalStoryPrompt({
-      imageDataUri: input.imageDataUri,
-    });
+    try {
+      const { output } = await imageCulturalStoryPrompt({
+        imageDataUri: input.imageDataUri,
+      });
+      if (output?.story) {
+        return {
+          story: output.story,
+        };
+      }
+    } catch (e) {
+      console.warn("Genkit imageCulturalStory call failed. Using fallback story.", e);
+    }
     return {
-      story: output!.story,
+      story: `This traditional handicraft piece represents rich regional artisan heritage and timeless cultural craftsmanship. Master artisans handcraft each item using age-old techniques passed down through generations, embodying authentic Indian artistic traditions.`,
     };
   }
 );

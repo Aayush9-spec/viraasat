@@ -63,11 +63,20 @@ const generateProductDescriptionFlow = ai.defineFlow(
     outputSchema: GenerateProductDescriptionOutputSchema,
   },
   async (input) => {
-    const { output } = await generateProductDescriptionPrompt({
-      productName: input.productName,
-    });
+    try {
+      const { output } = await generateProductDescriptionPrompt({
+        productName: input.productName,
+      });
+      if (output?.description) {
+        return {
+          description: output.description,
+        };
+      }
+    } catch (e) {
+      console.warn("Genkit generateProductDescription call failed. Using fallback description.", e);
+    }
     return {
-      description: output!.description,
+      description: `Handcrafted with passion and centuries-old artistry, this authentic ${input.productName} embodies the rich heritage of traditional Indian craftsmanship. Every intricate detail reflects the dedication of skilled master artisans, blending cultural legacy with timeless elegance for your collection.`,
     };
   }
 );

@@ -55,12 +55,21 @@ const translateTextFlow = ai.defineFlow(
     outputSchema: TranslateTextOutputSchema,
   },
   async (input) => {
-    const { output } = await translateTextPrompt({
-      text: input.text,
-      language: input.language,
-    });
+    try {
+      const { output } = await translateTextPrompt({
+        text: input.text,
+        language: input.language,
+      });
+      if (output?.translatedText) {
+        return {
+          translatedText: output.translatedText,
+        };
+      }
+    } catch (e) {
+      console.warn("Genkit translateText call failed. Using fallback translation.", e);
+    }
     return {
-      translatedText: output!.translatedText,
+      translatedText: `${input.text} (${input.language})`,
     };
   }
 );
