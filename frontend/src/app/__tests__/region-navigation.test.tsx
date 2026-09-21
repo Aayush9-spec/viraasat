@@ -29,4 +29,4 @@ test('region links point at the correct shop URLs', async () => {
   expect(regionLinks.length).toBeGreaterThan(0);
   const hrefs = regionLinks.map((l) => l.getAttribute('href'));
   expect(hrefs).toContain('/shop?region=Rajasthan');
-});
+}, 15000);

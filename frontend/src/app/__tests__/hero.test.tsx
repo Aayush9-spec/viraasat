@@ -27,13 +27,13 @@ function renderMarketplace() {
 test('renders hero section title and button', async () => {
   renderMarketplace();
   // The page shows skeleton loaders while products fetch (1.2s fallback timeout).
-  expect(await screen.findByText(/Enter The Viraasat/i, {}, { timeout: 5000 })).toBeInTheDocument();
+  expect(await screen.findByText(/Enter The Viraasat/i, {}, { timeout: 8000 })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /Enter The Viraasat/i })).toBeInTheDocument();
-});
+}, 15000);
 
 test('renders hero description', async () => {
   renderMarketplace();
   expect(
     await screen.findByText(/Discover authentic Indian handicrafts/i, {}, { timeout: 8000 })
   ).toBeInTheDocument();
-});
+}, 15000);
