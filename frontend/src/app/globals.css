@@ -166,11 +166,12 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   body {
-    @apply text-foreground;
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--background));
     font-family: var(--font-sans);
   }
 
