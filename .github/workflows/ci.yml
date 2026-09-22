@@ -25,7 +25,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci --legacy-peer-deps --include=dev
 
       - name: Lint
         run: npm run lint
@@ -34,7 +34,14 @@ jobs:
         run: npm run typecheck
 
       - name: Unit tests (Jest)
-        run: npm run test:unit
+        run: npm run test:unit || (npm run test:unit > jest-output.txt 2>&1 ; cat jest-output.txt && exit 1)
+
+      - name: Upload Jest logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-logs
+          path: frontend/jest-output.txt
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -124,7 +131,14 @@ jobs:
           ENVIRONMENT: development
         run: |
           source venv/bin/activate
-          python3 -m pytest -v
+          python3 -m pytest -v > pytest-output.txt 2>&1 || (cat pytest-output.txt && exit 1)
+
+      - name: Upload Pytest logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-logs
+          path: backend/pytest-output.txt
 
       - name: Backend API smoke test
         env:
