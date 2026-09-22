@@ -1,16 +1,20 @@
-# 🪔 Viraasat – The AI-Driven Marketplace for Local Artisans
-
-> **Preserve the heritage. Empower the artisans. Inspire the world.**
-
-**Viraasat** (Heritage) is an AI-powered digital marketplace that bridges India's traditional artisans with a global audience. We use **Google AI (Gemini, Cloud Vision, Speech-to-Text)** and a serverless data layer (Firebase + FastAPI) to turn a phone photo and a voice memo into a professionally listed, blockchain-provenanced product.
-
 <div align="center">
 
-[![GitHub repo](https://img.shields.io/badge/GitHub-Repository-black?logo=github)](https://github.com/Aayush9-spec/viraasat)
-[![Backend Status](https://img.shields.io/badge/Backend-FastAPI%20on%20Render-green?logo=python)](https://viraasat-backend-f0c1.onrender.com/health)
-[![Frontend Status](https://img.shields.io/badge/Frontend-Next.js%2016%20on%20Vercel-blue?logo=vercel)](https://viraasat-eta.vercel.app)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?logo=appveyor)](https://github.com/Aayush9-spec/viraasat/blob/main/LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/Aayush9-spec/viraasat/ci.yml?logo=github)](https://github.com/Aayush9-spec/viraasat/actions/workflows/ci.yml)
+<img src="https://viraasat-eta.vercel.app/icon-192.png" alt="Viraasat logo" width="96" />
+
+# 🪔 Viraasat
+
+**The AI-Driven Marketplace for India's Traditional Artisans**
+
+> *Preserve the heritage. Empower the artisans. Inspire the world.*
+
+[![Live App](https://img.shields.io/badge/App-viraasat--eta.vercel.app-blue?logo=vercel&logoColor=white)](https://viraasat-eta.vercel.app)
+[![Backend](https://img.shields.io/badge/API-FastAPI%20on%20Render-009688?logo=fastapi&logoColor=white)](https://viraasat-backend-f0c1.onrender.com/health)
+[![CI](https://img.shields.io/github/actions/workflow/status/Aayush9-spec/viraasat/ci.yml?label=CI&logo=github)](https://github.com/Aayush9-spec/viraasat/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 </div>
 
@@ -18,138 +22,179 @@
 
 ## 📑 Table of Contents
 
-- [🛑 The Problem](#-the-problem)
-- [💡 Our Solution: AI-First Empowerment](#-our-solution-ai-first-empowerment)
-- [🛠 Tech Stack](#-tech-stack)
-- [🏗 System Architecture](#-system-architecture)
-- [🗂 Project Structure](#-project-structure)
-- [⚙️ Getting Started](#-getting-started)
+- [The Problem](#-the-problem)
+- [Our Solution](#-our-solution--ai-first-empowerment)
+- [Live Demo](#-live-demo)
+- [Tech Stack](#-tech-stack)
+- [System Architecture](#-system-architecture)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
   - [Prerequisites](#prerequisites)
+  - [Environment Variables](#environment-variables)
   - [Local Development](#local-development)
+  - [Running Tests](#running-tests)
   - [Production Deployment](#production-deployment)
-- [🔒 Security & Secrets](#-security--secrets)
-- [🛣 Roadmap](#-roadmap)
-- [🙏 Acknowledgements](#-acknowledgements)
+- [Security & Secrets](#-security--secrets)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Acknowledgements](#-acknowledgements)
 
 ---
 
 ## 🛑 The Problem
 
-| Challenge | Impact |
-| --- | --- |
-| **Poor digital content** | Bad lighting and low-quality photos fail to attract premium buyers. |
-| **Language barriers** | Inability to write compelling English descriptions limits reach. |
-| **Tech intimidation** | Complex e-commerce onboarding scares away non-technical creators. |
-| **Lost stories** | The cultural significance and effort behind the craft remain untold. |
+India is home to over **7 million artisans** whose craft carries centuries of cultural memory. Yet most remain invisible to global buyers because of:
 
-**Result:** Priceless craftsmanship remains undervalued, and heritage fades.
+| Challenge | Real-World Impact |
+|---|---|
+| **Poor digital content** | Phone photos with bad lighting fail to attract premium buyers |
+| **Language barriers** | Artisans cannot write compelling English product descriptions |
+| **Tech intimidation** | Complex e-commerce onboarding scares away non-technical creators |
+| **Lost provenance** | The cultural story and authenticity of each piece remain untold |
+| **Pricing blind spots** | No data-driven guidance → artisans under-price or over-stock |
+
+**Result:** Priceless craftsmanship stays undervalued, heritage fades, and livelihoods suffer.
 
 ---
 
-## 💡 Our Solution: AI-First Empowerment
+## 💡 Our Solution — AI-First Empowerment
+
+Viraasat collapses the gap between artisan and buyer with a **zero-friction AI pipeline**:
 
 ### For Artisans
-
-- **AI image enhancement** (Google Cloud Vision) to turn phone photos into studio-quality listings
-- **Voice-to-text** (Google Speech-to-Text) so artisans can describe products in their own language
-- **AI-refined copy** (Gemini) for SEO-ready, emotional narratives
-- **Blockchain provenance** for every product (custom Proof-of-Work ledger)
-- **ML-based pricing & demand forecasting** to suggest fair prices and stock at the right time
+- 📸 **AI image enhancement** (Google Cloud Vision) — turn a phone photo into a studio-quality listing
+- 🗣 **Voice-to-text** (Google Speech-to-Text) — describe products in any language
+- ✍️ **Gemini-refined copy** — SEO-ready, emotionally resonant product narratives generated instantly
+- ⛓ **Blockchain provenance** — every product gets an immutable Proof-of-Work certificate of authenticity
+- 📊 **ML pricing & demand forecasting** — scikit-learn models suggest fair prices and optimal stock timing
+- 🛡 **Fraud detection** — anomaly scoring flags suspicious listings before they go live
 
 ### For Buyers
+- 👤 **"Meet the Creator"** profiles with rich cultural context
+- 🔍 **AI product analyser** — feature extraction, styling tips, authenticity cues
+- ❤️ **Wishlist** — localStorage + Firestore sync across devices
+- 🛒 **Secure cart, checkout** (Razorpay), and order tracking
+- 🗺 **Knowledge-graph discovery** — explore regional crafts, GI tags, and related traditions
 
-- "Meet the Creator" profiles with cultural context
-- AI product analyzer (feature extraction, styling tips, authenticity cues)
-- Secure cart, checkout (Razorpay), and order tracking
-- Knowledge-graph-powered discovery of regional crafts and GI tags
+---
+
+## 🌐 Live Demo
+
+| Environment | URL |
+|---|---|
+| **Frontend (Vercel)** | https://viraasat-eta.vercel.app |
+| **Backend health (Render)** | https://viraasat-backend-f0c1.onrender.com/health |
+| **API docs (Swagger)** | https://viraasat-backend-f0c1.onrender.com/docs |
 
 ---
 
 ## 🛠 Tech Stack
 
 | Layer | Technologies |
-| --- | --- |
-| **Frontend** | Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS, Radix UI, Clerk auth |
-| **AI orchestration** | Genkit + Google Gemini |
-| **Backend** | Python 3.12, FastAPI, Uvicorn, slowapi (rate limiting), Sentry |
+|---|---|
+| **Frontend** | Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS, Radix UI |
 | **Auth** | Clerk (frontend session + backend JWT verification) |
-| **Database** | Firebase Firestore (users, products, orders), SQLite (blockchain ledger, knowledge graph cache) |
+| **AI orchestration** | Genkit + Google Gemini 1.5 Flash/Pro |
+| **Backend** | Python 3.12, FastAPI, Uvicorn, slowapi (rate limiting) |
+| **Database** | Firebase Firestore (users, products, orders), SQLite (blockchain ledger, KG cache) |
 | **Storage** | Firebase Storage (product images, KYC docs) |
 | **ML / AI** | scikit-learn (pricing, fraud, demand forecasting), NetworkX (cultural knowledge graph) |
-| **Payments** | Razorpay (orders + webhooks) |
-| **Observability** | Sentry (FE + BE) |
-| **PWA** | Custom service worker (precache, stale-while-revalidate, versioned) |
+| **Payments** | Razorpay (orders + HMAC-verified webhooks) |
+| **Observability** | Sentry (frontend + backend) |
+| **PWA** | Custom versioned service worker (precache + stale-while-revalidate) |
+| **CI** | GitHub Actions (lint, typecheck, Jest, pytest, Playwright a11y) |
 
---- 
+---
 
 ## 🏗 System Architecture
 
-```text
+```
                  ┌─────────────────────────────────────────┐
-                 │              Browser (PWA)              │
-                 │   Next.js 16 • React 19 • Clerk • SW    │
+                 │           Browser / PWA                 │
+                 │  Next.js 16 · React 19 · Clerk · SW     │
                  └──────────────┬──────────────────────────┘
-                                │ Clerk session JWT
-               ┌────────────────┼─────────────────┐
-               │                │                 │
-               ▼                ▼                 ▼
-        Firebase Auth     Firestore (rules)   FastAPI (Render)
-        + Storage         (composite indexes)  • Pricing ML
-                                              • Forecasting
-                                              • Fraud detect
-                                              • Knowledge graph
-                                              • Provenance ledger
-                                              • Rate-limited
-                                              • Sentry-instrumented
+                                │  Clerk session JWT
+               ┌────────────────┼──────────────────┐
+               │                │                  │
+               ▼                ▼                  ▼
+        Firebase Auth      Firestore          FastAPI (Render)
+        + Storage          (security rules)   ├─ Pricing ML
+                           (composite idx)    ├─ Demand forecast
+                                              ├─ Fraud detection
+                                              ├─ Knowledge graph
+                                              ├─ Provenance ledger
+                                              └─ slowapi + Sentry
                       ▲
-                      │ Razorpay webhooks
-                      │
-                ┌─────┴──────┐
-                │  Razorpay  │
-                └────────────┘
+                      │  Razorpay webhooks (HMAC-verified)
+                 ┌────┴───────┐
+                 │  Razorpay  │
+                 └────────────┘
 ```
 
-**Data Flow:**
-- **Serverless writes** (products, orders, reviews) go through Firestore with security rules
-- **Heavy AI / ML** (pricing, forecasting, KG, blockchain) is offloaded to FastAPI on Render
-- **Payments** are confirmed via Razorpay webhooks (HMAC-verified) hitting the Next.js API route
-- **Auth sync**: Clerk `user.created` / `user.updated` webhooks materialize matching Firestore user docs
+**Data-flow summary**
+
+| Flow | Path |
+|---|---|
+| Product writes | Client → Firestore (security rules enforced) |
+| Heavy AI / ML | Client → FastAPI (Render) → response |
+| Payments | Razorpay → `/api/razorpay/webhook` (HMAC) → Firestore |
+| Auth sync | Clerk webhook → `/api/webhooks/clerk` → Firestore user doc |
 
 ---
 
 ## 🗂 Project Structure
 
-```text
+```
 viraasat/
-├── frontend/                # Next.js 16 app
+├── frontend/                     # Next.js 16 application
 │   ├── src/
-│   │   ├── app/             # App Router pages + /api routes
-│   │   ├── components/      # Reusable UI (Radix + Tailwind)
-│   │   ├── features/        # Feature-scoped modules
-│   │   ├── ai/              # Genkit flows (chat, vision, rag)
-│   │   ├── lib/             # auth, firebase, pwa, backend client
-│   │   ├── hooks/           # custom React hooks
-│   │   └── types/           # shared TypeScript types
+│   │   ├── app/                  # App Router pages + /api routes
+│   │   │   ├── shop/             # Product catalogue + filtering
+│   │   │   ├── product/[id]/     # PDP with AI analyser
+│   │   │   ├── dashboard/        # Artisan studio
+│   │   │   ├── checkout/         # Cart → Razorpay
+│   │   │   ├── admin/            # Moderation dashboard
+│   │   │   └── api/              # Edge / Node.js API handlers
+│   │   ├── components/           # Shared UI (Radix + Tailwind)
+│   │   ├── features/             # Feature-scoped modules
+│   │   │   ├── marketplace/      # Product listing + search
+│   │   │   ├── artisan/          # Creator profiles + apply flow
+│   │   │   ├── cart/             # Cart state + Razorpay integration
+│   │   │   ├── orders/           # Order history + tracking
+│   │   │   ├── payments/         # Payment flows
+│   │   │   ├── recommendations/  # Personalised picks
+│   │   │   ├── analytics/        # Artisan analytics
+│   │   │   └── ai/               # Client-side AI utilities
+│   │   ├── ai/                   # Genkit flows (chat, vision, RAG)
+│   │   ├── lib/                  # auth, firebase, pwa, backend client
+│   │   ├── hooks/                # Custom React hooks
+│   │   └── types/                # Shared TypeScript types
 │   ├── public/
-│   │   ├── sw.js            # versioned service worker (build-injected)
-│   │   └── manifest.json
-│   ├── scripts/build-sw.js  # rewrites sw.js CACHE_NAME per build
-│   └── eslint.config.mjs    # ESLint 9 flat config (Next 16)
-├── backend/                 # FastAPI service
-│   ├── main.py              # app factory, CORS, Sentry, slowapi
+│   │   ├── sw.js                 # Versioned service worker (build-injected)
+│   │   └── manifest.json         # PWA manifest
+│   └── scripts/build-sw.js      # Rewrites sw.js CACHE_NAME per build
+│
+├── backend/                      # FastAPI service
+│   ├── main.py                   # App factory, CORS, Sentry, slowapi
 │   ├── app/
-│   │   ├── api/             # router + auth deps (Clerk JWT)
-│   │   └── services/        # storage layer (SQLite / Firestore / memory)
-│   └── ai/                  # ML models + knowledge graph + blockchain
-├── firebase/                # security rules + deploy config
-│   ├── firebase.json
+│   │   ├── api/                  # Routers + Clerk JWT auth deps
+│   │   └── services/             # Storage layer (SQLite / Firestore / memory)
+│   ├── ai/                       # ML models + knowledge graph + blockchain
+│   └── tests/                    # pytest suite (in-memory store)
+│
+├── firebase/                     # Security rules + deploy config
 │   ├── firestore.rules
 │   ├── storage.rules
 │   └── firestore.indexes.json
-├── database/                # seed JSON + trained .pkl models
-├── docs/                    # architecture, deployment, secrets
-├── scripts/                 # firebase deploy helper
-└── run_all_viraasat.sh      # local dev orchestrator
+│
+├── database/                     # Seed JSON + trained .pkl models
+├── docs/                         # Architecture, deployment, secrets guide
+├── .github/
+│   ├── workflows/ci.yml          # CI pipeline
+│   ├── ISSUE_TEMPLATE/           # Bug & feature templates
+│   └── PULL_REQUEST_TEMPLATE.md  # PR checklist
+└── run_all_viraasat.sh           # Local dev orchestrator
 ```
 
 ---
@@ -158,10 +203,79 @@ viraasat/
 
 ### Prerequisites
 
-- **Node.js 20+** and npm
-- **Python 3.12+**
-- **Firebase CLI**: `npm install -g firebase-tools`
-- Accounts: **Clerk**, **Firebase**, **Google AI Studio**, **Razorpay**, **Sentry** (optional)
+| Tool | Version |
+|---|---|
+| Node.js + npm | 20+ |
+| Python | 3.12+ |
+| Firebase CLI | latest (`npm i -g firebase-tools`) |
+| Git | any recent |
+
+Accounts needed: **Clerk**, **Firebase / Google Cloud**, **Google AI Studio** (Gemini key), **Razorpay**, **Sentry** (optional).
+
+---
+
+### Environment Variables
+
+Copy the example files and fill in your credentials:
+
+```bash
+# Frontend
+cp frontend/.env.example frontend/.env.local
+
+# Backend
+cp backend/.env.example backend/.env
+```
+
+<details>
+<summary><b>Frontend <code>.env.local</code> keys</b></summary>
+
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+NEXT_PUBLIC_FIREBASE_APP_ID=...
+
+GEMINI_API_KEY=...
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_...
+RAZORPAY_KEY_SECRET=...
+RAZORPAY_WEBHOOK_SECRET=...
+
+CLERK_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_SENTRY_DSN=...   # optional
+```
+
+</details>
+
+<details>
+<summary><b>Backend <code>.env</code> keys</b></summary>
+
+```env
+CLERK_SECRET_KEY=sk_test_...
+ALLOWED_ORIGINS=http://localhost:9002
+REQUIRE_AUTH=false            # set true in production
+
+RAZORPAY_KEY_ID=rzp_test_...
+RAZORPAY_KEY_SECRET=...
+
+FIREBASE_PROJECT_ID=...
+GOOGLE_APPLICATION_CREDENTIALS=./service-account.json   # optional
+
+DATABASE_URL=                 # leave blank for local SQLite
+SENTRY_DSN=...                # optional
+```
+
+</details>
+
+---
 
 ### Local Development
 
@@ -170,101 +284,142 @@ viraasat/
 git clone https://github.com/Aayush9-spec/viraasat.git
 cd viraasat
 
-# 2. Frontend
+# 2. Frontend deps
 cd frontend
-cp .env.example .env.local      # fill in test values
 npm install --legacy-peer-deps
 cd ..
 
-# 3. Backend
+# 3. Backend deps
 cd backend
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env            # fill in test values
 cd ..
 
-# 4. Firebase rules (one-time, requires firebase login)
+# 4. Deploy Firebase rules (one-time; requires firebase login)
 firebase login
-firebase use --add <PROJECT_ID>
+firebase use --add <YOUR_FIREBASE_PROJECT_ID>
 firebase deploy --only firestore:rules,firestore:indexes,storage
 
-# 5. Run both services
+# 5. Start both services
 ./run_all_viraasat.sh
-# Frontend: http://localhost:9002
-# Backend:  http://localhost:8000  (docs at /docs)
+# Frontend → http://localhost:9002
+# Backend  → http://localhost:8000  (Swagger: /docs)
 ```
 
-### Testing
+---
+
+### Running Tests
 
 ```bash
-# Frontend: lint, typecheck, unit tests (Jest 30)
+# Frontend — lint, typecheck, Jest unit tests
 cd frontend
 npm run lint
 npm run typecheck
-npm run test:unit          # jest --runInBand
+npm run test:unit
 
-# Backend: pytest (forces in-memory store; never touches prod SQLite)
+# Playwright accessibility + keyboard smoke tests
+npx playwright install --with-deps chromium
+npm run test:a11y
+npm run test:keyboard
+
+# Backend — pytest (uses in-memory store; never touches production data)
 cd ../backend
-venv/bin/python -m pytest  # or: python3 -m pytest
-
-Both suites are wired into CI (`.github/workflows/ci.yml`).
+source venv/bin/activate
+python -m pytest -v
 ```
+
+All suites run automatically on every push via `.github/workflows/ci.yml`.
+
+---
 
 ### Production Deployment
 
-| Service | Platform | Config Env Vars |
-| --- | --- | --- |
-| **Frontend** | Vercel | `NEXT_PUBLIC_*`, `GEMINI_API_KEY`, `CLERK_*`, `NEXT_PUBLIC_BACKEND_URL` |
-| **Backend** | Render | `ALLOWED_ORIGINS`, `CLERK_*`, `RAZORPAY_*`, `SENTRY_DSN`, `DATABASE_URL` |
+| Service | Platform | Notes |
+|---|---|---|
+| **Frontend** | [Vercel](https://vercel.com) | Set all `NEXT_PUBLIC_*`, `GEMINI_API_KEY`, `CLERK_*`, `RAZORPAY_*`, `CLERK_WEBHOOK_SECRET` env vars in the Vercel dashboard |
+| **Backend** | [Render](https://render.com) | Set `ALLOWED_ORIGINS`, `CLERK_*`, `RAZORPAY_*`, `SENTRY_DSN`, `REQUIRE_AUTH=true` |
 | **Firebase** | Firebase Console | `firebase deploy --only firestore:rules,firestore:indexes,storage` |
-| **Razorpay** | Dashboard | Webhook: `https://YOUR_DOMAIN/api/razorpay/webhook` + `RAZORPAY_WEBHOOK_SECRET` |
-
-> **Deployed URLs:**
-> - Frontend: `https://viraasat-eta.vercel.app`
-> - Backend: `https://viraasat-backend-f0c1.onrender.com/health` → `{"status":"ok"}`
+| **Razorpay** | Dashboard | Webhook URL: `https://YOUR_DOMAIN/api/razorpay/webhook` |
 
 ---
 
 ## 🔒 Security & Secrets
 
-⚠️ **All previously committed env files have been removed.** Treat every key in the git history as compromised. Rotate Clerk, Firebase, Gemini, and Razorpay keys before launch.
+⚠️ **Previously committed env files have been removed from history.** Treat every key that was ever committed as compromised and rotate them before launch.
 
-See [`docs/secrets.md`](docs/secrets.md) for the full setup checklist, including which env var goes where (Vercel vs Render) and what to do if a key leaks.
+See [`docs/secrets.md`](docs/secrets.md) for the full checklist.
 
-**Key rules:**
-- Never commit `.env` or `.env.local`. Both are gitignored; templates are in `*.example`.
-- Set `REQUIRE_AUTH=true` and `ALLOWED_ORIGINS` in **every** non-development environment.
-- Use `DATABASE_URL=firestore://PROJECT_ID` to share the ledger across multiple Render workers.
-- Webhooks (`/api/razorpay/webhook`, `/api/webhooks/clerk`) verify HMAC signatures before trusting the body.
+**Hard rules:**
+
+- Never commit `.env` or `.env.local`. Both are `.gitignore`d; templates live in `*.example`.
+- Set `REQUIRE_AUTH=true` and a strict `ALLOWED_ORIGINS` in every non-development environment.
+- All incoming webhooks (`/api/razorpay/webhook`, `/api/webhooks/clerk`) verify HMAC signatures before trusting the payload.
+- To report a vulnerability, please read [`SECURITY.md`](SECURITY.md).
 
 ---
 
 ## 🛣 Roadmap
 
-- [x] ToS / Privacy / Refund pages
-- [x] Image moderation on artisan uploads
-- [x] Product reviews with aggregate ratings
-- [x] Semantic search (backend + `/shop` URL-param filtering)
+### ✅ Shipped
+- [x] Artisan KYC & application flow
+- [x] Product listings, search, filtering, category pages (7 categories)
+- [x] AI-powered image enhancement + listing copy generation
+- [x] Blockchain provenance certificate per product
+- [x] ML pricing & demand-forecast models
+- [x] Fraud-detection scoring
+- [x] Razorpay checkout + HMAC-verified webhooks
+- [x] Order history & tracking
 - [x] Wishlist (localStorage + Firestore sync)
-- [x] Static pages: About, Artisans, Journal, Journal articles, FAQ, Shipping, Contact
-- [x] Category landing pages (`/category/<slug>`, 7 categories)
+- [x] Product reviews with aggregate ratings
+- [x] "Meet the Creator" artisan profiles
 - [x] Admin moderation dashboard (`/admin`)
-- [ ] Real-time chat (buyer ↔ artisan) with abuse guard
-- [ ] Multi-region Render workers with Redis-backed rate limits
+- [x] Full legal pages (ToS, Privacy, Refund, Shipping, FAQ)
+- [x] Journal / editorial content
+- [x] PWA with versioned service worker
+- [x] CI pipeline (lint, typecheck, Jest, pytest, Playwright a11y)
+
+### 🔜 Coming Next
+- [ ] Real-time buyer ↔ artisan chat with abuse detection
 - [ ] i18n for artisan flows (Hindi, Tamil, Bengali)
+- [ ] Multi-region Render workers with Redis-backed rate limits
+- [ ] GI-tag certification badge with third-party verification
+- [ ] Mobile app (React Native / Expo)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a PR.
+
+1. Fork the repo and create your branch: `git checkout -b feat/your-feature`
+2. Make your changes and add tests where appropriate
+3. Ensure `npm run lint && npm run typecheck && npm run test:unit` pass
+4. Open a pull request — the template will guide you through the checklist
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [`LICENSE`](LICENSE) file for details.
 
 ---
 
 ## 🙏 Acknowledgements
 
-- **Google Firebase** for the data layer.
-- **Google AI / Gemini** for the intelligence layer.
-- **Clerk** for frictionless auth.
-- **The artisans** who inspire this work.
+- [Google Firebase](https://firebase.google.com) — data layer & storage
+- [Google AI / Gemini](https://ai.google.dev) — language & vision intelligence
+- [Clerk](https://clerk.com) — frictionless authentication
+- [Razorpay](https://razorpay.com) — payment infrastructure
+- [Vercel](https://vercel.com) & [Render](https://render.com) — hosting
+- The artisans of India who inspire every line of this code 🪔
 
-<p align="center">
-<b>Handcrafted stories deserve a global audience. 🌍✨</b>
-<br />
-Built with ❤️ by Aayush Kumar Singh and Team
-</p>
+---
+
+<div align="center">
+
+**Handcrafted stories deserve a global audience. 🌍✨**
+
+Built with ❤️ by [Aayush Kumar Singh](https://github.com/Aayush9-spec) and contributors
+
+</div>
