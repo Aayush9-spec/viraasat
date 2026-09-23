@@ -139,7 +139,7 @@ export default function CheckoutPage() {
             const orderId = order.order_id || order.id;
 
             const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_TZ710mgL66w46A',
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? '',
                 amount: order.amount,
                 currency: order.currency || 'INR',
                 name: "Viraasat",

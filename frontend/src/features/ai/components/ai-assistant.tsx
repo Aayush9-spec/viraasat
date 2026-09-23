@@ -110,22 +110,34 @@ export function AIAssistant() {
         mediaRecorderRef.current.onstop = async () => {
           const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
           audioChunksRef.current = [];
-          
-          // Use AI to transcribe
           setIsTyping(true);
           try {
             const reader = new FileReader();
-            reader.readAsDataURL(audioBlob);
             reader.onloadend = async () => {
               const base64Audio = reader.result as string;
-              // Call voice search api to transcribe
-              const res = await fetch(`${BACKEND_URL}/api/metrics/evaluation`); // telemetry check
-              // Fallback translation query
-              setInput("Blue Pottery Vase Rajasthan");
+              try {
+                const res = await fetch('/api/chat', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    message: 'Transcribe this voice recording and extract the craft, product, or heritage item the user is asking about. Reply with only the transcribed or interpreted search phrase.',
+                    imageDataUri: base64Audio,
+                  }),
+                });
+                if (res.ok) {
+                  const data = await res.json();
+                  if (data.response) setInput(data.response.trim());
+                }
+              } catch (e) {
+                console.error('Voice transcription failed:', e);
+              } finally {
+                setIsTyping(false);
+                stream.getTracks().forEach(track => track.stop());
+              }
             };
+            reader.readAsDataURL(audioBlob);
           } catch (e) {
             console.error(e);
-          } finally {
             setIsTyping(false);
             stream.getTracks().forEach(track => track.stop());
           }

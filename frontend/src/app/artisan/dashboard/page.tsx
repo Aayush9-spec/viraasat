@@ -13,6 +13,9 @@ import { products as staticProducts } from '@/lib/data';
 export default function ArtisanDashboardPage() {
   const { user } = useUser();
   const [myProducts, setMyProducts] = useState<Product[]>([]);
+  const [ordersCount, setOrdersCount] = useState<number | null>(null);
+  const [monthlyRevenue, setMonthlyRevenue] = useState<number | null>(null);
+  const [metricsLoading, setMetricsLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
@@ -32,6 +35,31 @@ export default function ArtisanDashboardPage() {
         if (data) setMyProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
       })
       .subscribe();
+
+    // Fetch real order metrics
+    const firstOfMonth = new Date();
+    firstOfMonth.setDate(1);
+    firstOfMonth.setHours(0, 0, 0, 0);
+
+    Promise.all([
+      supabase
+        .from('orders')
+        .select('id', { count: 'exact', head: true })
+        .eq('artisan_id', user.id)
+        .in('status', ['Processing', 'Pending', 'Shipped']),
+      supabase
+        .from('orders')
+        .select('total_amount')
+        .eq('artisan_id', user.id)
+        .gte('created_at', firstOfMonth.toISOString()),
+    ]).then(([ordersRes, revenueRes]) => {
+      if (ordersRes.count !== null) setOrdersCount(ordersRes.count);
+      if (revenueRes.data) {
+        const total = revenueRes.data.reduce((sum: number, r: { total_amount: number }) => sum + (r.total_amount || 0), 0);
+        setMonthlyRevenue(total);
+      }
+      setMetricsLoading(false);
+    }).catch(() => setMetricsLoading(false));
 
     return () => { void supabase.removeChannel(channel); };
   }, [user]);
@@ -78,8 +106,10 @@ export default function ArtisanDashboardPage() {
             <ShoppingCart className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-heading">12</div>
-            <p className="text-xs text-emerald-600 font-medium mt-1">↑ 4 ready to dispatch</p>
+            <div className="text-2xl font-bold font-heading">
+              {metricsLoading ? '—' : (ordersCount ?? 0)}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Processing / pending / shipped</p>
           </CardContent>
         </Card>
 
@@ -89,8 +119,10 @@ export default function ArtisanDashboardPage() {
             <TrendingUp className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-heading">₹48,500</div>
-            <p className="text-xs text-emerald-600 font-medium mt-1">↑ 18% vs last month</p>
+            <div className="text-2xl font-bold font-heading">
+              {metricsLoading ? '—' : `₹${(monthlyRevenue ?? 0).toLocaleString('en-IN')}`}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">This calendar month</p>
           </CardContent>
         </Card>
 
@@ -100,8 +132,8 @@ export default function ArtisanDashboardPage() {
             <ShieldCheck className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-heading">100%</div>
-            <p className="text-xs text-muted-foreground mt-1">GI Registry Authenticated</p>
+            <div className="text-2xl font-bold font-heading">{allProducts.length}</div>
+            <p className="text-xs text-muted-foreground mt-1">Products on blockchain</p>
           </CardContent>
         </Card>
       </div>
