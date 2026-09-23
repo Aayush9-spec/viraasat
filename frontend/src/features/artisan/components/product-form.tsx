@@ -50,6 +50,7 @@ const productSchema = z.object({
   description: z.string().min(10, 'Description is too short'),
   price: z.coerce.number().positive('Price must be a positive number'),
   category: z.string().min(1, 'Please select a category'),
+  region: z.string().min(1, 'Please enter the craft region (e.g. Rajasthan)'),
   laborHours: z.coerce.number().default(5),
   sizeSqft: z.coerce.number().default(1),
   material: z.string().default('Natural Vegetable Dyes'),
@@ -84,6 +85,7 @@ export function ProductForm({ product }: ProductFormProps) {
       description: product?.description || '',
       price: product?.price || 0,
       category: product?.category || '',
+      region: product?.region || '',
       laborHours: 5,
       sizeSqft: 1,
       material: 'Natural Vegetable Dyes',
@@ -158,50 +160,56 @@ export function ProductForm({ product }: ProductFormProps) {
   async function onSubmit(values: z.infer<typeof productSchema>) {
     setIsSubmitting(true);
     try {
-      const productData = {
-        artisanId: user?.id || 'artisan-1',
+      const now = new Date().toISOString();
+      const supabasePayload = {
+        artisan_id: user?.id || 'artisan-1',
         name: values.name,
         description: values.description,
         category: values.category,
+        region: values.region,
         price: values.price,
-        currency: 'INR',
-        stock: 10, // Default stock
+        stock: 10,
         images: images,
-        tagline: values.description.substring(0, 50) + '...', // Generate tagline from description
-        isActive: true,
-        status: 'active',
-        aiInsights: {
+        ai_insights: {
           keyFeatures: features,
           styleTags: styleTags,
-          useCases: useCases
+          useCases: useCases,
         },
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updated_at: now,
       };
 
       if (product) {
-        // Update existing product logic would go here
+        // Edit: update Supabase row + keep localStorage in sync
+        const { error } = await supabase
+          .from('products')
+          .update(supabasePayload)
+          .eq('id', product.id);
+        if (error) console.error('Supabase product update failed:', error);
+
         const localProducts = JSON.parse(localStorage.getItem('viraasat_local_products') || '[]');
-        const updatedLocal = localProducts.map((p: any) => p.id === product.id ? { ...p, ...productData } : p);
+        const updatedLocal = localProducts.map((p: any) =>
+          p.id === product.id ? { ...p, ...supabasePayload, id: product.id } : p,
+        );
         localStorage.setItem('viraasat_local_products', JSON.stringify(updatedLocal));
       } else {
-        // Fallback/Demo sync: Save product to local storage so it registers in the marketplace
-        const localProducts = JSON.parse(localStorage.getItem('viraasat_local_products') || '[]');
-        const newProduct = { ...productData, id: `local-prod-${Date.now()}` };
-        localProducts.push(newProduct);
-        localStorage.setItem('viraasat_local_products', JSON.stringify(localProducts));
-
-        const { error } = await supabase.from('products').insert({
-          artisan_id: productData.artisanId,
-          name: productData.name,
-          description: productData.description,
-          category: productData.category,
-          price: productData.price,
-          stock: productData.stock,
-          images: productData.images,
-          ai_insights: productData.aiInsights,
-        });
-        if (error) console.error('Supabase product insert failed:', error);
+        // Create: insert into Supabase; also push to localStorage for immediate UI visibility
+        const { data: inserted, error } = await supabase
+          .from('products')
+          .insert({ ...supabasePayload, created_at: now })
+          .select('id')
+          .single();
+        if (error) {
+          console.error('Supabase product insert failed:', error);
+          // Fallback: persist locally so artisan sees their product right away
+          const localProducts = JSON.parse(localStorage.getItem('viraasat_local_products') || '[]');
+          localProducts.push({ ...supabasePayload, id: `local-prod-${Date.now()}` });
+          localStorage.setItem('viraasat_local_products', JSON.stringify(localProducts));
+        } else if (inserted) {
+          // Seed localStorage with the real DB id so subsequent edits hit Supabase
+          const localProducts = JSON.parse(localStorage.getItem('viraasat_local_products') || '[]');
+          localProducts.push({ ...supabasePayload, id: inserted.id });
+          localStorage.setItem('viraasat_local_products', JSON.stringify(localProducts));
+        }
       }
 
       toast({
@@ -532,6 +540,20 @@ export function ProductForm({ product }: ProductFormProps) {
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="region"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Craft Region</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Rajasthan, Kashmir, Kutch" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
