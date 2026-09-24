@@ -87,3 +87,5 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "ok", "timestamp": datetime.now().isoformat()}
+
+# catalog: 29 products
