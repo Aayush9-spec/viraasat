@@ -38,19 +38,9 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                 <div className="hidden md:flex items-center space-x-7">
                   <Link href="/" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Home</Link>
                   <Link href="/shop" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.shop')}</Link>
-                  {isArtisan ? (
-                    <>
-                      <Link href="/artisan/dashboard" className="text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors">Artisan Portal</Link>
-                      <Link href="/artisan/products" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Products</Link>
-                      <Link href="/artisan/orders" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Orders</Link>
-                    </>
-                  ) : (
-                    <>
-                      <Link href="/wishlist" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Wishlist</Link>
-                      <Link href="/orders" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.orders')}</Link>
-                      <Link href="/dashboard" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">My Account</Link>
-                    </>
-                  )}
+                  <Link href="/artisan/dashboard" className="text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors">Artisan Portal</Link>
+                  <Link href={isArtisan ? "/artisan/products" : "/shop"} className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Products</Link>
+                  <Link href={isArtisan ? "/artisan/orders" : "/orders"} className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Orders</Link>
                 </div>
               </div>
               <div className="flex items-center space-x-2 md:space-x-5">
