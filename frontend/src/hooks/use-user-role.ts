@@ -49,7 +49,9 @@ export function useUserRole() {
 
       // Slow path: confirm with Firestore (may override fast path)
       try {
-        const userDoc = await getUser(user!.id);
+        const userDocPromise = getUser(user!.id);
+        const timeoutPromise = new Promise<null>((res) => setTimeout(() => res(null), 2000));
+        const userDoc = await Promise.race([userDocPromise, timeoutPromise]);
         const firestoreRole = userDoc?.role ?? null;
 
         const resolvedRole = firestoreRole || metaRole || (cachedUid === user!.id ? cachedRole : null) || null;

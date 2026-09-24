@@ -25,37 +25,54 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
 
       if (!isSignedIn || !user) {
         router.push(`/login?redirectUrl=${encodeURIComponent(pathname)}`);
-        return;
-      }
-
-      // Resolve role: Firestore is the source of truth; fall back to Clerk
-      // unsafeMetadata so dashboards never blank-out when Firestore is offline.
-      let role: UserRole | null = null;
-
-      try {
-        const userDoc = await getUser(user.id);
-        role = userDoc?.role ?? (user.unsafeMetadata?.role as UserRole) ?? null;
-      } catch (err) {
-        // Firestore unavailable — degrade gracefully using the role stored
-        // in Clerk's unsafeMetadata (set at sign-up / role-selection time).
-        console.warn('ProtectedRoute: Firestore unavailable, falling back to unsafeMetadata.role', err);
-        role = (user.unsafeMetadata?.role as UserRole) ?? null;
-      }
-
-      if (!role) {
-        // No role anywhere — send to role selection
-        router.push('/select-role');
         setCheckingAuth(false);
         return;
       }
 
       const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
 
-      if (!rolesArray.includes(role)) {
-        // Redirect the user to their own dashboard
-        router.push(role === 'artisan' ? '/artisan/dashboard' : '/dashboard');
+      // Fast path: check Clerk metadata or localStorage synchronously
+      const metaRole = user.unsafeMetadata?.role as UserRole | undefined;
+      const cachedRole = typeof window !== 'undefined' ? (localStorage.getItem('viraasat_session_role') as UserRole | null) : null;
+      const cachedUid = typeof window !== 'undefined' ? localStorage.getItem('viraasat_session_uid') : null;
+      const fastRole = metaRole || (cachedUid === user.id ? cachedRole : null) || null;
+
+      if (fastRole && rolesArray.includes(fastRole)) {
+        setIsAuthorized(true);
+        setCheckingAuth(false);
+      }
+
+      // Slow path: try fetching from DB with a 2-second timeout to avoid infinite hangs
+      let dbRole: UserRole | null = null;
+      try {
+        const userDocPromise = getUser(user.id);
+        const timeoutPromise = new Promise<null>((res) => setTimeout(() => res(null), 2000));
+        const userDoc = await Promise.race([userDocPromise, timeoutPromise]);
+        dbRole = userDoc?.role ?? null;
+      } catch (err) {
+        console.warn('ProtectedRoute: DB query failed/timed out, falling back to fastRole', err);
+      }
+
+      const finalRole = dbRole || fastRole;
+
+      if (!finalRole) {
+        // No role anywhere — send to role selection
+        router.push('/select-role');
         setCheckingAuth(false);
         return;
+      }
+
+      if (!rolesArray.includes(finalRole)) {
+        // Redirect the user to their matching dashboard
+        router.push(finalRole === 'artisan' ? '/artisan/dashboard' : '/dashboard');
+        setCheckingAuth(false);
+        return;
+      }
+
+      // Cache verified role for future fast-path loads
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('viraasat_session_role', finalRole);
+        localStorage.setItem('viraasat_session_uid', user.id);
       }
 
       setIsAuthorized(true);
@@ -80,3 +97,4 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
 
   return <>{children}</>;
 }
+

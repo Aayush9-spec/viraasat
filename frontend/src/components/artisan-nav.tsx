@@ -22,7 +22,7 @@ export const artisanNavItems = [
   { href: '/artisan/ai-tools', label: 'AI Tools', icon: Sparkles },
   { href: '/artisan/business-advisor', label: 'Business Advisor', icon: TrendingUp },
   { href: '/artisan/provenance', label: 'Provenance', icon: ShieldCheck },
-  { href: '/dashboard/profile', label: 'Profile', icon: UserCircle },
+  { href: '/artisan/profile', label: 'Profile', icon: UserCircle },
 ];
 
 export function ArtisanNav() {
