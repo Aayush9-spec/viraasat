@@ -34,6 +34,10 @@ export default function ProfilePage() {
   const { role, loading: roleLoading } = useUserRole();
   const { toast } = useToast();
 
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/artisan')) {
+    return <ArtisanProfile toast={toast} />;
+  }
+
   if (roleLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
