@@ -83,6 +83,7 @@ export default function RootLayout({
             process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
             'pk_test_c2hpbmluZy1mcm9nLTU3LmNsZXJrLmFjY291bnRzLmRldiQ'
           }
+          clerkJSUrl="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
           appearance={{ theme: shadcn }}
         >
           <Script
