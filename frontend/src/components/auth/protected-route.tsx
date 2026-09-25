@@ -18,18 +18,42 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
   const pathname = usePathname();
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [clerkLoaded, setClerkLoaded] = useState(false);
+
+  // Fallback timer: If Clerk's useUser().isLoaded takes >1.5s (e.g. script error or missing env vars on Vercel),
+  // force clerkLoaded to true so we never freeze the UI permanently.
+  useEffect(() => {
+    if (isLoaded) {
+      setClerkLoaded(true);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setClerkLoaded(true);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [isLoaded]);
 
   useEffect(() => {
     async function checkUserAuthorization() {
-      if (!isLoaded) return;
+      if (!clerkLoaded && !isLoaded) return;
+
+      const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
 
       if (!isSignedIn || !user) {
-        router.push(`/login?redirectUrl=${encodeURIComponent(pathname)}`);
+        // Check local cached role fallback before redirecting
+        const cachedRole = typeof window !== 'undefined' ? (localStorage.getItem('viraasat_session_role') as UserRole | null) : null;
+
+        if (cachedRole && rolesArray.includes(cachedRole)) {
+          setIsAuthorized(true);
+          setCheckingAuth(false);
+          return;
+        }
+
+        const loginRedirect = pathname.startsWith('/artisan') ? '/login/artisan' : `/login?redirectUrl=${encodeURIComponent(pathname)}`;
+        router.push(loginRedirect);
         setCheckingAuth(false);
         return;
       }
-
-      const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
 
       // Fast path: check Clerk metadata or localStorage synchronously
       const metaRole = user.unsafeMetadata?.role as UserRole | undefined;
@@ -42,11 +66,11 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
         setCheckingAuth(false);
       }
 
-      // Slow path: try fetching from DB with a 2-second timeout to avoid infinite hangs
+      // Slow path: try fetching from DB with a 1.5-second timeout to avoid infinite hangs
       let dbRole: UserRole | null = null;
       try {
         const userDocPromise = getUser(user.id);
-        const timeoutPromise = new Promise<null>((res) => setTimeout(() => res(null), 2000));
+        const timeoutPromise = new Promise<null>((res) => setTimeout(() => res(null), 1500));
         const userDoc = await Promise.race([userDocPromise, timeoutPromise]);
         dbRole = userDoc?.role ?? null;
       } catch (err) {
@@ -80,9 +104,9 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
     }
 
     checkUserAuthorization();
-  }, [isLoaded, isSignedIn, user, allowedRoles, router, pathname]);
+  }, [isLoaded, clerkLoaded, isSignedIn, user, allowedRoles, router, pathname]);
 
-  if (!isLoaded || checkingAuth) {
+  if ((!isLoaded && !clerkLoaded) || checkingAuth) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

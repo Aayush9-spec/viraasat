@@ -79,7 +79,10 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased text-foreground" suppressHydrationWarning>
         <ClerkProvider 
-          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+          publishableKey={
+            process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+            'pk_test_c2hpbmluZy1mcm9nLTU3LmNsZXJrLmFjY291bnRzLmRldiQ'
+          }
           appearance={{ theme: shadcn }}
         >
           <Script
