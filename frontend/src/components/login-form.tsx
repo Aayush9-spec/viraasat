@@ -20,10 +20,11 @@ import { useToast } from '@/hooks/use-toast';
 
 interface LoginFormProps {
   userType: 'Artisan' | 'Customer';
+  initialIsSignUp?: boolean;
 }
 
-export function LoginForm({ userType }: LoginFormProps) {
-  const [isSignUp, setIsSignUp] = useState(false);
+export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps) {
+  const [isSignUp, setIsSignUp] = useState(initialIsSignUp);
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -33,64 +34,40 @@ export function LoginForm({ userType }: LoginFormProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Capture values BEFORE async operation to avoid currentTarget being null
     const formData = new FormData(e.currentTarget);
     const identifier = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const fullname = (formData.get('fullname') as string) || '';
 
     setIsLoading(true);
 
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 400));
 
-    if (userType === 'Artisan') {
-      // Mock Backend Verification Logic for Artisan
-      let isAuthenticated = false;
-      let authMessage = "Login successful";
+    const isArtisan = userType === 'Artisan';
+    const role = isArtisan ? 'artisan' : 'buyer';
+    const mockUid = `usr_${Date.now()}`;
 
-      // 1. Check LocalStorage (Simulating DB check for verified artisan)
-      const storedProfile = localStorage.getItem('viraasat_profile');
-      if (storedProfile) {
-        const parsed = JSON.parse(storedProfile);
-        // Check if entered ID matches stored Artisan ID (case-insensitive)
-        if (parsed.artisanId && parsed.artisanId.toLowerCase() === identifier.toLowerCase()) {
-          isAuthenticated = true;
-          authMessage = `Welcome back, ${parsed.name || 'Artisan'}!`;
-        }
-      }
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('viraasat_session_role', role);
+      localStorage.setItem('viraasat_session_uid', mockUid);
+      window.dispatchEvent(new Event('profile-updated'));
+    }
 
-      // 2. Fallback to Mock Data (for demo emails)
-      if (!isAuthenticated) {
-        // Allow standard demo emails or if no specific ID match found but it looks like a valid email login
-        if (identifier.includes('@') && password.length > 0) {
-          isAuthenticated = true;
-          authMessage = "Welcome back!";
-        }
-      }
-
-      if (isAuthenticated) {
-        toast({
-          title: "Authentication Successful",
-          description: authMessage,
-        });
-        router.push('/dashboard');
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Authentication Failed",
-          description: "Invalid Artisan ID or Email. Please check your credentials.",
-        });
-      }
-    } else {
-      // Customer Logic (Keep as is/Simulate success)
+    if (isSignUp) {
       toast({
-        title: "Welcome!",
-        description: "Logged in successfully.",
+        title: "Account Created!",
+        description: `Welcome to Viraasat, ${fullname || (isArtisan ? 'Artisan' : 'Customer')}!`,
       });
-      router.push('/');
+      router.push(isArtisan ? '/artisan/dashboard' : '/shop');
+    } else {
+      toast({
+        title: "Authentication Successful",
+        description: `Welcome back, ${fullname || identifier || (isArtisan ? 'Artisan' : 'Customer')}!`,
+      });
+      router.push(isArtisan ? '/artisan/dashboard' : '/shop');
     }
     setIsLoading(false);
-  }
+  };
 
   const isArtisan = userType === 'Artisan';
 
