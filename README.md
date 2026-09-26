@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://viraasat-eta.vercel.app/icon-192.png" alt="Viraasat logo" width="96" />
+<img src="https://viraasat-eta.vercel.app/icon-192.png" alt="Viraasat logo" width="96" /> 
 
 # 🪔 Viraasat
 
