@@ -8,7 +8,7 @@
 
 > *Preserve the heritage. Empower the artisans. Inspire the world.*
 
-[![Live App](https://img.shields.io/badge/App-viraasat--eta.vercel.app-blue?logo=vercel&logoColor=white)](https://viraasat-eta.vercel.app)
+[![Live App](https://img.shields.io/badge/App-virrasat.in-blue?logo=vercel&logoColor=white)](https://virrasat.in)
 [![Backend](https://img.shields.io/badge/API-FastAPI%20on%20Render-009688?logo=fastapi&logoColor=white)](https://viraasat-backend-f0c1.onrender.com/health)
 [![CI](https://img.shields.io/github/actions/workflow/status/Aayush9-spec/viraasat/ci.yml?label=CI&logo=github)](https://github.com/Aayush9-spec/viraasat/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -83,7 +83,7 @@ Viraasat collapses the gap between artisan and buyer with a **zero-friction AI p
 
 | Environment | URL |
 |---|---|
-| **Frontend (Vercel)** | https://viraasat-eta.vercel.app |
+| **Frontend (Vercel)** | https://virrasat.in |
 | **Backend health (Render)** | https://viraasat-backend-f0c1.onrender.com/health |
 | **API docs (Swagger)** | https://viraasat-backend-f0c1.onrender.com/docs |
 
