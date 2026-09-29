@@ -268,7 +268,7 @@ export default function ArtisanProvenancePage() {
               <div className="p-2 bg-white rounded-lg shadow-md inline-block">
                 <Image
                   src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(
-                    `${process.env.NEXT_PUBLIC_APP_URL || 'https://viraasat-eta.vercel.app'}/product/${qrItem.product_id}?verify=1`
+                    `${process.env.NEXT_PUBLIC_APP_URL || 'https://virrasat.in'}/product/${qrItem.product_id}?verify=1`
                   )}&size=200x200`}
                   alt="Provenance QR Code"
                   width={200}
