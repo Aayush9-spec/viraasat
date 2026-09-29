@@ -13,7 +13,7 @@ import VoiceSearch from "@/features/ai/components/voice-search";
 import { useCart } from "@/context/cart-context";
 import CartSidebar from "@/features/cart/components/cart-sidebar";
 import dynamic from 'next/dynamic';
-import { Show, UserButton, SignInButton, SignUpButton } from "@clerk/nextjs";
+import { useUser, UserButton, SignInButton, SignUpButton } from "@clerk/nextjs";
 
 import { useUserRole } from "@/hooks/use-user-role";
 import { NewsletterForm } from "./newsletter-form";
@@ -25,6 +25,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
   const { cartItems, setCartOpen } = useCart();
   const itemCount = cartItems.length;
   const { isArtisan, isBuyer } = useUserRole();
+  const { isSignedIn } = useUser();
 
   return (
     <>
@@ -56,27 +57,20 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                   )}
                 </Button>
                 
-                <Show 
-                  when="signed-in"
-                  fallback={
-                    <div className="hidden sm:flex items-center gap-4">
-                      <SignInButton mode="modal">
-                        <Button variant="ghost" className="text-foreground/70 hover:text-primary transition-colors">
-                          {t('nav.login')}
-                        </Button>
-                      </SignInButton>
-                      <SignUpButton mode="modal">
-                        <Button className="text-primary-foreground rounded-md transition-all ease-out duration-300 bg-primary hover:bg-primary/90">
-                          Sign Up
-                        </Button>
-                      </SignUpButton>
-                    </div>
-                  }
-                >
+                {isSignedIn ? (
                   <div className="flex items-center">
                     <UserButton />
                   </div>
-                </Show>
+                ) : (
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <Button variant="ghost" asChild className="text-foreground/70 hover:text-primary transition-colors text-sm font-medium">
+                      <Link href="/login">{t('nav.login') || "Login"}</Link>
+                    </Button>
+                    <Button asChild className="text-primary-foreground rounded-md transition-all ease-out duration-300 bg-primary hover:bg-primary/90 text-sm font-medium">
+                      <Link href="/login">Sign Up</Link>
+                    </Button>
+                  </div>
+                )}
 
                 {/* Mobile Menu */}
                 <div className="md:hidden">
@@ -107,27 +101,20 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                           </Link>
                         </nav>
                         <div className="border-t pt-6">
-                          <Show 
-                            when="signed-in"
-                            fallback={
-                              <div className="flex flex-col gap-3">
-                                <SignInButton mode="modal">
-                                  <Button variant="outline" className="w-full">
-                                    {t('nav.login')}
-                                  </Button>
-                                </SignInButton>
-                                <SignUpButton mode="modal">
-                                  <Button className="w-full text-primary-foreground bg-primary hover:bg-primary/90">
-                                    Sign Up
-                                  </Button>
-                                </SignUpButton>
-                              </div>
-                            }
-                          >
+                          {isSignedIn ? (
                             <div className="flex justify-center py-2">
                               <UserButton />
                             </div>
-                          </Show>
+                          ) : (
+                            <div className="flex flex-col gap-3">
+                              <Button variant="outline" asChild className="w-full">
+                                <Link href="/login">{t('nav.login') || "Login"}</Link>
+                              </Button>
+                              <Button asChild className="w-full text-primary-foreground bg-primary hover:bg-primary/90">
+                                <Link href="/login">Sign Up</Link>
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </SheetContent>
