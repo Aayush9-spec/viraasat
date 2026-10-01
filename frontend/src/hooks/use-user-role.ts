@@ -72,6 +72,8 @@ export function useUserRole() {
     fetchRole();
   }, [isLoaded, isSignedIn, user]);
 
-  return { role: role || 'artisan', loading, isBuyer: role === 'buyer', isArtisan: role !== 'buyer' };
+  const isArtisanPath = typeof window !== 'undefined' && window.location.pathname.startsWith('/artisan');
+  const effectiveRole: UserRole = role || (isArtisanPath ? 'artisan' : 'buyer');
+  return { role: effectiveRole, loading, isBuyer: effectiveRole === 'buyer', isArtisan: effectiveRole === 'artisan' };
 }
 

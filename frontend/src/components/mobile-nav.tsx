@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, ShoppingBag, ShoppingCart, Heart, User, Sparkles } from 'lucide-react';
@@ -12,8 +13,14 @@ export function MobileNav() {
   const { cartItems, setCartOpen } = useCart();
   const itemCount = cartItems.length;
   const { isArtisan } = useUserRole();
+  const [mounted, setMounted] = useState(false);
 
-  const accountHref = isArtisan ? '/artisan/dashboard' : '/dashboard';
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isArtisanRole = mounted ? isArtisan : false;
+  const accountHref = isArtisanRole ? '/artisan/dashboard' : '/dashboard';
 
   const navItems = [
     { label: 'Home', href: '/', icon: Home },
@@ -25,7 +32,7 @@ export function MobileNav() {
       badge: itemCount > 0 ? itemCount : null,
     },
     { label: 'Wishlist', href: '/wishlist', icon: Heart },
-    { label: isArtisan ? 'Portal' : 'Account', href: accountHref, icon: isArtisan ? Sparkles : User },
+    { label: isArtisanRole ? 'Portal' : 'Account', href: accountHref, icon: isArtisanRole ? Sparkles : User },
   ];
 
   return (

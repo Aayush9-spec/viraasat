@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { useTranslation } from "@/hooks/use-translation";
 import { ViraasatLogo } from "./viraasat-logo";
 import LanguageSwitcher from "./language-switcher";
@@ -24,8 +25,15 @@ export function MainContent({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const { cartItems, setCartOpen } = useCart();
   const itemCount = cartItems.length;
-  const { isArtisan, isBuyer } = useUserRole();
+  const { isArtisan } = useUserRole();
   const { isSignedIn } = useUser();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isArtisanRole = mounted ? isArtisan : false;
 
   return (
     <>
@@ -40,8 +48,8 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                   <Link href="/" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Home</Link>
                   <Link href="/shop" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.shop')}</Link>
                   <Link href="/artisan/dashboard" className="text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors">Artisan Portal</Link>
-                  <Link href={isArtisan ? "/artisan/products" : "/shop"} className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Products</Link>
-                  <Link href={isArtisan ? "/artisan/orders" : "/orders"} className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Orders</Link>
+                  <Link href={isArtisanRole ? "/artisan/products" : "/shop"} className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Products</Link>
+                  <Link href={isArtisanRole ? "/artisan/orders" : "/orders"} className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Orders</Link>
                 </div>
               </div>
               <div className="flex items-center space-x-2 md:space-x-5">
