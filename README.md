@@ -47,7 +47,7 @@
 India is home to over **7 million artisans** whose craft carries centuries of cultural memory. Yet most remain invisible to global buyers because of:
 
 | Challenge | Real-World Impact |
-|---|---|
+| --- | --- |
 | **Poor digital content** | Phone photos with bad lighting fail to attract premium buyers |
 | **Language barriers** | Artisans cannot write compelling English product descriptions |
 | **Tech intimidation** | Complex e-commerce onboarding scares away non-technical creators |
@@ -63,6 +63,7 @@ India is home to over **7 million artisans** whose craft carries centuries of cu
 Viraasat collapses the gap between artisan and buyer with a **zero-friction AI pipeline**:
 
 ### For Artisans
+
 - 📸 **AI image enhancement** (Google Cloud Vision) — turn a phone photo into a studio-quality listing
 - 🗣 **Voice-to-text** (Google Speech-to-Text) — describe products in any language
 - ✍️ **Gemini-refined copy** — SEO-ready, emotionally resonant product narratives generated instantly
@@ -71,6 +72,7 @@ Viraasat collapses the gap between artisan and buyer with a **zero-friction AI p
 - 🛡 **Fraud detection** — anomaly scoring flags suspicious listings before they go live
 
 ### For Buyers
+
 - 👤 **"Meet the Creator"** profiles with rich cultural context
 - 🔍 **AI product analyser** — feature extraction, styling tips, authenticity cues
 - ❤️ **Wishlist** — localStorage + Firestore sync across devices
@@ -82,17 +84,17 @@ Viraasat collapses the gap between artisan and buyer with a **zero-friction AI p
 ## 🌐 Live Demo
 
 | Environment | URL |
-|---|---|
-| **Frontend (Vercel)** | https://virrasat.in |
-| **Backend health (Render)** | https://viraasat-backend-f0c1.onrender.com/health |
-| **API docs (Swagger)** | https://viraasat-backend-f0c1.onrender.com/docs |
+| --- | --- |
+| **Frontend (Vercel)** | <https://virrasat.in> |
+| **Backend health (Render)** | <https://viraasat-backend-f0c1.onrender.com/health> |
+| **API docs (Swagger)** | <https://viraasat-backend-f0c1.onrender.com/docs> |
 
 ---
 
 ## 🛠 Tech Stack
 
 | Layer | Technologies |
-|---|---|
+| --- | --- |
 | **Frontend** | Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS, Radix UI |
 | **Auth** | Clerk (frontend session + backend JWT verification) |
 | **AI orchestration** | Genkit + Google Gemini 1.5 Flash/Pro |
@@ -135,7 +137,7 @@ Viraasat collapses the gap between artisan and buyer with a **zero-friction AI p
 **Data-flow summary**
 
 | Flow | Path |
-|---|---|
+| --- | --- |
 | Product writes | Client → Firestore (security rules enforced) |
 | Heavy AI / ML | Client → FastAPI (Render) → response |
 | Payments | Razorpay → `/api/razorpay/webhook` (HMAC) → Firestore |
@@ -204,7 +206,7 @@ viraasat/
 ### Prerequisites
 
 | Tool | Version |
-|---|---|
+| --- | --- |
 | Node.js + npm | 20+ |
 | Python | 3.12+ |
 | Firebase CLI | latest (`npm i -g firebase-tools`) |
@@ -336,7 +338,7 @@ All suites run automatically on every push via `.github/workflows/ci.yml`.
 ### Production Deployment
 
 | Service | Platform | Notes |
-|---|---|---|
+| --- | --- | --- |
 | **Frontend** | [Vercel](https://vercel.com) | Set all `NEXT_PUBLIC_*`, `GEMINI_API_KEY`, `CLERK_*`, `RAZORPAY_*`, `CLERK_WEBHOOK_SECRET` env vars in the Vercel dashboard |
 | **Backend** | [Render](https://render.com) | Set `ALLOWED_ORIGINS`, `CLERK_*`, `RAZORPAY_*`, `SENTRY_DSN`, `REQUIRE_AUTH=true` |
 | **Firebase** | Firebase Console | `firebase deploy --only firestore:rules,firestore:indexes,storage` |
@@ -362,6 +364,7 @@ See [`docs/secrets.md`](docs/secrets.md) for the full checklist.
 ## 🛣 Roadmap
 
 ### ✅ Shipped
+
 - [x] Artisan KYC & application flow
 - [x] Product listings, search, filtering, category pages (7 categories)
 - [x] AI-powered image enhancement + listing copy generation
@@ -380,6 +383,7 @@ See [`docs/secrets.md`](docs/secrets.md) for the full checklist.
 - [x] CI pipeline (lint, typecheck, Jest, pytest, Playwright a11y)
 
 ### 🔜 Coming Next
+
 - [ ] Real-time buyer ↔ artisan chat with abuse detection
 - [ ] i18n for artisan flows (Hindi, Tamil, Bengali)
 - [ ] Multi-region Render workers with Redis-backed rate limits
