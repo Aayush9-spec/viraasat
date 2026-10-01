@@ -76,6 +76,17 @@ export default function RootLayout({
         <meta property="og:image" content="/viraasat-hero-cream.png" />
         <link rel="icon" href="/viraasat-logo-full.png" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <Script
+          id="sw-build-id"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `window.__SW_BUILD_ID__=${JSON.stringify(
+              process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ||
+                process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ||
+                'dev',
+            )};`,
+          }}
+        />
       </head>
       <body className="font-sans antialiased text-foreground" suppressHydrationWarning>
         <ClerkProvider 
@@ -85,17 +96,6 @@ export default function RootLayout({
           }
           appearance={{ theme: shadcn }}
         >
-          <Script
-            id="sw-build-id"
-            strategy="beforeInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `window.__SW_BUILD_ID__=${JSON.stringify(
-                process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ||
-                  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ||
-                  'dev',
-              )};`,
-            }}
-          />
           <PWALifecycle />
           <AuthSync />
           <LanguageProvider>
