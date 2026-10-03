@@ -62,40 +62,27 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
 
     try {
       if (isSignUp) {
-        let createdUserId: string | null = null;
-        let createdSessionId: string | null = null;
-
-        if (signUp && typeof signUp.create === 'function') {
-          try {
-            const nameParts = fullname.trim().split(' ');
-            const firstName = nameParts[0] || fullname;
-            const lastName = nameParts.slice(1).join(' ') || undefined;
-
-            const res = await signUp.create({
-              emailAddress: identifier,
-              password: password,
-              firstName,
-              lastName,
-              unsafeMetadata: { role },
-            });
-
-            createdUserId = res?.createdUserId || signUp?.createdUserId || null;
-            createdSessionId = res?.createdSessionId || signUp?.createdSessionId || null;
-
-            if (createdSessionId && setSignUpActive) {
-              await setSignUpActive({ session: createdSessionId });
-            }
-          } catch (signUpErr: any) {
-            console.warn('Clerk signUp.create note:', signUpErr?.message || signUpErr);
-          }
+        if (!signUp || typeof signUp.create !== 'function' || !setSignUpActive) {
+          throw new Error('Sign-up is temporarily unavailable. Please try again.');
         }
 
-        const userUid = createdUserId || `usr_${Date.now()}`;
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('viraasat_session_role', role);
-          localStorage.setItem('viraasat_session_uid', userUid);
-          window.dispatchEvent(new Event('profile-updated'));
+        const nameParts = fullname.trim().split(' ');
+        const firstName = nameParts[0] || fullname;
+        const lastName = nameParts.slice(1).join(' ') || undefined;
+        const res = await signUp.create({
+          emailAddress: identifier,
+          password,
+          firstName,
+          lastName,
+          unsafeMetadata: { role },
+        });
+
+        if (res.status !== 'complete' || !res.createdSessionId) {
+          throw new Error('Please complete the required verification before signing in.');
         }
+
+        await setSignUpActive({ session: res.createdSessionId });
+        localStorage.setItem('viraasat_session_role', role);
 
         toast({
           title: "Account Created Successfully!",
@@ -103,34 +90,17 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
         });
         router.push(isArtisan ? '/artisan/dashboard' : '/shop');
       } else {
-        // SIGN IN
-        let createdUserId: string | null = null;
-        let createdSessionId: string | null = null;
-
-        if (signIn && typeof signIn.create === 'function') {
-          try {
-            const res = await signIn.create({
-              identifier: identifier,
-              password: password,
-            });
-
-            createdUserId = res?.createdUserId || signIn?.createdUserId || null;
-            createdSessionId = res?.createdSessionId || signIn?.createdSessionId || null;
-
-            if (createdSessionId && setSignInActive) {
-              await setSignInActive({ session: createdSessionId });
-            }
-          } catch (signInErr: any) {
-            console.warn('Clerk signIn.create note:', signInErr?.message || signInErr);
-          }
+        if (!signIn || typeof signIn.create !== 'function' || !setSignInActive) {
+          throw new Error('Sign-in is temporarily unavailable. Please try again.');
         }
 
-        const userUid = createdUserId || `usr_${Date.now()}`;
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('viraasat_session_role', role);
-          localStorage.setItem('viraasat_session_uid', userUid);
-          window.dispatchEvent(new Event('profile-updated'));
+        const res = await signIn.create({ identifier, password });
+        if (res.status !== 'complete' || !res.createdSessionId) {
+          throw new Error('Additional verification is required before signing in.');
         }
+
+        await setSignInActive({ session: res.createdSessionId });
+        localStorage.setItem('viraasat_session_role', role);
 
         toast({
           title: "Authentication Successful",
@@ -140,16 +110,15 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
       }
     } catch (err: any) {
       console.error('Auth handler error:', err);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('viraasat_session_role', role);
-        localStorage.setItem('viraasat_session_uid', `usr_${Date.now()}`);
-        window.dispatchEvent(new Event('profile-updated'));
-      }
       toast({
-        title: "Logged In",
-        description: `Welcome to Viraasat!`,
+        title: 'Authentication Failed',
+        description:
+          err?.errors?.[0]?.longMessage ||
+          err?.errors?.[0]?.message ||
+          err?.message ||
+          'Please check your details and try again.',
+        variant: 'destructive',
       });
-      router.push(isArtisan ? '/artisan/dashboard' : '/shop');
     } finally {
       setIsLoading(false);
     }
@@ -159,63 +128,25 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
     setIsSocialLoading(true);
     const role = isArtisan ? 'artisan' : 'buyer';
 
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('viraasat_session_role', role);
-    }
-
     try {
       const clerkAny = clerk as any;
-      if (clerkAny && typeof clerkAny.authenticateWithRedirect === 'function') {
-        await clerkAny.authenticateWithRedirect({
-          strategy: 'oauth_google',
-          redirectUrl: '/sso-callback',
-          redirectUrlComplete: isArtisan ? '/artisan/dashboard' : '/shop',
-        });
-        return;
+      if (!clerkAny || typeof clerkAny.authenticateWithRedirect !== 'function') {
+        throw new Error('Google sign-in is temporarily unavailable. Please try again.');
       }
-    } catch (clerkErr) {
-      console.warn('Clerk Google OAuth initiation error:', clerkErr);
-    }
-
-    try {
-      const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth');
-      const { getFirebaseAuth } = await import('@/services/firebase/auth');
-      const firebaseAuth = getFirebaseAuth();
-
-      if (firebaseAuth) {
-        const provider = new GoogleAuthProvider();
-        const res = await signInWithPopup(firebaseAuth, provider);
-        if (res.user) {
-          const uid = res.user.uid;
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('viraasat_session_role', role);
-            localStorage.setItem('viraasat_session_uid', uid);
-            window.dispatchEvent(new Event('profile-updated'));
-          }
-          toast({
-            title: isSignUp ? "Account Created with Google!" : "Signed in with Google!",
-            description: `Welcome to Viraasat, ${res.user.displayName || (isArtisan ? 'Artisan' : 'Customer')}!`,
-          });
-          router.push(isArtisan ? '/artisan/dashboard' : '/shop');
-          setIsSocialLoading(false);
-          return;
-        }
-      }
-    } catch (firebaseErr: any) {
-      console.warn('Firebase Google Auth error:', firebaseErr?.message || firebaseErr);
-    }
-
-    if (typeof window !== 'undefined') {
       localStorage.setItem('viraasat_session_role', role);
-      localStorage.setItem('viraasat_session_uid', `google_usr_${Date.now()}`);
-      window.dispatchEvent(new Event('profile-updated'));
+      await clerkAny.authenticateWithRedirect({
+        strategy: 'oauth_google',
+        redirectUrl: '/sso-callback',
+        redirectUrlComplete: isArtisan ? '/artisan/dashboard' : '/shop',
+      });
+    } catch (err: any) {
+      toast({
+        title: 'Authentication Failed',
+        description: err?.message || 'Google sign-in could not be started. Please try again.',
+        variant: 'destructive',
+      });
+      setIsSocialLoading(false);
     }
-    toast({
-      title: isSignUp ? "Account Created with Google!" : "Signed in with Google!",
-      description: `Welcome to Viraasat!`,
-    });
-    router.push(isArtisan ? '/artisan/dashboard' : '/shop');
-    setIsSocialLoading(false);
   };
 
   const handleFacebookAuth = async () => {
@@ -224,29 +155,23 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
 
     try {
       const clerkAny = clerk as any;
-      if (clerkAny && typeof clerkAny.authenticateWithRedirect === 'function') {
-        await clerkAny.authenticateWithRedirect({
-          strategy: 'oauth_facebook',
-          redirectUrl: '/sso-callback',
-          redirectUrlComplete: isArtisan ? '/artisan/dashboard' : '/shop',
-        });
-        return;
+      if (!clerkAny || typeof clerkAny.authenticateWithRedirect !== 'function') {
+        throw new Error('Facebook sign-in is temporarily unavailable. Please try again.');
       }
-    } catch (clerkErr) {
-      console.warn('Clerk Facebook OAuth initiation error:', clerkErr);
-    }
-
-    if (typeof window !== 'undefined') {
       localStorage.setItem('viraasat_session_role', role);
-      localStorage.setItem('viraasat_session_uid', `fb_usr_${Date.now()}`);
-      window.dispatchEvent(new Event('profile-updated'));
+      await clerkAny.authenticateWithRedirect({
+        strategy: 'oauth_facebook',
+        redirectUrl: '/sso-callback',
+        redirectUrlComplete: isArtisan ? '/artisan/dashboard' : '/shop',
+      });
+    } catch (err: any) {
+      toast({
+        title: 'Authentication Failed',
+        description: err?.message || 'Facebook sign-in could not be started. Please try again.',
+        variant: 'destructive',
+      });
+      setIsSocialLoading(false);
     }
-    toast({
-      title: isSignUp ? "Account Created with Facebook!" : "Signed in with Facebook!",
-      description: `Welcome to Viraasat!`,
-    });
-    router.push(isArtisan ? '/artisan/dashboard' : '/shop');
-    setIsSocialLoading(false);
   };
 
   return (
