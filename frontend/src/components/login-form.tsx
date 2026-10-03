@@ -124,55 +124,37 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
     }
   };
 
-  const handleGoogleAuth = async () => {
+  const handleSocialAuth = async (strategy: 'oauth_google' | 'oauth_facebook') => {
     setIsSocialLoading(true);
     const role = isArtisan ? 'artisan' : 'buyer';
 
     try {
-      const clerkAny = clerk as any;
-      if (!clerkAny || typeof clerkAny.authenticateWithRedirect !== 'function') {
-        throw new Error('Google sign-in is temporarily unavailable. Please try again.');
+      if (!signIn || typeof signIn.sso !== 'function') {
+        throw new Error('Social sign-in is temporarily unavailable. Please try again.');
       }
       localStorage.setItem('viraasat_session_role', role);
-      await clerkAny.authenticateWithRedirect({
-        strategy: 'oauth_google',
-        redirectUrl: '/sso-callback',
-        redirectUrlComplete: isArtisan ? '/artisan/dashboard' : '/shop',
+      const { error } = await signIn.sso({
+        strategy,
+        redirectCallbackUrl: '/sso-callback',
+        redirectUrl: isArtisan ? '/artisan/dashboard' : '/shop',
       });
+      if (error) throw error;
     } catch (err: any) {
       toast({
         title: 'Authentication Failed',
-        description: err?.message || 'Google sign-in could not be started. Please try again.',
+        description:
+          err?.errors?.[0]?.longMessage ||
+          err?.errors?.[0]?.message ||
+          err?.message ||
+          'Social sign-in could not be started. Please try again.',
         variant: 'destructive',
       });
       setIsSocialLoading(false);
     }
   };
 
-  const handleFacebookAuth = async () => {
-    setIsSocialLoading(true);
-    const role = isArtisan ? 'artisan' : 'buyer';
-
-    try {
-      const clerkAny = clerk as any;
-      if (!clerkAny || typeof clerkAny.authenticateWithRedirect !== 'function') {
-        throw new Error('Facebook sign-in is temporarily unavailable. Please try again.');
-      }
-      localStorage.setItem('viraasat_session_role', role);
-      await clerkAny.authenticateWithRedirect({
-        strategy: 'oauth_facebook',
-        redirectUrl: '/sso-callback',
-        redirectUrlComplete: isArtisan ? '/artisan/dashboard' : '/shop',
-      });
-    } catch (err: any) {
-      toast({
-        title: 'Authentication Failed',
-        description: err?.message || 'Facebook sign-in could not be started. Please try again.',
-        variant: 'destructive',
-      });
-      setIsSocialLoading(false);
-    }
-  };
+  const handleGoogleAuth = () => handleSocialAuth('oauth_google');
+  const handleFacebookAuth = () => handleSocialAuth('oauth_facebook');
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-3 sm:p-6 md:p-8 bg-background dark:bg-background overflow-x-hidden">
