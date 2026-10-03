@@ -129,17 +129,27 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
     const role = isArtisan ? 'artisan' : 'buyer';
 
     try {
-      if (!signIn || typeof signIn.sso !== 'function') {
+      localStorage.setItem('viraasat_session_role', role);
+
+      const redirectUrlComplete = isArtisan ? '/artisan/dashboard' : '/shop';
+      const redirectUrl = '/sso-callback';
+
+      const authFn =
+        signIn?.authenticateWithRedirect ||
+        signUp?.authenticateWithRedirect ||
+        (clerk as any)?.authenticateWithRedirect;
+
+      if (typeof authFn !== 'function') {
         throw new Error('Social sign-in is temporarily unavailable. Please try again.');
       }
-      localStorage.setItem('viraasat_session_role', role);
-      const { error } = await signIn.sso({
+
+      await authFn.call(signIn || signUp || clerk, {
         strategy,
-        redirectCallbackUrl: '/sso-callback',
-        redirectUrl: isArtisan ? '/artisan/dashboard' : '/shop',
+        redirectUrl,
+        redirectUrlComplete,
       });
-      if (error) throw error;
     } catch (err: any) {
+      console.error('Social Auth Error:', err);
       toast({
         title: 'Authentication Failed',
         description:
