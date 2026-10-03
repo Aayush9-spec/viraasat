@@ -23,6 +23,9 @@ Object.defineProperty(global, 'IntersectionObserver', {
 // Clerk needs a browser + provider; unit tests provide neither. Sign-in
 // state defaults to an anonymous, signed-out user.
 jest.mock('@clerk/nextjs', () => ({
+  useClerk: jest.fn(() => ({ setActive: jest.fn() })),
+  useSignIn: jest.fn(() => ({ signIn: null })),
+  useSignUp: jest.fn(() => ({ signUp: null })),
   useUser: () => ({ isLoaded: true, isSignedIn: false, user: null }),
   useAuth: () => ({
     isLoaded: true,
