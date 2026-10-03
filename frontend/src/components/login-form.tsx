@@ -134,16 +134,20 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
       const redirectUrlComplete = isArtisan ? '/artisan/dashboard' : '/shop';
       const redirectUrl = '/sso-callback';
 
-      const authFn =
-        signIn?.authenticateWithRedirect ||
-        signUp?.authenticateWithRedirect ||
-        (clerk as any)?.authenticateWithRedirect;
+      const targetObj =
+        (signIn && typeof signIn.authenticateWithRedirect === 'function' ? signIn : null) ||
+        (signUp && typeof signUp.authenticateWithRedirect === 'function' ? signUp : null) ||
+        (signInHook && typeof signInHook.authenticateWithRedirect === 'function' ? signInHook : null) ||
+        (signUpHook && typeof signUpHook.authenticateWithRedirect === 'function' ? signUpHook : null) ||
+        (clerk?.client?.signIn && typeof clerk.client.signIn.authenticateWithRedirect === 'function' ? clerk.client.signIn : null) ||
+        (clerk?.client?.signUp && typeof clerk.client.signUp.authenticateWithRedirect === 'function' ? clerk.client.signUp : null) ||
+        (clerk && typeof (clerk as any).authenticateWithRedirect === 'function' ? clerk : null);
 
-      if (typeof authFn !== 'function') {
-        throw new Error('Social sign-in is temporarily unavailable. Please try again.');
+      if (!targetObj) {
+        throw new Error('Social sign-in is temporarily unavailable. Please try again in a few seconds.');
       }
 
-      await authFn.call(signIn || signUp || clerk, {
+      await (targetObj as any).authenticateWithRedirect({
         strategy,
         redirectUrl,
         redirectUrlComplete,
