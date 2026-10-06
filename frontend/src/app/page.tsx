@@ -109,17 +109,17 @@ return (
 
       <div className="relative z-10">
         {/* HERO SECTION */}
-        <header className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden bg-background">
+        <header className="relative flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center overflow-hidden bg-background px-4 py-12 text-center sm:px-6 sm:py-16">
           {/* Subtle Texture for Cream Background */}
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%235e2c18\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
           
           {/* Subtle Vignette Overlay */}
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,transparent_40%,rgba(94,44,24,0.08)_100%)]" />
 
-          <div className="relative z-10 w-full max-w-5xl mx-auto space-y-6 animate-fade-in-up pt-10">
+          <div className="relative z-10 mx-auto w-full max-w-5xl space-y-6 pt-4 animate-fade-in-up sm:pt-10">
 
             {/* Logo Image - Centered and Large */}
-            <div className="relative w-full max-w-[650px] mx-auto z-30 transition-transform duration-1000 hover:scale-105">
+            <div className="relative z-30 mx-auto w-full max-w-[min(650px,100%)] transition-transform duration-1000 hover:scale-105">
               <Image
                 src="/viraasat-hero-cream.png"
                 alt="Viraasat Heritage Logo"
@@ -134,23 +134,23 @@ return (
               />
             </div>
 
-            <div className="space-y-6 max-w-3xl mx-auto">
-              <h1 className="text-4xl md:text-6xl font-heading font-bold text-primary tracking-tight drop-shadow-sm">
+            <div className="mx-auto max-w-3xl space-y-5 sm:space-y-6">
+              <h1 className="max-w-full break-words font-heading text-[clamp(2.5rem,7vw,4.5rem)] font-bold tracking-tight text-primary drop-shadow-sm">
                 {t('home.hero.title')}
               </h1>
               <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-[#8b4513] to-transparent opacity-50" />
-              <p className="text-lg md:text-2xl text-primary/80 font-serif italic tracking-wide leading-relaxed">
+              <p className="font-serif text-[clamp(1.125rem,3.5vw,1.5rem)] italic leading-relaxed tracking-wide text-primary/80">
                 {t('home.hero.description')}
               </p>
 
-              <div className="pt-8 mb-12">
+              <div className="mb-4 pt-5 sm:mb-12 sm:pt-8">
                 <Button
                   size="lg"
                   onClick={() => {
                     const el = document.getElementById('explore-collection');
                     el?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-none px-12 py-7 text-lg uppercase tracking-widest transition-all duration-500 shadow-xl hover:shadow-2xl border border-primary/20"
+                  className="w-full max-w-xs rounded-none border border-primary/20 bg-primary px-6 py-6 text-base uppercase tracking-[0.15em] text-primary-foreground shadow-xl transition-all duration-500 hover:bg-primary/90 hover:shadow-2xl sm:w-auto sm:px-12 sm:py-7 sm:text-lg sm:tracking-widest"
                 >
                   Enter The Viraasat
                 </Button>
@@ -394,4 +394,3 @@ return (
     </div>
   );
 }
-
