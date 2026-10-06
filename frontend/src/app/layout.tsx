@@ -28,6 +28,8 @@ const cormorant = {
   variable: 'font-serif',
 };
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
+
 export const metadata: Metadata = {
   title: 'Viraasat - Artisan Marketplace',
   description: 'A premium marketplace for authentic artisan crafts and heritage products, powered by AI.',
@@ -94,6 +96,7 @@ export default function RootLayout({
             process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
             'pk_test_c2hpbmluZy1mcm9nLTU3LmNsZXJrLmFjY291bnRzLmRldiQ'
           }
+          allowedRedirectOrigins={[appUrl]}
           appearance={{ theme: shadcn }}
         >
           <PWALifecycle />
