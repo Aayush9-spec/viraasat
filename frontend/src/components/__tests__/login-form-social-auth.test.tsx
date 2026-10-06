@@ -18,16 +18,19 @@ jest.mock('@/components/ui/checkbox', () => ({
 }));
 
 describe('LoginForm social authentication', () => {
-  const authenticateWithRedirect = jest.fn();
+  const sso = jest.fn();
+  const signUpSso = jest.fn();
   const push = jest.fn();
   const toast = jest.fn();
+  const appUrl = window.location.origin;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    authenticateWithRedirect.mockResolvedValue(undefined);
+    sso.mockResolvedValue({ error: null });
+    signUpSso.mockResolvedValue({ error: null });
     (useClerk as jest.Mock).mockReturnValue({ setActive: jest.fn() });
-    (useSignIn as jest.Mock).mockReturnValue({ signIn: { authenticateWithRedirect } });
-    (useSignUp as jest.Mock).mockReturnValue({ signUp: null });
+    (useSignIn as jest.Mock).mockReturnValue({ signIn: { sso } });
+    (useSignUp as jest.Mock).mockReturnValue({ signUp: { sso: signUpSso } });
     (useRouter as jest.Mock).mockReturnValue({ push });
     (useToast as jest.Mock).mockReturnValue({ toast });
   });
@@ -41,10 +44,10 @@ describe('LoginForm social authentication', () => {
     fireEvent.click(screen.getByRole('button', { name: provider }));
 
     await waitFor(() => {
-      expect(authenticateWithRedirect).toHaveBeenCalledWith({
+      expect(sso).toHaveBeenCalledWith({
         strategy,
-        redirectUrl: '/sso-callback',
-        redirectUrlComplete: '/shop',
+        redirectUrl: `${appUrl}/shop`,
+        redirectCallbackUrl: `${appUrl}/sso-callback`,
       });
     });
     expect(window.localStorage.getItem('viraasat_session_role')).toBe('buyer');
@@ -52,8 +55,46 @@ describe('LoginForm social authentication', () => {
     expect(push).not.toHaveBeenCalled();
   });
 
+  it('starts social sign-up with Clerk’s sign-up SSO resource', async () => {
+    render(<LoginForm userType="Customer" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'SIGN UP' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Google' }));
+
+    await waitFor(() => {
+      expect(signUpSso).toHaveBeenCalledWith({
+        strategy: 'oauth_google',
+        redirectUrl: `${appUrl}/shop`,
+        redirectCallbackUrl: `${appUrl}/sso-callback`,
+      });
+    });
+    expect(sso).not.toHaveBeenCalled();
+  });
+
+  it('offers Google SSO to artisans and redirects to their dashboard', async () => {
+    render(<LoginForm userType="Artisan" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Google' }));
+
+    await waitFor(() => {
+      expect(sso).toHaveBeenCalledWith({
+        strategy: 'oauth_google',
+        redirectUrl: `${appUrl}/artisan/dashboard`,
+        redirectCallbackUrl: `${appUrl}/sso-callback`,
+      });
+    });
+    expect(window.localStorage.getItem('viraasat_session_role')).toBe('artisan');
+    expect(screen.queryByRole('button', { name: 'Facebook' })).not.toBeInTheDocument();
+  });
+
+  it('renders Clerk’s CAPTCHA placeholder for custom OAuth flows', () => {
+    render(<LoginForm userType="Customer" />);
+
+    expect(document.querySelector('#clerk-captcha')).toHaveAttribute('data-cl-size', 'flexible');
+  });
+
   it('shows Clerk SSO errors without navigating as authenticated', async () => {
-    authenticateWithRedirect.mockRejectedValue(new Error('Google connection is unavailable'));
+    sso.mockRejectedValue(new Error('Google connection is unavailable'));
     render(<LoginForm userType="Customer" />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Google' }));
