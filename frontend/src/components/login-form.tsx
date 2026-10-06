@@ -131,27 +131,26 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
     try {
       localStorage.setItem('viraasat_session_role', role);
 
-      const redirectUrlComplete = isArtisan ? '/artisan/dashboard' : '/shop';
-      const redirectUrl = '/sso-callback';
+      const redirectUrl = new URL(
+        isArtisan ? '/artisan/dashboard' : '/shop',
+        window.location.origin,
+      ).toString();
+      const redirectCallbackUrl = new URL('/sso-callback', window.location.origin).toString();
+      const authResource = isSignUp ? signUp : signIn;
 
-      const targetObj =
-        (signIn && typeof signIn.authenticateWithRedirect === 'function' ? signIn : null) ||
-        (signUp && typeof signUp.authenticateWithRedirect === 'function' ? signUp : null) ||
-        (signInHook && typeof signInHook.authenticateWithRedirect === 'function' ? signInHook : null) ||
-        (signUpHook && typeof signUpHook.authenticateWithRedirect === 'function' ? signUpHook : null) ||
-        (clerk?.client?.signIn && typeof clerk.client.signIn.authenticateWithRedirect === 'function' ? clerk.client.signIn : null) ||
-        (clerk?.client?.signUp && typeof clerk.client.signUp.authenticateWithRedirect === 'function' ? clerk.client.signUp : null) ||
-        (clerk && typeof (clerk as any).authenticateWithRedirect === 'function' ? clerk : null);
-
-      if (!targetObj) {
+      if (!authResource || typeof authResource.sso !== 'function') {
         throw new Error('Social sign-in is temporarily unavailable. Please try again in a few seconds.');
       }
 
-      await (targetObj as any).authenticateWithRedirect({
+      const { error } = await authResource.sso({
         strategy,
         redirectUrl,
-        redirectUrlComplete,
+        redirectCallbackUrl,
       });
+
+      if (error) {
+        throw error;
+      }
     } catch (err: any) {
       console.error('Social Auth Error:', err);
       toast({
@@ -317,30 +316,30 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
             </Button>
           </form>
 
-          {!isArtisan && (
-            <>
-              <div className="relative my-3 sm:my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-3 text-muted-foreground font-semibold tracking-wider">
-                    Or Sign In With
-                  </span>
-                </div>
+          <>
+            <div className="relative my-3 sm:my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
               </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-3 text-muted-foreground font-semibold tracking-wider">
+                  Or Continue With
+                </span>
+              </div>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleGoogleAuth}
-                  className="h-11 sm:h-12 border-input hover:bg-accent hover:text-accent-foreground rounded-xl text-sm font-medium w-full flex items-center justify-center gap-2 transition-colors"
-                  disabled={isLoading || isSocialLoading}
-                >
-                  <FcGoogle className="h-5 w-5 shrink-0" />
-                  <span>{isSocialLoading ? 'Connecting...' : 'Google'}</span>
-                </Button>
+            <div className={`grid grid-cols-1 gap-3 ${!isArtisan ? 'sm:grid-cols-2' : ''}`}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleGoogleAuth}
+                className="h-11 sm:h-12 border-input hover:bg-accent hover:text-accent-foreground rounded-xl text-sm font-medium w-full flex items-center justify-center gap-2 transition-colors"
+                disabled={isLoading || isSocialLoading}
+              >
+                <FcGoogle className="h-5 w-5 shrink-0" />
+                <span>{isSocialLoading ? 'Connecting...' : 'Google'}</span>
+              </Button>
+              {!isArtisan && (
                 <Button
                   type="button"
                   variant="outline"
@@ -351,9 +350,12 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                   <FaFacebook className="h-5 w-5 shrink-0 text-[#1877F2]" />
                   <span>Facebook</span>
                 </Button>
-              </div>
-            </>
-          )}
+              )}
+            </div>
+          </>
+
+          {/* Required by Clerk for bot protection in custom sign-up and OAuth flows. */}
+          <div id="clerk-captcha" data-cl-size="flexible" />
 
           <div className="text-center pt-1 text-xs text-muted-foreground leading-relaxed">
             {isSignUp ? (
