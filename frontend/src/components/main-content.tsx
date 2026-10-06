@@ -41,10 +41,10 @@ export function MainContent({ children }: { children: React.ReactNode }) {
         <div className="parallax-background"></div>
         <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-4">
-              <div className="flex items-center space-x-8">
-                <ViraasatLogo />
-                <div className="hidden md:flex items-center space-x-7">
+            <div className="flex min-w-0 items-center justify-between gap-3 py-3 sm:py-4">
+              <div className="flex min-w-0 items-center gap-8">
+                <ViraasatLogo className="shrink-0" />
+                <div className="hidden xl:flex items-center space-x-7">
                   <Link href="/" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Home</Link>
                   <Link href="/shop" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.shop')}</Link>
                   <Link href="/artisan/dashboard" className="text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors">Artisan Portal</Link>
@@ -52,10 +52,10 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                   <Link href={isArtisanRole ? "/artisan/orders" : "/orders"} className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Orders</Link>
                 </div>
               </div>
-              <div className="flex items-center space-x-2 md:space-x-5">
-                <VoiceSearch />
-                <LanguageSwitcher />
-                <ThemeSwitcher />
+              <div className="flex shrink-0 items-center space-x-1 sm:space-x-3 xl:space-x-5">
+                <div className="hidden sm:block"><VoiceSearch /></div>
+                <div className="hidden sm:block"><LanguageSwitcher /></div>
+                <div className="hidden sm:block"><ThemeSwitcher /></div>
                 <Button variant="ghost" size="icon" className="relative text-foreground/70 hover:text-primary" onClick={() => setCartOpen(true)}>
                   <ShoppingCart className="h-5 w-5" />
                   {itemCount > 0 && (
@@ -70,7 +70,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                     <UserButton />
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="hidden sm:flex items-center gap-2 sm:gap-3">
                     <Button variant="ghost" asChild className="text-foreground/70 hover:text-primary transition-colors text-sm font-medium">
                       <Link href="/login">{t('nav.login') || "Login"}</Link>
                     </Button>
@@ -81,7 +81,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                 )}
 
                 {/* Mobile Menu */}
-                <div className="md:hidden">
+                <div className="xl:hidden">
                   <Sheet>
                     <SheetTrigger asChild>
                       <Button variant="ghost" size="icon" className="-mr-2">
