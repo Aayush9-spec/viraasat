@@ -25,7 +25,7 @@ function mapRow(r: Record<string, unknown>): Product {
  */
 export function useProducts(opts: { max?: number } = {}): ProductsResult {
   const [state, setState] = useState<ProductsResult>({
-    products: [],
+    products: staticProducts,
     loading: true,
     error: null,
     isOnline: true,
@@ -41,12 +41,17 @@ export function useProducts(opts: { max?: number } = {}): ProductsResult {
       .order('created_at', { ascending: false })
       .limit(max)
       .then(({ data, error }) => {
-        if (error) {
+        if (error || !data) {
           console.warn('Supabase products unavailable — falling back to static seed.', error);
-          setState({ products: staticProducts, loading: false, error, isOnline: false });
+          setState({ products: staticProducts, loading: false, error: error || null, isOnline: false });
           return;
         }
-        setState({ products: (data ?? []).map(mapRow), loading: false, error: null, isOnline: true });
+
+        const map = new Map<string, Product>();
+        staticProducts.forEach(p => { if (p.id) map.set(p.id, p); });
+        data.map(mapRow).forEach(p => { if (p.id) map.set(p.id, p); });
+
+        setState({ products: Array.from(map.values()), loading: false, error: null, isOnline: true });
       });
 
     // Realtime subscription
@@ -59,7 +64,10 @@ export function useProducts(opts: { max?: number } = {}): ProductsResult {
           .order('created_at', { ascending: false })
           .limit(max);
         if (!error && data) {
-          setState({ products: data.map(mapRow), loading: false, error: null, isOnline: true });
+          const map = new Map<string, Product>();
+          staticProducts.forEach(p => { if (p.id) map.set(p.id, p); });
+          data.map(mapRow).forEach(p => { if (p.id) map.set(p.id, p); });
+          setState({ products: Array.from(map.values()), loading: false, error: null, isOnline: true });
         }
       })
       .subscribe();
