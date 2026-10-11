@@ -23,10 +23,10 @@ class BentPlaneGeometry extends THREE.PlaneGeometry {
         const pos = this.attributes.position
         const mainV = new THREE.Vector2()
         for (let i = 0; i < uv.count; i++) {
-            const uvRatio = 1 - uv.getX(i)
+            const uvRatio = uv.getX(i)
             const y = pos.getY(i)
-            mainV.copy(c).rotateAround(center, arc * uvRatio)
-            pos.setXYZ(i, mainV.x, y, -mainV.y)
+            mainV.copy(a).rotateAround(center, -arc * uvRatio)
+            pos.setXYZ(i, mainV.x, y, mainV.y)
         }
         pos.needsUpdate = true
         this.computeVertexNormals()
