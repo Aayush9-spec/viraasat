@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "ಮುಖ್ಯಪುಟ",
+    "shop": "ಅಂಗಡಿ",
+    "mission": "ನಮ್ಮ ಧ್ಯೇಯ",
+    "journal": "ಜರ್ನಲ್",
+    "orders": "ಆರ್ಡರ್‌ಗಳು",
+    "login": "ಲಾಗಿನ್",
+    "signUp": "ಸೈನ್ ಅಪ್",
+    "wishlist": "ವಿಶ್‌ಲಿಸ್ಟ್",
+    "cart": "ಕಾರ್ಟ್",
+    "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+    "artisan": "ಕರಕುಶಲ ಪೋರ್ಟಲ್",
+    "products": "ಉತ್ಪನ್ನಗಳು"
+  },
+  "product": {
+    "by": "ಮೂಲಕ",
+    "translateDescription": "ವಿವರಣೆ ಅನುವಾದಿಸಿ",
+    "translate": "ಅನುವಾದಿಸಿ",
+    "translating": "ಅನುವಾದಿಸಲಾಗುತ್ತಿದೆ...",
+    "addToCollection": "ಸಂಗ್ರಹಕ್ಕೆ ಸೇರಿಸಿ",
+    "inStock": "ಸ್ಟಾಕ್‌ನಲ್ಲಿದೆ",
+    "lowStock": "ಕಡಿಮೆ ಸ್ಟಾಕ್",
+    "outOfStock": "ಸ್ಟಾಕ್ ಮುಗಿದಿದೆ",
+    "authentic": "ಅಧಿಕೃತ",
+    "handmade": "ಹಸ್ತಾಲಂಕೃತ",
+    "insights": "ಒಳನೋಟಗಳು",
+    "passport": "ಪಾಸ್‌ಪೋರ್ಟ್",
+    "provenance": "ಮೂಲ ಪ್ರಮಾಣ",
+    "heritageInsights": "ಪರಂಪರೆ ಒಳನೋಟಗಳು",
+    "distinguishingFeatures": "ವಿಶೇಷ ಲಕ್ಷಣಗಳು"
+  }
+}

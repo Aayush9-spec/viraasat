@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "ਹੋਮ",
+    "shop": "ਦੁਕਾਨ",
+    "mission": "ਸਾਡਾ ਮਿਸ਼ਨ",
+    "journal": "ਜਰਨਲ",
+    "orders": "ਆਰਡਰ",
+    "login": "ਲੌਗਇਨ",
+    "signUp": "ਸਾਈਨ ਅੱਪ",
+    "wishlist": "ਵਿਸ਼ਲਿਸਟ",
+    "cart": "ਕਾਰਟ",
+    "dashboard": "ਡੈਸ਼ਬੋਰਡ",
+    "artisan": "ਕਾਰੀਗਰ ਪੋਰਟਲ",
+    "products": "ਉਤਪਾਦ"
+  },
+  "product": {
+    "by": "ਦੁਆਰਾ",
+    "translateDescription": "ਵੇਰਵੇ ਦਾ ਅਨੁਵਾਦ ਕਰੋ",
+    "translate": "ਅਨੁਵਾਦ ਕਰੋ",
+    "translating": "ਅਨੁਵਾਦ ਹੋ ਰਿਹਾ ਹੈ...",
+    "addToCollection": "ਸੰਗ੍ਰਹਿ ਵਿੱਚ ਜੋੜੋ",
+    "inStock": "ਸਟਾਕ ਵਿੱਚ",
+    "lowStock": "ਘੱਟ ਸਟਾਕ",
+    "outOfStock": "ਸਟਾਕ ਖਤਮ",
+    "authentic": "ਪ੍ਰਮਾਣਿਕ",
+    "handmade": "ਹੱਥ ਨਾਲ ਬਣਿਆ",
+    "insights": "ਅੰਤਰਦ੍ਰਿਸ਼ਟੀ",
+    "passport": "ਪਾਸਪੋਰਟ",
+    "provenance": "ਉਤਪੱਤੀ ਪ੍ਰਮਾਣ",
+    "heritageInsights": "ਵਿਰਾਸਤੀ ਅੰਤਰਦ੍ਰਿਸ਼ਟੀ",
+    "distinguishingFeatures": "ਖਾਸ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ"
+  }
+}

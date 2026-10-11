@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "ഹോം",
+    "shop": "ഷോപ്പ്",
+    "mission": "ഞങ്ങളുടെ ലക്ഷ്യം",
+    "journal": "ജേണൽ",
+    "orders": "ഓർഡറുകൾ",
+    "login": "ലോഗിൻ",
+    "signUp": "സൈൻ അപ്പ്",
+    "wishlist": "വിഷ്‌ലിസ്റ്റ്",
+    "cart": "കാർട്ട്",
+    "dashboard": "ഡാഷ്‌ബോർഡ്",
+    "artisan": "കരകൗശല പോർട്ടൽ",
+    "products": "ഉൽപ്പന്നങ്ങൾ"
+  },
+  "product": {
+    "by": "തയ്യാറാക്കിയത്",
+    "translateDescription": "വിവരണം തർജ്ജമ ചെയ്യുക",
+    "translate": "തർജ്ജമ ചെയ്യുക",
+    "translating": "തർജ്ജമ ചെയ്യുന്നു...",
+    "addToCollection": "ശേഖരത്തിലേക്ക് ചേർക്കുക",
+    "inStock": "സ്റ്റോക്കിലുണ്ട്",
+    "lowStock": "കുറഞ്ഞ സ്റ്റോക്ക്",
+    "outOfStock": "സ്റ്റോക്ക് തീർന്നു",
+    "authentic": "ആധികാരികം",
+    "handmade": "കൈകൊണ്ട് നിർമ്മിച്ചത്",
+    "insights": "കാഴ്ചപ്പാടുകൾ",
+    "passport": "പാസ്‌പോർട്ട്",
+    "provenance": "ഉത്ഭവ ചരിത്രം",
+    "heritageInsights": "പൈതൃക കാഴ്ചപ്പാടുകൾ",
+    "distinguishingFeatures": "പ്രത്യേക സവിശേഷതകൾ"
+  }
+}

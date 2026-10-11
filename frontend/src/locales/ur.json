@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "ہوم",
+    "shop": "دکان",
+    "mission": "ہمارا مقصد",
+    "journal": "جرنل",
+    "orders": "آرڈرز",
+    "login": "لاگ ان",
+    "signUp": "سائن اپ",
+    "wishlist": "وش لسٹ",
+    "cart": "کارٹ",
+    "dashboard": "ڈیش بورڈ",
+    "artisan": "دستکار پورٹل",
+    "products": "مصنوعات"
+  },
+  "product": {
+    "by": "بذریعہ",
+    "translateDescription": "تفصیل کا ترجمہ کریں",
+    "translate": "ترجمہ کریں",
+    "translating": "ترجمہ ہو رہا ہے...",
+    "addToCollection": "مجموعہ میں شامل کریں",
+    "inStock": "اسٹاک میں موجود",
+    "lowStock": "کم اسٹاک",
+    "outOfStock": "اسٹاک ختم",
+    "authentic": "مستند",
+    "handmade": "دستکاری",
+    "insights": "بصیرت",
+    "passport": "پاسپورٹ",
+    "provenance": "اصلیت",
+    "heritageInsights": "ثقافتی بصیرت",
+    "distinguishingFeatures": "نمایاں خصوصیات"
+  }
+}

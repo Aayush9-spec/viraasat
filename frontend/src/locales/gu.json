@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "હોમ",
+    "shop": "દુકાન",
+    "mission": "અમારો હેતુ",
+    "journal": "જર્નલ",
+    "orders": "ઓર્ડર",
+    "login": "લોગિન",
+    "signUp": "સાઇન અપ",
+    "wishlist": "વિશલિસ્ટ",
+    "cart": "કાર્ટ",
+    "dashboard": "ડેશબોર્ડ",
+    "artisan": "કારીગર પોર્ટલ",
+    "products": "ઉત્પાદનો"
+  },
+  "product": {
+    "by": "દ્વારા",
+    "translateDescription": "વર્ણનનું ભાષાંતર કરો",
+    "translate": "ભાષાંતર કરો",
+    "translating": "ભાષાંતર થઈ રહ્યું છે...",
+    "addToCollection": "સંગ્રહમાં ઉમેરો",
+    "inStock": "સ્ટોકમાં છે",
+    "lowStock": "ઓછો સ્ટોક",
+    "outOfStock": "સ્ટોક બહાર",
+    "authentic": "અધિકૃત",
+    "handmade": "હસ્તકલા",
+    "insights": "આંતરદૃષ્ટિ",
+    "passport": "પાસપોર્ટ",
+    "provenance": "ઉત્પત્તિ",
+    "heritageInsights": "વારસો આંતરદૃષ્ટિ",
+    "distinguishingFeatures": "ખાસ વિશેષતાઓ"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "मुख्यपृष्ठ",
+    "shop": "दुकान",
+    "mission": "आमचे ध्येय",
+    "journal": "जर्नल",
+    "orders": "ऑर्डर्स",
+    "login": "लॉगिन",
+    "signUp": "साइन अप",
+    "wishlist": "विशलिस्ट",
+    "cart": "कार्ट",
+    "dashboard": "डॅशबोर्ड",
+    "artisan": "कारागीर पोर्टल",
+    "products": "उत्पादने"
+  },
+  "product": {
+    "by": "द्वारे",
+    "translateDescription": "वर्णनाचे भाषांतर करा",
+    "translate": "भाषांतर करा",
+    "translating": "भाषांतर होत आहे...",
+    "addToCollection": "संग्रहात जोडा",
+    "inStock": "स्टॉकमध्ये उपलब्ध",
+    "lowStock": "कमी साठा",
+    "outOfStock": "साठा संपला",
+    "authentic": "अस्सल",
+    "handmade": "हस्तनिर्मित",
+    "insights": "आंतरदृष्टी",
+    "passport": "पासपोर्ट",
+    "provenance": "उत्पत्ती पुरावा",
+    "heritageInsights": "वारसा आंतरदृष्टी",
+    "distinguishingFeatures": "खास वैशिष्ट्ये"
+  }
+}
