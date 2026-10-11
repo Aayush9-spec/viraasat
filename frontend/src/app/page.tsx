@@ -14,11 +14,21 @@ import Link from 'next/link';
 import LazyCarousel from '@/components/LazyCarousel';
 import { ProductGridSkeleton } from '@/components/ui/product-skeleton';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getProductImage } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 export default function Marketplace() {
   const { t } = useTranslation();
   const router = useRouter();
-  
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDarkMode = mounted && (theme === 'dark' || resolvedTheme === 'dark');
+
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -118,20 +128,35 @@ return (
 
           <div className="relative z-10 mx-auto w-full max-w-5xl space-y-6 pt-4 animate-fade-in-up sm:pt-10">
 
-            {/* Logo Image - Centered and Large */}
+            {/* Logo Image - Centered and Large (Theme Aware) */}
             <div className="relative z-30 mx-auto w-full max-w-[min(650px,100%)] transition-transform duration-1000 hover:scale-105">
-              <Image
-                src="/viraasat-hero-cream.png"
-                alt="Viraasat Heritage Logo"
-                width={1024}
-                height={558}
-                priority
-                className="w-full h-auto mix-blend-multiply"
-                style={{
-                  maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 95%)',
-                  WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 95%)',
-                }}
-              />
+              {isDarkMode ? (
+                <Image
+                  src="/viraasat-hero-dark.png"
+                  alt="Viraasat Heritage Logo"
+                  width={1024}
+                  height={558}
+                  priority
+                  className="w-full h-auto drop-shadow-[0_0_40px_rgba(245,158,11,0.3)] rounded-3xl"
+                  style={{
+                    maskImage: 'radial-gradient(ellipse at center, black 60%, transparent 95%)',
+                    WebkitMaskImage: 'radial-gradient(ellipse at center, black 60%, transparent 95%)',
+                  }}
+                />
+              ) : (
+                <Image
+                  src="/viraasat-hero-cream.png"
+                  alt="Viraasat Heritage Logo"
+                  width={1024}
+                  height={558}
+                  priority
+                  className="w-full h-auto mix-blend-multiply"
+                  style={{
+                    maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 95%)',
+                    WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 95%)',
+                  }}
+                />
+              )}
             </div>
 
             <div className="mx-auto max-w-3xl space-y-5 sm:space-y-6">
@@ -152,7 +177,7 @@ return (
                   }}
                   className="w-full max-w-xs rounded-none border border-primary/20 bg-primary px-6 py-6 text-base uppercase tracking-[0.15em] text-primary-foreground shadow-xl transition-all duration-500 hover:bg-primary/90 hover:shadow-2xl sm:w-auto sm:px-12 sm:py-7 sm:text-lg sm:tracking-widest"
                 >
-                  Enter The Viraasat
+                  {t('Enter The Viraasat')}
                 </Button>
               </div>
             </div>
@@ -165,7 +190,7 @@ return (
         {/* MISSION SECTION */}
         <section id="mission" className="py-32 relative bg-secondary border-t border-border/50">
           <div className="max-w-5xl mx-auto px-4 text-center">
-            <span className="text-primary text-sm tracking-[0.3em] uppercase mb-4 block">Our Philosophy</span>
+            <span className="text-primary text-sm tracking-[0.3em] uppercase mb-4 block">{t('Our Philosophy')}</span>
             <h2 className="text-3xl md:text-5xl font-heading text-foreground mb-12">
               {t('home.mission.title')}
             </h2>
@@ -186,12 +211,12 @@ return (
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-20">
-              <span className="text-primary text-sm tracking-[0.3em] uppercase mb-4 block">The Collection</span>
+              <span className="text-primary text-sm tracking-[0.3em] uppercase mb-4 block">{t('The Collection')}</span>
               <h2 className="text-4xl md:text-6xl font-heading font-normal text-foreground mb-6">
-                Masterpieces
+                {t('Masterpieces')}
               </h2>
               <p className="text-lg text-foreground/50 max-w-2xl mx-auto font-light">
-                Handcrafted treasures from the heart of India
+                {t('Handcrafted treasures from the heart of India')}
               </p>
             </div>
 
@@ -205,7 +230,7 @@ return (
                 onClick={() => router.push('/shop')}
                 className="bg-amber-700 hover:bg-amber-600 text-white rounded-none px-12 py-6 text-lg tracking-wider transition-all duration-300 shadow-[0_0_30px_rgba(245,158,11,0.2)] hover:shadow-[0_0_50px_rgba(245,158,11,0.4)]"
               >
-                View Gallery
+                {t('View Gallery')}
               </Button>
             </div>
           </div>
@@ -215,7 +240,7 @@ return (
         <section id="product-grid" className="py-32 bg-secondary/30 relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h3 className="text-3xl font-heading text-foreground mb-16 text-center border-b border-primary/20 pb-8 inline-block w-full">
-              Curated Selections
+              {t('Curated Selections')}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {allProducts.slice(0, 8).map((product) => (
@@ -230,8 +255,8 @@ return (
           <div className="absolute inset-0 opacity-[0.03] clay-texture pointer-events-none" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-16">
-              <span className="text-primary text-sm tracking-[0.3em] uppercase mb-4 block">Regional Heritage</span>
-              <h2 className="text-4xl md:text-6xl font-heading font-normal text-foreground">Explore by Origin</h2>
+              <span className="text-primary text-sm tracking-[0.3em] uppercase mb-4 block">{t('Regional Heritage')}</span>
+              <h2 className="text-4xl md:text-6xl font-heading font-normal text-foreground">{t('Explore by Origin')}</h2>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -288,23 +313,23 @@ return (
 
               <div className="space-y-8">
                 <div>
-                  <span className="text-primary text-sm tracking-[0.3em] uppercase mb-2 block">Tradition</span>
-                  <h3 className="font-heading text-4xl md:text-5xl text-foreground mb-6">Supporting The Hands That Create</h3>
+                  <span className="text-primary text-sm tracking-[0.3em] uppercase mb-2 block">{t('Tradition')}</span>
+                  <h3 className="font-heading text-4xl md:text-5xl text-foreground mb-6">{t('Supporting The Hands That Create')}</h3>
                   <p className="text-foreground/60 text-lg leading-relaxed font-light">
-                    Viraasat is not just a marketplace; it is a movement. A movement to bring the spotlight back to the hands that weave magic, carve history, and paint culture. Your patronage directly empowers these guardians of our heritage.
+                    {t('Viraasat is not just a marketplace; it is a movement. A movement to bring the spotlight back to the hands that weave magic, carve history, and paint culture. Your patronage directly empowers these guardians of our heritage.')}
                   </p>
                 </div>
 
                 <div className="bg-secondary/50 p-10 border border-border/50 backdrop-blur-sm">
-                  <h4 className="font-heading text-2xl text-foreground mb-2">Join The Legacy</h4>
-                  <p className="text-primary/60 mb-8 text-sm">Be the first to know about rare acquirements.</p>
+                  <h4 className="font-heading text-2xl text-foreground mb-2">{t('Join The Legacy')}</h4>
+                  <p className="text-primary/60 mb-8 text-sm">{t('Be the first to know about rare acquirements.')}</p>
 
                                       <form className="flex flex-col gap-4" onSubmit={handleSubscribe}>
                       <label htmlFor="subscribe-email" className="sr-only">Email address</label>
 <Input
                           id="subscribe-email"
                           type="email"
-                          placeholder="EMAIL ADDRESS"
+                          placeholder={t('EMAIL ADDRESS')}
                           value={email}
                           onChange={e=>setEmail(e.target.value)}
                           className="bg-transparent border-b rounded-none px-0 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-0 transition-colors"
@@ -316,7 +341,7 @@ return (
                       )}
                       <div className="pt-4">
                         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-widest py-6 text-sm">
-                          Subscribe
+                          {t('Subscribe')}
                         </Button>
                       </div>
                     </form>
@@ -334,12 +359,12 @@ return (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 text-left">
               <div className="max-w-2xl">
-                <span className="text-primary text-sm tracking-[0.4em] uppercase mb-4 block font-bold opacity-40">The Viraasat Collection</span>
-                <h2 className="text-4xl md:text-6xl font-heading text-primary leading-tight">Bring India&apos;s Soul <br /><span className="italic font-normal">To Your Home</span></h2>
+                <span className="text-primary text-sm tracking-[0.4em] uppercase mb-4 block font-bold opacity-40">{t('The Viraasat Collection')}</span>
+                <h2 className="text-4xl md:text-6xl font-heading text-primary leading-tight">{t('Bring India\'s Soul To Your Home')}</h2>
                 <div className="h-px w-24 bg-primary/20 mt-8" />
               </div>
               <Button size="lg" className="rounded-none bg-primary hover:bg-primary/90 text-primary-foreground px-10 h-14 tracking-widest uppercase text-xs shadow-2xl" asChild>
-                <a href="/shop">View Full Gallery</a>
+                <a href="/shop">{t('View Full Gallery')}</a>
               </Button>
             </div>
 
@@ -349,7 +374,7 @@ return (
                   <a href={`/product/${product.id}`} className="block">
                     <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100 mb-8 shadow-sm group-hover:shadow-[0_30px_60px_rgba(94,44,24,0.15)] transition-all duration-700">
                       <Image 
-                        src={product.images[0]} 
+                        src={getProductImage(product?.images)} 
                         alt={product.name} 
                         fill 
                         className="object-cover group-hover:scale-105 transition-transform duration-1000 grayscale-[0.1] group-hover:grayscale-0"
@@ -373,7 +398,7 @@ return (
 
             {/* Region Based Browsing */}
             <div className="mt-32">
-              <h4 className="text-[10px] text-center uppercase tracking-[0.5em] text-amber-900/30 mb-12 font-bold">Explore by Geographic Heritage</h4>
+              <h4 className="text-[10px] text-center uppercase tracking-[0.5em] text-amber-900/30 mb-12 font-bold">{t('Explore by Geographic Heritage')}</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                 {regionInfo.map((reg) => (
 <a 
