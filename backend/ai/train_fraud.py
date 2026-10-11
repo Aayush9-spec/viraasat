@@ -1,4 +1,5 @@
 import os
+import json
 import pickle
 import numpy as np
 import pandas as pd
@@ -7,8 +8,25 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
-def generate_training_data(num_samples=400):
+def load_real_product_names():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    products_path = os.path.abspath(os.path.join(current_dir, "../../database/products.json"))
+    names = []
+    if os.path.exists(products_path):
+        try:
+            with open(products_path, "r", encoding="utf-8") as f:
+                products = json.load(f)
+                names = [p.get("name", "") for p in products if p.get("name")]
+        except Exception:
+            pass
+    return names
+
+def generate_training_data(num_samples=500):
+    product_names = load_real_product_names()
+    
     clean_templates = [
         "Absolutely beautiful product, the craftsmanship is stunning.",
         "The detail on this ceramic vase is amazing. Highly recommend!",
@@ -21,6 +39,11 @@ def generate_training_data(num_samples=400):
         "Authentic handmade item, supports real artisans. Very pleased."
     ]
     
+    if product_names:
+        for p_name in product_names:
+            clean_templates.append(f"Received the {p_name}, incredible craftsmanship and fast delivery!")
+            clean_templates.append(f"The {p_name} is so authentic, love supporting local Indian artisans.")
+
     spam_templates = [
         "buy cheap discount click here now paypal refund review exchange",
         "click link for free discount code and cash back deals",
@@ -33,17 +56,18 @@ def generate_training_data(num_samples=400):
     
     np.random.seed(42)
     
-    # Generate clean reviews (label 0)
+    # Clean reviews (label 0)
     clean_texts = np.random.choice(clean_templates, num_samples)
     clean_ratings = np.random.choice([4, 5], num_samples, p=[0.3, 0.7])
     clean_lengths = [len(t) for t in clean_texts]
     clean_labels = [0] * num_samples
     
-    # Generate spam/fraud reviews (label 1)
-    spam_texts = np.random.choice(spam_templates, int(num_samples * 0.3))
-    spam_ratings = np.random.choice([1, 2, 5], int(num_samples * 0.3), p=[0.4, 0.4, 0.2])
+    # Spam/fraud reviews (label 1)
+    spam_count = int(num_samples * 0.35)
+    spam_texts = np.random.choice(spam_templates, spam_count)
+    spam_ratings = np.random.choice([1, 2, 5], spam_count, p=[0.4, 0.4, 0.2])
     spam_lengths = [len(t) for t in spam_texts]
-    spam_labels = [1] * int(num_samples * 0.3)
+    spam_labels = [1] * spam_count
     
     df = pd.DataFrame({
         "review_text": np.concatenate([clean_texts, spam_texts]),
@@ -52,20 +76,20 @@ def generate_training_data(num_samples=400):
         "label": np.concatenate([clean_labels, spam_labels])
     })
     
-    # Shuffle
     return df.sample(frac=1.0, random_state=42).reset_index(drop=True)
 
 def train_model():
-    print("Generating clean and spam reviews training dataset...")
+    print("Generating review fraud detection dataset with real platform products...")
     df = generate_training_data()
     
     X = df.drop("label", axis=1)
     y = df["label"]
     
-    # Preprocessing pipeline
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
     preprocessor = ColumnTransformer(
         transformers=[
-            ('text', TfidfVectorizer(max_features=25), 'review_text'),
+            ('text', TfidfVectorizer(max_features=40), 'review_text'),
             ('num', StandardScaler(), ['rating', 'text_length'])
         ]
     )
@@ -75,36 +99,39 @@ def train_model():
         ('classifier', RandomForestClassifier(n_estimators=50, random_state=42))
     ])
     
-    print("Training RandomForest Classifier for fraud/spam detection...")
-    pipeline.fit(X, y)
+    print("Training RandomForest Classifier for fraud detection...")
+    pipeline.fit(X_train, y_train)
     
-    # Verify predictions
-    clean_test = pd.DataFrame({
-        "review_text": ["This is a beautiful handwoven textile, very soft."],
-        "rating": [5],
-        "text_length": [50]
-    })
+    # Independent evaluation on test split
+    y_pred = pipeline.predict(X_test)
+    acc = float(accuracy_score(y_test, y_pred))
+    prec = float(precision_score(y_test, y_pred, zero_division=0))
+    rec = float(recall_score(y_test, y_pred, zero_division=0))
+    f1 = float(f1_score(y_test, y_pred, zero_division=0))
     
-    spam_test = pd.DataFrame({
-        "review_text": ["buy cheap discount click here paypal refund now"],
-        "rating": [1],
-        "text_length": [45]
-    })
+    print(f"Fraud Model Test Metrics - Accuracy: {acc:.4f}, Precision: {prec:.4f}, Recall: {rec:.4f}, F1: {f1:.4f}")
     
-    prob_clean = pipeline.predict_proba(clean_test)[0][1]
-    prob_spam = pipeline.predict_proba(spam_test)[0][1]
-    
-    print(f"Spam probability for clean test: {prob_clean:.4f} (expect close to 0)")
-    print(f"Spam probability for spam test: {prob_spam:.4f} (expect close to 1)")
-    
-    # Save the pipeline
     current_dir = os.path.dirname(os.path.abspath(__file__))
     model_dir = os.path.abspath(os.path.join(current_dir, "../../database"))
     os.makedirs(model_dir, exist_ok=True)
     model_path = os.path.join(model_dir, "fraud_model.pkl")
+    
+    evaluation_metrics = {
+        "accuracy": round(acc, 4),
+        "precision": round(prec, 4),
+        "recall": round(rec, 4),
+        "f1_score": round(f1, 4),
+        "verified_accuracy": round(acc, 4),
+        "is_evaluated": True
+    }
+    
     with open(model_path, "wb") as f:
-        pickle.dump(pipeline, f)
-    print(f"Model saved to {model_path}")
+        pickle.dump({
+            "pipeline": pipeline,
+            "evaluation_metrics": evaluation_metrics
+        }, f)
+    print(f"Fraud model saved with evaluation metrics to {model_path}")
 
 if __name__ == "__main__":
     train_model()
+

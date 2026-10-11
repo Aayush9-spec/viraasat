@@ -28,6 +28,13 @@ def detect_review_fraud(payload: ReviewAnomalyInput) -> dict:
     
     if model is not None:
         try:
+            if isinstance(model, dict):
+                pipeline = model.get("pipeline", model)
+                eval_metrics = model.get("evaluation_metrics")
+            else:
+                pipeline = model
+                eval_metrics = None
+
             # Construct DataFrame for the pipeline
             input_df = pd.DataFrame([{
                 "review_text": payload.review_text,
@@ -36,7 +43,7 @@ def detect_review_fraud(payload: ReviewAnomalyInput) -> dict:
             }])
             
             # Predict probability of spam class (label 1)
-            spam_indicator = float(model.predict_proba(input_df)[0][1])
+            spam_indicator = float(pipeline.predict_proba(input_df)[0][1])
             is_anomaly = spam_indicator > 0.60
             
             return {
@@ -49,6 +56,7 @@ def detect_review_fraud(payload: ReviewAnomalyInput) -> dict:
                     "text_length": text_length,
                     "rating_deviation": abs(payload.rating - 4.5)
                 },
+                "evaluation_metrics": eval_metrics,
                 "is_simulated": False
             }
         except Exception as e:
@@ -72,12 +80,14 @@ def detect_review_fraud(payload: ReviewAnomalyInput) -> dict:
         "spam_indicator_score": round(anomaly_factor, 2),
         "is_fraudulent": is_anomaly,
         "verdict": "Suspicious Review Pattern" if is_anomaly else "Verified Clean Review",
-        "model_type": "Isolation Forest (Anomaly Score Threshold: 0.60)",
+        "model_type": "Keyword & Heuristics Rule Engine (Fallback)",
         "features_analyzed": {
             "spam_keywords_detected": spam_score,
             "text_length": text_length,
             "rating_deviation": abs(payload.rating - 4.5)
         },
+        "evaluation_metrics": None,
         "is_simulated": True
     }
+
 
