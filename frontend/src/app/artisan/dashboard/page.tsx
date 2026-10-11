@@ -8,35 +8,41 @@ import { Package, ShoppingCart, TrendingUp, Sparkles, Plus, ArrowRight, ShieldCh
 import { useEffect, useState } from 'react';
 import { supabase } from '@/services/supabase';
 import { Product } from '@/lib/types';
-import { products as staticProducts } from '@/lib/data';
+import { products as staticProducts, getLocalProducts } from '@/lib/data';
 
 export default function ArtisanDashboardPage() {
   const { user } = useUser();
   const [myProducts, setMyProducts] = useState<Product[]>([]);
+  const [localProducts, setLocalProducts] = useState<Product[]>([]);
   const [ordersCount, setOrdersCount] = useState<number | null>(null);
   const [monthlyRevenue, setMonthlyRevenue] = useState<number | null>(null);
   const [metricsLoading, setMetricsLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    const refreshLocal = () => setLocalProducts(getLocalProducts());
+    refreshLocal();
 
+    window.addEventListener('focus', refreshLocal);
+    window.addEventListener('storage', refreshLocal);
+    window.addEventListener('viraasat_products_updated', refreshLocal);
+
+    const artisanId = user?.id || 'artisan-1';
     supabase
       .from('products')
       .select('*')
-      .eq('artisan_id', user.id)
+      .or(`artisan_id.eq.${artisanId},artisan_id.eq.artisan-1`)
       .then(({ data }) => {
         if (data) setMyProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
       });
 
     const channel = supabase
-      .channel(`artisan-products-${user.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'products', filter: `artisan_id=eq.${user.id}` }, async () => {
-        const { data } = await supabase.from('products').select('*').eq('artisan_id', user.id);
+      .channel(`artisan-products-${artisanId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
+        const { data } = await supabase.from('products').select('*').or(`artisan_id.eq.${artisanId},artisan_id.eq.artisan-1`);
         if (data) setMyProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
       })
       .subscribe();
 
-    // Fetch real order metrics
     const firstOfMonth = new Date();
     firstOfMonth.setDate(1);
     firstOfMonth.setHours(0, 0, 0, 0);
@@ -45,12 +51,12 @@ export default function ArtisanDashboardPage() {
       supabase
         .from('orders')
         .select('id', { count: 'exact', head: true })
-        .eq('artisan_id', user.id)
+        .or(`artisan_id.eq.${artisanId},artisan_id.eq.artisan-1`)
         .in('status', ['Processing', 'Pending', 'Shipped']),
       supabase
         .from('orders')
         .select('total_amount')
-        .eq('artisan_id', user.id)
+        .or(`artisan_id.eq.${artisanId},artisan_id.eq.artisan-1`)
         .gte('created_at', firstOfMonth.toISOString()),
     ]).then(([ordersRes, revenueRes]) => {
       if (ordersRes.count !== null) setOrdersCount(ordersRes.count);
@@ -61,25 +67,37 @@ export default function ArtisanDashboardPage() {
       setMetricsLoading(false);
     }).catch(() => setMetricsLoading(false));
 
-    return () => { void supabase.removeChannel(channel); };
+    return () => {
+      window.removeEventListener('focus', refreshLocal);
+      window.removeEventListener('storage', refreshLocal);
+      window.removeEventListener('viraasat_products_updated', refreshLocal);
+      void supabase.removeChannel(channel);
+    };
   }, [user]);
 
-  const allProducts = [...myProducts, ...staticProducts.filter((p) => p.artisanId === (user?.id || 'artisan-1'))];
+  const activeLocal = localProducts.length > 0 ? localProducts : (typeof window !== 'undefined' ? getLocalProducts() : []);
+  const prodsMap = new Map<string, Product>();
+  [...activeLocal, ...myProducts, ...staticProducts].forEach((p) => {
+    if (p.id) prodsMap.set(p.id, p);
+  });
+  const allProducts = Array.from(prodsMap.values());
+
 
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="rounded-3xl bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 p-6 sm:p-8 text-white shadow-xl">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#4A2111] via-[#5E2C18] to-[#3B1A0E] p-6 sm:p-8 text-amber-50 shadow-xl border border-amber-900/40">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+        <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-heading font-bold">
+            <h1 className="text-2xl sm:text-3xl font-heading font-bold tracking-tight text-amber-50">
               Namaste, {user?.fullName || user?.firstName || 'Master Artisan'}! 🙏
             </h1>
-            <p className="text-amber-100 text-sm sm:text-base max-w-xl">
+            <p className="text-amber-100/90 text-sm sm:text-base max-w-xl font-sans leading-relaxed">
               Welcome to your Viraasat Artisan Hub. Manage your authentic creations, leverage AI pricing algorithms, and track your global impact.
             </p>
           </div>
-          <Button asChild size="lg" className="bg-white text-amber-900 hover:bg-amber-50 shadow-md font-semibold shrink-0">
+          <Button asChild size="lg" className="bg-amber-500 hover:bg-amber-400 text-amber-950 font-semibold shadow-md shrink-0 border border-amber-400/50">
             <Link href="/artisan/products/new">
               <Plus className="mr-2 h-5 w-5" /> Add New Creation
             </Link>
@@ -89,10 +107,10 @@ export default function ArtisanDashboardPage() {
 
       {/* Overview Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-amber-200/50 dark:border-amber-900/30 bg-card">
+        <Card className="border-border/60 hover:border-amber-700/40 transition-all duration-300 shadow-sm bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Creations</CardTitle>
-            <Package className="h-5 w-5 text-amber-600" />
+            <Package className="h-5 w-5 text-amber-700 dark:text-amber-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-heading">{allProducts.length}</div>
@@ -100,10 +118,10 @@ export default function ArtisanDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-amber-200/50 dark:border-amber-900/30 bg-card">
+        <Card className="border-border/60 hover:border-amber-700/40 transition-all duration-300 shadow-sm bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Active Orders</CardTitle>
-            <ShoppingCart className="h-5 w-5 text-amber-600" />
+            <ShoppingCart className="h-5 w-5 text-amber-700 dark:text-amber-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-heading">
@@ -113,10 +131,10 @@ export default function ArtisanDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-amber-200/50 dark:border-amber-900/30 bg-card">
+        <Card className="border-border/60 hover:border-amber-700/40 transition-all duration-300 shadow-sm bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Monthly Revenue</CardTitle>
-            <TrendingUp className="h-5 w-5 text-amber-600" />
+            <TrendingUp className="h-5 w-5 text-amber-700 dark:text-amber-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-heading">
@@ -126,10 +144,10 @@ export default function ArtisanDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-amber-200/50 dark:border-amber-900/30 bg-card">
+        <Card className="border-border/60 hover:border-amber-700/40 transition-all duration-300 shadow-sm bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Provenances Verified</CardTitle>
-            <ShieldCheck className="h-5 w-5 text-amber-600" />
+            <ShieldCheck className="h-5 w-5 text-amber-700 dark:text-amber-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-heading">{allProducts.length}</div>
@@ -140,10 +158,10 @@ export default function ArtisanDashboardPage() {
 
       {/* Quick Action Hub */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="group hover:border-amber-500/50 transition-all cursor-pointer">
+        <Card className="group hover:border-amber-700/50 transition-all duration-300 cursor-pointer shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Sparkles className="h-5 w-5 text-amber-600" />
+              <Sparkles className="h-5 w-5 text-amber-700 dark:text-amber-400" />
               AI Business Advisor
             </CardTitle>
             <CardDescription>
@@ -151,7 +169,7 @@ export default function ArtisanDashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="ghost" className="p-0 text-amber-600 group-hover:translate-x-1 transition-transform">
+            <Button asChild variant="ghost" className="p-0 text-amber-700 dark:text-amber-400 group-hover:translate-x-1 transition-transform">
               <Link href="/artisan/business-advisor" className="flex items-center gap-1 font-semibold">
                 Launch Advisor <ArrowRight className="h-4 w-4" />
               </Link>
@@ -159,10 +177,10 @@ export default function ArtisanDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="group hover:border-amber-500/50 transition-all cursor-pointer">
+        <Card className="group hover:border-amber-700/50 transition-all duration-300 cursor-pointer shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Package className="h-5 w-5 text-amber-600" />
+              <Package className="h-5 w-5 text-amber-700 dark:text-amber-400" />
               Product Catalog
             </CardTitle>
             <CardDescription>
@@ -170,7 +188,7 @@ export default function ArtisanDashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="ghost" className="p-0 text-amber-600 group-hover:translate-x-1 transition-transform">
+            <Button asChild variant="ghost" className="p-0 text-amber-700 dark:text-amber-400 group-hover:translate-x-1 transition-transform">
               <Link href="/artisan/products" className="flex items-center gap-1 font-semibold">
                 Manage Products <ArrowRight className="h-4 w-4" />
               </Link>
@@ -178,10 +196,10 @@ export default function ArtisanDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="group hover:border-amber-500/50 transition-all cursor-pointer">
+        <Card className="group hover:border-amber-700/50 transition-all duration-300 cursor-pointer shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <ShieldCheck className="h-5 w-5 text-amber-600" />
+              <ShieldCheck className="h-5 w-5 text-amber-700 dark:text-amber-400" />
               Provenance & GI Graph
             </CardTitle>
             <CardDescription>
@@ -189,7 +207,7 @@ export default function ArtisanDashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="ghost" className="p-0 text-amber-600 group-hover:translate-x-1 transition-transform">
+            <Button asChild variant="ghost" className="p-0 text-amber-700 dark:text-amber-400 group-hover:translate-x-1 transition-transform">
               <Link href="/artisan/provenance" className="flex items-center gap-1 font-semibold">
                 View Provenance <ArrowRight className="h-4 w-4" />
               </Link>
