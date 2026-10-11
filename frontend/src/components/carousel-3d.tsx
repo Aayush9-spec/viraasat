@@ -27,25 +27,23 @@ const LOCAL_IMAGE_FALLBACKS = [
 ];
 
 export const Carousel3D = () => {
-    // Prefer products with local images or map remote images to local assets for reliable WebGL rendering
+    // Map products to their authentic matching images for reliable WebGL rendering & navigation
     const carouselProducts = useMemo(() => {
-        return products.slice(0, 12).map((prod, idx) => {
-          const imgUrl = prod.images && prod.images[0] && prod.images[0].startsWith('/images/') 
-            ? prod.images[0] 
-            : LOCAL_IMAGE_FALLBACKS[idx % LOCAL_IMAGE_FALLBACKS.length];
-          return {
-            ...prod,
-            carouselImageUrl: imgUrl,
-          };
-        });
+        const localItems = products.filter(p => p.images && p.images[0] && p.images[0].startsWith('/images/'));
+        const remoteItems = products.filter(p => p.images && p.images[0] && !p.images[0].startsWith('/images/'));
+        const combined = [...localItems, ...remoteItems];
+        return combined.slice(0, 12).map((prod) => ({
+          ...prod,
+          carouselImageUrl: prod.images[0] || 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300',
+        }));
     }, []);
 
     return (
         <div className="h-[500px] w-full relative">
-            <Canvas camera={{ position: [0, 0, 100], fov: 15 }}>
+            <Canvas camera={{ position: [0, 0, 100], fov: 20 }}>
                 <ScrollControls pages={4} infinite>
                     <Rig rotation={[0, 0, 0.15]}>
-                        <Carousel items={carouselProducts} />
+                        <Carousel radius={2.2} items={carouselProducts} />
                     </Rig>
                 </ScrollControls>
                 <Environment preset="dawn" blur={0.5} />
@@ -66,13 +64,13 @@ function Rig(props: any) {
         }
         if (state.events.update) state.events.update();
         // @ts-ignore
-        easing.damp3(state.camera.position, [-state.pointer.x * 2, state.pointer.y + 1.5, 10], 0.3, delta);
+        easing.damp3(state.camera.position, [-state.pointer.x * 2, state.pointer.y + 1.5, 11], 0.3, delta);
         state.camera.lookAt(0, 0, 0);
     });
     return <group ref={ref} {...props} />;
 }
 
-function Carousel({ radius = 1.4, items }: { radius?: number, items: any[] }) {
+function Carousel({ radius = 2.2, items }: { radius?: number, items: any[] }) {
     const count = items.length;
     return (
         <>
@@ -82,7 +80,7 @@ function Carousel({ radius = 1.4, items }: { radius?: number, items: any[] }) {
                     product={product}
                     url={product.carouselImageUrl}
                     position={[Math.sin((i / count) * Math.PI * 2) * radius, 0, Math.cos((i / count) * Math.PI * 2) * radius]}
-                    rotation={[0, Math.PI + (i / count) * Math.PI * 2, 0]}
+                    rotation={[0, (i / count) * Math.PI * 2, 0]}
                 />
             ))}
         </>
