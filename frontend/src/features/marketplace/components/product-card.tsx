@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Product } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { cn, getProductImage } from '@/lib/utils';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { artisans } from '@/lib/data';
 import { useCart } from '@/context/cart-context';
@@ -25,6 +25,7 @@ export default function ProductCard({ product, variant = 'mission' }: ProductCar
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { rating, loading: ratingLoading } = useProductReviews(product.id);
   const wishlisted = isWishlisted(product.id);
+  const imageUrl = getProductImage(product?.images);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -70,7 +71,7 @@ export default function ProductCard({ product, variant = 'mission' }: ProductCar
 
           <div className={styles.glass}>
             <Image
-              src={product.images[0]}
+              src={imageUrl}
               alt={product.name}
               width={400}
               height={400}
