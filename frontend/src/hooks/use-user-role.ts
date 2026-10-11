@@ -21,9 +21,12 @@ export function useUserRole() {
 
   useEffect(() => {
     const cachedRole = typeof window !== 'undefined' ? (localStorage.getItem(LS_ROLE_KEY) as UserRole | null) : null;
+    const cachedUid  = typeof window !== 'undefined' ? localStorage.getItem(LS_UID_KEY) : null;
     const metaRole = user?.unsafeMetadata?.role as UserRole | undefined;
-    const isArtisanPath = typeof window !== 'undefined' && window.location.pathname.startsWith('/artisan');
-    const resolvedFastRole = metaRole || cachedRole || (isArtisanPath ? 'artisan' : null);
+
+    // Fast path: only use cache if signed in AND cache belongs to this user
+    const ownCachedRole = (isSignedIn && user && cachedUid === user.id) ? cachedRole : null;
+    const resolvedFastRole = metaRole || ownCachedRole;
 
     if (resolvedFastRole) {
       setRole(resolvedFastRole);
@@ -38,13 +41,12 @@ export function useUserRole() {
     }
 
     if (!isSignedIn || !user) {
-      if (cachedRole) {
-        setRole(cachedRole);
-      } else if (isArtisanPath) {
-        setRole('artisan');
-      } else {
-        setRole(null);
+      // Not signed in — no role, clear stale cache
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(LS_ROLE_KEY);
+        localStorage.removeItem(LS_UID_KEY);
       }
+      setRole(null);
       setLoading(false);
       return;
     }
@@ -56,14 +58,14 @@ export function useUserRole() {
         const userDoc = await Promise.race([userDocPromise, timeoutPromise]);
         const firestoreRole = userDoc?.role ?? null;
 
-        const resolvedRole = firestoreRole || metaRole || cachedRole || (isArtisanPath ? 'artisan' : null);
+        const resolvedRole = firestoreRole || metaRole || ownCachedRole;
         if (resolvedRole && typeof window !== 'undefined') {
           localStorage.setItem(LS_ROLE_KEY, resolvedRole);
           localStorage.setItem(LS_UID_KEY, user!.id);
           setRole(resolvedRole);
         }
       } catch {
-        // Fallback role already set above
+        // Keep fast-path role if already set
       } finally {
         setLoading(false);
       }
@@ -72,8 +74,8 @@ export function useUserRole() {
     fetchRole();
   }, [isLoaded, isSignedIn, user]);
 
-  const isArtisanPath = typeof window !== 'undefined' && window.location.pathname.startsWith('/artisan');
-  const effectiveRole: UserRole = role || (isArtisanPath ? 'artisan' : 'buyer');
+  // Role for the current signed-in user only — never inferred from URL path
+  const effectiveRole: UserRole = role || 'buyer';
   return { role: effectiveRole, loading, isBuyer: effectiveRole === 'buyer', isArtisan: effectiveRole === 'artisan' };
 }
 
