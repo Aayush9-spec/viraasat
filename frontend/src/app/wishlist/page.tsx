@@ -8,6 +8,7 @@ import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
+import { getProductImage } from '@/lib/utils';
 
 export default function WishlistPage() {
   const { addItem } = useCart();
@@ -42,7 +43,7 @@ export default function WishlistPage() {
                 <div>
                   <div className="relative aspect-square overflow-hidden bg-muted">
                     <Image
-                      src={product.images[0]}
+                      src={getProductImage(product?.images)}
                       alt={product.name}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
