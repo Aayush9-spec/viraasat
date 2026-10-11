@@ -169,12 +169,23 @@ function ShopPageContent() {
       tempProducts = tempProducts.filter(p => selectedCategories.includes(p.category));
     }
 
-    // Regional Filter — match against the dedicated region field
+    // Regional Filter — match against dedicated region field, description, tagline, or name
     if (selectedRegions.length > 0) {
       tempProducts = tempProducts.filter(p =>
-        selectedRegions.some(region =>
-          (p.region ?? '').toLowerCase() === region.toLowerCase()
-        )
+        selectedRegions.some(region => {
+          const regLower = region.toLowerCase();
+          const prodRegion = (p.region ?? '').toLowerCase();
+          const prodDesc = (p.description ?? '').toLowerCase();
+          const prodTagline = (p.tagline ?? '').toLowerCase();
+          const prodName = (p.name ?? '').toLowerCase();
+          return (
+            prodRegion === regLower ||
+            prodRegion.includes(regLower) ||
+            prodDesc.includes(regLower) ||
+            prodTagline.includes(regLower) ||
+            prodName.includes(regLower)
+          );
+        })
       );
     }
 
