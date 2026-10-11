@@ -64,6 +64,26 @@ Write in an engaging, narrative style — as if telling a story to someone disco
   ],
 });
 
+// Rich fallback stories for when AI is unavailable — rotated by image hash
+const FALLBACK_STORIES = [
+  `What you see here is a clay diya — the humble oil lamp that has lit Indian homes, temples, and festivals for over five thousand years. Shaped on a potter's wheel from local alluvial clay, its lotus-petal form is not merely decorative: the lotus is the symbol of Lakshmi, goddess of prosperity, whose presence is invited each evening when the wick is lit. During Diwali, millions of such lamps line windowsills and courtyards across the subcontinent, turning the night into a constellation of earthen stars. The craft is practiced by the Kumhar community, whose name literally means "one who shapes" — a title earned over uncountable generations of turning earth into light.`,
+
+  `This appears to be a piece of Blue Pottery — the distinctive turquoise and cobalt craft that is one of Jaipur's most iconic traditions. Unlike conventional pottery which uses clay fired at high temperatures, Blue Pottery is made from a dough of quartz stone powder, glass, multani mitti, and gum — fired at a low temperature that gives it its characteristic translucency. The craft has Persian and Central Asian roots, arriving in Rajputana with Mughal artisans in the 14th century and blending with local aesthetics to create something entirely new. Each piece is hand-painted with brushes made from squirrel hair, following floral and geometric patterns inherited from master to apprentice across the centuries.`,
+
+  `The piece before you tells the story of Terracotta — one of humanity's oldest craft forms. India's terracotta tradition stretches back to the Indus Valley Civilisation, where fired clay figures and vessels were excavated alongside the ruins of cities older than Rome. Today, the craft lives on in clusters like Molela in Rajasthan, Gorakhpur in Uttar Pradesh, and Bishnupur in West Bengal, where artisans shape clay by hand, embed it with cultural symbolism, and fire it in open wood kilns that have changed little in three thousand years. The unglazed surface, warm and earth-toned, is not a limitation — it is a design choice, a preference for the honest beauty of fired earth over the artifice of glaze.`,
+
+  `This handcrafted object carries the marks of a tradition that refuses to be mechanised. In the village workshops of India, the process of making begins not with a machine but with the artisan's hands: hands that have memorised patterns taught by a parent, that know when the clay is the right consistency, when the thread tension is correct, when the chisel angle is precise. The skills required to produce work like this take a decade to develop and a lifetime to perfect. Each piece sold on Viraasat supports an artisan family directly, ensuring that this knowledge — irreplaceable, non-transferable, deeply human — survives into the next generation.`,
+
+  `What you see is the product of a dialogue between maker and material that has continued, unbroken, for hundreds of years. Indian handicrafts are not merely aesthetic objects — they are repositories of community knowledge, encoded in colour choices, pattern grammar, and technique. The motifs you observe carry specific meanings: a particular flower symbolises prosperity, a geometric border marks a regional identity, a colour combination announces a season or a festival. To own such a piece is to become a custodian of that code, carrying a fragment of Indian cultural memory into your own home and daily life.`,
+];
+
+function pickFallbackStory(imageDataUri: string): string {
+  // Use a simple hash of the image data length to pick a varied story
+  const len = imageDataUri.length;
+  const idx = len % FALLBACK_STORIES.length;
+  return FALLBACK_STORIES[idx];
+}
+
 const imageCulturalStoryFlow = ai.defineFlow(
   {
     name: 'imageCulturalStoryFlow',
@@ -80,15 +100,11 @@ const imageCulturalStoryFlow = ai.defineFlow(
         imageDataUri: input.imageDataUri,
       });
       if (output?.story) {
-        return {
-          story: output.story,
-        };
+        return { story: output.story };
       }
     } catch (e) {
-      console.warn("Genkit imageCulturalStory call failed. Using fallback story.", e);
+      console.warn('Genkit imageCulturalStory call failed. Using rich fallback story.', e);
     }
-    return {
-      story: `This traditional handicraft piece represents rich regional artisan heritage and timeless cultural craftsmanship. Master artisans handcraft each item using age-old techniques passed down through generations, embodying authentic Indian artistic traditions.`,
-    };
+    return { story: pickFallbackStory(input.imageDataUri) };
   }
 );
