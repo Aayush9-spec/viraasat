@@ -12,10 +12,16 @@ import { Globe } from 'lucide-react';
 
 const languages = [
   { code: 'en', name: 'English' },
-  { code: 'hi', name: 'हिन्दी' },
-  { code: 'ta', name: 'தமிழ்' },
-  { code: 'bn', name: 'বাংলা' },
-  { code: 'te', name: 'తెలుగు' },
+  { code: 'hi', name: 'हिन्दी (Hindi)' },
+  { code: 'ta', name: 'தமிழ் (Tamil)' },
+  { code: 'bn', name: 'বাংলা (Bengali)' },
+  { code: 'te', name: 'తెలుగు (Telugu)' },
+  { code: 'mr', name: 'मराठी (Marathi)' },
+  { code: 'ur', name: 'اردو (Urdu)' },
+  { code: 'gu', name: 'ગુજરાતી (Gujarati)' },
+  { code: 'kn', name: 'ಕನ್ನಡ (Kannada)' },
+  { code: 'ml', name: 'മലയാളം (Malayalam)' },
+  { code: 'pa', name: 'ਪੰਜਾਬੀ (Punjabi)' },
 ];
 
 export default function LanguageSwitcher() {
