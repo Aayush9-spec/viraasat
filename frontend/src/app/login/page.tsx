@@ -25,10 +25,10 @@ export default function LoginPage() {
 
             {/* Header */}
             <div className="space-y-3 text-center lg:text-left">
-              <h1 className="text-4xl lg:text-5xl font-heading font-bold bg-gradient-to-r from-amber-700 via-orange-600 to-amber-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl lg:text-5xl font-heading font-bold bg-gradient-to-r from-[#5e2c18] via-amber-800 to-[#4a2111] dark:from-amber-400 dark:via-amber-200 dark:to-amber-500 bg-clip-text text-transparent">
                 Welcome to Viraasat
               </h1>
-              <p className="text-lg font-medium text-amber-900/80 dark:text-amber-200/80">
+              <p className="text-lg font-medium text-primary dark:text-amber-200/90">
                 Preserving Heritage. Empowering Artisans.
               </p>
               <p className="text-sm text-muted-foreground">
@@ -38,17 +38,17 @@ export default function LoginPage() {
 
             {/* Customer Login Card */}
             <div className="group relative">
-              <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-teal-400 via-emerald-500 to-teal-500 opacity-40 blur transition duration-500 group-hover:opacity-70 group-hover:duration-200 animate-tilt" />
-              <div className="relative flex flex-col gap-5 rounded-2xl border border-teal-200/50 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl p-8 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:scale-[1.02]">
+              <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-[#5e2c18] via-amber-700 to-[#5e2c18] opacity-30 blur transition duration-500 group-hover:opacity-60 group-hover:duration-200 animate-tilt" />
+              <div className="relative flex flex-col gap-5 rounded-2xl border border-primary/20 bg-white/80 dark:bg-card/80 backdrop-blur-xl p-8 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:scale-[1.02]">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 shadow-lg">
-                    <ShoppingBag className="h-6 w-6 text-white" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#5e2c18] to-amber-900 shadow-lg text-amber-100">
+                    <ShoppingBag className="h-6 w-6" />
                   </div>
                   <div className="flex-1 space-y-2">
-                    <h2 className="text-2xl font-heading font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-2xl font-heading font-bold text-foreground">
                       For Our Customers
                     </h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       Sign in to continue your shopping journey, view your orders, and manage your account.
                     </p>
                   </div>
@@ -56,7 +56,7 @@ export default function LoginPage() {
                 <Button
                   asChild
                   size="lg"
-                  className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
+                  className="w-full bg-[#5e2c18] hover:bg-[#4a2111] text-amber-50 shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
                 >
                   <Link href="/login/customer" className="flex items-center justify-center gap-2">
                     Customer Login / Sign Up
@@ -68,17 +68,17 @@ export default function LoginPage() {
 
             {/* Artisan Login Card */}
             <div className="group relative">
-              <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 opacity-40 blur transition duration-500 group-hover:opacity-70 group-hover:duration-200 animate-tilt" />
-              <div className="relative flex flex-col gap-5 rounded-2xl border border-amber-200/50 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl p-8 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:scale-[1.02]">
+              <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-600 via-amber-500 to-amber-700 opacity-30 blur transition duration-500 group-hover:opacity-60 group-hover:duration-200 animate-tilt" />
+              <div className="relative flex flex-col gap-5 rounded-2xl border border-amber-500/30 bg-white/80 dark:bg-card/80 backdrop-blur-xl p-8 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:scale-[1.02]">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg">
-                    <Store className="h-6 w-6 text-white" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 shadow-lg text-white">
+                    <Store className="h-6 w-6" />
                   </div>
                   <div className="flex-1 space-y-2">
-                    <h2 className="text-2xl font-heading font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-2xl font-heading font-bold text-foreground">
                       For Our Artisans
                     </h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       Log in to manage your products, view your sales, and connect with a global audience.
                     </p>
                   </div>
@@ -86,7 +86,7 @@ export default function LoginPage() {
                 <Button
                   asChild
                   size="lg"
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
                 >
                   <Link href="/login/artisan" className="flex items-center justify-center gap-2">
                     Artisan Login / Sign Up
