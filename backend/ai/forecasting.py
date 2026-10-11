@@ -49,11 +49,15 @@ def calculate_demand_forecast(region: str, category: str) -> dict:
                     "tourist_inflow_k": round(max(10.0, float(tourist_preds[i])))
                 })
                 
+            eval_metrics = model.get("evaluation_metrics") if isinstance(model, dict) else None
+            verified_acc = eval_metrics.get("verified_accuracy") if eval_metrics else None
+            
             return {
                 "region": region,
                 "category": category,
                 "time_series": forecast,
-                "model_accuracy": 0.924, # Fit MAPE reference
+                "model_accuracy": verified_acc,
+                "evaluation_metrics": eval_metrics,
                 "warnings": warnings,
                 "is_simulated": False
             }
@@ -87,8 +91,10 @@ def calculate_demand_forecast(region: str, category: str) -> dict:
         "region": region,
         "category": category,
         "time_series": forecast,
-        "model_accuracy": 0.924,
+        "model_accuracy": None,
+        "evaluation_metrics": None,
         "warnings": warnings,
         "is_simulated": True
     }
+
 
