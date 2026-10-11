@@ -8,8 +8,11 @@ import { useCart } from '@/context/cart-context';
 import { useUserRole } from '@/hooks/use-user-role';
 import { cn } from '@/lib/utils';
 
+import { useLanguage } from '@/context/language-context';
+
 export function MobileNav() {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const { cartItems, setCartOpen } = useCart();
   const itemCount = cartItems.length;
   const { isArtisan } = useUserRole();
@@ -23,16 +26,16 @@ export function MobileNav() {
   const accountHref = isArtisanRole ? '/artisan/dashboard' : '/dashboard';
 
   const navItems = [
-    { label: 'Home', href: '/', icon: Home },
-    { label: 'Shop', href: '/shop', icon: ShoppingBag },
+    { label: t('nav.home'), href: '/', icon: Home },
+    { label: t('nav.shop'), href: '/shop', icon: ShoppingBag },
     {
-      label: 'Cart',
+      label: t('nav.cart'),
       onClick: () => setCartOpen(true),
       icon: ShoppingCart,
       badge: itemCount > 0 ? itemCount : null,
     },
-    { label: 'Wishlist', href: '/wishlist', icon: Heart },
-    { label: isArtisanRole ? 'Portal' : 'Account', href: accountHref, icon: isArtisanRole ? Sparkles : User },
+    { label: t('nav.wishlist'), href: '/wishlist', icon: Heart },
+    { label: isArtisanRole ? t('nav.artisan') : t('nav.dashboard'), href: accountHref, icon: isArtisanRole ? Sparkles : User },
   ];
 
   return (
