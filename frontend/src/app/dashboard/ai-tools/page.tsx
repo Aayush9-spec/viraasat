@@ -33,10 +33,20 @@ import {
   Wand2,
   Globe2,
   ImageIcon,
+  AlertTriangle,
+  Zap,
 } from 'lucide-react';
+
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
 import { translateText } from '@/ai/flows/translate-text';
 import { generateImageCulturalStory } from '@/ai/flows/image-cultural-story';
+
+// Detect whether Gemini AI is configured with a real key.
+// Valid Google AI Studio keys start with "AIza". The placeholder in .env.local starts with "AQ."
+const AI_CONFIGURED =
+  typeof process !== 'undefined' &&
+  typeof (process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY) === 'string' &&
+  (process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY ?? '').startsWith('AIza');
 
 const LANGUAGES = [
   { value: 'Hindi', label: 'हिन्दी (Hindi)' },
@@ -73,6 +83,23 @@ export default function AIToolsPage() {
             translate content across languages, and discover the cultural stories
             behind every craft.
           </p>
+          {/* AI status pill */}
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border
+            bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-300">
+            <AlertTriangle className="h-3 w-3 shrink-0" />
+            Running in Smart Fallback mode — add a valid{' '}
+            <code className="font-mono font-semibold">GOOGLE_GENAI_API_KEY</code>{' '}
+            from{' '}
+            <a
+              href="https://aistudio.google.com/apikey"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2"
+            >
+              aistudio.google.com
+            </a>{' '}
+            to enable live AI generation.
+          </div>
         </div>
       </div>
 
