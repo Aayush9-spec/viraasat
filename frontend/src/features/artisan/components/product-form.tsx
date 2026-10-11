@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { products, categories } from '@/lib/data';
+import { products, categories, saveLocalProduct } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import VoiceRecorder from '@/features/ai/components/voice-recorder';
 import ImageEnhancer from './image-enhancer';
@@ -161,15 +161,18 @@ export function ProductForm({ product }: ProductFormProps) {
     setIsSubmitting(true);
     try {
       const now = new Date().toISOString();
+      const newId = product?.id || `creation-${Date.now()}`;
+      const artisanId = user?.id || 'artisan-1';
+
       const supabasePayload = {
-        artisan_id: user?.id || 'artisan-1',
+        artisan_id: artisanId,
         name: values.name,
         description: values.description,
         category: values.category,
         region: values.region,
         price: values.price,
         stock: 10,
-        images: images,
+        images: images.length > 0 ? images : ['https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300'],
         ai_insights: {
           keyFeatures: features,
           styleTags: styleTags,
@@ -178,43 +181,51 @@ export function ProductForm({ product }: ProductFormProps) {
         updated_at: now,
       };
 
-      if (product) {
-        // Edit: update Supabase row + keep localStorage in sync
-        const { error } = await supabase
-          .from('products')
-          .update(supabasePayload)
-          .eq('id', product.id);
-        if (error) console.error('Supabase product update failed:', error);
+      const localItem = {
+        id: newId,
+        artisan_id: artisanId,
+        artisanId: artisanId,
+        name: values.name,
+        description: values.description,
+        category: values.category,
+        region: values.region,
+        price: values.price,
+        stock: 10,
+        images: images.length > 0 ? images : ['https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300'],
+        ai_insights: {
+          keyFeatures: features,
+          styleTags: styleTags,
+          useCases: useCases,
+        },
+        aiInsights: {
+          keyFeatures: features,
+          styleTags: styleTags,
+          useCases: useCases,
+        },
+        created_at: now,
+        createdAt: now,
+        updated_at: now,
+        status: 'Active',
+        isActive: true,
+      };
 
-        const localProducts = JSON.parse(localStorage.getItem('viraasat_local_products') || '[]');
-        const updatedLocal = localProducts.map((p: any) =>
-          p.id === product.id ? { ...p, ...supabasePayload, id: product.id } : p,
-        );
-        localStorage.setItem('viraasat_local_products', JSON.stringify(updatedLocal));
-      } else {
-        // Create: insert into Supabase; also push to localStorage for immediate UI visibility
-        const { data: inserted, error } = await supabase
-          .from('products')
-          .insert({ ...supabasePayload, created_at: now })
-          .select('id')
-          .single();
-        if (error) {
-          console.error('Supabase product insert failed:', error);
-          // Fallback: persist locally so artisan sees their product right away
-          const localProducts = JSON.parse(localStorage.getItem('viraasat_local_products') || '[]');
-          localProducts.push({ ...supabasePayload, id: `local-prod-${Date.now()}` });
-          localStorage.setItem('viraasat_local_products', JSON.stringify(localProducts));
-        } else if (inserted) {
-          // Seed localStorage with the real DB id so subsequent edits hit Supabase
-          const localProducts = JSON.parse(localStorage.getItem('viraasat_local_products') || '[]');
-          localProducts.push({ ...supabasePayload, id: inserted.id });
-          localStorage.setItem('viraasat_local_products', JSON.stringify(localProducts));
+      // Always update localStorage first for immediate UI consistency & fire update events
+      saveLocalProduct(localItem);
+
+      // Asynchronous Supabase sync (does not block local UI)
+      try {
+        if (product) {
+          await supabase.from('products').update(supabasePayload).eq('id', product.id);
+        } else {
+          await supabase.from('products').insert({ ...supabasePayload, created_at: now });
         }
+      } catch (dbErr) {
+        console.warn('Supabase DB sync warning:', dbErr);
       }
 
       toast({
-        title: 'Product Saved',
-        description: `${values.name} has been successfully saved.`,
+        title: 'Product Saved!',
+        description: `${values.name} has been added to your catalog.`,
       });
 
       router.push('/artisan/products');
@@ -231,6 +242,7 @@ export function ProductForm({ product }: ProductFormProps) {
       setIsSubmitting(false);
     }
   }
+
 
   const handleInsights = async () => {
     const { name, description, category } = form.getValues();
