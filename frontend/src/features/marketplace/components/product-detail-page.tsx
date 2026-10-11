@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 import Image from 'next/image';
-import { products, artisans } from '@/lib/data';
+import { products, artisans, getLocalProducts } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -34,7 +34,20 @@ import { Globe2, Loader2, QrCode, ShieldCheck, Leaf, ShieldAlert, Cpu, Network, 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEffect } from 'react';
 
-export function ProductDetailPageClient({ product }: { product: Product }) {
+import { useLanguage } from '@/context/language-context';
+
+export function ProductDetailPageClient({ 
+  initialProduct, 
+  product: directProduct,
+  productId 
+}: { 
+  initialProduct?: Product; 
+  product?: Product;
+  productId?: string; 
+}) {
+  const { t, language } = useLanguage();
+  const [product, setProduct] = useState<Product | undefined>(initialProduct || directProduct);
+  const [hasCheckedClient, setHasCheckedClient] = useState<boolean>(Boolean(initialProduct || directProduct));
   const { addItem } = useCart();
   const { toast } = useToast();
   const backend = useBackend();
@@ -46,16 +59,29 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
   const [loadingProvenance, setLoadingProvenance] = useState(false);
 
   useEffect(() => {
+    if (!product && productId) {
+      const localProds = getLocalProducts();
+      const match = localProds.find((p) => p.id === productId) || products.find((p) => p.id === productId);
+      if (match) {
+        setProduct(match);
+      }
+      setHasCheckedClient(true);
+    }
+  }, [productId, product]);
+
+  useEffect(() => {
+    if (!product) return;
+    const p = product; // snapshot for TypeScript narrowing inside async
     async function fetchProvenance() {
       setLoadingProvenance(true);
       try {
-        const data = await backendGet<{ ledger_chain?: any[] }>(`/api/blockchain/provenance/${product.id}`);
+        const data = await backendGet<{ ledger_chain?: any[] }>(`/api/blockchain/provenance/${p.id}`);
         setProvenance(data.ledger_chain || []);
       } catch (err) {
         console.warn('Blockchain backend offline, using simulated provenance ledger.');
         setProvenance([
-          { index: 1, timestamp: "2026-07-20 10:00:00", action: "Artisan Identity Verified (" + (product.artisanName || 'Riya Sharma') + ")", actor: "Viraasat Protocol Node", hash: "8f3b2a9e", prev_hash: "00000000" },
-          { index: 2, timestamp: "2026-07-22 11:30:00", action: "GI Origin Certification Issued (" + (product.region || 'Rajasthan') + ")", actor: "Handicrafts Board Node", hash: "4c7e2d9b", prev_hash: "8f3b2a9e" },
+          { index: 1, timestamp: "2026-07-20 10:00:00", action: "Artisan Identity Verified (" + (p.artisanName || 'Riya Sharma') + ")", actor: "Viraasat Protocol Node", hash: "8f3b2a9e", prev_hash: "00000000" },
+          { index: 2, timestamp: "2026-07-22 11:30:00", action: "GI Origin Certification Issued (" + (p.region || 'Rajasthan') + ")", actor: "Handicrafts Board Node", hash: "4c7e2d9b", prev_hash: "8f3b2a9e" },
           { index: 3, timestamp: "2026-07-25 14:00:00", action: "Digital Passport Mined (Genesis Block)", actor: "Viraasat Ledger Mainnet", hash: "d9e8a7f6", prev_hash: "4c7e2d9b" }
         ]);
       } finally {
@@ -63,7 +89,24 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
       }
     }
     fetchProvenance();
-  }, [product.id, product.artisanName, product.region, backendGet]);
+  }, [product?.id, product?.artisanName, product?.region, backendGet]);
+
+  if (!product) {
+    if (!hasCheckedClient) {
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
+    }
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 text-center">
+        <h2 className="text-2xl font-bold mb-2">Product Not Found</h2>
+        <p className="text-muted-foreground mb-6">The requested artisan creation could not be found or has been removed.</p>
+        <Button onClick={() => window.location.href = '/shop'}>Return to Shop</Button>
+      </div>
+    );
+  }
 
   const TRANSLATE_LANGUAGES = [
     { value: 'Hindi', label: 'हिन्दी' },
@@ -79,6 +122,20 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
   ];
 
   const artisan = artisans.find((a) => a.id === product.artisanId);
+
+  // Deterministic "related products" — seeded by product.id so server and client agree
+  const relatedProducts = useMemo(() => {
+    const candidates = products.filter(
+      (p) => p.id !== product.id && (p.category === product.category || p.region === product.region)
+    );
+    // Simple seeded shuffle: use char codes of product.id as seed
+    const seed = product.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    return [...candidates].sort((a, b) => {
+      const ha = (seed * a.id.length * 2654435761) >>> 0;
+      const hb = (seed * b.id.length * 2654435761) >>> 0;
+      return ha - hb;
+    }).slice(0, 4);
+  }, [product.id, product.category, product.region]);
 
   const handleAddToCart = () => {
     addItem(product);
@@ -119,7 +176,7 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
             <div>
               <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">{product.name}</h1>
               <p className="text-xl text-muted-foreground mt-1">
-                by <span className="text-primary hover:underline">{artisan?.shopName}</span>
+                {t('product.by')} <span className="text-primary hover:underline">{artisan?.shopName}</span>
               </p>
             </div>
 
@@ -129,7 +186,7 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
             <div className="flex flex-col gap-3 rounded-lg border border-border/50 bg-muted/30 p-4">
               <div className="flex items-center gap-2">
                 <Globe2 className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">Translate Description</span>
+                <span className="text-sm font-medium">{t('product.translateDescription')}</span>
               </div>
               <div className="flex gap-2">
                 <Select value={translateLang} onValueChange={setTranslateLang}>
@@ -173,10 +230,10 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
                   {isTranslating ? (
                     <>
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      Translating...
+                      {t('product.translating')}
                     </>
                   ) : (
-                    'Translate'
+                    t('product.translate')
                   )}
                 </Button>
               </div>
@@ -193,7 +250,7 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
               </div>
               <div className="flex flex-col items-end">
                 <Badge variant={product.stock > 0 ? "secondary" : "destructive"} className="px-3 py-1 rounded-none uppercase tracking-[0.2em] text-[10px] bg-[#5e2c18]/5 text-[#5e2c18] border-[#5e2c18]/10">
-                  {product.stock > 10 ? 'In Stock' : product.stock > 0 ? 'Low Stock' : 'Out of Stock'}
+                  {product.stock > 10 ? t('product.inStock') : product.stock > 0 ? t('product.lowStock') : t('product.outOfStock')}
                 </Badge>
                 {product.stock > 0 && product.stock <= 5 && (
                   <p className="text-[10px] text-amber-600 mt-1 font-medium animate-pulse uppercase tracking-wider">Only {product.stock} left</p>
@@ -207,17 +264,17 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
             >
-              Add to Collection
+              {t('product.addToCollection')}
             </Button>
 
             <div className="flex items-center gap-6 text-[10px] text-amber-900/40 uppercase tracking-[0.2em] font-bold pt-2">
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500/30" />
-                <span>Authentic</span>
+                <span>{t('product.authentic')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500/30" />
-                <span>Handmade</span>
+                <span>{t('product.handmade')}</span>
               </div>
             </div>
 
@@ -253,9 +310,9 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
             {(product.aiInsights) && (
             <Tabs defaultValue="insights" className="w-full">
               <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-[#fbf7f0] border border-amber-900/10">
-                <TabsTrigger value="insights" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-[#5e2c18] data-[state=active]:text-white">Insights</TabsTrigger>
-                <TabsTrigger value="passport" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-[#5e2c18] data-[state=active]:text-white">Passport</TabsTrigger>
-                <TabsTrigger value="provenance" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-[#5e2c18] data-[state=active]:text-white">Provenance</TabsTrigger>
+                <TabsTrigger value="insights" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-[#5e2c18] data-[state=active]:text-white">{t('product.insights')}</TabsTrigger>
+                <TabsTrigger value="passport" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-[#5e2c18] data-[state=active]:text-white">{t('product.passport')}</TabsTrigger>
+                <TabsTrigger value="provenance" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-[#5e2c18] data-[state=active]:text-white">{t('product.provenance')}</TabsTrigger>
               </TabsList>
 
               {/* Heritage Insights Tab */}
@@ -265,7 +322,7 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
                     <CardHeader className="pb-3 border-b border-amber-900/5 bg-[#fbf7f0]/50">
                       <div className="flex items-center gap-2">
                         <div className="w-1 h-3 bg-amber-500/40" />
-                        <CardTitle className="text-[10px] font-bold tracking-[0.3em] uppercase text-amber-900/60">Heritage Insights</CardTitle>
+                        <CardTitle className="text-[10px] font-bold tracking-[0.3em] uppercase text-amber-900/60">{t('product.heritageInsights')}</CardTitle>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-6 pt-6">
@@ -400,11 +457,7 @@ export function ProductDetailPageClient({ product }: { product: Product }) {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-                {products
-                    .filter(p => p.id !== product.id && (p.category === product.category || p.region === product.region))
-                    .sort(() => 0.5 - Math.random())
-                    .slice(0, 4)
-                    .map((item) => (
+                {relatedProducts.map((item) => (
                         <div key={item.id} className="group cursor-pointer">
                             <a href={`/product/${item.id}`} className="block space-y-6">
                                 <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100 group-hover:shadow-[0_20px_50px_rgba(94,44,24,0.15)] transition-all duration-700">
