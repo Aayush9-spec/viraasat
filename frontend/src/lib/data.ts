@@ -1,5 +1,62 @@
 import type { Product, Artisan, Order, User } from './types';
 
+export function getLocalProducts(): Product[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem('viraasat_local_products');
+    if (!raw) return [];
+    const items = JSON.parse(raw);
+    if (!Array.isArray(items)) return [];
+    return items.map((r: any) => ({
+      id: r.id || `local-prod-${Math.random()}`,
+      artisanId: r.artisan_id || r.artisanId || 'artisan-1',
+      name: r.name || 'Untitled Craft',
+      description: r.description || '',
+      tagline: r.tagline || '',
+      category: r.category || 'Home Decor',
+      price: Number(r.price) || 0,
+      currency: r.currency || 'INR',
+      stock: r.stock ?? 10,
+      images: Array.isArray(r.images) && r.images.length > 0 ? r.images : ['https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300'],
+      region: r.region || 'Rajasthan',
+      aiInsights: r.ai_insights || r.aiInsights,
+      isActive: r.isActive ?? true,
+      status: (r.status || 'active') as 'active' | 'archived',
+      createdAt: r.createdAt || new Date().toISOString(),
+      updatedAt: r.updatedAt || new Date().toISOString(),
+    }));
+  } catch (e) {
+    console.warn('Failed to parse viraasat_local_products from localStorage:', e);
+    return [];
+  }
+}
+
+export function saveLocalProduct(localItem: any): Product[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem('viraasat_local_products');
+    const localProducts = raw ? JSON.parse(raw) : [];
+    const idx = localProducts.findIndex((p: any) => p.id === localItem.id);
+    if (idx >= 0) {
+      localProducts[idx] = { ...localProducts[idx], ...localItem };
+    } else {
+      localProducts.unshift(localItem);
+    }
+    localStorage.setItem('viraasat_local_products', JSON.stringify(localProducts));
+
+    // Dispatch both standard and custom storage events for same-window listeners
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new CustomEvent('viraasat_products_updated'));
+
+    return getLocalProducts();
+  } catch (e) {
+    console.warn('Failed to save product to localStorage:', e);
+    return getLocalProducts();
+  }
+}
+
+
+
 export const users: User[] = [
   {
     id: 'artisan-1',
@@ -82,7 +139,7 @@ export const products: Product[] = [
     name: 'Azure Ceramic Vase',
     description: 'A stunning handcrafted ceramic vase, glazed in a deep azure blue. Perfect as a centerpiece or for holding your favorite flowers. Its unique shape is inspired by the waves of the ocean.',
     tagline: 'Hand-thrown by artisans in Jaipur.',
-    price: 3750,
+    price: 650,
     currency: 'INR',
     category: 'Home Decor',
     stock: 15,
@@ -110,7 +167,7 @@ export const products: Product[] = [
     name: 'Sunset Tapestry',
     description: 'A large, handwoven wall tapestry depicting a vibrant sunset over the desert. Made with naturally dyed wool and cotton fibers.',
     tagline: 'Woven with dreams in the heart of Kutch.',
-    price: 9900,
+    price: 1800,
     currency: 'INR',
     category: 'Textiles',
     stock: 5,
@@ -137,7 +194,7 @@ export const products: Product[] = [
     artisanId: 'artisan-1',
     description: 'Set of two rustic earthenware mugs, perfect for your morning coffee or tea. The textured finish provides a comfortable, earthy grip.',
     tagline: 'Sip your morning brew from the earth itself.',
-    price: 2500,
+    price: 380,
     currency: 'INR',
     stock: 25,
     category: 'Kitchenware',
@@ -155,7 +212,7 @@ export const products: Product[] = [
     artisanId: 'artisan-2',
     description: 'A lightweight cotton scarf with a hand-block printed geometric pattern. Versatile and stylish for any season.',
     tagline: 'A touch of modern artistry, block-printed by hand.',
-    price: 2000,
+    price: 250,
     currency: 'INR',
     stock: 50,
     category: 'Accessories',
@@ -173,7 +230,7 @@ export const products: Product[] = [
     artisanId: 'artisan-1',
     description: 'A simple yet elegant terracotta planter with a subtle etched pattern. Includes a drainage hole and matching saucer.',
     tagline: 'Give your favorite plant a worthy home.',
-    price: 2300,
+    price: 220,
     currency: 'INR',
     stock: 0,
     category: 'Gardening',
@@ -191,7 +248,7 @@ export const products: Product[] = [
     name: 'Glazed Soup Bowls',
     description: 'Set of four ceramic soup bowls with a unique reactive glaze. Each bowl has a slightly different pattern, making them one-of-a-kind.',
     tagline: 'Serve your favorite soups in style.',
-    price: 4200,
+    price: 750,
     currency: 'INR',
     category: 'Kitchenware',
     stock: 12,
@@ -209,7 +266,7 @@ export const products: Product[] = [
     name: 'Embroidered Cushion Cover',
     description: 'A vibrant, hand-embroidered cushion cover from Kutch. Features traditional mirror work and colorful thread.',
     tagline: 'Add a pop of color and culture to your home.',
-    price: 3200,
+    price: 480,
     currency: 'INR',
     category: 'Textiles',
     stock: 20,
@@ -227,7 +284,7 @@ export const products: Product[] = [
     artisanId: 'artisan-1',
     description: 'A complete tea set for two, including a teapot, two cups, and a serving tray. Finished with a delicate crackle glaze.',
     tagline: 'For moments of shared tranquility.',
-    price: 6800,
+    price: 1100,
     currency: 'INR',
     category: 'Kitchenware',
     stock: 8,
@@ -245,7 +302,7 @@ export const products: Product[] = [
     artisanId: 'artisan-1',
     description: 'A small wooden box, hand-painted with intricate floral motifs. Perfect for storing jewelry or keepsakes.',
     tagline: 'A beautiful home for your little treasures.',
-    price: 1800,
+    price: 320,
     currency: 'INR',
     stock: 30,
     category: 'Home Decor',
@@ -263,7 +320,7 @@ export const products: Product[] = [
     artisanId: 'artisan-2',
     description: 'A beautiful table runner made from handwoven cotton and colored with natural, plant-based dyes.',
     tagline: 'Dress your table in the colors of nature.',
-    price: 2900,
+    price: 350,
     currency: 'INR',
     stock: 18,
     category: 'Textiles',
@@ -281,7 +338,7 @@ export const products: Product[] = [
     artisanId: 'artisan-1',
     description: 'Traditional silver jhumka earrings with delicate filigree work. Lightweight and perfect for any occasion.',
     tagline: 'Timeless elegance for your ears.',
-    price: 4500,
+    price: 850,
     currency: 'INR',
     stock: 22,
     category: 'Jewelry',
@@ -299,7 +356,7 @@ export const products: Product[] = [
     artisanId: 'artisan-2',
     description: 'A soft, breathable cotton quilt featuring a classic Rajasthani block-print pattern. Reversible design.',
     tagline: 'Wrap yourself in the comfort of tradition.',
-    price: 8500,
+    price: 1400,
     currency: 'INR',
     stock: 7,
     category: 'Textiles',
@@ -317,7 +374,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'Taj Mahal-style stone inlay artistry (Pietra Dura). This handcrafted marble plate features intricate floral patterns inlaid with semi-precious stones, a craft perfected in Agra.',
     tagline: 'A piece of the Taj Mahal in your home.',
-    price: 12500,
+    price: 2200,
     currency: 'INR',
     category: 'Home Decor',
     stock: 8,
@@ -340,7 +397,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'Exquisite brass idol from the Brass City of India, Moradabad. This meticulously crafted Ganesh statue brings a golden glow of tradition to your home.',
     tagline: 'Divine craftsmanship in brass.',
-    price: 3500,
+    price: 550,
     currency: 'INR',
     category: 'Home Decor',
     stock: 15,
@@ -363,7 +420,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'A robust and decorative antique-style padlock from Aligarh, known globally for its quality locks. Fully functional with a unique key mechanism.',
     tagline: 'Security with a touch of history.',
-    price: 1800,
+    price: 280,
     currency: 'INR',
     category: 'Home Decor',
     stock: 25,
@@ -386,7 +443,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'UNESCO-recognized terracotta artistry from Gorakhpur. This large, ornate horse statue is handmade from natural clay and fired to perfection.',
     tagline: 'The spirit of the earth, captured in clay.',
-    price: 4200,
+    price: 700,
     currency: 'INR',
     category: 'Home Decor',
     stock: 5,
@@ -409,7 +466,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'A dazzling set of glass bangles from Firozabad, the glass capital of India. Features intricate hand-painted designs and vibrant colors.',
     tagline: 'Vibrant colors, delicate sound.',
-    price: 950,
+    price: 120,
     currency: 'INR',
     category: 'Jewelry',
     stock: 50,
@@ -432,7 +489,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'Delicate hand-cut paper stencils of Radha-Krishna from Mathura. A traditional temple art form that creates intricate patterns on water or floors.',
     tagline: 'Intricate paper artistry devoted to Lord Krishna.',
-    price: 1200,
+    price: 180,
     currency: 'INR',
     category: 'Painting',
     stock: 10,
@@ -455,7 +512,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'Stunning blue-glazed pottery from Khairabad, Sitapur. This vase is fired at low temperatures and features Persian-influenced floral designs.',
     tagline: 'The mesmerizing blue of Sitapur.',
-    price: 2800,
+    price: 420,
     currency: 'INR',
     category: 'Home Decor',
     stock: 12,
@@ -478,7 +535,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'The most refined hand embroidery in the world from Lucknow. Detailed thread work on fine fabric, featuring the famous "shadow work".',
     tagline: 'Elegance woven in white thread.',
-    price: 4500,
+    price: 950,
     currency: 'INR',
     category: 'Textiles',
     stock: 20,
@@ -501,7 +558,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'Export-quality carved wooden box from Saharanpur. Expertly crafted from Sheesham wood with intricate floral jaali (lattice) work.',
     tagline: 'Timeless beauty carved in wood.',
-    price: 3200,
+    price: 580,
     currency: 'INR',
     category: 'Home Decor',
     stock: 15,
@@ -524,7 +581,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'Regal, luxurious silk saree with gold zari work from the looms of Varanasi. A masterpiece of Indian weaving tradition.',
     tagline: 'The queen of sarees, straight from Varanasi.',
-    price: 18000,
+    price: 3800,
     currency: 'INR',
     category: 'Textiles',
     stock: 5,
@@ -547,7 +604,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'Detailed metal sculpting from Mathura. A handcrafted brass chariot featuring intricate figurines and traditional motifs, reflecting the city\'s heritage.',
     tagline: 'Timeless storytelling in brass.',
-    price: 6500,
+    price: 1200,
     currency: 'INR',
     category: 'Home Decor',
     stock: 6,
@@ -570,7 +627,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'A complete hand-painted ceramic dinner set from the Ceramic City, Khurja. Food safe and microwave friendly with vibrant traditional patterns.',
     tagline: 'Dine with the colors of tradition.',
-    price: 5500,
+    price: 900,
     currency: 'INR',
     category: 'Kitchenware',
     stock: 10,
@@ -593,7 +650,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'Durable and export-quality floor rug (dhurrie) woven in Mirzapur. Geometric patterns made from high-quality cotton yarn.',
     tagline: 'Rugged beauty for your floors.',
-    price: 2400,
+    price: 450,
     currency: 'INR',
     category: 'Home Decor',
     stock: 30,
@@ -616,7 +673,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'Royal gold and silver threadwork (Zardozi) on velvet. This framed piece showcases the opulent embroidery style originally crafted for kings.',
     tagline: 'The royal touch of gold embroidery.',
-    price: 7200,
+    price: 1600,
     currency: 'INR',
     category: 'Home Decor',
     stock: 8,
@@ -639,7 +696,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'A premium wool carpet from Bhadohi, the Carpet City of India. Densely knotted by hand for unmatched durability and intricate designs.',
     tagline: 'World-class luxury under your feet.',
-    price: 25000,
+    price: 4500,
     currency: 'INR',
     category: 'Home Decor',
     stock: 4,
@@ -662,7 +719,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'Exquisite Silver Filigree (Tarkashi) work from Varanasi. This decorative box is made from twisted silver wire, forming delicate lace-like patterns.',
     tagline: 'Lace woven in silver.',
-    price: 8500,
+    price: 1800,
     currency: 'INR',
     category: 'Home Decor',
     stock: 7,
@@ -685,7 +742,7 @@ export const products: Product[] = [
     artisanId: 'artisan-3',
     description: 'High-quality handcrafted leather messenger bag from Kanpur. Made from full-grain leather that ages beautifully, perfect for modern daily use.',
     tagline: 'Durability meets classic style.',
-    price: 4800,
+    price: 950,
     currency: 'INR',
     category: 'Accessories',
     stock: 20,
