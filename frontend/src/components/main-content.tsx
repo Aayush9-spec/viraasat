@@ -45,11 +45,13 @@ export function MainContent({ children }: { children: React.ReactNode }) {
               <div className="flex min-w-0 items-center gap-8">
                 <ViraasatLogo className="shrink-0" />
                 <div className="hidden xl:flex items-center space-x-7">
-                  <Link href="/" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Home</Link>
+                  <Link href="/" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.home')}</Link>
                   <Link href="/shop" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.shop')}</Link>
-                  <Link href="/artisan/dashboard" className="text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors">Artisan Portal</Link>
-                  <Link href={isArtisanRole ? "/artisan/products" : "/shop"} className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Products</Link>
-                  <Link href={isArtisanRole ? "/artisan/orders" : "/orders"} className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">Orders</Link>
+                  {isArtisanRole && (
+                    <Link href="/artisan/dashboard" className="text-sm font-semibold text-primary hover:text-primary/80 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 dark:bg-amber-950/40 dark:border-amber-800/30 dark:text-amber-300 transition-colors">{t('nav.artisan')}</Link>
+                  )}
+                  <Link href={isArtisanRole ? "/artisan/products" : "/shop"} className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.products')}</Link>
+                  <Link href={isArtisanRole ? "/artisan/orders" : "/orders"} className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">{t('nav.orders')}</Link>
                 </div>
               </div>
               <div className="flex shrink-0 items-center space-x-1 sm:space-x-3 xl:space-x-5">
@@ -72,10 +74,10 @@ export function MainContent({ children }: { children: React.ReactNode }) {
                 ) : (
                   <div className="hidden sm:flex items-center gap-2 sm:gap-3">
                     <Button variant="ghost" asChild className="text-foreground/70 hover:text-primary transition-colors text-sm font-medium">
-                      <Link href="/login">{t('nav.login') || "Login"}</Link>
+                      <Link href="/login">{t('nav.login')}</Link>
                     </Button>
                     <Button asChild className="text-primary-foreground rounded-md transition-all ease-out duration-300 bg-primary hover:bg-primary/90 text-sm font-medium">
-                      <Link href="/login">Sign Up</Link>
+                      <Link href="/login">{t('nav.signUp')}</Link>
                     </Button>
                   </div>
                 )}
