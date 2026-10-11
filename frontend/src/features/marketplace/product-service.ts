@@ -1,45 +1,49 @@
-import { products, categories as staticCategories, regions as staticRegions } from '@/lib/data';
+import { products, getLocalProducts, categories as staticCategories, regions as staticRegions } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { supabase } from '@/services/supabase';
 
 export class ProductService {
   static async getAllProducts(): Promise<Product[]> {
+    const localProds = getLocalProducts();
+    let dbProducts: Product[] = [];
+
     try {
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-
-      const dbProducts = (data ?? []).map((row) => ({
-        id: row.id,
-        artisanId: row.artisan_id,
-        name: row.name,
-        category: row.category,
-        description: row.description,
-        price: row.price,
-        stock: row.stock,
-        images: row.images ?? [],
-        region: row.region,
-        aiInsights: row.ai_insights,
-        createdAt: row.created_at,
-      })) as Product[];
-
-      const merged = [...dbProducts];
-      products.forEach((staticProd) => {
-        if (!merged.some((p) => p.id === staticProd.id)) {
-          merged.push(staticProd);
-        }
-      });
-      return merged;
+      if (!error && data) {
+        dbProducts = data.map((row) => ({
+          id: row.id,
+          artisanId: row.artisan_id,
+          name: row.name,
+          category: row.category,
+          description: row.description,
+          price: row.price,
+          stock: row.stock,
+          images: row.images ?? [],
+          region: row.region,
+          aiInsights: row.ai_insights,
+          createdAt: row.created_at,
+        })) as Product[];
+      }
     } catch (e) {
-      console.warn('Failed to fetch products from Supabase, falling back to static:', e);
-      return products;
+      console.warn('Failed to fetch products from Supabase, falling back:', e);
     }
+
+    const map = new Map<string, Product>();
+    [...localProds, ...dbProducts, ...products].forEach((p) => {
+      if (p.id) map.set(p.id, p);
+    });
+    return Array.from(map.values());
   }
 
   static async getProductById(id: string): Promise<Product | undefined> {
+    const localProds = getLocalProducts();
+    const localMatch = localProds.find((p) => p.id === id);
+    if (localMatch) return localMatch;
+
     try {
       const { data, error } = await supabase
         .from('products')
@@ -47,26 +51,27 @@ export class ProductService {
         .eq('id', id)
         .single();
 
-      if (error) throw error;
-
-      return {
-        id: data.id,
-        artisanId: data.artisan_id,
-        name: data.name,
-        category: data.category,
-        description: data.description,
-        price: data.price,
-        stock: data.stock,
-        images: data.images ?? [],
-        region: data.region,
-        aiInsights: data.ai_insights,
-        createdAt: data.created_at,
-      } as Product;
+      if (!error && data) {
+        return {
+          id: data.id,
+          artisanId: data.artisan_id,
+          name: data.name,
+          category: data.category,
+          description: data.description,
+          price: data.price,
+          stock: data.stock,
+          images: data.images ?? [],
+          region: data.region,
+          aiInsights: data.ai_insights,
+          createdAt: data.created_at,
+        } as Product;
+      }
     } catch (e) {
       console.warn(`Failed to fetch product ${id} from Supabase:`, e);
-      return products.find((p) => p.id === id);
     }
+    return products.find((p) => p.id === id);
   }
+
 
   static async getProductsByCategory(category: string): Promise<Product[]> {
     const all = await this.getAllProducts();
