@@ -37,11 +37,11 @@ export function ArtisanNav() {
             key={href}
             href={href}
             className={cn(
-              'flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-muted-foreground transition-all hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/30',
-              isActive && 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-semibold shadow-sm'
+              'flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-muted-foreground transition-all duration-200 hover:text-foreground hover:bg-amber-900/10 dark:hover:bg-amber-950/40',
+              isActive && 'bg-[#5e2c18] text-amber-50 font-semibold shadow-md dark:bg-amber-950/90 dark:text-amber-100 dark:border dark:border-amber-800/40'
             )}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className={cn('h-4 w-4 transition-colors', isActive ? 'text-amber-300 dark:text-amber-400' : 'text-muted-foreground/70')} />
             {label}
           </Link>
         );
