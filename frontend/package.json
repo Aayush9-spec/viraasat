@@ -20,6 +20,7 @@
     "test:keyboard": "playwright test tests/e2e/keyboard.spec.ts"
   },
   "dependencies": {
+    "@clerk/clerk-js": "^6.38.1",
     "@clerk/nextjs": "^7.3.2",
     "@clerk/ui": "^1.33.1",
     "@genkit-ai/google-genai": "^1.42.0",
