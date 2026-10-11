@@ -100,6 +100,9 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
         }
 
         await setSignInActive({ session: res.createdSessionId });
+        // Always stamp the role chosen on the login page so the next render
+        // picks up the right dashboard immediately. useUserRole will reconcile
+        // with Clerk metadata / Firestore on the next load.
         localStorage.setItem('viraasat_session_role', role);
 
         toast({
