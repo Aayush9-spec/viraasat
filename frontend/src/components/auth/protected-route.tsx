@@ -40,15 +40,7 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
       const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
 
       if (!isSignedIn || !user) {
-        // Check local cached role fallback before redirecting
-        const cachedRole = typeof window !== 'undefined' ? (localStorage.getItem('viraasat_session_role') as UserRole | null) : null;
-
-        if (cachedRole && rolesArray.includes(cachedRole)) {
-          setIsAuthorized(true);
-          setCheckingAuth(false);
-          return;
-        }
-
+        // User is not signed in — always redirect to login, never trust cached role
         const loginRedirect = pathname.startsWith('/artisan') ? '/login/artisan' : `/login?redirectUrl=${encodeURIComponent(pathname)}`;
         router.push(loginRedirect);
         setCheckingAuth(false);
