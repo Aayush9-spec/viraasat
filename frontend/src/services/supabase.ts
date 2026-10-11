@@ -11,6 +11,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(
-  supabaseUrl ?? 'https://mkeowabbnpyenqeiybzw.supabase.co',
-  supabaseAnonKey ?? '',
+  supabaseUrl || 'https://mkeowabbnpyenqeiybzw.supabase.co',
+  supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy',
 );
