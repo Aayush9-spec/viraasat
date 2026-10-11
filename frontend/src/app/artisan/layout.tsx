@@ -20,7 +20,7 @@ export default function ArtisanLayout({
               <ViraasatLogo />
             </div>
             <div className="px-4 py-2">
-              <div className="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-semibold">
+              <div className="px-3 py-1.5 rounded-xl bg-[#5e2c18]/10 border border-[#5e2c18]/20 text-[#5e2c18] dark:bg-amber-950/40 dark:border-amber-800/30 dark:text-amber-300 text-xs font-bold tracking-wider uppercase">
                 Artisan Business Studio
               </div>
             </div>
