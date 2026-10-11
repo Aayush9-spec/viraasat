@@ -107,7 +107,7 @@ export default function RootLayout({
                 defaultTheme="clay"
                 enableSystem
                 disableTransitionOnChange
-                themes={['light', 'dark', 'sapphire', 'emerald', 'sunset', 'clay']}
+                themes={['light', 'dark', 'clay']}
               >
                 <CartProvider>
                   <WishlistProvider>
