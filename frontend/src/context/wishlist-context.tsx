@@ -11,6 +11,7 @@ import React, {
 import type { Product } from '@/lib/types';
 import { useUser } from '@clerk/nextjs';
 import { supabase } from '@/services/supabase';
+import { STORAGE_KEYS } from '@/config/constants';
 
 interface WishlistContextType {
   wishlist: Product[];
@@ -20,7 +21,7 @@ interface WishlistContextType {
   wishlistCount: number;
 }
 
-const WISHLIST_KEY = 'viraasat-wishlist';
+const WISHLIST_KEY = STORAGE_KEYS.WISHLIST;
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 

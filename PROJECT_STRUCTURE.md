@@ -11,12 +11,25 @@ viraasat/
 ├── src/
 │   ├── app/                         # 🌐 ROUTES / PAGES (Clean Next.js App Router)
 │   │   ├── (auth)/                  #   - Login / Signup route wrappers
-│   │   ├── dashboard/               #   - Control panel page folders (products, metrics, sustainability)
+│   │   ├── admin/                   #   - Moderation & application review console
+│   │   ├── artisan/                 #   - Artisan dashboard, inventory, & provenance
 │   │   ├── shop/                    #   - Product marketplace listing page
 │   │   ├── product/[id]/            #   - Dynamic route for single product details
 │   │   ├── checkout/                #   - Razorpay transaction storefront checkout
-│   │   ├── layout.tsx               #   - Root viewport container and main providers
+│   │   ├── layout.tsx               #   - Root viewport container with AppProviders & AppShell
 │   │   └── globals.css              #   - Tailwind global styling and theme variables
+│   │
+│   ├── config/                      # ⚙️ CONFIGURATION & ENVIRONMENT
+│   │   ├── env.ts                   #   - Type-safe, validated environment variables with fallbacks
+│   │   ├── site.ts                  #   - Site-wide navigation links, social handles, metadata
+│   │   ├── constants.ts             #   - Central constants (Storage keys, roles, currencies)
+│   │   └── index.ts                 #   - Barrel export
+│   │
+│   ├── services/                    # 🔌 SERVICES & API CLIENTS
+│   │   ├── api/                     #   - Centralized typed API client (products, orders, users, AI)
+│   │   ├── backend/                 #   - Python FastAPI service client
+│   │   ├── firebase/                #   - Firestore, Storage, and Auth client drivers
+│   │   └── supabase.ts              #   - Supabase client singleton
 │   │
 │   ├── features/                    # 🧩 BUSINESS FEATURES (Scoped Modules)
 │   │   ├── artisan/                 #   - Listing management and media enhancements
@@ -25,16 +38,34 @@ viraasat/
 │   │   ├── cart/                    #   - Sidebar bag summary and context operations
 │   │   └── analytics/               #   - Business forecasts and sustainability dashboards
 │   │
-│   ├── services/                    # ⚙️ SERVICES LAYER (APIs & Database Adapters)
-│   │   └── firebase/                #   - Firestore, Storage, and Auth client drivers
+│   ├── hooks/                       # 🪝 REUSABLE CUSTOM HOOKS (Business Logic)
+│   │   ├── use-auth-form.ts         #   - Decoupled auth form state & Clerk SSO handler
+│   │   ├── use-admin-dashboard.ts   #   - Moderation & application approval logic
+│   │   ├── use-user-role.ts         #   - Session role resolution & cache reconciliation
+│   │   └── use-products.ts          #   - Catalog loading with search & filter state
 │   │
-│   ├── ai/                          # 🤖 AI WORKFLOWS (Next.js server-side Genkit flows)
-│   │   └── flows/                   #   - chat, translate, image analysis Genkit executions
+│   ├── context/                     # 📦 STATE MANAGEMENT PROVIDERS
+│   │   ├── cart-context.tsx         #   - Cart operations with LocalStorage sync & memoization
+│   │   ├── wishlist-context.tsx     #   - Wishlist with Supabase sync
+│   │   └── language-context.tsx     #   - Multilingual internationalization dictionary
 │   │
-│   └── components/                  # 🎨 SHARED UI components (Buttons, inputs, icons)
-│       ├── common/                  #   - PWA features and network listeners
-│       └── ui/                      #   - Shadcn primitive UI libraries
-│
+│   ├── components/                  # 🎨 MODULAR UI COMPONENTS
+│   │   ├── layout/                  #   - Header, Footer, and AppShell
+│   │   ├── common/                  #   - ErrorBoundary, PWA lifecycle, Online status
+│   │   ├── ui/                      #   - Shadcn primitive UI design tokens
+│   │   └── providers.tsx            #   - Unified AppProviders hierarchy
+│   │
+│   ├── types/                       # 🏷️ TYPE CONTRACTS
+│   │   ├── api.ts                   #   - ApiResponse<T> & ApiErrorDetail
+│   │   ├── product.ts               #   - Product models
+│   │   ├── user.ts                  #   - UserProfile & UserRole models
+│   │   └── index.ts                 #   - Barrel type exports
+│   │
+│   └── lib/                         # 🛠️ UTILITIES & HELPERS
+│       ├── api-response.ts          #   - Standardized API route response constructors
+│       ├── utils.ts                 #   - Tailwind merge & classnames helper
+│       └── data.ts                  #   - Seed craft data
+```
 ├── backend/                         # 🧠 PYTHON BACK-OFFICE (FastAPI & ML Services)
 │   ├── app/
 │   │   └── api/                     #   - FastAPI route mappings and entry gateway

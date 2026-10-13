@@ -16,3 +16,5 @@ export type User = {
   lastLogin?: string;
 };
 
+export type UserProfile = User;
+

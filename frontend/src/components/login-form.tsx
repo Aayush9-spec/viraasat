@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,10 +8,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { FaFacebook } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
-import { useClerk, useSignIn, useSignUp } from '@clerk/nextjs';
 import { ViraasatLogo } from './viraasat-logo';
+import { useAuthForm } from '@/hooks/use-auth-form';
 
 interface LoginFormProps {
   userType: 'Artisan' | 'Customer';
@@ -20,154 +17,19 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps) {
-  const [isSignUp, setIsSignUp] = useState(initialIsSignUp);
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(true);
-  const router = useRouter();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSocialLoading, setIsSocialLoading] = useState(false);
-
-  const clerk = useClerk();
-  const signInHook = useSignIn() as any;
-  const signUpHook = useSignUp() as any;
-
-  const signIn = signInHook?.signIn || signInHook;
-  const setSignInActive = signInHook?.setActive || (clerk as any)?.setActive;
-
-  const signUp = signUpHook?.signUp || signUpHook;
-  const setSignUpActive = signUpHook?.setActive || (clerk as any)?.setActive;
-
-  const isArtisan = userType === 'Artisan';
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const identifier = (formData.get('email') as string) || '';
-    const password = (formData.get('password') as string) || '';
-    const fullname = (formData.get('fullname') as string) || '';
-
-    if (isSignUp && confirmPassword && password !== confirmPassword) {
-      toast({
-        title: "Passwords Do Not Match",
-        description: "Please make sure your passwords match.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    const role = isArtisan ? 'artisan' : 'buyer';
-
-    try {
-      if (isSignUp) {
-        if (!signUp || typeof signUp.create !== 'function' || !setSignUpActive) {
-          throw new Error('Sign-up is temporarily unavailable. Please try again.');
-        }
-
-        const nameParts = fullname.trim().split(' ');
-        const firstName = nameParts[0] || fullname;
-        const lastName = nameParts.slice(1).join(' ') || undefined;
-        const res = await signUp.create({
-          emailAddress: identifier,
-          password,
-          firstName,
-          lastName,
-          unsafeMetadata: { role },
-        });
-
-        if (res.status !== 'complete' || !res.createdSessionId) {
-          throw new Error('Please complete the required verification before signing in.');
-        }
-
-        await setSignUpActive({ session: res.createdSessionId });
-        localStorage.setItem('viraasat_session_role', role);
-
-        toast({
-          title: "Account Created Successfully!",
-          description: `Welcome to Viraasat, ${fullname || (isArtisan ? 'Artisan' : 'Customer')}!`,
-        });
-        router.push(isArtisan ? '/artisan/dashboard' : '/shop');
-      } else {
-        if (!signIn || typeof signIn.create !== 'function' || !setSignInActive) {
-          throw new Error('Sign-in is temporarily unavailable. Please try again.');
-        }
-
-        const res = await signIn.create({ identifier, password });
-        if (res.status !== 'complete' || !res.createdSessionId) {
-          throw new Error('Additional verification is required before signing in.');
-        }
-
-        await setSignInActive({ session: res.createdSessionId });
-        // Always stamp the role chosen on the login page so the next render
-        // picks up the right dashboard immediately. useUserRole will reconcile
-        // with Clerk metadata / Firestore on the next load.
-        localStorage.setItem('viraasat_session_role', role);
-
-        toast({
-          title: "Authentication Successful",
-          description: `Welcome back to Viraasat!`,
-        });
-        router.push(isArtisan ? '/artisan/dashboard' : '/shop');
-      }
-    } catch (err: any) {
-      console.error('Auth handler error:', err);
-      toast({
-        title: 'Authentication Failed',
-        description:
-          err?.errors?.[0]?.longMessage ||
-          err?.errors?.[0]?.message ||
-          err?.message ||
-          'Please check your details and try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSocialAuth = async (strategy: 'oauth_google' | 'oauth_facebook') => {
-    setIsSocialLoading(true);
-    const role = isArtisan ? 'artisan' : 'buyer';
-
-    try {
-      localStorage.setItem('viraasat_session_role', role);
-
-      const redirectUrl = new URL(
-        isArtisan ? '/artisan/dashboard' : '/shop',
-        window.location.origin,
-      ).toString();
-      const redirectCallbackUrl = new URL('/sso-callback', window.location.origin).toString();
-      const authResource = isSignUp ? signUp : signIn;
-
-      if (!authResource || typeof authResource.sso !== 'function') {
-        throw new Error('Social sign-in is temporarily unavailable. Please try again in a few seconds.');
-      }
-
-      const { error } = await authResource.sso({
-        strategy,
-        redirectUrl,
-        redirectCallbackUrl,
-      });
-
-      if (error) {
-        throw error;
-      }
-    } catch (err: any) {
-      console.error('Social Auth Error:', err);
-      toast({
-        title: 'Authentication Failed',
-        description:
-          err?.errors?.[0]?.longMessage ||
-          err?.errors?.[0]?.message ||
-          err?.message ||
-          'Social sign-in could not be started. Please try again.',
-        variant: 'destructive',
-      });
-      setIsSocialLoading(false);
-    }
-  };
+  const {
+    isSignUp,
+    setIsSignUp,
+    confirmPassword,
+    setConfirmPassword,
+    rememberMe,
+    setRememberMe,
+    isLoading,
+    isSocialLoading,
+    isArtisan,
+    handleSubmit,
+    handleSocialAuth,
+  } = useAuthForm({ userType, initialIsSignUp });
 
   const handleGoogleAuth = () => handleSocialAuth('oauth_google');
   const handleFacebookAuth = () => handleSocialAuth('oauth_facebook');

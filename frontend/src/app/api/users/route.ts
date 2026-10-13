@@ -1,19 +1,44 @@
-import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { NextResponse } from 'next/server';
+import fs from 'node:fs';
+import path from 'node:path';
+import { apiError, apiSuccess, handleApiError } from '@/lib/api-response';
 
-// Next.js runs with cwd = frontend/, so step up to the repo root for the seed DB.
-const usersFilePath = path.join(process.cwd(), "..", "database", "users.json");
+const usersFilePath = path.join(process.cwd(), '..', 'database', 'users.json');
 
-// Helper to read users
-function readUsers() {
-  const data = fs.readFileSync(usersFilePath, "utf-8");
-  return JSON.parse(data);
+interface UserRecord {
+  id: string;
+  name: string;
+  email: string;
+  role?: string;
+  profile?: Record<string, unknown>;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-// Helper to write users
-function writeUsers(users: any[]) {
-  fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+function readUsers(): UserRecord[] {
+  try {
+    if (fs.existsSync(usersFilePath)) {
+      const data = fs.readFileSync(usersFilePath, 'utf-8');
+      return JSON.parse(data) as UserRecord[];
+    }
+  } catch (err) {
+    console.warn('[Users API] Could not read database/users.json:', err);
+  }
+  return [];
+}
+
+function writeUsers(users: UserRecord[]): boolean {
+  try {
+    const dir = path.dirname(usersFilePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+    return true;
+  } catch (err) {
+    console.warn('[Users API] Could not write database/users.json (read-only environment):', err);
+    return false;
+  }
 }
 
 // GET - list all users
@@ -22,33 +47,37 @@ export function GET() {
     const users = readUsers();
     return NextResponse.json(users);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
+    return handleApiError(error, 'Failed to fetch users');
   }
 }
 
 // POST - create a new user
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const users = readUsers();
 
-    // Simple validation
     if (!body.name || !body.email) {
-      return NextResponse.json(
-        { error: "Name and email are required" },
-        { status: 400 }
-      );
+      return apiError('Name and email are required', 400, 'MISSING_REQUIRED_FIELDS');
     }
 
-    // Assign a new ID (simple incremental approach)
-    const maxId = users.length > 0 ? Math.max(...users.map((u: any) => Number(u.id.split("-")[1]))) : 0;
+    const maxId =
+      users.length > 0
+        ? Math.max(
+          ...users.map((u) => {
+            const num = Number(u.id?.split('-')[1]);
+            return isNaN(num) ? 0 : num;
+          })
+        )
+        : 0;
+
     const newId = `user-${maxId + 1}`;
 
-    const newUser = {
+    const newUser: UserRecord = {
       id: newId,
       name: body.name,
       email: body.email,
-      role: body.role || "user",
+      role: body.role || 'user',
       profile: body.profile || {},
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -59,9 +88,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
+    return handleApiError(error, 'Failed to save user');
   }
 }
-
-// Item operations (GET/PATCH/DELETE by id) live in [id]/route.ts,
-// since only dynamic route segments receive `params`.

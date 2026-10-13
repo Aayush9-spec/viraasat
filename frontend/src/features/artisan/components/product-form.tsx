@@ -96,7 +96,10 @@ export function ProductForm({ product }: ProductFormProps) {
     setIsPredictingPrice(true);
     try {
       const values = form.getValues();
-      const data = await backendPost<{ recommended_price: number }>('/api/predict-price', {
+      const data = await backendPost<{ recommended_price: number; craft_tier?: string; labor_cost?: number; material_factor?: number; sustainability_premium?: number; price_range?: { min: number; max: number } }>('/api/predict-price', {
+        name: values.name || '',
+        description: values.description || '',
+        region: values.region || '',
         category: values.category || 'Home Decor',
         material: values.material || 'Natural Vegetable Dyes',
         labor_hours: Number(values.laborHours) || 5,
@@ -105,10 +108,10 @@ export function ProductForm({ product }: ProductFormProps) {
       });
       setPricingInfo(data);
       form.setValue('price', data.recommended_price);
-        toast({
-          title: "AI Suggested Price Applied!",
-          description: `Suggested price: ₹${data.recommended_price} based on labor & materials.`
-        });
+      toast({
+        title: "AI Fair Artisan Price Applied!",
+        description: `Suggested ₹${data.recommended_price} based on ${data.craft_tier || 'craft economics'} & local labor costs.`
+      });
     } catch (err) {
       console.error(err);
       toast({
@@ -588,11 +591,15 @@ export function ProductForm({ product }: ProductFormProps) {
                         </FormControl>
                         <SelectContent>
                           {[
-                            "Natural Vegetable Dyes",
+                            "Terracotta & Natural Clay",
                             "Multani Mitti & Quartz",
-                            "Changthangi Cashmere Wool",
+                            "Natural Vegetable Dyes",
+                            "Khadi Cotton",
+                            "Jute & Bamboo",
+                            "Sheesham & Teak Wood",
+                            "Brass & Bell Metal",
                             "Pure Chandi / Silver Alloy",
-                            "Khadi Cotton"
+                            "Changthangi Cashmere Wool"
                           ].map((mat) => (
                             <SelectItem key={mat} value={mat}>
                               {mat}
@@ -636,12 +643,33 @@ export function ProductForm({ product }: ProductFormProps) {
                 </div>
 
                 {pricingInfo && (
-                  <div className="p-3 bg-green-50/50 border border-green-200 text-left text-xs space-y-1 rounded-sm">
-                    <div className="font-bold text-green-800">Suggested Price Details:</div>
-                    <div>Estimated Labor Cost: ₹{pricingInfo.labor_cost}</div>
-                    <div>Material Multiplier: x{pricingInfo.material_factor}</div>
-                    <div>Sustainability Sourcing Premium: +₹{pricingInfo.sustainability_premium}</div>
-                    <div className="text-muted-foreground text-[10px] mt-1 font-mono">Suggested Range: ₹{pricingInfo.price_range.min} - ₹{pricingInfo.price_range.max}</div>
+                  <div className="p-3 bg-green-50/50 border border-green-200 text-left text-xs space-y-1.5 rounded-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-green-900">AI Fair Price Breakdown:</span>
+                      {pricingInfo.craft_tier && (
+                        <span className="text-[10px] bg-green-100 text-green-800 font-medium px-2 py-0.5 rounded-full border border-green-300">
+                          {pricingInfo.craft_tier}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-muted-foreground flex justify-between">
+                      <span>Artisan Labor Wage:</span>
+                      <span className="font-semibold text-foreground">₹{pricingInfo.labor_cost}</span>
+                    </div>
+                    <div className="text-muted-foreground flex justify-between">
+                      <span>Material Cost Factor:</span>
+                      <span className="font-semibold text-foreground">x{pricingInfo.material_factor}</span>
+                    </div>
+                    <div className="text-muted-foreground flex justify-between">
+                      <span>Sustainably Sourced Value:</span>
+                      <span className="font-semibold text-foreground">+₹{pricingInfo.sustainability_premium}</span>
+                    </div>
+                    {pricingInfo.price_range && (
+                      <div className="text-muted-foreground text-[11px] pt-1.5 border-t border-green-200 flex justify-between font-mono">
+                        <span>Suggested Range:</span>
+                        <span className="font-bold text-green-700">₹{pricingInfo.price_range.min} - ₹{pricingInfo.price_range.max}</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>

@@ -1,17 +1,44 @@
-import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { NextResponse } from 'next/server';
+import fs from 'node:fs';
+import path from 'node:path';
+import { apiError, handleApiError } from '@/lib/api-response';
 
-// Next.js runs with cwd = frontend/, so step up to the repo root for the seed DB.
-const usersFilePath = path.join(process.cwd(), "..", "database", "users.json");
+const usersFilePath = path.join(process.cwd(), '..', 'database', 'users.json');
 
-function readUsers() {
-  const data = fs.readFileSync(usersFilePath, "utf-8");
-  return JSON.parse(data);
+interface UserRecord {
+  id: string;
+  name: string;
+  email: string;
+  role?: string;
+  profile?: Record<string, unknown>;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-function writeUsers(users: unknown[]) {
-  fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+function readUsers(): UserRecord[] {
+  try {
+    if (fs.existsSync(usersFilePath)) {
+      const data = fs.readFileSync(usersFilePath, 'utf-8');
+      return JSON.parse(data) as UserRecord[];
+    }
+  } catch (err) {
+    console.warn('[Users API] Could not read database/users.json:', err);
+  }
+  return [];
+}
+
+function writeUsers(users: UserRecord[]): boolean {
+  try {
+    const dir = path.dirname(usersFilePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+    return true;
+  } catch (err) {
+    console.warn('[Users API] Could not write database/users.json:', err);
+    return false;
+  }
 }
 
 // GET - fetch a single user by id
@@ -22,13 +49,13 @@ export async function GET(
   try {
     const { id } = await params;
     const users = readUsers();
-    const user = users.find((u: { id: string }) => u.id === id);
+    const user = users.find((u) => u.id === id);
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return apiError('User not found', 404, 'NOT_FOUND');
     }
     return NextResponse.json(user);
-  } catch {
-    return NextResponse.json({ error: "Failed to fetch user" }, { status: 500 });
+  } catch (error) {
+    return handleApiError(error, 'Failed to fetch user');
   }
 }
 
@@ -39,17 +66,17 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const users = readUsers();
-    const index = users.findIndex((u: { id: string }) => u.id === id);
+    const index = users.findIndex((u) => u.id === id);
     if (index === -1) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return apiError('User not found', 404, 'NOT_FOUND');
     }
     users[index] = { ...users[index], ...body, updatedAt: new Date().toISOString() };
     writeUsers(users);
     return NextResponse.json(users[index]);
-  } catch {
-    return NextResponse.json({ error: "Failed to update user" }, { status: 500 });
+  } catch (error) {
+    return handleApiError(error, 'Failed to update user');
   }
 }
 
@@ -61,14 +88,14 @@ export async function DELETE(
   try {
     const { id } = await params;
     const users = readUsers();
-    const index = users.findIndex((u: { id: string }) => u.id === id);
+    const index = users.findIndex((u) => u.id === id);
     if (index === -1) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return apiError('User not found', 404, 'NOT_FOUND');
     }
-    users.splice(index, 1);
+    const [deleted] = users.splice(index, 1);
     writeUsers(users);
-    return NextResponse.json({ message: "User deleted" });
-  } catch {
-    return NextResponse.json({ error: "Failed to delete user" }, { status: 500 });
+    return NextResponse.json({ success: true, user: deleted });
+  } catch (error) {
+    return handleApiError(error, 'Failed to delete user');
   }
 }

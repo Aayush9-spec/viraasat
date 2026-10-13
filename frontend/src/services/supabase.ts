@@ -1,7 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { env } from '@/config/env';
+
+const supabaseUrl = env.supabase.url;
+const supabaseAnonKey = env.supabase.anonKey;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(

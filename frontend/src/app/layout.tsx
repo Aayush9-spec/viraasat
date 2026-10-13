@@ -1,24 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import './globals.css';
-import { Toaster } from '@/components/ui/toaster';
-import { ViraasatLogo } from '@/components/viraasat-logo';
-import { Button } from '@/components/ui/button';
-import { Search, ShoppingCart, Instagram, Facebook, Twitter, Globe } from 'lucide-react';
-import Link from 'next/link';
-import { LanguageProvider } from '@/context/language-context';
-import LanguageSwitcher from '@/components/language-switcher';
-import { MainContent } from '@/components/main-content';
-import { CartProvider } from '@/context/cart-context';
-import { WishlistProvider } from '@/context/wishlist-context';
-import { Background3D } from '@/components/background-3d';
-import { ThemeProvider } from '@/components/theme-provider';
-import InstallPrompt from '@/components/common/install-prompt';
-import PWALifecycle from '@/components/common/pwa-lifecycle';
-import OnlineStatus from '@/components/common/online-status';
-import { ClerkProvider } from '@clerk/nextjs';
-import { shadcn } from '@clerk/ui/themes';
-import { AuthSync } from '@/components/auth-sync';
+import { env } from '@/config/env';
+import { siteConfig } from '@/config/site';
+import { AppProviders } from '@/components/providers';
+import { AppShell } from '@/components/layout';
 
 const inter = {
   variable: 'font-sans',
@@ -28,30 +14,28 @@ const cormorant = {
   variable: 'font-serif',
 };
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
-
 export const metadata: Metadata = {
-  title: 'Viraasat - Artisan Marketplace',
-  description: 'A premium marketplace for authentic artisan crafts and heritage products, powered by AI.',
-  applicationName: 'Viraasat',
+  title: `${siteConfig.name} - ${siteConfig.tagline}`,
+  description: siteConfig.description,
+  applicationName: siteConfig.name,
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Viraasat',
+    title: siteConfig.name,
   },
   formatDetection: {
     telephone: false,
   },
   openGraph: {
     type: 'website',
-    siteName: 'Viraasat',
-    title: 'Viraasat - Artisan Marketplace',
-    description: 'A premium marketplace for authentic artisan crafts and heritage products',
+    siteName: siteConfig.name,
+    title: `${siteConfig.name} - ${siteConfig.tagline}`,
+    description: siteConfig.description,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Viraasat - Artisan Marketplace',
-    description: 'A premium marketplace for authentic artisan crafts and heritage products',
+    title: `${siteConfig.name} - ${siteConfig.tagline}`,
+    description: siteConfig.description,
   },
   manifest: '/manifest.json',
 };
@@ -82,47 +66,16 @@ export default function RootLayout({
           id="sw-build-id"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
-            __html: `window.__SW_BUILD_ID__=${JSON.stringify(
-              process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ||
-                process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ||
-                'dev',
-            )};`,
+            __html: `window.__SW_BUILD_ID__=${JSON.stringify(env.app.commitSha)};`,
           }}
         />
       </head>
       <body className="font-sans antialiased text-foreground" suppressHydrationWarning>
-        <ClerkProvider 
-          publishableKey={
-            process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
-            'pk_test_c2hpbmluZy1mcm9nLTU3LmNsZXJrLmFjY291bnRzLmRldiQ'
-          }
-          allowedRedirectOrigins={[appUrl]}
-          appearance={{ theme: shadcn }}
-        >
-          <PWALifecycle />
-          <AuthSync />
-          <LanguageProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="clay"
-                enableSystem
-                disableTransitionOnChange
-                themes={['light', 'dark', 'clay']}
-              >
-                <CartProvider>
-                  <WishlistProvider>
-                    <Background3D />
-                    <MainContent>
-                      {children}
-                    </MainContent>
-                    <InstallPrompt />
-                    <OnlineStatus />
-                  </WishlistProvider>
-                </CartProvider>
-              </ThemeProvider>
-          </LanguageProvider>
-          <Toaster />
-        </ClerkProvider>
+        <AppProviders>
+          <AppShell>
+            {children}
+          </AppShell>
+        </AppProviders>
       </body>
     </html>
   );

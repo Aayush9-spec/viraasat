@@ -16,19 +16,7 @@ const Carousel3DLazy = dynamic(
     }
 );
 
-class ErrorBoundary extends Component<{ children: ReactNode; fallback: ReactNode }, { hasError: boolean }> {
-    state = { hasError: false };
-    static getDerivedStateFromError() {
-        return { hasError: true };
-    }
-    componentDidCatch(error: any) {
-        console.warn("Carousel3D WebGL render error:", error);
-    }
-    render() {
-        if (this.state.hasError) return this.props.fallback;
-        return this.props.children;
-    }
-}
+import { ErrorBoundary } from '@/components/common/error-boundary';
 
 function CarouselLoadingSkeleton() {
     return (

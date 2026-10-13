@@ -1,14 +1,14 @@
 'use client';
 
-import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
+import React, { createContext, useState, useContext, type ReactNode, useCallback, useMemo, useEffect } from 'react';
+import { STORAGE_KEYS } from '@/config/constants';
 import type { Product } from '@/lib/types';
-import { useToast } from '@/hooks/use-toast';
 
-interface CartItem extends Product {
+export interface CartItem extends Product {
   quantity: number;
 }
 
-interface CartContextType {
+export interface CartContextType {
   isCartOpen: boolean;
   setCartOpen: (isOpen: boolean) => void;
   cartItems: CartItem[];
@@ -25,29 +25,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isCartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const { toast } = useToast();
 
   // Persistence: Load from localStorage
-  React.useEffect(() => {
-    const savedCart = localStorage.getItem('viraasat-cart');
-    if (savedCart) {
-      try {
+  useEffect(() => {
+    try {
+      const savedCart = localStorage.getItem(STORAGE_KEYS.CART);
+      if (savedCart) {
         setCartItems(JSON.parse(savedCart));
-      } catch (e) {
-        console.error('Failed to parse cart from localStorage', e);
       }
+    } catch (e) {
+      console.error('Failed to parse cart from localStorage', e);
     }
     setHasLoaded(true);
   }, []);
 
   // Persistence: Save to localStorage
-  React.useEffect(() => {
+  useEffect(() => {
     if (hasLoaded) {
-      localStorage.setItem('viraasat-cart', JSON.stringify(cartItems));
+      try {
+        localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cartItems));
+      } catch (e) {
+        console.error('Failed to persist cart to localStorage', e);
+      }
     }
   }, [cartItems, hasLoaded]);
 
-  const addItem = (item: Product) => {
+  const addItem = useCallback((item: Product) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((cartItem) => cartItem.id === item.id);
 
@@ -58,19 +61,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : cartItem
         );
       }
-      
+
       setCartOpen(true);
       return [...prevItems, { ...item, quantity: 1 }];
     });
-  };
+  }, []);
 
-  const removeItem = (itemId: string) => {
+  const removeItem = useCallback((itemId: string) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
-  };
+  }, []);
 
-  const updateQuantity = (itemId: string, quantity: number) => {
+  const updateQuantity = useCallback((itemId: string, quantity: number) => {
     if (quantity < 1) {
-      removeItem(itemId);
+      setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
       return;
     }
     setCartItems((prevItems) =>
@@ -78,27 +81,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
         item.id === itemId ? { ...item, quantity } : item
       )
     );
-  };
+  }, []);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCartItems([]);
-  };
-  
+  }, []);
+
   const getCartTotal = useCallback(() => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   }, [cartItems]);
 
+  const value = useMemo(
+    () => ({
+      isCartOpen,
+      setCartOpen,
+      cartItems,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+      getCartTotal,
+    }),
+    [isCartOpen, cartItems, addItem, removeItem, updateQuantity, clearCart, getCartTotal]
+  );
+
   return (
-    <CartContext.Provider value={{ 
-      isCartOpen, 
-      setCartOpen, 
-      cartItems, 
-      addItem, 
-      removeItem, 
-      updateQuantity, 
-      clearCart, 
-      getCartTotal 
-    }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
