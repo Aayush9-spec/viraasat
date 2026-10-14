@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-import { env } from '@/config/env';
+import { env } from '@/core/config/env';
 
 const supabaseUrl = env.supabase.url;
 const supabaseAnonKey = env.supabase.anonKey;
@@ -14,5 +14,5 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(
   supabaseUrl || 'https://mkeowabbnpyenqeiybzw.supabase.co',
-  supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy',
+  supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rZW93YWJibnB5ZW5xZWl5Ynp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDE5ODksImV4cCI6MjEwNTQ3Nzk4OX0.-5V1A7dJyA2KGoBcpdRhMpAgqoKCR-AD8LR9Und-StM',
 );

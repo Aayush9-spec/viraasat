@@ -2,6 +2,8 @@ import { products, getLocalProducts, categories as staticCategories, regions as 
 import type { Product } from '@/lib/types';
 import { supabase } from '@/services/supabase';
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export class ProductService {
   static async getAllProducts(): Promise<Product[]> {
     const localProds = getLocalProducts();
@@ -20,7 +22,7 @@ export class ProductService {
           name: row.name,
           category: row.category,
           description: row.description,
-          price: row.price,
+          price: Number(row.price) || 0,
           stock: row.stock,
           images: row.images ?? [],
           region: row.region,
@@ -33,8 +35,17 @@ export class ProductService {
     }
 
     const map = new Map<string, Product>();
+    // Deduplicate by normalized product name so static seeds and database items merge cleanly.
+    // Priority order: local artisan creations first, then live database products, then static fallback.
     [...localProds, ...dbProducts, ...products].forEach((p) => {
-      if (p.id) map.set(p.id, p);
+      if (!p) return;
+      const key = (p.name || '').trim().toLowerCase() || p.id;
+      if (!map.has(key)) {
+        map.set(key, {
+          ...p,
+          price: Number(p.price) || 0,
+        });
+      }
     });
     return Array.from(map.values());
   }
@@ -44,34 +55,37 @@ export class ProductService {
     const localMatch = localProds.find((p) => p.id === id);
     if (localMatch) return localMatch;
 
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('id', id)
-        .single();
+    // Only query Supabase with valid UUIDs to avoid 22P02 Postgres errors
+    if (UUID_REGEX.test(id)) {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('id', id)
+          .single();
 
-      if (!error && data) {
-        return {
-          id: data.id,
-          artisanId: data.artisan_id,
-          name: data.name,
-          category: data.category,
-          description: data.description,
-          price: data.price,
-          stock: data.stock,
-          images: data.images ?? [],
-          region: data.region,
-          aiInsights: data.ai_insights,
-          createdAt: data.created_at,
-        } as Product;
+        if (!error && data) {
+          return {
+            id: data.id,
+            artisanId: data.artisan_id,
+            name: data.name,
+            category: data.category,
+            description: data.description,
+            price: Number(data.price) || 0,
+            stock: data.stock,
+            images: data.images ?? [],
+            region: data.region,
+            aiInsights: data.ai_insights,
+            createdAt: data.created_at,
+          } as Product;
+        }
+      } catch (e) {
+        console.warn("Failed to fetch product " + id + " from Supabase:", e);
       }
-    } catch (e) {
-      console.warn(`Failed to fetch product ${id} from Supabase:`, e);
     }
+
     return products.find((p) => p.id === id);
   }
-
 
   static async getProductsByCategory(category: string): Promise<Product[]> {
     const all = await this.getAllProducts();

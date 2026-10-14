@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { supabase } from '@/services/supabase';
-import { useProductReviews } from '@/hooks/use-product-reviews';
+import { useProductReviews } from '@/features/marketplace/hooks/use-product-reviews';
 import type { Product } from '@/lib/types';
 
 export function ReviewsSection({ product }: { product: Product }) {

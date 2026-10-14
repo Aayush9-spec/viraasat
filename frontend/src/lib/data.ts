@@ -7,7 +7,13 @@ export function getLocalProducts(): Product[] {
     if (!raw) return [];
     const items = JSON.parse(raw);
     if (!Array.isArray(items)) return [];
-    return items.map((r: any) => ({
+    // Filter out any stale mock catalog seeds that may have been saved with old inflated prices in earlier testing
+    const validItems = items.filter((r: any) => {
+      if (!r || typeof r !== 'object') return false;
+      if (typeof r.id === 'string' && r.id.startsWith('prod-')) return false;
+      return true;
+    });
+    return validItems.map((r: any) => ({
       id: r.id || `local-prod-${Math.random()}`,
       artisanId: r.artisan_id || r.artisanId || 'artisan-1',
       name: r.name || 'Untitled Craft',
@@ -88,12 +94,12 @@ export const artisans: Artisan[] = [
   {
     id: 'artisan-1',
     name: 'Riya Sharma',
-    shopName: 'Riya\'s Creations',
-    bio: 'Creating beautiful handcrafted pottery from the heart of Rajasthan.',
-    profilePicture: 'https://picsum.photos/seed/artisan1/100/100',
-    location: 'Jaipur, India',
-    story: 'From a young age, I was fascinated by the pottery wheels in my village. I spent years learning from the masters, and now I blend those traditional techniques with my own modern aesthetic. Each piece tells a story of the earth, my hands, and a centuries-old tradition.',
-    contactEmail: 'support@riyascreations.com',
+    shopName: "Riya's Blue Pottery Creations",
+    bio: "Third-generation master ceramist preserving Jaipur's turquoise quartz pottery tradition.",
+    profilePicture: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400',
+    location: 'Jaipur, Rajasthan',
+    story: "From a young age, I was fascinated by the pottery wheels in Kot Jewar village. Our glazes use no clay—only quartz stone, fuller's earth, and natural mineral oxides.",
+    contactEmail: 'riya.pottery@viraasat.org',
     socialLinks: {
       instagram: 'https://instagram.com/riyascreations',
       facebook: 'https://facebook.com/riyascreations',
@@ -104,11 +110,11 @@ export const artisans: Artisan[] = [
   {
     id: 'artisan-2',
     name: 'Aarav Patel',
-    shopName: 'Woven Dreams',
-    bio: 'Specializing in handwoven textiles and tapestries, blending modern designs with age-old techniques.',
-    profilePicture: 'https://picsum.photos/seed/artisan2/100/100',
-    location: 'Kutch, India',
-    story: 'Weaving is in my family\'s blood. I learned the art of the loom from my grandmother, and I am passionate about keeping this beautiful craft alive. I source my materials locally and use natural dyes to create textiles that are both beautiful and sustainable.',
+    shopName: 'Woven Heritage of Kutch',
+    bio: 'Specializing in 16-stage indigo handblock Ajrakh printing and traditional Rogan art.',
+    profilePicture: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400',
+    location: 'Bhuj, Gujarat',
+    story: 'Weaving and block printing is in our blood. I learned the rhythm of wooden blocks from my grandfather. Every motif reflects celestial geometries and desert flora.',
     socialLinks: {
       twitter: 'https://twitter.com/wovendreams',
     },
@@ -118,17 +124,122 @@ export const artisans: Artisan[] = [
   {
     id: 'artisan-3',
     name: 'Arjun Verma',
-    shopName: 'Heritage Crafts UP',
-    bio: 'Bringing you the finest crafts from the heart of Uttar Pradesh. From the gleaming brass of Moradabad to the delicate glass of Firozabad.',
-    profilePicture: 'https://picsum.photos/seed/artisan3/100/100',
-    location: 'Uttar Pradesh, India',
-    story: 'I grew up watching the masters work in the narrow lanes of Varanasi and Agra. My mission is to give these diverse art forms a global platform.',
+    shopName: 'Kashi Brass & Zari Works',
+    bio: 'Bringing heirloom metal sculpting and gold-silver brocade weaving from the ghats of Varanasi.',
+    profilePicture: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400',
+    location: 'Varanasi, Uttar Pradesh',
+    story: 'I grew up in the narrow lanes near Chowk, watching pit looms humming with gold wire. Our family has preserved 400-year-old Mughal Kadwa jacquard motifs.',
     contactEmail: 'contact@heritageup.com',
     socialLinks: {
       instagram: 'https://instagram.com/heritageup',
     },
     createdAt: '2023-11-01T09:00:00Z',
     updatedAt: '2023-11-01T09:00:00Z',
+  },
+  {
+    id: 'artisan-4',
+    name: 'Ghulam Mohammad Mir',
+    shopName: 'Kashmir Pashm Guild',
+    bio: 'Master spinner and Sozni needle-embroiderer of grade-A Changthangi mountain cashmere shawls.',
+    profilePicture: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400',
+    location: 'Srinagar, Kashmir',
+    story: 'A single jamawar shawl takes over 180 days of single-hair needlework. We work strictly with cruelty-free shed fleece combed from nomadic Changpa goats at 14,000 feet.',
+    contactEmail: 'mir.pashm@kashmirloom.com',
+    socialLinks: {
+      instagram: 'https://instagram.com/kashmirpashmguild',
+    },
+    createdAt: '2023-12-01T12:00:00Z',
+    updatedAt: '2024-01-15T10:00:00Z',
+  },
+  {
+    id: 'artisan-5',
+    name: 'Gowramma Channapatna',
+    shopName: 'Varnam Wooden Toys',
+    bio: 'Pioneering eco-friendly Wrightia tinctoria wooden toys glazed with natural turmeric and indigo lacquer.',
+    profilePicture: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400',
+    location: 'Channapatna, Karnataka',
+    story: 'Introduced during the reign of Tipu Sultan from Persia, our lacquer toys are 100% lead-free, non-toxic, and made on foot-pedal lathes using Aale Mara softwood.',
+    contactEmail: 'gowramma@varnamtoys.com',
+    socialLinks: {
+      instagram: 'https://instagram.com/varnamcrafts',
+    },
+    createdAt: '2024-01-18T10:15:00Z',
+    updatedAt: '2024-02-10T08:00:00Z',
+  },
+  {
+    id: 'artisan-6',
+    name: 'Bulu Chitrakar',
+    shopName: 'Raghurajpur Pattachitra Heritage',
+    bio: 'Preserving ancient cloth scrolls and Talapatra palm leaf etchings with conch shell white and lampblack inks.',
+    profilePicture: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=400',
+    location: 'Puri, Odisha',
+    story: 'Every leaf of dried palmyra is inscribed with an iron stylus without dipping in ink. Charcoal powder and neem oil seal the mythological narratives of Lord Jagannath.',
+    contactEmail: 'bulu.chitrakar@pattachitra.org',
+    socialLinks: {
+      facebook: 'https://facebook.com/raghurajpurarts',
+    },
+    createdAt: '2024-02-01T09:45:00Z',
+    updatedAt: '2024-02-01T09:45:00Z',
+  },
+  {
+    id: 'artisan-7',
+    name: 'Shanti Devi Jha',
+    shopName: 'Mithila Shristi Kendra',
+    bio: 'Celebrated Mithila painter creating Kachni and Bharni style narratives on handmade paper.',
+    profilePicture: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400',
+    location: 'Madhubani, Bihar',
+    story: 'From mud hut walls during wedding ceremonies to handmade Lokta paper, our brushes are bamboo twigs and cotton swabs. Every line depicts harmony between cosmos and nature.',
+    contactEmail: 'shantidevi@mithilashristi.in',
+    socialLinks: {
+      instagram: 'https://instagram.com/mithilashristi',
+    },
+    createdAt: '2024-01-22T14:00:00Z',
+    updatedAt: '2024-02-15T12:00:00Z',
+  },
+  {
+    id: 'artisan-8',
+    name: 'Lalit Ram Baghel',
+    shopName: 'Bastar Dhokra Shilp',
+    bio: '4000-year-old non-ferrous lost-wax metal caster from the Ghadwa tribal community of Bastar.',
+    profilePicture: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=400',
+    location: 'Kondagaon, Chhattisgarh',
+    story: 'Our technique traces straight back to the Mohenjo-daro Dancing Girl. We make beeswax wires, wrap them over termite clay cores, and pour molten bell metal in open kilns.',
+    contactEmail: 'baghel.dhokra@bastarshilp.org',
+    socialLinks: {
+      instagram: 'https://instagram.com/bastardhokra',
+    },
+    createdAt: '2024-01-11T16:20:00Z',
+    updatedAt: '2024-01-11T16:20:00Z',
+  },
+  {
+    id: 'artisan-9',
+    name: 'Rashid Ahmed Khan',
+    shopName: 'Bidar Silver Tarkashi',
+    bio: 'Master of pure silver wire inlay set into zinc-copper alloy, blackened with soil from the 15th-century Bidar fort.',
+    profilePicture: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=400',
+    location: 'Bidar, Karnataka',
+    story: 'The black patina on Bidriware cannot be replicated anywhere in the world—it requires unique alkaline soil collected exclusively from unexposed foundations of Bidar Fort.',
+    contactEmail: 'rashid.khan@bidriware.in',
+    socialLinks: {
+      facebook: 'https://facebook.com/bidarhandicrafts',
+    },
+    createdAt: '2024-02-14T11:00:00Z',
+    updatedAt: '2024-02-14T11:00:00Z',
+  },
+  {
+    id: 'artisan-10',
+    name: 'Subhasish Karmakar',
+    shopName: 'Bankura Terracotta & Dokra',
+    bio: 'Renowned creator of traditional long-eared Bankura Terracotta Horses and Bishnupur temple tiles.',
+    profilePicture: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=400',
+    location: 'Bankura, West Bengal',
+    story: 'Panchmura village is the sacred crucible of Bengal terracotta. The rhythmic symmetry of the horse ears and neck has stood as the emblem of Indian handicrafts worldwide.',
+    contactEmail: 'subhasish@bankuraterracotta.com',
+    socialLinks: {
+      instagram: 'https://instagram.com/bankuracrafts',
+    },
+    createdAt: '2024-01-05T09:00:00Z',
+    updatedAt: '2024-01-05T09:00:00Z',
   },
 ];
 

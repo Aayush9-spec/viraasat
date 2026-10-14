@@ -3,13 +3,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Product } from '@/lib/types';
-import { cn, getProductImage } from '@/lib/utils';
+import { cn, getProductImage } from '@/core/utils/utils';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { artisans } from '@/lib/data';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
-import { useToast } from '@/hooks/use-toast';
-import { useProductReviews } from '@/hooks/use-product-reviews';
+import { useToast } from '@/core/hooks/use-toast';
+import { useProductReviews } from '@/features/marketplace/hooks/use-product-reviews';
 import { Star } from 'lucide-react';
 import styles from './product-card.module.css';
 
@@ -25,6 +25,7 @@ export default function ProductCard({ product, variant = 'mission' }: ProductCar
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { rating, loading: ratingLoading } = useProductReviews(product.id);
   const wishlisted = isWishlisted(product.id);
+  const safePrice = Number(product?.price) || 0;
   const imageUrl = getProductImage(product?.images);
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -33,7 +34,7 @@ export default function ProductCard({ product, variant = 'mission' }: ProductCar
     addItem(product);
     toast({
       title: "Added to Cart 🛍️",
-      description: `${product.name} (₹${product.price.toLocaleString('en-IN')}) is now in your cart.`,
+      description: `${product.name} (₹${safePrice.toLocaleString('en-IN')}) is now in your cart.`,
     });
   };
 
@@ -93,7 +94,7 @@ export default function ProductCard({ product, variant = 'mission' }: ProductCar
           </div>
 
           <div className={styles.bottom}>
-            <span className={styles.priceTag}>₹{product.price.toFixed(0)}</span>
+            <span className={styles.priceTag}>₹{safePrice.toFixed(0)}</span>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleAddToCart}

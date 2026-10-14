@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 
 import Image from 'next/image';
 import { products, artisans, getLocalProducts } from '@/lib/data';
@@ -19,7 +20,7 @@ import { Separator } from '@/components/ui/separator';
 import { ViraasatLogo } from '@/components/viraasat-logo';
 import { ReviewsSection } from './reviews-section';
 import { useCart } from '@/context/cart-context';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { useBackend } from '@/hooks/use-backend';
 import type { Product } from '@/lib/types';
 import { translateText } from '@/ai/flows/translate-text';
@@ -45,6 +46,7 @@ export function ProductDetailPageClient({
   product?: Product;
   productId?: string; 
 }) {
+  const router = useRouter();
   const { t, language } = useLanguage();
   const [product, setProduct] = useState<Product | undefined>(initialProduct || directProduct);
   const [hasCheckedClient, setHasCheckedClient] = useState<boolean>(Boolean(initialProduct || directProduct));
@@ -91,6 +93,23 @@ export function ProductDetailPageClient({
     fetchProvenance();
   }, [product?.id, product?.artisanName, product?.region, backendGet]);
 
+  const artisan = product ? artisans.find((a) => a.id === product.artisanId) : undefined;
+
+  // Deterministic "related products" — seeded by product.id so server and client agree
+  const relatedProducts = useMemo(() => {
+    if (!product) return [];
+    const candidates = products.filter(
+      (p) => p.id !== product.id && (p.category === product.category || p.region === product.region)
+    );
+    // Simple seeded shuffle: use char codes of product.id as seed
+    const seed = product.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    return [...candidates].sort((a, b) => {
+      const ha = (seed * a.id.length * 2654435761) >>> 0;
+      const hb = (seed * b.id.length * 2654435761) >>> 0;
+      return ha - hb;
+    }).slice(0, 4);
+  }, [product?.id, product?.category, product?.region]);
+
   if (!product) {
     if (!hasCheckedClient) {
       return (
@@ -103,7 +122,7 @@ export function ProductDetailPageClient({
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 text-center">
         <h2 className="text-2xl font-bold mb-2">Product Not Found</h2>
         <p className="text-muted-foreground mb-6">The requested artisan creation could not be found or has been removed.</p>
-        <Button onClick={() => window.location.href = '/shop'}>Return to Shop</Button>
+        <Button onClick={() => router.push('/shop')}>Return to Shop</Button>
       </div>
     );
   }
@@ -121,21 +140,7 @@ export function ProductDetailPageClient({
     { value: 'Punjabi', label: 'ਪੰਜਾਬੀ' },
   ];
 
-  const artisan = artisans.find((a) => a.id === product.artisanId);
 
-  // Deterministic "related products" — seeded by product.id so server and client agree
-  const relatedProducts = useMemo(() => {
-    const candidates = products.filter(
-      (p) => p.id !== product.id && (p.category === product.category || p.region === product.region)
-    );
-    // Simple seeded shuffle: use char codes of product.id as seed
-    const seed = product.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-    return [...candidates].sort((a, b) => {
-      const ha = (seed * a.id.length * 2654435761) >>> 0;
-      const hb = (seed * b.id.length * 2654435761) >>> 0;
-      return ha - hb;
-    }).slice(0, 4);
-  }, [product.id, product.category, product.region]);
 
   const handleAddToCart = () => {
     addItem(product);
