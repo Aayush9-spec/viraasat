@@ -72,3 +72,7 @@ viraasat.db-*
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# Local workspace backups
+auth_collection/
+

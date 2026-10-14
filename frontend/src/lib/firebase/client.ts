@@ -1,4 +1,2 @@
-import { db } from "@/services/firebase/firestore";
-import { app } from "@/services/firebase/config";
-
-export { db, app };
+export const db = null as any;
+export const app = null as any;
