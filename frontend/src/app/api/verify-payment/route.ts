@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'node:crypto';
-import { env } from '@/config/env';
-import { apiError } from '@/lib/api-response';
+import { env } from '@/core/config/env';
+import { apiError } from '@/core/api/api-response';
 
 export const runtime = 'nodejs';
 
