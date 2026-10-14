@@ -2,14 +2,14 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useClerk, useSignIn, useSignUp } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { LoginForm } from '@/components/login-form';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-jest.mock('@/hooks/use-toast', () => ({
+jest.mock('@/core/hooks/use-toast', () => ({
   useToast: jest.fn(),
 }));
 

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag, Heart, Package, User, ArrowRight, Sparkles } from 'lucide-react';
-import { ProtectedRoute } from '@/components/auth/protected-route';
+import { ProtectedRoute } from '@/features/auth/components/protected-route';
 
 export default function BuyerDashboardPage() {
   const { user } = useUser();

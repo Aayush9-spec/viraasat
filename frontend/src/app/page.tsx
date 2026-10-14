@@ -2,7 +2,7 @@
 
 import ProductCard from '@/features/marketplace/components/product-card';
 import { ProductService } from '@/features/marketplace/product-service';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/core/hooks/use-translation';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
@@ -11,10 +11,10 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import LazyCarousel from '@/components/LazyCarousel';
+import LazyCarousel from '@/components/shared/visuals/LazyCarousel';
 import { ProductGridSkeleton } from '@/components/ui/product-skeleton';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getProductImage } from '@/lib/utils';
+import { getProductImage } from '@/core/utils/utils';
 import { useTheme } from 'next-themes';
 
 export default function Marketplace() {

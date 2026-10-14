@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, ShoppingBag, ShoppingCart, Heart, User, Sparkles } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
-import { useUserRole } from '@/hooks/use-user-role';
-import { cn } from '@/lib/utils';
+import { useUserRole } from '@/features/auth/hooks/use-user-role';
+import { cn } from '@/core/utils/utils';
 
 import { useLanguage } from '@/context/language-context';
 

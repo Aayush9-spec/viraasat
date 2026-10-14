@@ -32,7 +32,7 @@ import {
   CloudOff,
   Cloud,
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { generateArtisanStory } from '@/ai/flows/generate-artisan-story';
 import {
   Select,
@@ -43,7 +43,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useUserRole } from '@/hooks/use-user-role';
+import { useUserRole } from '@/features/auth/hooks/use-user-role';
 import { supabase } from '@/services/supabase';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -411,6 +411,21 @@ function ArtisanProfile({ userId, toast }: { userId: string | null; toast: any }
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  function applyProfile(p: ArtisanProfileData) {
+    setName(p.full_name || '');
+    setShopName(p.shop_name || '');
+    setProfilePictureUrl(p.profile_picture_url || '');
+    setBio(p.bio || '');
+    setCraft(p.craft || categories[0]);
+    setExperience(p.experience || 1);
+    setInstagram(p.instagram || '');
+    setFacebook(p.facebook || '');
+    setYoutube(p.youtube || '');
+    setWebsite(p.website || '');
+    setVerificationStatus(p.verification_status || 'unverified');
+    setArtisanId(p.artisan_id || null);
+  }
+
   // ── Load from Supabase, fallback to localStorage ─────────────────────────
   useEffect(() => {
     async function load() {
@@ -443,20 +458,7 @@ function ArtisanProfile({ userId, toast }: { userId: string | null; toast: any }
     load();
   }, [userId]);
 
-  function applyProfile(p: ArtisanProfileData) {
-    setName(p.full_name || '');
-    setShopName(p.shop_name || '');
-    setProfilePictureUrl(p.profile_picture_url || '');
-    setBio(p.bio || '');
-    setCraft(p.craft || categories[0]);
-    setExperience(p.experience || 1);
-    setInstagram(p.instagram || '');
-    setFacebook(p.facebook || '');
-    setYoutube(p.youtube || '');
-    setWebsite(p.website || '');
-    setVerificationStatus(p.verification_status || 'unverified');
-    setArtisanId(p.artisan_id || null);
-  }
+
 
   function buildCurrentProfile(overrides?: Partial<ArtisanProfileData>): ArtisanProfileData {
     return {

@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { Header } from './header';
 import { Footer } from './footer';
 import CartSidebar from '@/features/cart/components/cart-sidebar';
-import { MobileNav } from '@/components/mobile-nav';
+import { MobileNav } from '@/components/shared/navigation/mobile-nav';
 import { Toaster } from '@/components/ui/toaster';
 
 const AIAssistant = dynamic(

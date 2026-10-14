@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { supabase } from '@/services/supabase';
 import { sendContactReceipt } from '@/lib/notifications/email';
 import { Mail, MapPin, Send } from 'lucide-react';

@@ -38,7 +38,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { DemandForecast } from '@/features/analytics/demand-forecast';
 import { BACKEND_URL } from '@/services/backend/client';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 
 // Fallback heuristic generator when offline or backend unreachable
 function getFallbackForecast(region: string, category: string) {

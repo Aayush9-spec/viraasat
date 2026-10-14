@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   UserCircle,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/core/utils/utils';
 
 export const artisanNavItems = [
   { href: '/artisan/dashboard', label: 'Dashboard', icon: LayoutDashboard },

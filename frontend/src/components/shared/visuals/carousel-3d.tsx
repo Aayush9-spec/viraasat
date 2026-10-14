@@ -6,7 +6,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Image, Environment, ScrollControls, useScroll } from '@react-three/drei';
 // @ts-ignore
 import { easing } from 'maath';
-import '../lib/three-utils';
+import '@/lib/three-utils';
 import { products } from '@/lib/data';
 import { useRouter } from 'next/navigation';
 

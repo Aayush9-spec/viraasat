@@ -1,4 +1,4 @@
-import { requireRole } from '@/lib/auth/require-role';
+import { requireRole } from '@/features/auth/services/require-role';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireRole('admin');

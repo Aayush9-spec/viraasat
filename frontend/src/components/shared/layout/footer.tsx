@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Twitter, Facebook, Instagram } from 'lucide-react';
-import { NewsletterForm } from '@/components/newsletter-form';
+import { NewsletterForm } from '@/components/shared/common/newsletter-form';
 
 export function Footer() {
   return (

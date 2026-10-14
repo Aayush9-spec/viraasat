@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/core/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { db } from "@/services/firebase/firestore";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { supabase } from "@/services/supabase";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -24,11 +23,6 @@ export function NewsletterForm() {
       return;
     }
 
-    if (!db) {
-      toast({ variant: "destructive", title: "Subscription unavailable", description: "This feature isn't configured yet. Please try again later." });
-      return;
-    }
-
     if (!user) {
       toast({ variant: "destructive", title: "Sign in required", description: "Please sign in to subscribe to the newsletter." });
       return;
@@ -36,12 +30,17 @@ export function NewsletterForm() {
 
     setBusy(true);
     try {
-      await addDoc(collection(db, "newsletter"), {
-        email: value,
-        userId: user.id,
-        source: "footer",
-        subscribedAt: serverTimestamp(),
-      });
+      const { error } = await supabase
+        .from('newsletter')
+        .insert({
+          email: value,
+          user_id: user.id,
+          source: 'footer',
+          subscribed_at: new Date().toISOString(),
+        });
+
+      if (error) throw error;
+
       setEmail("");
       toast({ title: "Subscribed!", description: "You're on the list for new arrivals and special offers." });
     } catch (err) {

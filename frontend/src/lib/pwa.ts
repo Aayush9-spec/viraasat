@@ -1,3 +1,4 @@
+import { env } from '@/core/config/env';
 // PWA registration helpers.
 
 const SW_PATH = '/sw.js';
@@ -15,7 +16,7 @@ function getBuildId(): string {
   if (typeof window !== 'undefined' && window.__SW_BUILD_ID__) {
     return window.__SW_BUILD_ID__;
   }
-  return String(Date.now());
+  return env.app.commitSha || 'dev';
 }
 
 export function registerServiceWorker() {

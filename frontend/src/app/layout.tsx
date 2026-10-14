@@ -1,10 +1,8 @@
 import type { Metadata, Viewport } from 'next';
-import Script from 'next/script';
 import './globals.css';
-import { env } from '@/config/env';
-import { siteConfig } from '@/config/site';
-import { AppProviders } from '@/components/providers';
-import { AppShell } from '@/components/layout';
+import { siteConfig } from '@/core/config/site';
+import { AppProviders } from '@/core/providers';
+import { AppShell } from '@/components/shared/layout/app-shell';
 
 const inter = {
   variable: 'font-sans',
@@ -58,17 +56,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${cormorant.variable}`}>
-      <head>
+      <head suppressHydrationWarning>
         <meta property="og:image" content="/viraasat-hero-cream.png" />
         <link rel="icon" href="/viraasat-logo-full.png" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        <Script
-          id="sw-build-id"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `window.__SW_BUILD_ID__=${JSON.stringify(env.app.commitSha)};`,
-          }}
-        />
       </head>
       <body className="font-sans antialiased text-foreground" suppressHydrationWarning>
         <AppProviders>

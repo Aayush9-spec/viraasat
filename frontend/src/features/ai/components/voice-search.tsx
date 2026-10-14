@@ -23,7 +23,7 @@ interface WebSpeechRecognizer {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mic, Search, Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { searchWithVoice } from '@/ai/flows/search-with-voice';
 import { suggestProducts } from '@/ai/flows/suggest-products';
 import { products } from '@/lib/data';

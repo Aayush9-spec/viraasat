@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { categories } from '@/lib/data';
 import { UploadCloud, X, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -436,6 +436,7 @@ export default function ArtisanApplicationPage() {
                           key={idx}
                           className="relative group rounded-lg border bg-card p-2 shadow-sm flex flex-col items-center text-center"
                         >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={file.url}
                             alt={file.name}

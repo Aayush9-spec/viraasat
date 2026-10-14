@@ -5,10 +5,10 @@ import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
-import { ProtectedRoute } from '@/components/auth/protected-route';
+import { ProtectedRoute } from '@/features/auth/components/protected-route';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
-import { getProductImage } from '@/lib/utils';
+import { getProductImage } from '@/core/utils/utils';
 
 export default function WishlistPage() {
   const { addItem } = useCart();

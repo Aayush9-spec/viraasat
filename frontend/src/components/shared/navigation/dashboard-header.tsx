@@ -3,7 +3,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
 import { DashboardNav } from "./dashboard-nav"
-import { ViraasatLogo } from "./viraasat-logo"
+import { ViraasatLogo } from "@/components/shared/visuals/viraasat-logo"
 import Link from 'next/link';
 
 interface DashboardHeaderProps {

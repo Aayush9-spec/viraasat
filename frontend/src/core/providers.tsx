@@ -3,18 +3,18 @@
 import React from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
 import { shadcn } from '@clerk/ui/themes';
-import { env } from '@/config/env';
-import { ThemeProvider } from '@/components/theme-provider';
+import { env } from '@/core/config/env';
+import { ThemeProvider } from '@/core/theme-provider';
 import { LanguageProvider } from '@/context/language-context';
 import { CartProvider } from '@/context/cart-context';
 import { WishlistProvider } from '@/context/wishlist-context';
-import { Background3D } from '@/components/background-3d';
-import { AuthSync } from '@/components/auth-sync';
-import PWALifecycle from '@/components/common/pwa-lifecycle';
-import InstallPrompt from '@/components/common/install-prompt';
-import OnlineStatus from '@/components/common/online-status';
+import { Background3D } from '@/components/shared/visuals/background-3d';
+import { AuthSync } from '@/features/auth/components/auth-sync';
+import PWALifecycle from '@/components/shared/common/pwa-lifecycle';
+import InstallPrompt from '@/components/shared/common/install-prompt';
+import OnlineStatus from '@/components/shared/common/online-status';
 import { Toaster } from '@/components/ui/toaster';
-import { ErrorBoundary } from '@/components/common/error-boundary';
+import { ErrorBoundary } from '@/components/shared/common/error-boundary';
 
 export interface AppProvidersProps {
   children: React.ReactNode;

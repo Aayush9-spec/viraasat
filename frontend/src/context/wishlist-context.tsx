@@ -11,7 +11,7 @@ import React, {
 import type { Product } from '@/lib/types';
 import { useUser } from '@clerk/nextjs';
 import { supabase } from '@/services/supabase';
-import { STORAGE_KEYS } from '@/config/constants';
+import { STORAGE_KEYS } from '@/core/config/constants';
 
 interface WishlistContextType {
   wishlist: Product[];

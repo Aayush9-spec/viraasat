@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useState, useContext, type ReactNode, useCallback, useMemo, useEffect } from 'react';
-import { STORAGE_KEYS } from '@/config/constants';
+import { STORAGE_KEYS } from '@/core/config/constants';
 import type { Product } from '@/lib/types';
 
 export interface CartItem extends Product {

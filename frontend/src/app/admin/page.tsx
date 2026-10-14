@@ -27,7 +27,7 @@ import {
   type DbProduct,
   type ArtisanApplication,
   type ModerationVerdict,
-} from '@/hooks/use-admin-dashboard';
+} from '@/features/artisan/hooks/use-admin-dashboard';
 
 const verdictStyles: Record<ModerationVerdict, string> = {
   pending: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
