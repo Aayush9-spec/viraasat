@@ -1,7 +1,7 @@
-import { ProtectedRoute } from '@/components/auth/protected-route';
-import { ArtisanNav } from '@/components/artisan-nav';
-import { ViraasatLogo } from '@/components/viraasat-logo';
-import { UserNav } from '@/components/user-nav';
+import { ProtectedRoute } from '@/features/auth/components/protected-route';
+import { ArtisanNav } from '@/components/shared/navigation/artisan-nav';
+import { ViraasatLogo } from '@/components/shared/visuals/viraasat-logo';
+import { UserNav } from '@/components/shared/navigation/user-nav';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 

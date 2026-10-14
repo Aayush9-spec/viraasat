@@ -37,7 +37,7 @@ import ImageEnhancer from './image-enhancer';
 import { generateProductInsights } from '@/ai/flows/generate-product-insights';
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
 import { analyzeImage } from '@/ai/flows/analyze-image';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { useBackend } from '@/hooks/use-backend';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/services/supabase';
@@ -83,12 +83,12 @@ export function ProductForm({ product }: ProductFormProps) {
     defaultValues: {
       name: product?.name || '',
       description: product?.description || '',
-      price: product?.price || 0,
-      category: product?.category || '',
-      region: product?.region || '',
+      price: product?.price || 450,
+      category: product?.category || 'Home Decor',
+      region: product?.region || 'Rajasthan',
       laborHours: 5,
       sizeSqft: 1,
-      material: 'Natural Vegetable Dyes',
+      material: 'Terracotta & Natural Clay',
     },
   });
 
@@ -167,15 +167,25 @@ export function ProductForm({ product }: ProductFormProps) {
       const newId = product?.id || `creation-${Date.now()}`;
       const artisanId = user?.id || 'artisan-1';
 
+      const isValidUuid = (val?: string) =>
+        typeof val === 'string' &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
+
+      // Postgres requires a valid UUID for artisan_id column in Supabase
+      const dbArtisanId = isValidUuid(artisanId) ? artisanId : '1e5f1a27-4c4e-5b84-b4dd-5227b40c755d';
+
+      const numPrice = Number(values.price) || 0;
+      const finalImages = images.length > 0 ? images : ['https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300'];
+
       const supabasePayload = {
-        artisan_id: artisanId,
-        name: values.name,
-        description: values.description,
+        artisan_id: dbArtisanId,
+        name: values.name.trim(),
+        description: values.description.trim(),
         category: values.category,
         region: values.region,
-        price: values.price,
+        price: numPrice,
         stock: 10,
-        images: images.length > 0 ? images : ['https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300'],
+        images: finalImages,
         ai_insights: {
           keyFeatures: features,
           styleTags: styleTags,
@@ -188,13 +198,13 @@ export function ProductForm({ product }: ProductFormProps) {
         id: newId,
         artisan_id: artisanId,
         artisanId: artisanId,
-        name: values.name,
-        description: values.description,
+        name: values.name.trim(),
+        description: values.description.trim(),
         category: values.category,
         region: values.region,
-        price: values.price,
+        price: numPrice,
         stock: 10,
-        images: images.length > 0 ? images : ['https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300'],
+        images: finalImages,
         ai_insights: {
           keyFeatures: features,
           styleTags: styleTags,
@@ -212,26 +222,38 @@ export function ProductForm({ product }: ProductFormProps) {
         isActive: true,
       };
 
-      // Always update localStorage first for immediate UI consistency & fire update events
+      // 1. Save to local storage & dispatch events for instantaneous reactive rendering across all pages
       saveLocalProduct(localItem);
 
-      // Asynchronous Supabase sync (does not block local UI)
+      // 2. Persist to server / database/products.json via /api/products
       try {
-        if (product) {
+        await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(localItem),
+        });
+      } catch (apiErr) {
+        console.warn('API sync notice:', apiErr);
+      }
+
+      // 3. Sync to Supabase cloud database
+      try {
+        if (product && isValidUuid(product.id)) {
           await supabase.from('products').update(supabasePayload).eq('id', product.id);
         } else {
           await supabase.from('products').insert({ ...supabasePayload, created_at: now });
         }
       } catch (dbErr) {
-        console.warn('Supabase DB sync warning:', dbErr);
+        console.warn('Supabase DB sync notice:', dbErr);
       }
 
       toast({
-        title: 'Product Saved!',
-        description: `${values.name} has been added to your catalog.`,
+        title: 'Product Published to Shop!',
+        description: `${values.name} is now live in the artisan marketplace.`,
       });
 
-      router.push('/artisan/products');
+      // Redirect directly to the shop page so artisan sees their new creation immediately
+      router.push('/shop');
       router.refresh();
 
     } catch (error) {
@@ -540,7 +562,7 @@ export function ProductForm({ product }: ProductFormProps) {
                       <FormLabel>Category</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -582,7 +604,7 @@ export function ProductForm({ product }: ProductFormProps) {
                       <FormLabel>Raw Material</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>

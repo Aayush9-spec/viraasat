@@ -72,9 +72,15 @@ export default function ArtisanProductsPage() {
 
   const productsMap = new Map<string, Product>();
   // activeLocalProducts listed first so newly added creations appear at top
+  // Deduplicate by normalized name so db items and static seeds do not duplicate
   [...activeLocalProducts, ...dbProducts, ...products].forEach((p) => {
-    if (p && p.id && !productsMap.has(p.id)) {
-      productsMap.set(p.id, p);
+    if (!p) return;
+    const key = (p.name || '').trim().toLowerCase() || p.id;
+    if (!productsMap.has(key)) {
+      productsMap.set(key, {
+        ...p,
+        price: Number(p.price) || 0,
+      });
     }
   });
   const artisanProducts = Array.from(productsMap.values());

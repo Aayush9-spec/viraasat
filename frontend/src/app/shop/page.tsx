@@ -20,8 +20,8 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { BACKEND_URL } from '@/services/backend/client';
-import { useProducts } from '@/hooks/use-products';
-import { categories as staticCategories, regions as staticRegions } from '@/lib/data';
+import { useProducts } from '@/features/marketplace/hooks/use-products';
+import { categories as staticCategories, regions as staticRegions, getLocalProducts } from '@/lib/data';
 
 import { ProductGridSkeleton } from '@/components/ui/product-skeleton';
 
@@ -44,10 +44,16 @@ function ShopPageContent() {
 
   const { products: liveProducts, loading: productsLoading } = useProducts();
 
-  // Build the effective category/region lists: prefer Firestore, fall back to
-  // static seed while loading or on error.
-  const effectiveCategories = categories.length > 0 ? categories : staticCategories;
-  const effectiveRegions = regions.length > 0 ? regions : staticRegions;
+  // Dynamically derive categories and regions from database + newly added artisan creations
+  const effectiveCategories = Array.from(new Set([
+    ...(categories.length > 0 ? categories : staticCategories),
+    ...allProducts.map((p) => p.category).filter(Boolean) as string[],
+  ])).sort();
+
+  const effectiveRegions = Array.from(new Set([
+    ...(regions.length > 0 ? regions : staticRegions),
+    ...allProducts.map((p) => p.region).filter(Boolean) as string[],
+  ])).sort();
 
   // Seed categories + regions from Firestore with static fallback.
   useEffect(() => {
@@ -70,28 +76,56 @@ function ShopPageContent() {
   useEffect(() => {
     async function loadProducts() {
       try {
-        const items = liveProducts;
-        const local = localStorage.getItem('viraasat_local_products');
-        let finalItems = [...items];
-        if (local) {
-          try {
-            const parsed = JSON.parse(local);
-            parsed.forEach((localProd: Product) => {
-              if (!finalItems.some(p => p.id === localProd.id)) {
-                finalItems.unshift(localProd);
-              }
+        const local = getLocalProducts();
+        let serverProducts: Product[] = [];
+        try {
+          const res = await fetch('/api/products');
+          if (res.ok) {
+            const json = await res.json();
+            serverProducts = json?.data?.products || [];
+          }
+        } catch (e) {}
+
+        const map = new Map<string, Product>();
+
+        // Priority order:
+        // 1. Newly created local products (instant artisan additions)
+        // 2. Server-persisted products (from /api/products)
+        // 3. Live products (Supabase / static catalog)
+        // Deduplicate by normalized name so items never show twice
+        [...local, ...serverProducts, ...liveProducts].forEach((p) => {
+          if (!p) return;
+          const key = (p.name || '').trim().toLowerCase() || p.id;
+          if (!map.has(key)) {
+            map.set(key, {
+              ...p,
+              price: Number(p.price) || 0,
             });
-          } catch (e) {}
-        }
+          }
+        });
+
+        const finalItems = Array.from(map.values());
         setAllProducts(finalItems);
         setFilteredProducts(finalItems);
       } finally {
         setLoading(false);
       }
     }
+
     if (!productsLoading) {
       loadProducts();
     }
+
+    // Event listeners so newly listed artisan creations show immediately on the shop section
+    window.addEventListener('storage', loadProducts);
+    window.addEventListener('viraasat_products_updated', loadProducts);
+    window.addEventListener('focus', loadProducts);
+
+    return () => {
+      window.removeEventListener('storage', loadProducts);
+      window.removeEventListener('viraasat_products_updated', loadProducts);
+      window.removeEventListener('focus', loadProducts);
+    };
   }, [liveProducts, productsLoading]);
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
