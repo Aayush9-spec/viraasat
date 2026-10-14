@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'node:fs';
-import path from 'node:path';
-import { apiError, apiSuccess, handleApiError } from '@/lib/api-response';
-
-const usersFilePath = path.join(process.cwd(), '..', 'database', 'users.json');
+import { apiError, apiSuccess, handleApiError } from '@/core/api/api-response';
+import { supabase } from '@/services/supabase';
 
 interface UserRecord {
   id: string;
@@ -15,79 +12,53 @@ interface UserRecord {
   updatedAt?: string;
 }
 
-function readUsers(): UserRecord[] {
+// GET - list all users from Supabase
+export async function GET() {
   try {
-    if (fs.existsSync(usersFilePath)) {
-      const data = fs.readFileSync(usersFilePath, 'utf-8');
-      return JSON.parse(data) as UserRecord[];
-    }
-  } catch (err) {
-    console.warn('[Users API] Could not read database/users.json:', err);
-  }
-  return [];
-}
+    const { data, error } = await supabase
+      .from('users')
+      .select('id, email, display_name as name, role');
 
-function writeUsers(users: UserRecord[]): boolean {
-  try {
-    const dir = path.dirname(usersFilePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-    return true;
-  } catch (err) {
-    console.warn('[Users API] Could not write database/users.json (read-only environment):', err);
-    return false;
-  }
-}
+    if (error) throw error;
 
-// GET - list all users
-export function GET() {
-  try {
-    const users = readUsers();
-    return NextResponse.json(users);
+    return NextResponse.json(data || []);
   } catch (error) {
-    return handleApiError(error, 'Failed to fetch users');
+    return handleApiError(error, 'Failed to fetch users from Supabase');
   }
 }
 
-// POST - create a new user
+// POST - create or update a user in Supabase
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const users = readUsers();
-
+    
     if (!body.name || !body.email) {
       return apiError('Name and email are required', 400, 'MISSING_REQUIRED_FIELDS');
     }
 
-    const maxId =
-      users.length > 0
-        ? Math.max(
-          ...users.map((u) => {
-            const num = Number(u.id?.split('-')[1]);
-            return isNaN(num) ? 0 : num;
-          })
-        )
-        : 0;
+    // Upsert user: update if email exists, otherwise insert
+    const { data, error } = await supabase
+      .from('users')
+      .upsert(
+        { 
+          email: body.email.toLowerCase(), 
+          display_name: body.name, 
+          role: body.role || 'user' 
+        }, 
+        { onConflict: 'email' }
+      )
+      .select()
+      .single();
 
-    const newId = `user-${maxId + 1}`;
+    if (error) throw error;
 
-    const newUser: UserRecord = {
-      id: newId,
-      name: body.name,
-      email: body.email,
-      role: body.role || 'user',
-      profile: body.profile || {},
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    users.push(newUser);
-    writeUsers(users);
-
-    return NextResponse.json(newUser, { status: 201 });
+    return NextResponse.json({
+      id: data.id,
+      name: data.display_name,
+      email: data.email,
+      role: data.role,
+    }, { status: 200 });
   } catch (error) {
-    return handleApiError(error, 'Failed to save user');
+    return handleApiError(error, 'Failed to save user to Supabase');
   }
 }

@@ -2,9 +2,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ViraasatLogo } from '@/components/viraasat-logo';
+import { ViraasatLogo } from '@/components/shared/visuals/viraasat-logo';
 import { ArrowRight, ShoppingBag, Store } from 'lucide-react';
-import { Login3DBackground } from '@/components/login-3d-background';
+import { Login3DBackground } from '@/components/shared/visuals/login-3d-background';
 
 export default function LoginPage() {
   return (

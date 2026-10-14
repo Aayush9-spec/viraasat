@@ -1,4 +1,4 @@
-import { RoleSelector } from "@/components/auth/role-selector";
+import { RoleSelector } from "@/features/auth/components/role-selector";
 
 export default function SelectRolePage() {
   return (

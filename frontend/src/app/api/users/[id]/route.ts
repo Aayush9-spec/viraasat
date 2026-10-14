@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { apiError, handleApiError } from '@/lib/api-response';
+import { apiError, handleApiError } from '@/core/api/api-response';
 
 const usersFilePath = path.join(process.cwd(), '..', 'database', 'users.json');
 
