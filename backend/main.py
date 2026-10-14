@@ -7,10 +7,10 @@ from slowapi import Limiter
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 
-from app.api.router import api_router
-from app.api.webhooks import router as webhooks_router
-from app.api.moderation import router as moderation_router
-from app.api.razorpay import router as razorpay_router
+from app.api.v1.router import api_router
+from app.api.v1.webhooks import router as webhooks_router
+from app.api.v1.moderation import router as moderation_router
+from app.api.v1.razorpay import router as razorpay_router
 
 
 load_dotenv()
