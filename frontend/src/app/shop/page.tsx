@@ -331,7 +331,7 @@ function ShopPageContent() {
                 </Sheet>
 
                 <Select onValueChange={setSortOrder} defaultValue={sortOrder}>
-                  <SelectTrigger className="w-full md:w-[200px] rounded-none bg-secondary/50 border-none">
+                  <SelectTrigger aria-label="Sort products by" className="w-full md:w-[200px] rounded-none bg-secondary/50 border-none">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>

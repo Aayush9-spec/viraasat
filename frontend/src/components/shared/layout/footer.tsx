@@ -17,7 +17,7 @@ export function Footer() {
             <Link href="/" className="inline-block">
               <span className="font-heading text-3xl font-bold text-foreground">Viraasat</span>
             </Link>
-            <p className="text-foreground/60 text-sm leading-relaxed font-light">
+            <p className="text-foreground/80 text-sm leading-relaxed font-light">
               Celebrating the timeless art of Indian craftsmanship. Every piece tells a story of heritage, skill, and dedication.
             </p>
             <div className="flex space-x-4 pt-4">
@@ -52,7 +52,7 @@ export function Footer() {
           {/* Discover Links */}
           <div className="col-span-1">
             <h3 className="font-serif text-primary tracking-wider uppercase text-sm mb-6">Discover</h3>
-            <ul className="space-y-3 text-sm text-foreground/60">
+            <ul className="space-y-3 text-sm text-foreground/80">
               <li>
                 <Link href="/shop" className="hover:text-primary transition-colors">
                   Our Collection
@@ -79,7 +79,7 @@ export function Footer() {
           {/* Support Links */}
           <div className="col-span-1">
             <h3 className="font-serif text-primary tracking-wider uppercase text-sm mb-6">Support</h3>
-            <ul className="space-y-3 text-sm text-foreground/60">
+            <ul className="space-y-3 text-sm text-foreground/80">
               <li>
                 <Link href="/faq" className="hover:text-primary transition-colors">
                   Help & FAQs
@@ -106,14 +106,14 @@ export function Footer() {
           {/* Newsletter Column */}
           <div className="col-span-1">
             <h3 className="font-serif text-primary tracking-wider uppercase text-sm mb-6">Stay Connected</h3>
-            <p className="text-foreground/60 text-sm mb-4 leading-relaxed font-light">
+            <p className="text-foreground/80 text-sm mb-4 leading-relaxed font-light">
               Subscribe to discover artisan tales, craft histories, and early access to curated collections.
             </p>
             <NewsletterForm />
           </div>
         </div>
 
-        <div className="border-t border-border/40 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-foreground/50">
+        <div className="border-t border-border/40 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-foreground/75">
           <p>© {new Date().getFullYear()} Viraasat Platform. Rooted in tradition, built with pride.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link href="/privacy" className="hover:text-primary transition-colors">

@@ -86,7 +86,7 @@ export default function LoginPage() {
                 <Button
                   asChild
                   size="lg"
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
+                  className="w-full bg-amber-800 hover:bg-amber-900 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
                 >
                   <Link href="/login/artisan" className="flex items-center justify-center gap-2">
                     Artisan Login / Sign Up

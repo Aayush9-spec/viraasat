@@ -215,7 +215,7 @@ return (
               <h2 className="text-4xl md:text-6xl font-heading font-normal text-foreground mb-6">
                 {t('Masterpieces')}
               </h2>
-              <p className="text-lg text-foreground/50 max-w-2xl mx-auto font-light">
+              <p className="text-lg text-foreground/80 max-w-2xl mx-auto font-light">
                 {t('Handcrafted treasures from the heart of India')}
               </p>
             </div>
@@ -315,14 +315,14 @@ return (
                 <div>
                   <span className="text-primary text-sm tracking-[0.3em] uppercase mb-2 block">{t('Tradition')}</span>
                   <h3 className="font-heading text-4xl md:text-5xl text-foreground mb-6">{t('Supporting The Hands That Create')}</h3>
-                  <p className="text-foreground/60 text-lg leading-relaxed font-light">
+                  <p className="text-foreground/85 text-lg leading-relaxed font-light">
                     {t('Viraasat is not just a marketplace; it is a movement. A movement to bring the spotlight back to the hands that weave magic, carve history, and paint culture. Your patronage directly empowers these guardians of our heritage.')}
                   </p>
                 </div>
 
                 <div className="bg-secondary/50 p-10 border border-border/50 backdrop-blur-sm">
                   <h4 className="font-heading text-2xl text-foreground mb-2">{t('Join The Legacy')}</h4>
-                  <p className="text-primary/60 mb-8 text-sm">{t('Be the first to know about rare acquirements.')}</p>
+                  <p className="text-foreground/80 mb-8 text-sm">{t('Be the first to know about rare acquirements.')}</p>
 
                                       <form className="flex flex-col gap-4" onSubmit={handleSubscribe}>
                       <label htmlFor="subscribe-email" className="sr-only">Email address</label>
@@ -359,7 +359,7 @@ return (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 text-left">
               <div className="max-w-2xl">
-                <span className="text-primary text-sm tracking-[0.4em] uppercase mb-4 block font-bold opacity-40">{t('The Viraasat Collection')}</span>
+                <span className="text-primary text-sm tracking-[0.4em] uppercase mb-4 block font-bold">{t('The Viraasat Collection')}</span>
                 <h2 className="text-4xl md:text-6xl font-heading text-primary leading-tight">{t('Bring India\'s Soul To Your Home')}</h2>
                 <div className="h-px w-24 bg-primary/20 mt-8" />
               </div>
@@ -388,7 +388,7 @@ return (
                       <h3 className="font-heading text-2xl text-primary group-hover:text-primary/80 transition-colors leading-tight">{product.name}</h3>
                       <div className="flex items-center gap-3">
                         <div className="h-px w-8 bg-primary/10" />
-                        <p className="text-[11px] text-primary/40 uppercase tracking-[0.3em] font-bold">₹{product.price.toLocaleString('en-IN')}</p>
+                        <p className="text-[11px] text-primary uppercase tracking-[0.3em] font-bold">₹{product.price.toLocaleString('en-IN')}</p>
                       </div>
                     </div>
                   </a>
@@ -398,7 +398,7 @@ return (
 
             {/* Region Based Browsing */}
             <div className="mt-32">
-              <h4 className="text-[10px] text-center uppercase tracking-[0.5em] text-amber-900/30 mb-12 font-bold">{t('Explore by Geographic Heritage')}</h4>
+              <h4 className="text-[10px] text-center uppercase tracking-[0.5em] text-foreground/75 mb-12 font-bold">{t('Explore by Geographic Heritage')}</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                 {regionInfo.map((reg) => (
 <a 
@@ -407,7 +407,7 @@ return (
                   aria-label={`Explore ${reg.name}`}
                   className="px-4 py-10 bg-background border border-primary/5 text-center hover:bg-primary hover:text-primary-foreground transition-all duration-700 group flex flex-col items-center justify-center space-y-4 shadow-sm hover:shadow-2xl hover:-translate-y-1"
                   >
-                    <span className="text-[9px] tracking-[0.1em] text-amber-600/40 font-bold group-hover:text-amber-400/50">{reg.count} Artifacts</span>
+                    <span className="text-[9px] tracking-[0.1em] text-foreground/75 font-bold group-hover:text-primary-foreground/90">{reg.count} Artifacts</span>
                     <span className="text-xs tracking-[0.3em] uppercase font-bold text-primary group-hover:text-primary-foreground">{reg.name}</span>
                   </a>
                 ))}

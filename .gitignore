@@ -76,3 +76,6 @@ viraasat.db-*
 # Local workspace backups
 auth_collection/
 
+test-results/
+frontend/test-results/
+

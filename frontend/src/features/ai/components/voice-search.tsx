@@ -268,7 +268,7 @@ export default function VoiceSearch() {
         <Input
           type="search"
           placeholder="Search heritage..."
-          className="pr-16 bg-white/5 border-white/10 rounded-none focus:ring-amber-500 focus:border-amber-500 text-amber-50 placeholder:text-amber-50/20"
+          className="pr-16 bg-background border-input rounded-none focus:ring-primary focus:border-primary text-foreground placeholder:text-muted-foreground"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -279,7 +279,7 @@ export default function VoiceSearch() {
             variant={isRecording ? 'destructive' : 'ghost'}
             onClick={toggleRecording}
             disabled={isProcessing}
-            className="h-8 w-8 text-amber-200 hover:text-amber-100 hover:bg-amber-500/10"
+            className="h-8 w-8 text-foreground/70 hover:text-foreground hover:bg-muted"
           >
             {isProcessing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -288,7 +288,7 @@ export default function VoiceSearch() {
             )}
             <span className="sr-only">{isRecording ? 'Stop recording' : 'Start voice search'}</span>
           </Button>
-          <Button type="submit" size="icon" variant="ghost" className="h-8 w-8 text-amber-200 hover:text-amber-100 hover:bg-amber-500/10">
+          <Button type="submit" size="icon" variant="ghost" className="h-8 w-8 text-foreground/70 hover:text-foreground hover:bg-muted">
             <Search className="h-4 w-4" />
             <span className="sr-only">Search</span>
           </Button>

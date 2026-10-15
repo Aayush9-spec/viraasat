@@ -298,7 +298,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                       type="button"
                       variant="outline"
                       onClick={handleFacebookAuth}
-                      className="h-11 sm:h-12 border-input hover:bg-accent rounded-xl text-sm font-medium text-[#1877F2] w-full flex items-center justify-center gap-2 transition-colors"
+                      className="h-11 sm:h-12 border-input hover:bg-accent rounded-xl text-sm font-medium text-foreground w-full flex items-center justify-center gap-2 transition-colors"
                       disabled={isLoading || isSocialLoading}
                     >
                       <FaFacebook className="h-5 w-5 shrink-0 text-[#1877F2]" />
