@@ -13,9 +13,13 @@ from typing import Dict, List
 from ai.graph import traverse_knowledge_graph
 
 _CATALOG: List[dict] | None = None
-_CATALOG_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../database/products.json")
-)
+_CATALOG_CANDIDATES = [
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../database/products.json")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../../database/products.json")),
+    os.path.abspath(os.path.join(os.getcwd(), "../database/products.json")),
+    os.path.abspath(os.path.join(os.getcwd(), "database/products.json"))
+]
+_CATALOG_PATH = next((x for x in _CATALOG_CANDIDATES if os.path.exists(x)), _CATALOG_CANDIDATES[0])
 
 
 def _load_catalog() -> List[dict]:

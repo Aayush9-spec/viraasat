@@ -40,7 +40,13 @@ def _store():
     return get_store()
 
 
-_SEED_LEDGER_PATH = Path(__file__).resolve().parent.parent.parent / "database" / "blockchain_ledger.json"
+_candidates = [
+    Path(__file__).resolve().parent.parent.parent.parent / "database" / "blockchain_ledger.json",
+    Path(__file__).resolve().parent.parent.parent / "database" / "blockchain_ledger.json",
+    Path.cwd() / "database" / "blockchain_ledger.json",
+    Path.cwd().parent / "database" / "blockchain_ledger.json"
+]
+_SEED_LEDGER_PATH = next((x for x in _candidates if x.exists()), _candidates[0])
 _seed_cache: Dict[str, List[Dict]] = {}
 
 

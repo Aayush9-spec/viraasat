@@ -21,6 +21,9 @@ def _seed_from_json() -> Tuple[List[dict], List[dict]]:
     """Return (nodes, edges) from the seed JSON if the store is empty."""
     paths = [
         os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../../../../database/knowledge_graph.json")
+        ),
+        os.path.abspath(
             os.path.join(os.path.dirname(__file__), "../../database/knowledge_graph.json")
         ),
         "database/knowledge_graph.json",

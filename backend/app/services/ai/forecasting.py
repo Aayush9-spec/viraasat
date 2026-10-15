@@ -5,7 +5,13 @@ import pandas as pd
 
 # Load the trained Ridge forecasting pipeline
 current_dir = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.abspath(os.path.join(current_dir, "../../database/forecasting_model.pkl"))
+MODEL_CANDIDATES = [
+    os.path.abspath(os.path.join(current_dir, "../../../../database/forecasting_model.pkl")),
+    os.path.abspath(os.path.join(current_dir, "../../database/forecasting_model.pkl")),
+    os.path.abspath(os.path.join(os.getcwd(), "../database/forecasting_model.pkl")),
+    os.path.abspath(os.path.join(os.getcwd(), "database/forecasting_model.pkl"))
+]
+MODEL_PATH = next((x for x in MODEL_CANDIDATES if os.path.exists(x)), MODEL_CANDIDATES[0])
 model = None
 
 try:
