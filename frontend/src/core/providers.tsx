@@ -25,6 +25,10 @@ export function AppProviders({ children }: AppProvidersProps) {
     <ErrorBoundary>
       <ClerkProvider
         publishableKey={env.clerk.publishableKey}
+        signInUrl="/login"
+        signUpUrl="/signup"
+        signInFallbackRedirectUrl="/"
+        signUpFallbackRedirectUrl="/select-role"
         allowedRedirectOrigins={[env.app.url]}
         appearance={{ theme: shadcn }}
       >

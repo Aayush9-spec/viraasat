@@ -724,6 +724,8 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
           strategy,
           redirectUrl: redirectCallbackUrl,
           redirectUrlComplete: redirectUrl,
+          continueSignUp: true,
+          continueSignIn: true,
         });
       } else if (authResource && typeof authResource.sso === 'function') {
         const { error } = await authResource.sso({
