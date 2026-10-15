@@ -114,6 +114,8 @@
     "core-js": true,
     "protobufjs": true,
     "unrs-resolver": true,
-    "fsevents": true
+    "fsevents": true,
+    "browser-tabs-lock": true,
+    "browser-tabs-lock@1.3.0": true
   }
 }
