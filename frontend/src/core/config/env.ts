@@ -27,7 +27,7 @@ export const env = {
   clerk: {
     publishableKey: getEnvVar(
       'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
-      'pk_test_c2hpbmluZy1mcm9nLTU3LmNsZXJrLmFjY291bnRzLmRldiQ'
+      'pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA'
     ),
     secretKey: getEnvVar('CLERK_SECRET_KEY', ''),
     signInUrl: getEnvVar('NEXT_PUBLIC_CLERK_SIGN_IN_URL', '/sign-in'),
