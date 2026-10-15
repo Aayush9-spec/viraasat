@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,27 +14,8 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { categories } from '@/lib/data';
-import {
-  Sparkles,
-  Loader2,
-  ShieldCheck,
-  AlertCircle,
-  IdCard,
-  User,
-  Camera,
-  CheckCircle2,
-  Globe,
-  Youtube,
-  Instagram,
-  Facebook,
-  CloudOff,
-  Cloud,
-} from 'lucide-react';
-import { useToast } from '@/core/hooks/use-toast';
-import { generateArtisanStory } from '@/ai/flows/generate-artisan-story';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -41,878 +23,493 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useUserRole } from '@/features/auth/hooks/use-user-role';
+import {
+  User as UserIcon,
+  Mail,
+  Phone,
+  MapPin,
+  Heart,
+  Package,
+  Sparkles,
+  ShieldCheck,
+  CheckCircle2,
+  Loader2,
+  ShoppingBag,
+  ArrowRight,
+} from 'lucide-react';
+import { useToast } from '@/core/hooks/use-toast';
+import { ProtectedRoute } from '@/features/auth/components/protected-route';
 import { supabase } from '@/services/supabase';
+import { categories } from '@/lib/data';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+const INDIAN_STATES = [
+  'Andhra Pradesh',
+  'Assam',
+  'Bihar',
+  'Delhi',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jammu and Kashmir',
+  'Karnataka',
+  'Kerala',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Odisha',
+  'Punjab',
+  'Rajasthan',
+  'Tamil Nadu',
+  'Telangana',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+];
 
-interface ArtisanProfileData {
-  full_name: string;
-  shop_name: string;
-  bio: string;
-  craft: string;
-  experience: number;
-  instagram: string;
-  facebook: string;
-  youtube: string;
-  website: string;
-  profile_picture_url: string;
-  verification_status: 'unverified' | 'pending' | 'verified';
-  artisan_id: string | null;
-}
-
-const EMPTY_PROFILE: ArtisanProfileData = {
-  full_name: '',
-  shop_name: '',
-  bio: '',
-  craft: '',
-  experience: 1,
-  instagram: '',
-  facebook: '',
-  youtube: '',
-  website: '',
-  profile_picture_url: '',
-  verification_status: 'unverified',
-  artisan_id: null,
-};
-
-const LS_KEY = 'viraasat_artisan_profile_v2';
-const LS_BUYER_KEY = 'viraasat_buyer_profile';
-
-// ─── Supabase helpers ─────────────────────────────────────────────────────────
-
-async function loadProfileFromSupabase(userId: string): Promise<ArtisanProfileData | null> {
-  try {
-    const { data, error } = await supabase
-      .from('artisan_profiles')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
-
-    if (error) {
-      console.warn('[Profile] Supabase read error:', error.message);
-      return null;
-    }
-    if (!data) return null;
-
-    return {
-      full_name: data.full_name ?? '',
-      shop_name: data.shop_name ?? '',
-      bio: data.bio ?? '',
-      craft: data.craft ?? '',
-      experience: data.experience ?? 1,
-      instagram: data.instagram ?? '',
-      facebook: data.facebook ?? '',
-      youtube: data.youtube ?? '',
-      website: data.website ?? '',
-      profile_picture_url: data.profile_picture_url ?? '',
-      verification_status: data.verification_status ?? 'unverified',
-      artisan_id: data.artisan_id ?? null,
-    };
-  } catch {
-    return null;
-  }
-}
-
-async function upsertProfileToSupabase(
-  userId: string,
-  profile: Partial<ArtisanProfileData>,
-): Promise<{ ok: boolean; error?: string }> {
-  try {
-    const { error } = await supabase
-      .from('artisan_profiles')
-      .upsert({ user_id: userId, ...profile, updated_at: new Date().toISOString() }, {
-        onConflict: 'user_id',
-      });
-
-    if (error) {
-      console.warn('[Profile] Supabase upsert error:', error.message);
-      return { ok: false, error: error.message };
-    }
-    return { ok: true };
-  } catch (e: any) {
-    return { ok: false, error: e?.message ?? 'Unknown error' };
-  }
-}
-
-// ─── Root component ───────────────────────────────────────────────────────────
-
-export default function ProfilePage() {
-  const { user } = useUser();
-  const { role, loading: roleLoading } = useUserRole();
+export default function CustomerProfilePage() {
+  const { user, isLoaded } = useUser();
   const { toast } = useToast();
 
-  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/artisan')) {
-    return <ArtisanProfile userId={user?.id ?? null} toast={toast} />;
-  }
-
-  if (roleLoading) {
-    return (
-      <div className="flex h-96 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (role === 'buyer') {
-    return <BuyerProfile user={user} toast={toast} />;
-  }
-
-  return <ArtisanProfile userId={user?.id ?? null} toast={toast} />;
-}
-
-// ─── Buyer profile ────────────────────────────────────────────────────────────
-
-function BuyerProfile({ user, toast }: { user: any; toast: any }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-
-  const [displayName, setDisplayName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
-  const [addressLine1, setAddressLine1] = useState('');
-  const [addressLine2, setAddressLine2] = useState('');
+
+  // Shipping Address
+  const [address1, setAddress1] = useState('');
+  const [address2, setAddress2] = useState('');
   const [city, setCity] = useState('');
   const [stateName, setStateName] = useState('');
-  const [zipCode, setZipCode] = useState('');
+  const [zip, setZip] = useState('');
 
+  // Preferences
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Initialize from Clerk + localStorage on mount
   useEffect(() => {
-    // Try Supabase first, fall back to localStorage
-    async function load() {
-      let loaded = false;
-      if (user?.id) {
-        try {
-          const { data } = await supabase
-            .from('buyer_profiles')
-            .select('*')
-            .eq('user_id', user.id)
-            .maybeSingle();
+    if (user) {
+      setFirstName(user.firstName || '');
+      setLastName(user.lastName || '');
 
-          if (data) {
-            setDisplayName(data.display_name ?? user?.fullName ?? '');
-            setPhone(data.phone ?? '');
-            setAddressLine1(data.address_line1 ?? '');
-            setAddressLine2(data.address_line2 ?? '');
-            setCity(data.city ?? '');
-            setStateName(data.state ?? '');
-            setZipCode(data.zip_code ?? '');
-            loaded = true;
+      // Load metadata or localStorage shipping address
+      if (typeof window !== 'undefined') {
+        try {
+          const savedAddr = localStorage.getItem('customer_shipping_address');
+          if (savedAddr) {
+            const parsed = JSON.parse(savedAddr);
+            if (parsed.address1) setAddress1(parsed.address1);
+            if (parsed.address2) setAddress2(parsed.address2);
+            if (parsed.city) setCity(parsed.city);
+            if (parsed.stateName) setStateName(parsed.stateName);
+            if (parsed.zip) setZip(parsed.zip);
+            if (parsed.phone) setPhone(parsed.phone);
+          }
+
+          const savedPrefs = localStorage.getItem('customer_profile_preferences');
+          if (savedPrefs) {
+            const parsed = JSON.parse(savedPrefs);
+            if (Array.isArray(parsed.interests)) {
+              setSelectedInterests(parsed.interests);
+            }
           }
         } catch {
-          // fall through to localStorage
+          // ignore parsing error
         }
       }
 
-      if (!loaded) {
-        const saved = localStorage.getItem(LS_BUYER_KEY);
-        if (saved) {
-          try {
-            const p = JSON.parse(saved);
-            setDisplayName(p.displayName || user?.fullName || '');
-            setPhone(p.phone || '');
-            setAddressLine1(p.addressLine1 || '');
-            setAddressLine2(p.addressLine2 || '');
-            setCity(p.city || '');
-            setStateName(p.state || '');
-            setZipCode(p.zipCode || '');
-          } catch { /* ignore */ }
-        } else {
-          setDisplayName(user?.fullName || '');
-        }
+      // Check Clerk unsafeMetadata fallback
+      const meta = user.unsafeMetadata as Record<string, unknown> | undefined;
+      if (meta?.phone && !phone) setPhone(String(meta.phone));
+      if (meta?.interests && Array.isArray(meta.interests) && selectedInterests.length === 0) {
+        setSelectedInterests(meta.interests as string[]);
       }
-      setIsLoading(false);
     }
-    load();
   }, [user]);
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    const profileData = {
-      displayName, phone, addressLine1, addressLine2, city,
-      state: stateName, zipCode,
-    };
-
-    // Always save to localStorage immediately
-    localStorage.setItem(LS_BUYER_KEY, JSON.stringify(profileData));
-
-    // Try Supabase
-    let savedToCloud = false;
-    if (user?.id) {
-      try {
-        const { error } = await supabase
-          .from('buyer_profiles')
-          .upsert({
-            user_id: user.id,
-            display_name: displayName,
-            phone,
-            address_line1: addressLine1,
-            address_line2: addressLine2,
-            city,
-            state: stateName,
-            zip_code: zipCode,
-            updated_at: new Date().toISOString(),
-          }, { onConflict: 'user_id' });
-
-        if (!error) savedToCloud = true;
-      } catch { /* already saved locally */ }
-    }
-
-    toast({
-      title: savedToCloud ? '✅ Profile saved to cloud' : '💾 Profile saved locally',
-      description: savedToCloud
-        ? 'Your details are synced across all devices.'
-        : 'Saved to this browser. Sign in to sync across devices.',
-    });
-    setIsSaving(false);
+  const toggleInterest = (category: string) => {
+    setSelectedInterests((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
   };
 
-  if (isLoading) {
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    setIsSaving(true);
+
+    try {
+      // 1. Update Clerk user profile (name and metadata)
+      if (typeof user.update === 'function') {
+        await user.update({
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          unsafeMetadata: {
+            ...user.unsafeMetadata,
+            phone: phone.trim(),
+            interests: selectedInterests,
+            shippingAddress: {
+              address1: address1.trim(),
+              address2: address2.trim(),
+              city: city.trim(),
+              stateName: stateName.trim(),
+              zip: zip.trim(),
+            },
+          },
+        });
+      }
+
+      // 2. Save shipping address for 1-click checkout
+      const shippingPayload = {
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        address1: address1.trim(),
+        address2: address2.trim(),
+        city: city.trim(),
+        stateName: stateName.trim(),
+        zip: zip.trim(),
+        phone: phone.trim(),
+      };
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(
+          'customer_shipping_address',
+          JSON.stringify(shippingPayload)
+        );
+        localStorage.setItem(
+          'customer_profile_preferences',
+          JSON.stringify({ interests: selectedInterests })
+        );
+      }
+
+      // 3. Upsert to Supabase
+      try {
+        await supabase.from('users').upsert({
+          id: user.id,
+          email: user.primaryEmailAddress?.emailAddress || '',
+          display_name: `${firstName} ${lastName}`.trim() || user.fullName || 'Customer',
+          role: 'buyer',
+        });
+      } catch (err) {
+        console.warn('[Customer Profile] Supabase sync skipped:', err);
+      }
+
+      toast({
+        title: 'Profile Updated',
+        description: 'Your personal details, shipping address, and craft preferences have been saved.',
+      });
+    } catch (err: unknown) {
+      console.error('Error saving customer profile:', err);
+      toast({
+        title: 'Update Failed',
+        description: (err as Error)?.message || 'Could not save profile changes.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (!isLoaded) {
     return (
-      <div className="flex h-96 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
+  const email = user?.primaryEmailAddress?.emailAddress || '';
+  const fullName = `${firstName} ${lastName}`.trim() || user?.fullName || 'Viraasat Patron';
+  const avatarUrl = user?.imageUrl || '';
+  const initial = (firstName?.[0] || user?.fullName?.[0] || 'C').toUpperCase();
+  const memberSince = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString('en-US', {
+        month: 'long',
+        year: 'numeric',
+      })
+    : 'Recent';
+
   return (
-    <div className="space-y-6 max-w-2xl">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" /> Personal Information
-          </CardTitle>
-          <CardDescription>
-            Manage your account details and default shipping address.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16 border-2 border-muted">
-              <AvatarImage src={user?.imageUrl} />
-              <AvatarFallback className="text-lg">
-                {displayName?.charAt(0) || 'U'}
+    <ProtectedRoute allowedRoles={['buyer']}>
+      <div className="max-w-4xl mx-auto space-y-8 p-4 sm:p-6 md:p-8">
+        {/* Header Hero Banner */}
+        <div className="relative rounded-3xl bg-gradient-to-r from-amber-800 via-primary to-amber-900 p-6 sm:p-8 text-white shadow-xl overflow-hidden">
+          <div className="absolute -right-8 -bottom-8 opacity-10 pointer-events-none">
+            <Sparkles className="w-64 h-64" />
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 relative z-10">
+            <Avatar className="h-20 w-20 ring-4 ring-white/20 shadow-md">
+              <AvatarImage src={avatarUrl} alt={fullName} />
+              <AvatarFallback className="bg-amber-950 text-white font-bold text-xl">
+                {initial}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <p className="font-medium">{user?.primaryEmailAddress?.emailAddress}</p>
-              <p className="text-sm text-muted-foreground">Photo managed via Clerk — update in account settings.</p>
+
+            <div className="space-y-1.5 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-2xl sm:text-3xl font-heading font-bold">{fullName}</h1>
+                <Badge className="bg-emerald-500/90 hover:bg-emerald-500 text-white border-none text-[11px] font-semibold gap-1">
+                  <ShieldCheck className="h-3 w-3" /> Verified Patron
+                </Badge>
+              </div>
+              <p className="text-amber-100/90 text-sm flex items-center gap-1.5">
+                <Mail className="h-3.5 w-3.5 opacity-80" /> {email}
+              </p>
+              <p className="text-xs text-amber-200/75">
+                Member of Viraasat since {memberSince}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap sm:flex-col gap-2 w-full sm:w-auto">
+              <Button asChild size="sm" variant="secondary" className="bg-white/95 text-primary hover:bg-white font-semibold text-xs shadow-sm flex-1 sm:flex-initial">
+                <Link href="/orders">
+                  <Package className="mr-1.5 h-3.5 w-3.5" /> My Orders
+                </Link>
+              </Button>
+              <Button asChild size="sm" variant="outline" className="border-white/30 text-white hover:bg-white/10 font-semibold text-xs flex-1 sm:flex-initial">
+                <Link href="/wishlist">
+                  <Heart className="mr-1.5 h-3.5 w-3.5" /> My Wishlist
+                </Link>
+              </Button>
             </div>
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="displayName">Display Name</Label>
-            <Input
-              id="displayName"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Your name"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input
-              id="phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+91 98765 43210"
-            />
-          </div>
-        </CardContent>
-
-        <CardHeader className="pt-0 pb-2">
-          <CardTitle className="text-base">Default Shipping Address</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="addressLine1">Address Line 1</Label>
-            <Input
-              id="addressLine1"
-              value={addressLine1}
-              onChange={(e) => setAddressLine1(e.target.value)}
-              placeholder="House / Flat no., Street"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="addressLine2">Address Line 2</Label>
-            <Input
-              id="addressLine2"
-              value={addressLine2}
-              onChange={(e) => setAddressLine2(e.target.value)}
-              placeholder="Area, Landmark (optional)"
-            />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="Mumbai"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="stateName">State</Label>
-              <Input
-                id="stateName"
-                value={stateName}
-                onChange={(e) => setStateName(e.target.value)}
-                placeholder="Maharashtra"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="zipCode">PIN Code</Label>
-              <Input
-                id="zipCode"
-                value={zipCode}
-                onChange={(e) => setZipCode(e.target.value)}
-                placeholder="400001"
-              />
-            </div>
-          </div>
-        </CardContent>
-
-        <CardFooter className="border-t px-6 py-4">
-          <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Profile
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
-  );
-}
-
-// ─── Artisan profile ──────────────────────────────────────────────────────────
-
-function ArtisanProfile({ userId, toast }: { userId: string | null; toast: any }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isSaving, setIsSaving] = useState<string | null>(null);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [storageMode, setStorageMode] = useState<'cloud' | 'local'>('local');
-
-  // Profile fields
-  const [name, setName] = useState('');
-  const [shopName, setShopName] = useState('');
-  const [profilePictureUrl, setProfilePictureUrl] = useState('');
-  const [bio, setBio] = useState('');
-  const [craft, setCraft] = useState('');
-  const [experience, setExperience] = useState(1);
-  const [instagram, setInstagram] = useState('');
-  const [facebook, setFacebook] = useState('');
-  const [youtube, setYoutube] = useState('');
-  const [website, setWebsite] = useState('');
-  const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'pending' | 'verified'>('unverified');
-  const [artisanId, setArtisanId] = useState<string | null>(null);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  function applyProfile(p: ArtisanProfileData) {
-    setName(p.full_name || '');
-    setShopName(p.shop_name || '');
-    setProfilePictureUrl(p.profile_picture_url || '');
-    setBio(p.bio || '');
-    setCraft(p.craft || categories[0]);
-    setExperience(p.experience || 1);
-    setInstagram(p.instagram || '');
-    setFacebook(p.facebook || '');
-    setYoutube(p.youtube || '');
-    setWebsite(p.website || '');
-    setVerificationStatus(p.verification_status || 'unverified');
-    setArtisanId(p.artisan_id || null);
-  }
-
-  // ── Load from Supabase, fallback to localStorage ─────────────────────────
-  useEffect(() => {
-    async function load() {
-      // 1. Try localStorage first for instant load
-      const cached = localStorage.getItem(LS_KEY);
-      if (cached) {
-        try {
-          const p: ArtisanProfileData = JSON.parse(cached);
-          applyProfile(p);
-        } catch { /* corrupt cache */ }
-      }
-
-      // 2. Try Supabase for fresh/persistent data
-      if (userId) {
-        const remote = await loadProfileFromSupabase(userId);
-        if (remote) {
-          applyProfile(remote);
-          // Refresh cache
-          localStorage.setItem(LS_KEY, JSON.stringify(remote));
-          setStorageMode('cloud');
-        } else {
-          setStorageMode('local');
-        }
-      } else {
-        setStorageMode('local');
-      }
-
-      setIsLoading(false);
-    }
-    load();
-  }, [userId]);
-
-
-
-  function buildCurrentProfile(overrides?: Partial<ArtisanProfileData>): ArtisanProfileData {
-    return {
-      full_name: name,
-      shop_name: shopName,
-      bio,
-      craft,
-      experience,
-      instagram,
-      facebook,
-      youtube,
-      website,
-      profile_picture_url: profilePictureUrl,
-      verification_status: verificationStatus,
-      artisan_id: artisanId,
-      ...overrides,
-    };
-  }
-
-  // ── Image upload ──────────────────────────────────────────────────────────
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 3 * 1024 * 1024) {
-      toast({
-        variant: 'destructive',
-        title: 'File too large',
-        description: 'Please upload an image smaller than 3MB.',
-      });
-      return;
-    }
-
-    // Try Supabase Storage upload
-    if (userId) {
-      try {
-        const ext = file.name.split('.').pop() ?? 'jpg';
-        const path = `artisan-avatars/${userId}.${ext}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(path, file, { upsert: true, contentType: file.type });
-
-        if (!uploadError && uploadData) {
-          const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
-          const publicUrl = urlData.publicUrl;
-          setProfilePictureUrl(publicUrl);
-          toast({ title: '📷 Photo uploaded', description: 'Profile picture saved to cloud.' });
-          return;
-        }
-      } catch { /* fall through to base64 */ }
-    }
-
-    // Fallback: base64 in localStorage
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const dataUrl = reader.result as string;
-      setProfilePictureUrl(dataUrl);
-      toast({ title: '📷 Photo selected', description: "Save your profile to keep this picture." });
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // ── Save section ──────────────────────────────────────────────────────────
-  const handleSave = async (section: 'basic' | 'story' | 'social') => {
-    setIsSaving(section);
-
-    const profile = buildCurrentProfile();
-
-    // 1. Always save to localStorage immediately (optimistic)
-    localStorage.setItem(LS_KEY, JSON.stringify(profile));
-    window.dispatchEvent(new Event('profile-updated'));
-
-    // 2. Try Supabase
-    let savedToCloud = false;
-    if (userId) {
-      const result = await upsertProfileToSupabase(userId, profile);
-      savedToCloud = result.ok;
-      if (result.ok) setStorageMode('cloud');
-    }
-
-    const sectionLabel =
-      section === 'basic' ? 'Basic info' :
-      section === 'story' ? 'Bio & story' : 'Social links';
-
-    toast({
-      title: savedToCloud ? `✅ ${sectionLabel} saved` : `💾 ${sectionLabel} saved locally`,
-      description: savedToCloud
-        ? 'Changes are synced to your account.'
-        : 'Saved to this browser. Sign in to sync across devices.',
-    });
-
-    setIsSaving(null);
-  };
-
-  // ── AI story generation ───────────────────────────────────────────────────
-  const handleGenerateStory = async () => {
-    if (!name || !shopName || !craft) {
-      toast({
-        variant: 'destructive',
-        title: 'Missing Information',
-        description: 'Please fill in your Name, Shop Name, and Craft before generating a story.',
-      });
-      return;
-    }
-    setIsGenerating(true);
-    try {
-      const result = await generateArtisanStory({
-        artisanName: name,
-        shopName,
-        craftType: craft,
-        yearsExperience: experience,
-      });
-      if (result.storyIdeas?.length > 0) {
-        setBio(result.storyIdeas.join('\n\n'));
-        toast({ title: '✨ Story Generated!', description: 'AI has drafted a bio. Edit it to make it yours.' });
-      }
-    } catch {
-      toast({ variant: 'destructive', title: 'Generation Failed', description: 'Could not generate story. Please try again.' });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  // ── Verify & generate Artisan ID ──────────────────────────────────────────
-  const handleVerify = async () => {
-    const missing: string[] = [];
-    if (!name) missing.push('Full Name');
-    if (!shopName) missing.push('Shop Name');
-    if (!craft) missing.push('Craft');
-    if (!bio || bio.length < 20) missing.push('Bio (min 20 characters)');
-    if (missing.length > 0) {
-      toast({
-        variant: 'destructive',
-        title: 'Incomplete Profile',
-        description: `Please complete: ${missing.join(', ')}`,
-      });
-      return;
-    }
-
-    setIsVerifying(true);
-    await new Promise((r) => setTimeout(r, 1500));
-
-    const newId = `ART-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
-    setVerificationStatus('verified');
-    setArtisanId(newId);
-
-    const profile = buildCurrentProfile({ verification_status: 'verified', artisan_id: newId });
-    localStorage.setItem(LS_KEY, JSON.stringify(profile));
-    window.dispatchEvent(new Event('profile-updated'));
-
-    let savedToCloud = false;
-    if (userId) {
-      const result = await upsertProfileToSupabase(userId, profile);
-      savedToCloud = result.ok;
-    }
-
-    toast({
-      title: '🎉 Verification Successful!',
-      description: `Artisan ID ${newId} generated${savedToCloud ? ' and saved to your account' : ' locally'}.`,
-    });
-    setIsVerifying(false);
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex h-96 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      {/* Storage mode indicator */}
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        {storageMode === 'cloud' ? (
-          <><Cloud className="h-3.5 w-3.5 text-emerald-500" /><span className="text-emerald-600">Synced to cloud — changes saved across all devices</span></>
-        ) : (
-          <><CloudOff className="h-3.5 w-3.5 text-amber-500" /><span className="text-amber-600">Browser storage only — sign in to sync across devices</span></>
-        )}
-      </div>
-
-      {/* ── Artisan Identity card ─────────────────────────────────────────── */}
-      <Card className={`border-l-4 ${verificationStatus === 'verified' ? 'border-l-green-500' : 'border-l-yellow-500'}`}>
-        <CardHeader>
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <div className="space-y-1">
-              <CardTitle className="flex items-center gap-2 flex-wrap">
-                Artisan Identity
-                {verificationStatus === 'verified' ? (
-                  <Badge className="bg-green-600 hover:bg-green-700 gap-1">
-                    <ShieldCheck className="h-3 w-3" /> Verified
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary" className="gap-1">
-                    <AlertCircle className="h-3 w-3" /> Unverified
-                  </Badge>
-                )}
-              </CardTitle>
+        {/* Form Container */}
+        <div className="grid grid-cols-1 gap-6">
+          {/* 1. Personal Information */}
+          <Card className="border border-border shadow-md rounded-2xl">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-2 text-primary font-semibold text-sm uppercase tracking-wide">
+                <UserIcon className="h-4 w-4" /> Personal Details
+              </div>
+              <CardTitle className="text-xl font-heading">Your Identity</CardTitle>
               <CardDescription>
-                {verificationStatus === 'verified'
-                  ? 'Your identity has been verified. You can now access all artisan features.'
-                  : 'Verify your profile to generate your unique Artisan ID and start selling.'}
+                Manage your name and contact number for order dispatches and account notifications.
               </CardDescription>
-            </div>
-
-            {verificationStatus === 'verified' ? (
-              <div className="bg-muted p-3 rounded-lg flex items-center gap-3">
-                <IdCard className="h-8 w-8 opacity-50" />
-                <div>
-                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Artisan ID</div>
-                  <div className="font-mono text-lg font-semibold">{artisanId}</div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="firstName" className="text-xs font-semibold uppercase text-muted-foreground">
+                    First Name
+                  </Label>
+                  <Input
+                    id="firstName"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="e.g. Priya"
+                    className="h-11"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="lastName" className="text-xs font-semibold uppercase text-muted-foreground">
+                    Last Name
+                  </Label>
+                  <Input
+                    id="lastName"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="e.g. Sharma"
+                    className="h-11"
+                  />
                 </div>
               </div>
-            ) : (
-              <Button onClick={handleVerify} disabled={isVerifying}>
-                {isVerifying
-                  ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  : <ShieldCheck className="mr-2 h-4 w-4" />}
-                Verify & Generate ID
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        {verificationStatus !== 'verified' && (
-          <CardContent>
-            <Alert className="bg-yellow-50/50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-800">
-              <AlertCircle className="h-4 w-4 text-yellow-600" />
-              <AlertTitle>Action Required</AlertTitle>
-              <AlertDescription>
-                Fill in your <strong>Full Name</strong>, <strong>Shop Name</strong>, <strong>Craft</strong>, and <strong>Bio</strong> below, then click <em>Verify & Generate ID</em>.
-              </AlertDescription>
-            </Alert>
-          </CardContent>
-        )}
-      </Card>
 
-      {/* ── Profile / Basic Info ──────────────────────────────────────────── */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>Update your shop details and personal information.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Avatar */}
-          <div className="flex items-center gap-5">
-            <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-              <Avatar className="h-20 w-20 border-2 border-muted">
-                <AvatarImage src={profilePictureUrl} className="object-cover" />
-                <AvatarFallback className="text-2xl">{name.charAt(0) || '?'}</AvatarFallback>
-              </Avatar>
-              <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Camera className="h-6 w-6 text-white" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="text-xs font-semibold uppercase text-muted-foreground flex items-center justify-between">
+                    <span>Email Address</span>
+                    <span className="text-[10px] text-emerald-600 font-medium flex items-center gap-0.5">
+                      <CheckCircle2 className="h-2.5 w-2.5" /> Verified via Clerk
+                    </span>
+                  </Label>
+                  <Input
+                    id="email"
+                    value={email}
+                    disabled
+                    className="h-11 bg-muted/50 cursor-not-allowed text-muted-foreground"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="phone" className="text-xs font-semibold uppercase text-muted-foreground">
+                    Phone Number (for Courier & OTPs)
+                  </Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="phone"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="h-11 pl-9"
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Profile Picture</Label>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="gap-2 text-xs"
-              >
-                <Camera className="h-3.5 w-3.5" /> Change Photo
+            </CardContent>
+          </Card>
+
+          {/* 2. Default Shipping & Delivery Address */}
+          <Card className="border border-border shadow-md rounded-2xl">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-2 text-primary font-semibold text-sm uppercase tracking-wide">
+                <MapPin className="h-4 w-4" /> Delivery Address
+              </div>
+              <CardTitle className="text-xl font-heading">Default Shipping Address</CardTitle>
+              <CardDescription>
+                Saved addresses are automatically pre-filled at checkout for instant 1-click purchasing.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="address1" className="text-xs font-semibold uppercase text-muted-foreground">
+                  Address Line 1 (House/Flat No., Building, Street)
+                </Label>
+                <Input
+                  id="address1"
+                  value={address1}
+                  onChange={(e) => setAddress1(e.target.value)}
+                  placeholder="e.g. Flat 402, Royal Palms, MG Road"
+                  className="h-11"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="address2" className="text-xs font-semibold uppercase text-muted-foreground">
+                  Address Line 2 (Landmark, Colony - Optional)
+                </Label>
+                <Input
+                  id="address2"
+                  value={address2}
+                  onChange={(e) => setAddress2(e.target.value)}
+                  placeholder="e.g. Near City Heritage Garden"
+                  className="h-11"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="city" className="text-xs font-semibold uppercase text-muted-foreground">
+                    City
+                  </Label>
+                  <Input
+                    id="city"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="e.g. Jaipur"
+                    className="h-11"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="stateName" className="text-xs font-semibold uppercase text-muted-foreground">
+                    State
+                  </Label>
+                  <Select value={stateName} onValueChange={setStateName}>
+                    <SelectTrigger id="stateName" className="h-11">
+                      <SelectValue placeholder="Select State" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {INDIAN_STATES.map((st) => (
+                        <SelectItem key={st} value={st}>
+                          {st}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="zip" className="text-xs font-semibold uppercase text-muted-foreground">
+                    PIN Code (6 digits)
+                  </Label>
+                  <Input
+                    id="zip"
+                    maxLength={6}
+                    value={zip}
+                    onChange={(e) => setZip(e.target.value.replace(/\D/g, ''))}
+                    placeholder="e.g. 302001"
+                    className="h-11"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 3. Heritage Interests */}
+          <Card className="border border-border shadow-md rounded-2xl">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-2 text-primary font-semibold text-sm uppercase tracking-wide">
+                <Sparkles className="h-4 w-4" /> Heritage Curation
+              </div>
+              <CardTitle className="text-xl font-heading">Craft & Art Preferences</CardTitle>
+              <CardDescription>
+                Select your favorite traditional crafts to receive personalized recommendations from authentic artisans.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2.5">
+                {categories.map((cat) => {
+                  const isSelected = selectedInterests.includes(cat);
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => toggleInterest(cat)}
+                      className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 border ${
+                        isSelected
+                          ? 'bg-primary text-primary-foreground border-primary shadow-sm scale-105'
+                          : 'bg-background hover:bg-muted text-foreground border-border'
+                      }`}
+                    >
+                      {isSelected ? '✓ ' : '+ '} {cat}
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 4. Become an Artisan Banner */}
+          <Card className="border border-amber-500/20 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-950/20 dark:to-orange-950/20 rounded-2xl">
+            <CardContent className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <h3 className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-amber-600" /> Are you an Indian artisan or master craftsperson?
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Showcase your handcrafted creations, tell your heritage story, and reach conscious buyers across India and globally.
+                </p>
+              </div>
+              <Button asChild className="bg-gradient-to-r from-amber-700 to-orange-600 hover:from-amber-800 hover:to-orange-700 text-white font-semibold text-xs px-5 h-11 shrink-0">
+                <Link href="/apply">
+                  Apply as Artisan <ArrowRight className="ml-1.5 h-4 w-4" />
+                </Link>
               </Button>
-              <p className="text-xs text-muted-foreground">JPG, PNG or WebP · max 3MB</p>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* Name & Shop */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name <span className="text-red-500">*</span></Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Riya Sharma"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="shopName">Shop Name <span className="text-red-500">*</span></Label>
-              <Input
-                id="shopName"
-                value={shopName}
-                onChange={(e) => setShopName(e.target.value)}
-                placeholder="e.g. Riya's Creations"
-              />
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="border-t px-6 py-4">
+        {/* Bottom Save Action */}
+        <div className="flex justify-end pt-2">
           <Button
-            onClick={() => handleSave('basic')}
-            disabled={isSaving === 'basic'}
-            className="min-w-[130px]"
+            onClick={handleSaveProfile}
+            disabled={isSaving}
+            className="h-12 px-8 text-sm font-bold tracking-wide rounded-xl shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
           >
-            {isSaving === 'basic'
-              ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              : <CheckCircle2 className="mr-2 h-4 w-4" />}
-            Save Basic Info
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving Changes...
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="mr-2 h-4 w-4" /> Save Profile & Address
+              </>
+            )}
           </Button>
-        </CardFooter>
-      </Card>
-
-      {/* ── Your Story / Bio ──────────────────────────────────────────────── */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Story</CardTitle>
-          <CardDescription>Share your journey as an artisan. Not sure what to write? Let AI help!</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label htmlFor="craftType">Primary Craft <span className="text-red-500">*</span></Label>
-              <Select value={craft} onValueChange={setCraft}>
-                <SelectTrigger id="craftType">
-                  <SelectValue placeholder="Select your craft" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="experience">Years of Experience</Label>
-              <Input
-                id="experience"
-                type="number"
-                min="0"
-                max="70"
-                value={experience}
-                onChange={(e) => setExperience(Math.max(0, Number(e.target.value)))}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="bio">
-                Bio <span className="text-red-500">*</span>
-                <span className="ml-2 text-xs text-muted-foreground font-normal">(min 20 chars)</span>
-              </Label>
-              <span className={`text-xs ${bio.length < 20 ? 'text-red-400' : 'text-muted-foreground'}`}>
-                {bio.length} chars
-              </span>
-            </div>
-            <Textarea
-              id="bio"
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows={7}
-              className="resize-none"
-              placeholder="Tell us about your journey, your craft, and what makes your work unique..."
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="border-t px-6 py-4 flex justify-between items-center gap-4 flex-wrap">
-          <Button variant="outline" onClick={handleGenerateStory} disabled={isGenerating}>
-            {isGenerating
-              ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              : <Sparkles className="mr-2 h-4 w-4 text-purple-500" />}
-            Generate with AI
-          </Button>
-          <Button
-            onClick={() => handleSave('story')}
-            disabled={isSaving === 'story'}
-            className="min-w-[110px]"
-          >
-            {isSaving === 'story'
-              ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              : <CheckCircle2 className="mr-2 h-4 w-4" />}
-            Save Bio
-          </Button>
-        </CardFooter>
-      </Card>
-
-      {/* ── Social Media Links ────────────────────────────────────────────── */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Social Media & Links</CardTitle>
-          <CardDescription>Help customers find and follow your work online.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label htmlFor="instagram" className="flex items-center gap-1.5">
-                <Instagram className="h-3.5 w-3.5 text-pink-500" /> Instagram
-              </Label>
-              <Input
-                id="instagram"
-                value={instagram}
-                onChange={(e) => setInstagram(e.target.value)}
-                placeholder="https://instagram.com/yourhandle"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="facebook" className="flex items-center gap-1.5">
-                <Facebook className="h-3.5 w-3.5 text-blue-600" /> Facebook
-              </Label>
-              <Input
-                id="facebook"
-                value={facebook}
-                onChange={(e) => setFacebook(e.target.value)}
-                placeholder="https://facebook.com/yourpage"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="youtube" className="flex items-center gap-1.5">
-                <Youtube className="h-3.5 w-3.5 text-red-500" /> YouTube
-              </Label>
-              <Input
-                id="youtube"
-                value={youtube}
-                onChange={(e) => setYoutube(e.target.value)}
-                placeholder="https://youtube.com/@yourchannel"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="website" className="flex items-center gap-1.5">
-                <Globe className="h-3.5 w-3.5 text-emerald-600" /> Website
-              </Label>
-              <Input
-                id="website"
-                value={website}
-                onChange={(e) => setWebsite(e.target.value)}
-                placeholder="https://yourshop.com"
-              />
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="border-t px-6 py-4">
-          <Button
-            onClick={() => handleSave('social')}
-            disabled={isSaving === 'social'}
-            className="min-w-[140px]"
-          >
-            {isSaving === 'social'
-              ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              : <CheckCircle2 className="mr-2 h-4 w-4" />}
-            Save Social Links
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
+        </div>
+      </div>
+    </ProtectedRoute>
   );
 }

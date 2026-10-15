@@ -1,6 +1,6 @@
 
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,8 +62,30 @@ export default function CheckoutPage() {
     const [address2, setAddress2] = useState('');
     const [city, setCity] = useState('');
     const [stateName, setStateName] = useState('');
-    const [zip, setZip] = useState('');
-    const [phone, setPhone] = useState('');
+    const [zip, setZip] = useState("");
+    const [phone, setPhone] = useState("");
+
+    // Auto-populate saved shipping address from customer profile
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            try {
+                const saved = localStorage.getItem("customer_shipping_address");
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.firstName) setFirstName(data.firstName);
+                    if (data.lastName) setLastName(data.lastName);
+                    if (data.address1) setAddress1(data.address1);
+                    if (data.address2) setAddress2(data.address2);
+                    if (data.city) setCity(data.city);
+                    if (data.stateName) setStateName(data.stateName);
+                    if (data.zip) setZip(data.zip);
+                    if (data.phone) setPhone(data.phone);
+                }
+            } catch {
+                // Ignore parse error
+            }
+        }
+    }, []);
 
     const validateForm = () => {
         if (!firstName.trim() || !lastName.trim()) {

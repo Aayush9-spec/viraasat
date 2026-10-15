@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { ShoppingCart, Menu, LogOut, User } from 'lucide-react';
+import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles } from 'lucide-react';
 import { useTranslation } from '@/core/hooks/use-translation';
 import { useCart } from '@/context/cart-context';
 import { useUserRole } from '@/features/auth/hooks/use-user-role';
@@ -169,7 +169,47 @@ export function Header() {
             {mounted && isClientAuth ? (
               <div className="flex items-center">
                 {isSignedIn ? (
-                  <UserButton />
+                  <UserButton
+                    appearance={{
+                      elements: {
+                        userButtonAvatarBox: "h-9 w-9 ring-2 ring-primary/20 hover:ring-primary/40 transition-all",
+                        userButtonPopoverCard: "shadow-2xl border border-border rounded-2xl p-1",
+                      },
+                    }}
+                  >
+                    <UserButton.MenuItems>
+                      <UserButton.Link
+                        label={isArtisan ? "Artisan Dashboard" : "My Dashboard"}
+                        labelIcon={<LayoutDashboard className="h-4 w-4 text-primary" />}
+                        href={isArtisan ? "/artisan/dashboard" : "/dashboard"}
+                      />
+                      <UserButton.Link
+                        label={isArtisan ? "Artisan Studio Profile" : "Profile & Address"}
+                        labelIcon={<User className="h-4 w-4 text-emerald-600" />}
+                        href={isArtisan ? "/artisan/profile" : "/dashboard/profile"}
+                      />
+                      <UserButton.Link
+                        label={isArtisan ? "Artisan Products" : "My Orders"}
+                        labelIcon={<Package className="h-4 w-4 text-amber-600" />}
+                        href={isArtisan ? "/artisan/products" : "/orders"}
+                      />
+                      {!isArtisan && (
+                        <UserButton.Link
+                          label="My Wishlist"
+                          labelIcon={<Heart className="h-4 w-4 text-rose-500" />}
+                          href="/wishlist"
+                        />
+                      )}
+                      {!isArtisan && (
+                        <UserButton.Link
+                          label="Artisan Portal"
+                          labelIcon={<Sparkles className="h-4 w-4 text-amber-500" />}
+                          href="/artisan/dashboard"
+                        />
+                      )}
+                      <UserButton.Action label="manageAccount" />
+                    </UserButton.MenuItems>
+                  </UserButton>
                 ) : (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
