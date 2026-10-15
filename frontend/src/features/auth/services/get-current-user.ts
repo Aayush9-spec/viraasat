@@ -33,6 +33,9 @@ export async function getCurrentUser(): Promise<User | null> {
       createdAt: new Date(clerkUser.createdAt).toISOString(),
     } as any;
   } catch (error) {
+    if ((error as any)?.digest === "DYNAMIC_SERVER_USAGE" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
     console.error("Error in getCurrentUser:", error);
     return null;
   }
