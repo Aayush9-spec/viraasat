@@ -129,6 +129,8 @@ jobs:
           CSAM_HASH_ENABLED: 'false'
           DATABASE_URL: 'memory://'
           ENVIRONMENT: development
+          RAZORPAY_KEY_ID: rzp_test_placeholder
+          RAZORPAY_KEY_SECRET: AGxzrZj2IpfG0qxWNrX7KEfu
         run: |
           source venv/bin/activate
           python3 -m pytest -v > pytest-output.txt 2>&1 || (cat pytest-output.txt && exit 1)
