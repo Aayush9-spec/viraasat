@@ -3,38 +3,48 @@
 import { useEffect } from 'react';
 
 export function PerformanceMonitor() {
-    useEffect(() => {
-        // Only run in development
-        if (process.env.NODE_ENV === 'development') {
-            // Monitor Web Vitals
-            if (typeof window !== 'undefined') {
-                import('web-vitals').then(({ onCLS, onFID, onFCP, onLCP, onTTFB }) => {
-                    onCLS(console.log);
-                    onFID(console.log);
-                    onFCP(console.log);
-                    onLCP(console.log);
-                    onTTFB(console.log);
-                });
+  useEffect(() => {
+    // Only run in development
+    if (process.env.NODE_ENV !== 'development' || typeof window === 'undefined') {
+      return;
+    }
+
+    try {
+      if ('PerformanceObserver' in window) {
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (entry.entryType === 'largest-contentful-paint') {
+              console.log('📊 LCP:', Math.round(entry.startTime), 'ms');
+            } else if (entry.entryType === 'first-input') {
+              const fid = (entry as any).processingStart - entry.startTime;
+              console.log('📊 FID:', Math.round(fid), 'ms');
+            } else if (entry.entryType === 'layout-shift' && !(entry as any).hadRecentInput) {
+              console.log('📊 CLS delta:', (entry as any).value);
             }
+          }
+        });
 
-            // Log performance metrics
-            if (window.performance && window.performance.timing) {
-                window.addEventListener('load', () => {
-                    setTimeout(() => {
-                        const perfData = window.performance.timing;
-                        const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-                        const connectTime = perfData.responseEnd - perfData.requestStart;
-                        const renderTime = perfData.domComplete - perfData.domLoading;
+        observer.observe({ type: 'largest-contentful-paint', buffered: true });
+        observer.observe({ type: 'first-input', buffered: true });
+        observer.observe({ type: 'layout-shift', buffered: true });
+      }
 
-                        console.log('📊 Performance Metrics:');
-                        console.log(`Page Load Time: ${pageLoadTime}ms`);
-                        console.log(`Connect Time: ${connectTime}ms`);
-                        console.log(`Render Time: ${renderTime}ms`);
-                    }, 0);
-                });
-            }
-        }
-    }, []);
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const navEntries = performance.getEntriesByType('navigation');
+          if (navEntries.length > 0) {
+            const nav = navEntries[0] as PerformanceNavigationTiming;
+            console.log('📊 Performance Metrics:');
+            console.log(`Page Load Time: ${Math.round(nav.loadEventEnd - nav.startTime)}ms`);
+            console.log(`Connect Time: ${Math.round(nav.responseEnd - nav.requestStart)}ms`);
+            console.log(`DOM Complete: ${Math.round(nav.domComplete - nav.startTime)}ms`);
+          }
+        }, 0);
+      });
+    } catch {
+      // Ignore performance monitoring errors in non-supporting browsers
+    }
+  }, []);
 
-    return null;
+  return null;
 }
