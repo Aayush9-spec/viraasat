@@ -74,7 +74,7 @@ export async function checkChatBudgetAsync(
   const docRef = adminDb.collection('rate_limits').doc(`chat_daily:${userId}`);
 
   try {
-    const result = await adminDb.runTransaction(async (tx) => {
+    const result = await adminDb.runTransaction(async (tx: any) => {
       const snap = await tx.get(docRef);
       let count = 0;
       let existingReset = 0;
