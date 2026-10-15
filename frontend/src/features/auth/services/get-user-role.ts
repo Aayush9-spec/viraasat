@@ -20,6 +20,9 @@ export async function getUserRole(targetUserId?: string): Promise<UserRole | nul
     const userDoc = await getUser(userId);
     return userDoc?.role || null;
   } catch (error) {
+    if ((error as any)?.digest === "DYNAMIC_SERVER_USAGE" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
     console.error("Error fetching user role:", error);
     return null;
   }

@@ -5,7 +5,17 @@ import { getCurrentUser } from "./get-current-user";
 import { UserRole } from "@/types/user";
 
 export async function requireRole(allowedRoles: UserRole | UserRole[]) {
-  const { userId } = await auth();
+  let userId: string | null = null;
+  try {
+    const authObj = await auth();
+    userId = authObj?.userId || null;
+  } catch (err) {
+    if ((err as any)?.digest === 'DYNAMIC_SERVER_USAGE' || (err as any)?.digest?.startsWith('NEXT_REDIRECT')) {
+      throw err;
+    }
+    console.warn('[requireRole] auth() call failed, redirecting to login:', err);
+    redirect("/login");
+  }
 
   if (!userId) {
     redirect("/login");
