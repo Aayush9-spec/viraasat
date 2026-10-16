@@ -79,7 +79,7 @@ export default function FaqPage() {
           {faqs.map((faq, index) => (
             <details
               key={index}
-              className="group border border-primary/10 bg-white open:shadow-sm transition-shadow"
+              className="group border border-primary/10 bg-card text-card-foreground open:shadow-sm transition-shadow"
             >
               <summary className="flex items-center justify-between gap-4 cursor-pointer list-none px-6 py-5">
                 <span className="font-heading text-[#5e2c18]">{faq.question}</span>

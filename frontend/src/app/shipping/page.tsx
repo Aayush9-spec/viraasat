@@ -46,7 +46,7 @@ export default function ShippingPage() {
         <h2 className="font-heading text-2xl text-[#5e2c18] mb-6">Delivery Options</h2>
         <div className="grid sm:grid-cols-3 gap-6">
           {options.map((option) => (
-            <div key={option.name} className="border border-primary/10 bg-white p-6">
+            <div key={option.name} className="border border-primary/10 bg-card text-card-foreground p-6">
               <p className="font-heading text-lg text-[#5e2c18]">{option.name}</p>
               <p className="text-sm font-semibold text-primary mt-2">{option.time}</p>
               <p className="text-sm font-bold text-amber-700 mt-1">{option.cost}</p>

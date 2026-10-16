@@ -250,11 +250,11 @@ export function ProductDetailPageClient({
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="text-4xl font-bold text-[#5e2c18] font-heading tracking-tight">
+              <div className="text-4xl font-bold text-primary font-heading tracking-tight">
                 ₹{product.price.toLocaleString('en-IN')}
               </div>
               <div className="flex flex-col items-end">
-                <Badge variant={product.stock > 0 ? "secondary" : "destructive"} className="px-3 py-1 rounded-none uppercase tracking-[0.2em] text-[10px] bg-[#5e2c18]/5 text-[#5e2c18] border-[#5e2c18]/10">
+                <Badge variant={product.stock > 0 ? "secondary" : "destructive"} className="px-3 py-1 rounded-none uppercase tracking-[0.2em] text-[10px] bg-primary/10 text-primary border-primary/20">
                   {product.stock > 10 ? t('product.inStock') : product.stock > 0 ? t('product.lowStock') : t('product.outOfStock')}
                 </Badge>
                 {product.stock > 0 && product.stock <= 5 && (
@@ -265,7 +265,7 @@ export function ProductDetailPageClient({
 
             <Button 
                 size="lg" 
-                className="w-full bg-[#5e2c18] hover:bg-[#4a2315] text-[#fbf7f0] font-bold h-14 rounded-none shadow-xl transition-all active:scale-[0.98] uppercase tracking-[0.3em] text-xs" 
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-14 rounded-none shadow-xl transition-all active:scale-[0.98] uppercase tracking-[0.3em] text-xs" 
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
             >
@@ -286,15 +286,15 @@ export function ProductDetailPageClient({
             <Separator className="bg-amber-900/10" />
 
             {artisan && (
-              <Card className="rounded-none border-amber-900/10 bg-white shadow-sm overflow-hidden">
-                <CardHeader className="flex flex-row items-center gap-4 bg-[#fbf7f0]/50 border-b border-amber-900/5">
+              <Card className="rounded-none border-border bg-card shadow-sm text-card-foreground overflow-hidden">
+                <CardHeader className="flex flex-row items-center gap-4 bg-secondary/40 border-b border-amber-900/5">
                   <Avatar className="h-14 w-14 ring-1 ring-amber-900/10">
                     <AvatarImage src={artisan.profilePicture} alt={artisan.name} />
                     <AvatarFallback className="bg-amber-50 text-amber-900">{artisan.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="text-[9px] uppercase tracking-[0.3em] text-amber-800/40 font-bold mb-1">The Craftsman</p>
-                    <CardTitle className="text-lg font-heading text-[#5e2c18]">{artisan.shopName}</CardTitle>
+                    <CardTitle className="text-lg font-heading text-primary">{artisan.shopName}</CardTitle>
                     <div className="flex items-center gap-1 text-[10px] text-amber-900/40 font-bold uppercase tracking-widest mt-0.5">
                         <Globe2 className="h-3 w-3 opacity-50" />
                         <span>{product.region}</span>
@@ -305,7 +305,7 @@ export function ProductDetailPageClient({
                   <p className="text-xs leading-relaxed text-amber-900/70 italic font-serif">&ldquo;{artisan.bio}&rdquo;</p>
                 </CardContent>
                 <div className="px-6 pb-6 pt-4">
-                    <Button variant="outline" size="sm" className="w-full rounded-none border-amber-900/20 text-[#5e2c18] hover:bg-amber-50 h-10 text-[10px] tracking-widest uppercase font-bold">
+                    <Button variant="outline" size="sm" className="w-full rounded-none border-amber-900/20 text-primary hover:bg-amber-50 h-10 text-[10px] tracking-widest uppercase font-bold">
                         View Artisan History
                     </Button>
                 </div>
@@ -314,17 +314,17 @@ export function ProductDetailPageClient({
 
             {(product.aiInsights) && (
             <Tabs defaultValue="insights" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-[#fbf7f0] border border-amber-900/10">
-                <TabsTrigger value="insights" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-[#5e2c18] data-[state=active]:text-white">{t('product.insights')}</TabsTrigger>
-                <TabsTrigger value="passport" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-[#5e2c18] data-[state=active]:text-white">{t('product.passport')}</TabsTrigger>
-                <TabsTrigger value="provenance" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-[#5e2c18] data-[state=active]:text-white">{t('product.provenance')}</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-secondary/50 border border-amber-900/10">
+                <TabsTrigger value="insights" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{t('product.insights')}</TabsTrigger>
+                <TabsTrigger value="passport" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{t('product.passport')}</TabsTrigger>
+                <TabsTrigger value="provenance" className="py-2.5 text-[10px] uppercase font-bold tracking-wider data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{t('product.provenance')}</TabsTrigger>
               </TabsList>
 
               {/* Heritage Insights Tab */}
               <TabsContent value="insights" className="mt-4">
                 {(product.aiInsights) ? (
-                  <Card className="rounded-none border-amber-900/10 bg-white shadow-sm">
-                    <CardHeader className="pb-3 border-b border-amber-900/5 bg-[#fbf7f0]/50">
+                  <Card className="rounded-none border-border bg-card shadow-sm text-card-foreground">
+                    <CardHeader className="pb-3 border-b border-amber-900/5 bg-secondary/40">
                       <div className="flex items-center gap-2">
                         <div className="w-1 h-3 bg-amber-500/40" />
                         <CardTitle className="text-[10px] font-bold tracking-[0.3em] uppercase text-amber-900/60">{t('product.heritageInsights')}</CardTitle>
@@ -350,21 +350,21 @@ export function ProductDetailPageClient({
                     </CardContent>
                   </Card>
                 ) : (
-                  <div className="p-8 text-center border border-amber-900/10 bg-white text-xs text-muted-foreground">No insights available.</div>
+                  <div className="p-8 text-center border border-border bg-card text-card-foreground text-xs text-muted-foreground">No insights available.</div>
                 )}
               </TabsContent>
 
               {/* Digital Product Passport Tab */}
               <TabsContent value="passport" className="mt-4">
-                <Card className="rounded-none border-amber-900/10 bg-white shadow-sm">
-                  <CardHeader className="pb-3 border-b border-amber-900/5 bg-[#fbf7f0]/50">
+                <Card className="rounded-none border-border bg-card shadow-sm text-card-foreground">
+                  <CardHeader className="pb-3 border-b border-amber-900/5 bg-secondary/40">
                     <div className="flex items-center gap-2">
                       <div className="w-1 h-3 bg-green-500/40" />
                       <CardTitle className="text-[10px] font-bold tracking-[0.3em] uppercase text-amber-900/60">Digital Product Passport</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent className="pt-6 space-y-4">
-                    <div className="flex flex-col sm:flex-row items-center gap-6 p-4 border border-dashed border-amber-900/10 bg-[#fbf7f0]/20">
+                    <div className="flex flex-col sm:flex-row items-center gap-6 p-4 border border-dashed border-amber-900/10 bg-secondary/20">
                       <div className="relative w-28 h-28 bg-white p-1 border border-amber-900/10 shrink-0">
                         <Image
                           src={`https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https://viraasat.org/passport/${product.id}`}
@@ -386,7 +386,7 @@ export function ProductDetailPageClient({
                         </div>
                         <div className="flex justify-between items-center border-b pb-1">
                           <span className="text-[9px] uppercase font-bold text-amber-900/40 tracking-wider">Craft Identity</span>
-                          <span className="text-xs font-semibold text-[#5e2c18]">{product.category} ({product.region})</span>
+                          <span className="text-xs font-semibold text-primary">{product.category} ({product.region})</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-[9px] uppercase font-bold text-amber-900/40 tracking-wider">Certification</span>
@@ -397,12 +397,12 @@ export function ProductDetailPageClient({
                     <div className="grid grid-cols-2 gap-4 text-left">
                       <div className="p-3 bg-muted/40 border rounded-none">
                         <h4 className="text-[9px] uppercase font-bold text-amber-900/40 tracking-wider mb-1">Local Sourcing %</h4>
-                        <p className="text-lg font-bold text-[#5e2c18]">95.0%</p>
+                        <p className="text-lg font-bold text-primary">95.0%</p>
                         <p className="text-[8px] text-muted-foreground uppercase tracking-widest mt-0.5">Sourced within {product.region}</p>
                       </div>
                       <div className="p-3 bg-muted/40 border rounded-none">
                         <h4 className="text-[9px] uppercase font-bold text-amber-900/40 tracking-wider mb-1">Production Date</h4>
-                        <p className="text-lg font-bold text-[#5e2c18]">July 2026</p>
+                        <p className="text-lg font-bold text-primary">July 2026</p>
                         <p className="text-[8px] text-muted-foreground uppercase tracking-widest mt-0.5">Handcrafted</p>
                       </div>
                     </div>
@@ -412,8 +412,8 @@ export function ProductDetailPageClient({
 
               {/* Blockchain Provenance Ledger Tab */}
               <TabsContent value="provenance" className="mt-4">
-                <Card className="rounded-none border-amber-900/10 bg-white shadow-sm">
-                  <CardHeader className="pb-3 border-b border-amber-900/5 bg-[#fbf7f0]/50">
+                <Card className="rounded-none border-border bg-card shadow-sm text-card-foreground">
+                  <CardHeader className="pb-3 border-b border-amber-900/5 bg-secondary/40">
                     <div className="flex items-center gap-2">
                       <div className="w-1 h-3 bg-blue-500/40" />
                       <CardTitle className="text-[10px] font-bold tracking-[0.3em] uppercase text-amber-900/60">Blockchain Provenance Ledger</CardTitle>
@@ -426,14 +426,14 @@ export function ProductDetailPageClient({
                       <div className="relative border-l border-amber-900/10 pl-6 ml-2 space-y-6 text-left">
                         {provenance.map((block) => (
                           <div key={block.index} className="relative">
-                            <div className="absolute -left-[31px] top-1 bg-white p-1 rounded-full border border-amber-900/20">
+                            <div className="absolute -left-[31px] top-1 bg-card p-1 rounded-full border border-amber-900/20">
                               <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
                             </div>
                             <div>
                               <span className="text-[8px] font-mono text-muted-foreground uppercase tracking-wider">{block.timestamp}</span>
-                              <h4 className="text-xs font-bold text-[#5e2c18] mt-0.5">{block.action}</h4>
+                              <h4 className="text-xs font-bold text-primary mt-0.5">{block.action}</h4>
                               <p className="text-[9px] text-muted-foreground mt-0.5">Actor: <span className="font-semibold">{block.actor}</span></p>
-                              <div className="flex gap-2 items-center mt-1.5 font-mono text-[8px] bg-secondary/50 p-1 px-2 border w-fit text-[#5e2c18]/70">
+                              <div className="flex gap-2 items-center mt-1.5 font-mono text-[8px] bg-secondary/50 p-1 px-2 border w-fit text-primary/70">
                                 <span>Hash: {block.hash}</span>
                                 <span className="opacity-50">|</span>
                                 <span>Prev: {block.prev_hash}</span>
@@ -457,7 +457,7 @@ export function ProductDetailPageClient({
             
             <div className="text-center mb-20">
                 <span className="text-amber-500 text-[10px] tracking-[0.5em] uppercase mb-4 block font-bold">Curated Heritage</span>
-                <h2 className="text-3xl md:text-5xl font-heading text-[#5e2c18] italic">Related Treasures</h2>
+                <h2 className="text-3xl md:text-5xl font-heading text-primary italic">Related Treasures</h2>
                 <p className="text-amber-900/40 text-sm mt-4 font-serif">Handpicked pieces from the same tradition</p>
             </div>
 
@@ -474,16 +474,16 @@ export function ProductDetailPageClient({
                                     />
                                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                     <div className="absolute bottom-6 left-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                                        <Button className="w-full rounded-none bg-white/95 text-[#5e2c18] border-none text-[10px] tracking-[0.2em] uppercase font-bold h-10">
+                                        <Button className="w-full rounded-none bg-white/95 text-primary border-none text-[10px] tracking-[0.2em] uppercase font-bold h-10">
                                             Discover
                                         </Button>
                                     </div>
                                     <div className="absolute top-4 left-4">
-                                        <Badge className="rounded-none bg-[#5e2c18]/90 text-amber-50 border-none text-[9px] tracking-widest uppercase px-3 py-1 font-bold">{item.region}</Badge>
+                                        <Badge className="rounded-none bg-primary/90 text-amber-50 border-none text-[9px] tracking-widest uppercase px-3 py-1 font-bold">{item.region}</Badge>
                                     </div>
                                 </div>
                                 <div className="text-center px-4">
-                                    <h3 className="font-heading text-xl text-[#5e2c18] group-hover:text-amber-700 transition-colors">{item.name}</h3>
+                                    <h3 className="font-heading text-xl text-primary group-hover:text-amber-700 transition-colors">{item.name}</h3>
                                     <div className="flex items-center justify-center gap-2 mt-2">
                                         <div className="h-px w-4 bg-amber-900/10" />
                                         <p className="text-[10px] text-amber-900/40 uppercase tracking-[0.2em] font-bold">₹{item.price.toLocaleString('en-IN')}</p>

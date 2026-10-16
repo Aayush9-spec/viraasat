@@ -27,7 +27,7 @@ export default function ArtisansPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {artisans.map((artisan) => (
-            <article key={artisan.id} className="border border-primary/10 bg-white shadow-sm group">
+            <article key={artisan.id} className="border border-primary/10 bg-card text-card-foreground shadow-sm group">
               <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
                 <Image
                   src={artisan.profilePicture}

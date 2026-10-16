@@ -88,7 +88,7 @@ export default function MetricsPage() {
     <div className="space-y-6 text-left">
       {/* Metrics Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-[10px] uppercase tracking-widest font-bold text-amber-900/50">Search Latency</CardTitle>
             <Gauge className="h-5 w-5 text-[#5e2c18]" />
@@ -99,7 +99,7 @@ export default function MetricsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-[10px] uppercase tracking-widest font-bold text-amber-900/50">AI Inference Time</CardTitle>
             <Cpu className="h-5 w-5 text-[#5e2c18]" />
@@ -110,7 +110,7 @@ export default function MetricsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-[10px] uppercase tracking-widest font-bold text-amber-900/50">Rec Accuracy (MAP)</CardTitle>
             <Award className="h-5 w-5 text-[#5e2c18]" />
@@ -121,7 +121,7 @@ export default function MetricsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-[10px] uppercase tracking-widest font-bold text-amber-900/50">System Uptime</CardTitle>
             <Server className="h-5 w-5 text-[#5e2c18]" />
@@ -135,7 +135,7 @@ export default function MetricsPage() {
 
       {/* Accuracy Comparison Radar and Latency Telemetry Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader>
             <CardTitle className="text-lg font-heading text-[#5e2c18]">Recommendation Quality Comparison</CardTitle>
             <CardDescription>LightGCN + GNN vs traditional baseline collaborative filtering.</CardDescription>
@@ -154,7 +154,7 @@ export default function MetricsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader>
             <CardTitle className="text-lg font-heading text-[#5e2c18]">System Latency Over Time (ms)</CardTitle>
             <CardDescription>Continuous monitoring of API Gateway routing times.</CardDescription>
@@ -176,7 +176,7 @@ export default function MetricsPage() {
 
       {/* Model Specifications Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="border-b pb-3">
             <CardTitle className="text-sm font-bold text-[#5e2c18] uppercase tracking-wider">Graph Recommendation Engine</CardTitle>
             <CardDescription>{metrics.recommendation_engine.model_name}</CardDescription>
@@ -189,7 +189,7 @@ export default function MetricsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="border-b pb-3">
             <CardTitle className="text-sm font-bold text-[#5e2c18] uppercase tracking-wider">Predictive Demand Forecast</CardTitle>
             <CardDescription>{metrics.demand_predictor.model_name}</CardDescription>
@@ -201,7 +201,7 @@ export default function MetricsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="border-b pb-3">
             <CardTitle className="text-sm font-bold text-[#5e2c18] uppercase tracking-wider">Computer Vision Classifier</CardTitle>
             <CardDescription>{metrics.computer_vision.model_name}</CardDescription>

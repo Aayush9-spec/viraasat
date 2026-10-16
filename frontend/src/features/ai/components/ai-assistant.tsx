@@ -302,10 +302,10 @@ export function AIAssistant() {
                     <div className={cn(
                       'p-3 rounded text-xs border leading-relaxed shadow-sm',
                       msg.role === 'user'
-                        ? 'bg-white border-amber-900/10 text-foreground'
+                        ? 'bg-card border-border text-card-foreground'
                         : msg.isError
                           ? 'bg-red-50 border-red-200 text-red-800'
-                          : 'bg-white border-amber-900/10 text-foreground'
+                          : 'bg-card border-border text-card-foreground'
                     )}>
                       {msg.image && (
                         <div className="relative w-full aspect-video mb-2 border overflow-hidden rounded">
@@ -336,7 +336,7 @@ export function AIAssistant() {
                               key={id}
                               href={`/product/${id}`}
                               onClick={() => setIsOpen(false)}
-                              className="block bg-white border border-amber-900/10 hover:border-amber-600/30 p-2 transition-all group rounded"
+                              className="block bg-card border border-border hover:border-amber-600/30 p-2 transition-all group rounded"
                             >
                               <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 mb-1 rounded">
                                 <Image
@@ -366,7 +366,7 @@ export function AIAssistant() {
                 <div className="h-7 w-7 rounded bg-[#5e2c18] text-white flex items-center justify-center shrink-0 border border-[#5e2c18]">
                   <Bot className="h-3.5 w-3.5" />
                 </div>
-                <div className="bg-white border border-amber-900/10 p-3 rounded text-[10px] text-muted-foreground italic shadow-sm flex items-center gap-2">
+                <div className="bg-card border border-border p-3 rounded text-[10px] text-muted-foreground italic shadow-sm flex items-center gap-2">
                   <Loader2 className="h-3 w-3 animate-spin" />
                   Consulting heritage archives...
                 </div>
@@ -379,7 +379,7 @@ export function AIAssistant() {
 
           {/* Quick suggestions (show only when 1 message / just opened) */}
           {messages.length === 1 && (
-            <div className="px-3 py-2 bg-white/60 border-t border-primary/5 flex gap-1.5 overflow-x-auto shrink-0">
+            <div className="px-3 py-2 bg-card/80 border-t border-primary/5 flex gap-1.5 overflow-x-auto shrink-0">
               {suggestions.map((s) => (
                 <button
                   key={s}
@@ -398,7 +398,7 @@ export function AIAssistant() {
 
           {/* Image attachment preview */}
           {selectedImage && (
-            <div className="px-3 py-2 bg-white border-t border-primary/10 flex items-center justify-between shrink-0">
+            <div className="px-3 py-2 bg-card border-t border-border flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <div className="relative w-8 h-8 border rounded overflow-hidden">
                   <Image
@@ -424,7 +424,7 @@ export function AIAssistant() {
           )}
 
           {/* Input bar */}
-          <CardFooter className="p-3 border-t border-primary/10 bg-[#fbf7f0]/70 !rounded-none shrink-0">
+          <CardFooter className="p-3 border-t border-primary/10 bg-secondary/70 !rounded-none shrink-0">
             <div className="flex w-full gap-1.5 items-center">
               <input
                 type="file"
@@ -438,7 +438,7 @@ export function AIAssistant() {
                 size="icon"
                 variant="outline"
                 className={cn(
-                  '!rounded-none border-primary/20 bg-white hover:bg-amber-50 h-9 w-9 shrink-0',
+                  '!rounded-none border-primary/20 bg-card hover:bg-secondary text-foreground h-9 w-9 shrink-0',
                   selectedImage && 'text-green-600 border-green-300'
                 )}
                 onClick={() => fileInputRef.current?.click()}
@@ -450,7 +450,7 @@ export function AIAssistant() {
                 type="button"
                 size="icon"
                 variant={isRecording ? 'destructive' : 'outline'}
-                className="!rounded-none border-primary/20 bg-white hover:bg-amber-50 h-9 w-9 shrink-0"
+                className="!rounded-none border-primary/20 bg-card hover:bg-secondary text-foreground h-9 w-9 shrink-0"
                 onClick={toggleRecording}
                 title={isRecording ? 'Stop recording' : 'Voice input'}
               >
@@ -466,13 +466,13 @@ export function AIAssistant() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 disabled={isTyping}
-                className="!rounded-none border-primary/20 focus-visible:ring-[#5e2c18]/20 bg-white text-xs h-9"
+                className="!rounded-none border-primary/20 focus-visible:ring-primary/20 bg-background text-xs h-9"
               />
               <Button
                 size="icon"
                 onClick={handleSend}
                 disabled={isTyping || (!input.trim() && !selectedImage)}
-                className="bg-[#5e2c18] hover:bg-[#4a2315] disabled:opacity-40 !rounded-none shrink-0 h-9 w-9 text-white"
+                className="bg-primary hover:bg-primary/90 disabled:opacity-40 !rounded-none shrink-0 h-9 w-9 text-white"
               >
                 {isTyping
                   ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -485,7 +485,7 @@ export function AIAssistant() {
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="h-14 w-14 bg-[#5e2c18] hover:bg-[#4a2315] text-white shadow-2xl border border-[#5e2c18]/20 flex items-center justify-center transition-transform hover:scale-105 relative"
+          className="h-14 w-14 bg-primary hover:bg-primary/90 text-white shadow-2xl border border-[#5e2c18]/20 flex items-center justify-center transition-transform hover:scale-105 relative"
           title="Open AI Assistant"
         >
           <MessageSquare className="h-6 w-6" />

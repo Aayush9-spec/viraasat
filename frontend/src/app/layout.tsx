@@ -55,13 +55,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${cormorant.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`clay ${inter.variable} ${cormorant.variable}`}>
       <head suppressHydrationWarning>
         <meta property="og:image" content="/viraasat-hero-cream.png" />
         <link rel="icon" href="/viraasat-logo-full.png" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
-      <body className="font-sans antialiased text-foreground" suppressHydrationWarning>
+      <body className="font-sans antialiased text-foreground bg-background" suppressHydrationWarning>
         <AppProviders>
           <AppShell>
             {children}

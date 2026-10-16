@@ -277,7 +277,7 @@ export function BusinessAdvisor() {
 
       {/* Strategic Metrics Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="rounded-none border-amber-900/10 bg-white p-4">
+        <Card className="rounded-none border-border bg-card text-card-foreground p-4">
           <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
             Peak Demand Season
           </div>
@@ -290,7 +290,7 @@ export function BusinessAdvisor() {
           <p className="text-[10px] text-muted-foreground mt-0.5">Highest projected tourist purchasing</p>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white p-4">
+        <Card className="rounded-none border-border bg-card text-card-foreground p-4">
           <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
             Predicted Demand Growth
           </div>
@@ -301,7 +301,7 @@ export function BusinessAdvisor() {
           <p className="text-[10px] text-muted-foreground mt-0.5">YoY festive craft index surge</p>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white p-4">
+        <Card className="rounded-none border-border bg-card text-card-foreground p-4">
           <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
             Optimal Price Margin
           </div>
@@ -312,7 +312,7 @@ export function BusinessAdvisor() {
           <p className="text-[10px] text-muted-foreground mt-0.5">Organic & heritage premium gap</p>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white p-4">
+        <Card className="rounded-none border-border bg-card text-card-foreground p-4">
           <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
             Raw Material Hedging
           </div>
@@ -353,7 +353,7 @@ export function BusinessAdvisor() {
 
       {/* Demand Curve Chart & Recommendations */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="rounded-none border-amber-900/10 bg-white lg:col-span-2">
+        <Card className="rounded-none border-border bg-card text-card-foreground lg:col-span-2">
           <CardHeader>
             <div className="flex justify-between items-center flex-wrap gap-4">
               <div>
@@ -436,7 +436,7 @@ export function BusinessAdvisor() {
         </Card>
 
         {/* Advisor Recommendations */}
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader>
             <CardTitle className="text-lg font-heading text-[#5e2c18]">
               AI Strategic Recommendations
@@ -477,7 +477,7 @@ export function BusinessAdvisor() {
       </div>
 
       {/* Interactive AI Price & Margin Optimizer */}
-      <Card className="rounded-none border-amber-900/10 bg-white">
+      <Card className="rounded-none border-border bg-card text-card-foreground">
         <CardHeader>
           <div className="flex justify-between items-center flex-wrap gap-2">
             <div>

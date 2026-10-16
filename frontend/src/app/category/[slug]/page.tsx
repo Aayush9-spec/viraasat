@@ -55,7 +55,7 @@ export default async function CategoryPage({ params }: PageProps) {
                   className={
                     active
                       ? 'bg-[#5e2c18] text-amber-50 text-xs font-bold uppercase tracking-widest px-4 py-2'
-                      : 'bg-white text-foreground/70 hover:text-primary text-xs font-bold uppercase tracking-widest px-4 py-2 border border-primary/10 transition-colors'
+                      : 'bg-card text-card-foreground/70 hover:text-primary text-xs font-bold uppercase tracking-widest px-4 py-2 border border-primary/10 transition-colors'
                   }
                 >
                   {item}

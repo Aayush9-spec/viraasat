@@ -147,7 +147,7 @@ export default function ContactPage() {
           </form>
 
           <aside className="lg:col-span-2 space-y-6">
-            <div className="border border-primary/10 bg-white p-6">
+            <div className="border border-primary/10 bg-card text-card-foreground p-6">
               <div className="flex items-center gap-3 text-[#5e2c18]">
                 <Mail className="h-5 w-5" />
                 <span className="font-heading">Email us</span>
@@ -157,7 +157,7 @@ export default function ContactPage() {
               </a>
               <p className="text-xs text-muted-foreground mt-2">{channel.hours}</p>
             </div>
-            <div className="border border-primary/10 bg-white p-6">
+            <div className="border border-primary/10 bg-card text-card-foreground p-6">
               <div className="flex items-center gap-3 text-[#5e2c18]">
                 <MapPin className="h-5 w-5" />
                 <span className="font-heading">Visit us</span>
@@ -167,7 +167,7 @@ export default function ContactPage() {
                 Our showroom doubles as a heritage display — walk-ins welcome.
               </p>
             </div>
-            <div className="border border-primary/10 bg-white p-6">
+            <div className="border border-primary/10 bg-card text-card-foreground p-6">
               <span className="font-heading text-[#5e2c18]">Artisan partnership</span>
               <p className="text-sm text-foreground/70 leading-relaxed mt-3">
                 If you craft with your hands, we&rsquo;d love to work with you.

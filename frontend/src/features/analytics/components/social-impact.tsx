@@ -25,7 +25,7 @@ export function SocialImpact() {
     <div className="space-y-6 text-left">
       {/* Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-[10px] uppercase tracking-widest font-bold text-amber-900/50">Artisan Guilds</CardTitle>
             <Users className="h-5 w-5 text-amber-600" />
@@ -36,7 +36,7 @@ export function SocialImpact() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-[10px] uppercase tracking-widest font-bold text-amber-900/50">Women Employment</CardTitle>
             <Heart className="h-5 w-5 text-amber-600" />
@@ -47,7 +47,7 @@ export function SocialImpact() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-[10px] uppercase tracking-widest font-bold text-amber-900/50">Income Multiplier</CardTitle>
             <Coins className="h-5 w-5 text-amber-600" />
@@ -58,7 +58,7 @@ export function SocialImpact() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-[10px] uppercase tracking-widest font-bold text-amber-900/50">GI Preservation</CardTitle>
             <Map className="h-5 w-5 text-amber-600" />
@@ -73,7 +73,7 @@ export function SocialImpact() {
       {/* Visual Analytics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Income Growth Chart */}
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader>
             <CardTitle className="text-lg font-heading text-[#5e2c18]">Average Artisan Monthly Income (INR)</CardTitle>
             <CardDescription>Viraasat direct platform earnings vs local middleman market baseline.</CardDescription>
@@ -100,7 +100,7 @@ export function SocialImpact() {
         </Card>
 
         {/* State wise Density Chart */}
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader>
             <CardTitle className="text-lg font-heading text-[#5e2c18]">State-wise Artisan Density & Engagement</CardTitle>
             <CardDescription>Number of registered families per state with platform participation index.</CardDescription>

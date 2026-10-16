@@ -58,14 +58,14 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#fbf7f0]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#5e2c18]" />
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="bg-[#fbf7f0] min-h-screen pb-20">
+    <div className="bg-background min-h-screen pb-20">
       {/* Header */}
       <header className="relative py-20 overflow-hidden bg-neutral-950 text-amber-50">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
@@ -82,24 +82,24 @@ export default function OrdersPage() {
         {allOrders.length > 0 ? (
           <div className="space-y-8">
             {allOrders.map((order) => (
-              <Card key={order.id} className="rounded-none border-amber-900/10 shadow-xl bg-white overflow-hidden">
-                <CardHeader className="bg-[#fbf7f0]/50 border-b border-amber-900/5 px-8 py-6">
+              <Card key={order.id} className="rounded-none border-border shadow-xl bg-card text-card-foreground overflow-hidden">
+                <CardHeader className="bg-background/50 border-b border-border/50 px-8 py-6">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="space-y-1">
-                      <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-amber-900/40">Order Reference</p>
-                      <CardTitle className="text-lg font-heading text-[#5e2c18]">{order.id.toUpperCase()}</CardTitle>
+                      <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-foreground/40">Order Reference</p>
+                      <CardTitle className="text-lg font-heading text-primary">{order.id.toUpperCase()}</CardTitle>
                     </div>
                     <div className="flex items-center gap-6">
                       <div className="text-right">
-                        <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-amber-900/40 mb-1">Status</p>
-                        <Badge variant="outline" className="rounded-none border-amber-900/20 text-amber-900 px-3 py-1 flex items-center gap-2 bg-white">
+                        <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-foreground/40 mb-1">Status</p>
+                        <Badge variant="outline" className="rounded-none border-border text-foreground px-3 py-1 flex items-center gap-2 bg-card text-card-foreground">
                           {STATUS_ICONS[order.status as keyof typeof STATUS_ICONS]}
                           <span className="text-[10px] tracking-widest uppercase font-bold">{order.status}</span>
                         </Badge>
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-amber-900/40 mb-1">Acquired On</p>
-                        <p className="text-xs font-bold text-[#5e2c18] uppercase tracking-wider">
+                        <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-foreground/40 mb-1">Acquired On</p>
+                        <p className="text-xs font-bold text-primary uppercase tracking-wider">
                           {(() => {
                             const dateStr = order.orderDate;
                             if (!dateStr) return 'TBA';
@@ -120,7 +120,7 @@ export default function OrdersPage() {
                       const product = products.find(p => p.id === item.productId);
                       return (
                         <div key={item.productId} className="flex gap-6 items-center">
-                          <div className="relative h-20 w-16 overflow-hidden bg-neutral-100 border border-amber-900/5 shrink-0">
+                          <div className="relative h-20 w-16 overflow-hidden bg-neutral-100 border border-border/50 shrink-0">
                             <Image 
                               src={item.itemImageUrl || product?.images[0] || ''} 
                               alt={item.productName || product?.name || ''} 
@@ -129,12 +129,12 @@ export default function OrdersPage() {
                             />
                           </div>
                           <div className="flex-grow">
-                            <h4 className="font-heading text-lg text-[#5e2c18]">{item.productName || product?.name}</h4>
-                            <p className="text-[10px] text-amber-900/40 uppercase tracking-widest font-bold">Category: {product?.category || 'Heritage'}</p>
-                            <p className="text-xs text-amber-900/60 mt-1">Quantity: {item.quantity}</p>
+                            <h4 className="font-heading text-lg text-primary">{item.productName || product?.name}</h4>
+                            <p className="text-[10px] text-foreground/40 uppercase tracking-widest font-bold">Category: {product?.category || 'Heritage'}</p>
+                            <p className="text-xs text-foreground/60 mt-1">Quantity: {item.quantity}</p>
                           </div>
                           <div className="text-right">
-                             <p className="text-sm font-bold text-[#5e2c18]">₹{(item.unitPrice || 0).toLocaleString('en-IN')}</p>
+                             <p className="text-sm font-bold text-primary">₹{(item.unitPrice || 0).toLocaleString('en-IN')}</p>
                           </div>
                         </div>
                       );
@@ -146,20 +146,20 @@ export default function OrdersPage() {
                   <div className="flex flex-col md:flex-row justify-between gap-8">
                     <div className="space-y-4 max-w-sm">
                       <div className="flex items-start gap-3">
-                        <MapPin className="h-4 w-4 text-amber-900/30 shrink-0 mt-0.5" />
+                        <MapPin className="h-4 w-4 text-foreground/30 shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-amber-900/40 mb-1">Delivery Destination</p>
-                          <p className="text-xs text-amber-900/70 leading-relaxed">
+                          <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-foreground/40 mb-1">Delivery Destination</p>
+                          <p className="text-xs text-foreground/70 leading-relaxed">
                             {order.shippingAddress.addressLine1}, {order.shippingAddress.city},<br />
                             {order.shippingAddress.state} - {order.shippingAddress.zipCode}
                           </p>
                         </div>
                       </div>
                     </div>
-                    <div className="bg-[#fbf7f0]/50 p-6 space-y-3 min-w-[240px]">
+                    <div className="bg-background/50 p-6 space-y-3 min-w-[240px]">
                       <div className="flex justify-between text-xs">
-                        <span className="text-amber-900/40 uppercase tracking-widest font-bold">Subtotal</span>
-                        <span className="text-amber-900/70 font-bold">₹{order.totalAmount.toLocaleString('en-IN')}</span>
+                        <span className="text-foreground/40 uppercase tracking-widest font-bold">Subtotal</span>
+                        <span className="text-foreground/70 font-bold">₹{order.totalAmount.toLocaleString('en-IN')}</span>
                       </div>
                       <div className="flex justify-between text-xs text-green-600">
                         <span className="uppercase tracking-widest font-bold">Shipping</span>
@@ -167,8 +167,8 @@ export default function OrdersPage() {
                       </div>
                       <div className="h-px bg-amber-900/10 my-2" />
                       <div className="flex justify-between items-baseline">
-                        <span className="text-xs text-amber-900/40 uppercase tracking-widest font-bold">Total Investment</span>
-                        <span className="text-xl font-heading font-bold text-[#5e2c18]">₹{order.totalAmount.toLocaleString('en-IN')}</span>
+                        <span className="text-xs text-foreground/40 uppercase tracking-widest font-bold">Total Investment</span>
+                        <span className="text-xl font-heading font-bold text-primary">₹{order.totalAmount.toLocaleString('en-IN')}</span>
                       </div>
                     </div>
                   </div>
@@ -177,11 +177,11 @@ export default function OrdersPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-32 bg-white border border-amber-900/5 shadow-xl">
-             <Package className="h-16 w-16 text-amber-900/10 mx-auto mb-6" />
-             <h2 className="text-2xl font-heading text-[#5e2c18] mb-4">No acquisitions yet</h2>
-              <p className="text-amber-900/50 text-sm mb-10 max-w-sm mx-auto leading-relaxed">Your journey through India&apos;s cultural gallery is just beginning. Explore our collection to find your first treasure.</p>
-             <Button className="rounded-none bg-[#5e2c18] hover:bg-[#4a2315] text-[#fbf7f0] px-12 h-14 uppercase tracking-[0.3em] text-xs" asChild>
+          <div className="text-center py-32 bg-card text-card-foreground border border-border/50 shadow-xl">
+             <Package className="h-16 w-16 text-foreground/10 mx-auto mb-6" />
+             <h2 className="text-2xl font-heading text-primary mb-4">No acquisitions yet</h2>
+              <p className="text-foreground/50 text-sm mb-10 max-w-sm mx-auto leading-relaxed">Your journey through India&apos;s cultural gallery is just beginning. Explore our collection to find your first treasure.</p>
+             <Button className="rounded-none bg-primary hover:bg-primary/90 text-primary-foreground px-12 h-14 uppercase tracking-[0.3em] text-xs" asChild>
                <a href="/shop">Begin Exploration</a>
              </Button>
           </div>

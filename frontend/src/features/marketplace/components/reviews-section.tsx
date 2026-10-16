@@ -90,11 +90,11 @@ export function ReviewsSection({ product }: { product: Product }) {
           <span className="text-amber-500 text-[10px] tracking-[0.5em] uppercase mb-2 block font-bold">
             Collector Voices
           </span>
-          <h2 className="text-3xl md:text-4xl font-heading text-[#5e2c18]">Reviews &amp; Ratings</h2>
+          <h2 className="text-3xl md:text-4xl font-heading text-primary">Reviews &amp; Ratings</h2>
         </div>
         {!loading && rating.count > 0 && (
           <div className="flex items-center gap-3">
-            <span className="text-3xl font-bold text-[#5e2c18]">{rating.avg.toFixed(1)}</span>
+            <span className="text-3xl font-bold text-primary">{rating.avg.toFixed(1)}</span>
             <div>
               <div className="flex gap-0.5">{ratingStars(rating.avg)}</div>
               <p className="text-xs text-muted-foreground mt-1">{rating.count} verified reviews</p>
@@ -104,8 +104,8 @@ export function ReviewsSection({ product }: { product: Product }) {
       </div>
 
       {isSignedIn && (
-        <div className="bg-[#fbf7f0] border border-amber-900/10 p-6 mb-10">
-          <h3 className="font-heading text-lg text-[#5e2c18] mb-3">Share your experience</h3>
+        <div className="bg-secondary/40 border border-amber-900/10 p-6 mb-10">
+          <h3 className="font-heading text-lg text-primary mb-3">Share your experience</h3>
           <div className="flex items-center gap-1 mb-4">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -132,13 +132,13 @@ export function ReviewsSection({ product }: { product: Product }) {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={3}
-            className="bg-white border-amber-900/10 mb-4"
+            className="bg-card border-border text-card-foreground mb-4"
           />
           <Button
             type="button"
             onClick={submitReview}
             disabled={submitting}
-            className="bg-[#5e2c18] hover:bg-[#4a2315] text-[#fbf7f0]"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             {submitting ? 'Submitting...' : 'Submit Review'}
           </Button>
@@ -157,7 +157,7 @@ export function ReviewsSection({ product }: { product: Product }) {
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
           {rating.reviews.map((review) => (
-            <div key={review.id} className="border border-amber-900/10 bg-white p-6">
+            <div key={review.id} className="border border-border bg-card text-card-foreground p-6">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-9 w-9">
@@ -169,7 +169,7 @@ export function ReviewsSection({ product }: { product: Product }) {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-semibold text-[#5e2c18]">{review.reviewerName}</p>
+                    <p className="text-sm font-semibold text-primary">{review.reviewerName}</p>
                     {review.createdAt !== undefined && (
                     <p className="text-[10px] text-muted-foreground">
                       {((): string => {

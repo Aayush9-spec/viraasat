@@ -39,7 +39,7 @@ export default function LoginPage() {
             {/* Customer Login Card */}
             <div className="group relative">
               <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-[#5e2c18] via-amber-700 to-[#5e2c18] opacity-30 blur transition duration-500 group-hover:opacity-60 group-hover:duration-200 animate-tilt" />
-              <div className="relative flex flex-col gap-5 rounded-2xl border border-primary/20 bg-white/80 dark:bg-card/80 backdrop-blur-xl p-8 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:scale-[1.02]">
+              <div className="relative flex flex-col gap-5 rounded-2xl border border-primary/20 bg-card/85 backdrop-blur-xl p-8 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:scale-[1.02]">
                 <div className="flex items-start gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#5e2c18] to-amber-900 shadow-lg text-amber-100">
                     <ShoppingBag className="h-6 w-6" />
@@ -69,7 +69,7 @@ export default function LoginPage() {
             {/* Artisan Login Card */}
             <div className="group relative">
               <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-600 via-amber-500 to-amber-700 opacity-30 blur transition duration-500 group-hover:opacity-60 group-hover:duration-200 animate-tilt" />
-              <div className="relative flex flex-col gap-5 rounded-2xl border border-amber-500/30 bg-white/80 dark:bg-card/80 backdrop-blur-xl p-8 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:scale-[1.02]">
+              <div className="relative flex flex-col gap-5 rounded-2xl border border-amber-500/30 bg-card/85 backdrop-blur-xl p-8 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:scale-[1.02]">
                 <div className="flex items-start gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 shadow-lg text-white">
                     <Store className="h-6 w-6" />

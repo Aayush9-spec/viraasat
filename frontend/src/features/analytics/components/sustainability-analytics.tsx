@@ -24,7 +24,7 @@ export function SustainabilityAnalytics() {
     <div className="space-y-6">
       {/* Upper Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-xs uppercase tracking-widest font-bold text-amber-900/50">Sustainability Score</CardTitle>
             <Award className="h-5 w-5 text-green-600" />
@@ -35,7 +35,7 @@ export function SustainabilityAnalytics() {
           </CardContent>
         </Card>
         
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-xs uppercase tracking-widest font-bold text-amber-900/50">Carbon Offsets</CardTitle>
             <Leaf className="h-5 w-5 text-green-600" />
@@ -46,7 +46,7 @@ export function SustainabilityAnalytics() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-xs uppercase tracking-widest font-bold text-amber-900/50">Local Sourcing Ratio</CardTitle>
             <Globe className="h-5 w-5 text-green-600" />
@@ -60,7 +60,7 @@ export function SustainabilityAnalytics() {
 
       {/* Visual Analytics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader>
             <CardTitle className="text-lg font-heading text-[#5e2c18]">Product Carbon Intensity (kg CO2e)</CardTitle>
             <CardDescription>Product footprint compared to industry maximum benchmarks.</CardDescription>
@@ -79,7 +79,7 @@ export function SustainabilityAnalytics() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-amber-900/10 bg-white">
+        <Card className="rounded-none border-border bg-card text-card-foreground">
           <CardHeader>
             <CardTitle className="text-lg font-heading text-[#5e2c18]">Ecological Material Composition</CardTitle>
             <CardDescription>Raw materials verified by blockchain certification.</CardDescription>
@@ -118,7 +118,7 @@ export function SustainabilityAnalytics() {
       </div>
 
       {/* Sustainable Practices Audit checklist */}
-      <Card className="rounded-none border-amber-900/10 bg-white text-left">
+      <Card className="rounded-none border-border bg-card text-card-foreground text-left">
         <CardHeader>
           <CardTitle className="text-lg font-heading text-[#5e2c18]">Environmental Compliance Checklist</CardTitle>
           <CardDescription>Verified sustainability criteria matching global retail directives.</CardDescription>

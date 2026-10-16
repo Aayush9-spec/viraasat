@@ -30,7 +30,32 @@
 }
 
 @layer base {
-  :root {
+  /* Default :root is the signature Viraasat Clay Theme */
+  :root,
+  .clay {
+    --background: 32 30% 95%;
+    --foreground: 20 42% 13%;
+    --card: 35 32% 98%;
+    --card-foreground: 20 42% 13%;
+    --popover: 35 32% 98%;
+    --popover-foreground: 20 42% 13%;
+    --primary: 22 62% 32%;
+    --primary-foreground: 36 45% 98%;
+    --secondary: 30 24% 90%;
+    --secondary-foreground: 20 42% 13%;
+    --muted: 28 20% 87%;
+    --muted-foreground: 24 18% 38%;
+    --accent: 34 82% 46%;
+    --accent-foreground: 36 45% 98%;
+    --destructive: 0 74% 50%;
+    --destructive-foreground: 36 45% 98%;
+    --border: 26 24% 82%;
+    --input: 26 24% 82%;
+    --ring: 22 62% 36%;
+    --radius: 0.75rem;
+  }
+
+  .light {
     --background: 35 25% 98%;
     --foreground: 20 40% 12%;
     --card: 0 0% 100%;
@@ -73,28 +98,7 @@
     --border: 24 18% 22%;
     --input: 24 18% 22%;
     --ring: 38 85% 50%;
-  }
-
-  .clay {
-    --background: 30 35% 97%;
-    --foreground: 20 40% 12%;
-    --card: 35 30% 99%;
-    --card-foreground: 20 40% 12%;
-    --popover: 35 30% 99%;
-    --popover-foreground: 20 40% 12%;
-    --primary: 25 52% 32%;
-    --primary-foreground: 35 40% 98%;
-    --secondary: 28 30% 93%;
-    --secondary-foreground: 20 40% 12%;
-    --muted: 28 20% 90%;
-    --muted-foreground: 25 20% 42%;
-    --accent: 36 80% 46%;
-    --accent-foreground: 35 40% 98%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 35 40% 98%;
-    --border: 25 25% 85%;
-    --input: 25 25% 85%;
-    --ring: 25 52% 32%;
+    --radius: 0.75rem;
   }
 }
 
@@ -247,7 +251,13 @@
 
 @layer utilities {
   .clay-shadow {
-    box-shadow: 0 4px 14px 0 rgba(94, 44, 24, 0.1), 0 2px 4px 0 rgba(94, 44, 24, 0.05);
+    box-shadow: 0 10px 30px -5px rgba(110, 50, 20, 0.1), 0 3px 10px -2px rgba(110, 50, 20, 0.05);
+  }
+
+  .clay-card {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 10px 30px -5px rgba(110, 50, 20, 0.08), 0 3px 10px -2px rgba(110, 50, 20, 0.04);
   }
 
   .clay-texture {

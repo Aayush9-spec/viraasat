@@ -38,9 +38,10 @@ export function AppProviders({ children }: AppProvidersProps) {
           <ThemeProvider
             attribute="class"
             defaultTheme="clay"
-            enableSystem
+            enableSystem={false}
+            storageKey="viraasat-theme"
             disableTransitionOnChange
-            themes={['light', 'dark', 'clay']}
+            themes={["clay", "dark", "light"]}
           >
             <CartProvider>
               <WishlistProvider>
