@@ -12,7 +12,7 @@ if (typeof process !== "undefined" && process.env) {
   if (isBrokenClerkKey(process.env.CLERK_PUBLISHABLE_KEY)) {
     process.env.CLERK_PUBLISHABLE_KEY = "pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA";
   }
-  if (!process.env.CLERK_SECRET_KEY || process.env.CLERK_SECRET_KEY.startsWith("sk_live_")) {
+  if (!process.env.CLERK_SECRET_KEY || isBrokenClerkKey(process.env.CLERK_SECRET_KEY)) {
     process.env.CLERK_SECRET_KEY = "sk_test_aJ5w4a5QHqS3UiaxXzFR64HA2fIZViqiQEM5MwZtE0";
   }
 }
