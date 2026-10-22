@@ -20,8 +20,24 @@ export default {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         heading: ['Cormorant Garamond', 'serif'],
+        serif: ['"Cormorant Garamond"', 'serif'],
+        display: ['"Cinzel Decorative"', 'serif'],
       },
       colors: {
+        heritage: {
+          cream: "#FAF7F2",
+          sand: "#F3EDE2",
+          border: "#E8DCCB",
+          terracotta: "#8C2B2B",
+          crimson: "#701D24",
+          rust: "#B44D2F",
+          gold: "#C59B4B",
+          goldLight: "#E8CA82",
+          bronze: "#8F6826",
+          charcoal: "#221C18",
+          warmgray: "#655B53",
+          forest: "#233831",
+        },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

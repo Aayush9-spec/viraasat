@@ -1,7 +1,8 @@
 'use client';
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Sparkles, MeshDistortMaterial, Sphere, OrbitControls, Environment, Stars } from '@react-three/drei';
+import { Float, Sparkles, MeshDistortMaterial, Sphere, OrbitControls, Stars } from '@react-three/drei';
+import { Suspense } from 'react';
 import { useRef, memo } from 'react';
 import * as THREE from 'three';
 import { useTheme } from 'next-themes';
@@ -10,7 +11,9 @@ export const Login3DBackground = memo(function Login3DBackground() {
     return (
         <div className="absolute inset-0 -z-10">
             <Canvas camera={{ position: [0, 0, 8], fov: 50 }} dpr={[1, 1.5]}>
-                <SceneContent />
+                <Suspense fallback={null}>
+                    <SceneContent />
+                </Suspense>
             </Canvas>
         </div>
     );
@@ -25,9 +28,12 @@ const SceneContent = memo(function SceneContent() {
 
     return (
         <>
-            {/* Improved Lighting Environment */}
-            <Environment preset="city" />
-            <ambientLight intensity={0.2} />
+            {/* Self-contained ambient, directional and specular lighting (No external HDR network dependency) */}
+            <ambientLight intensity={theme === 'dark' ? 0.4 : 0.7} />
+            <hemisphereLight args={[primaryColor, secondaryColor, 0.5]} />
+            <directionalLight position={[10, 10, 5]} intensity={1.4} color={primaryColor} />
+            <directionalLight position={[-10, -8, -5]} intensity={0.8} color={secondaryColor} />
+            <pointLight position={[0, 0, 6]} intensity={1.0} color="#ffffff" />
             <pointLight position={[10, 10, 10]} intensity={1.5} color={primaryColor} />
             <pointLight position={[-10, -10, -10]} intensity={0.5} color={secondaryColor} />
 

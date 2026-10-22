@@ -1,5 +1,7 @@
 'use client';
 
+import { AnnouncementBar } from "./announcement-bar";
+
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { Header } from './header';
@@ -20,8 +22,8 @@ export interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   return (
     <>
-      <div className="relative min-h-screen">
-        <div className="parallax-background" />
+      <div suppressHydrationWarning className="relative min-h-screen">
+        <AnnouncementBar />
         <Header />
         <main className="relative z-10">{children}</main>
       </div>

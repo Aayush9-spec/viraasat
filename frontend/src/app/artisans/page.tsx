@@ -24,7 +24,7 @@ export default function ArtisansPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <main className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {artisans.map((artisan) => (
             <article key={artisan.id} className="border border-primary/10 bg-card text-card-foreground shadow-sm group">

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles } from 'lucide-react';
+import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles, ShoppingBag } from 'lucide-react';
 import { useTranslation } from '@/core/hooks/use-translation';
 import { useCart } from '@/context/cart-context';
 import { useUserRole } from '@/features/auth/hooks/use-user-role';
@@ -88,51 +88,36 @@ export function Header() {
     router.push('/login');
   };
 
-  const isArtisanRole = mounted
-    ? Boolean(
-        isArtisan ||
-        localUser?.role === 'artisan' ||
-        (typeof window !== 'undefined' && localStorage.getItem('viraasat_session_role') === 'artisan') ||
-        user?.unsafeMetadata?.role === 'artisan'
-      )
-    : false;
+  const isArtisanRole = mounted ? Boolean(isArtisan) : false;
   const displayName = localUser?.name || user?.fullName || (isArtisanRole ? 'Artisan Partner' : 'Valued Customer');
   const displayEmail = localUser?.email || user?.primaryEmailAddress?.emailAddress || 'Active Session';
   const initialLetter = displayName ? displayName.charAt(0).toUpperCase() : (isArtisanRole ? 'A' : 'C');
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
         <div className="flex min-w-0 items-center justify-between gap-3 py-3 sm:py-4">
           {/* Logo and Primary Nav */}
           <div className="flex min-w-0 items-center gap-8">
             <ViraasatLogo className="shrink-0" />
-            <div className="hidden xl:flex items-center space-x-7">
-              <Link href="/" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">
+            <div className="hidden lg:flex items-center space-x-5 xl:space-x-8 text-sm font-medium tracking-wide">
+              <Link href="/" className="text-foreground/80 hover:text-primary transition-colors">
                 {t('nav.home')}
               </Link>
-              <Link href="/shop" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors">
+              <Link href="/#heritage-crafts" className="text-foreground/80 hover:text-primary transition-colors">
+                Heritage Crafts
+              </Link>
+              <Link href="/#artisan-lineage" className="text-foreground/80 hover:text-primary transition-colors">
+                Master Artisans
+              </Link>
+              <Link href="/#curated-treasures" className="text-foreground/80 hover:text-primary transition-colors">
+                Curated Heirlooms
+              </Link>
+              <Link href="/#why-viraasat" className="text-foreground/80 hover:text-primary transition-colors">
+                Philosophy
+              </Link>
+              <Link href="/shop" className="text-foreground/80 hover:text-primary transition-colors font-semibold text-primary">
                 {t('nav.shop')}
-              </Link>
-              {isArtisanRole && (
-                <Link
-                  href="/artisan/dashboard"
-                  className="text-sm font-semibold text-primary hover:text-primary/80 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 dark:bg-amber-950/40 dark:border-amber-800/30 dark:text-amber-300 transition-colors"
-                >
-                  {t('nav.artisan')}
-                </Link>
-              )}
-              <Link
-                href={isArtisanRole ? '/artisan/products' : '/shop'}
-                className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
-              >
-                {t('nav.products')}
-              </Link>
-              <Link
-                href={isArtisanRole ? '/artisan/orders' : '/orders'}
-                className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
-              >
-                {t('nav.orders')}
               </Link>
             </div>
           </div>
@@ -148,6 +133,38 @@ export function Header() {
             <div className="hidden sm:block">
               <ThemeSwitcher />
             </div>
+
+            {/* Role Switcher CTA */}
+            {mounted && isSignedIn && isArtisan ? (
+              <Link
+                href="/switch-role?to=buyer"
+                className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-amber-600/40 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-600 hover:text-white transition-all duration-300"
+              >
+                <ShoppingBag className="w-3.5 h-3.5" />
+                <span>Customer Shop</span>
+              </Link>
+            ) : (
+              <Link
+                href={mounted && isSignedIn ? "/switch-role?to=artisan" : "/login/artisan"}
+                className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#C59B4B]" />
+                <span>Artisan Portal</span>
+              </Link>
+            )}
+
+            {/* Wishlist Link */}
+            <Button
+              asChild
+              variant="ghost"
+              size="icon"
+              className="text-foreground/70 hover:text-primary relative"
+              aria-label="Wishlist"
+            >
+              <Link href="/wishlist">
+                <Heart className="h-5 w-5" />
+              </Link>
+            </Button>
 
             {/* Cart Button */}
             <Button
@@ -178,34 +195,57 @@ export function Header() {
                     }}
                   >
                     <UserButton.MenuItems>
-                      <UserButton.Link
-                        label={isArtisan ? "Artisan Dashboard" : "My Dashboard"}
-                        labelIcon={<LayoutDashboard className="h-4 w-4 text-primary" />}
-                        href={isArtisan ? "/artisan/dashboard" : "/dashboard"}
-                      />
-                      <UserButton.Link
-                        label={isArtisan ? "Artisan Studio Profile" : "Profile & Address"}
-                        labelIcon={<User className="h-4 w-4 text-emerald-600" />}
-                        href={isArtisan ? "/artisan/profile" : "/dashboard/profile"}
-                      />
-                      <UserButton.Link
-                        label={isArtisan ? "Artisan Products" : "My Orders"}
-                        labelIcon={<Package className="h-4 w-4 text-amber-600" />}
-                        href={isArtisan ? "/artisan/products" : "/orders"}
-                      />
-                      {!isArtisan && (
-                        <UserButton.Link
-                          label="My Wishlist"
-                          labelIcon={<Heart className="h-4 w-4 text-rose-500" />}
-                          href="/wishlist"
-                        />
-                      )}
-                      {!isArtisan && (
-                        <UserButton.Link
-                          label="Artisan Portal"
-                          labelIcon={<Sparkles className="h-4 w-4 text-amber-500" />}
-                          href="/artisan/dashboard"
-                        />
+                      {isArtisan ? (
+                        <>
+                          <UserButton.Link
+                            label="Artisan Dashboard"
+                            labelIcon={<LayoutDashboard className="h-4 w-4 text-primary" />}
+                            href="/artisan/dashboard"
+                          />
+                          <UserButton.Link
+                            label="Artisan Studio Profile"
+                            labelIcon={<User className="h-4 w-4 text-emerald-600" />}
+                            href="/artisan/profile"
+                          />
+                          <UserButton.Link
+                            label="Artisan Products"
+                            labelIcon={<Package className="h-4 w-4 text-amber-600" />}
+                            href="/artisan/products"
+                          />
+                          <UserButton.Link
+                            label="Switch to Customer Mode"
+                            labelIcon={<ShoppingBag className="h-4 w-4 text-amber-600" />}
+                            href="/switch-role?to=buyer"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <UserButton.Link
+                            label="My Dashboard"
+                            labelIcon={<LayoutDashboard className="h-4 w-4 text-primary" />}
+                            href="/dashboard"
+                          />
+                          <UserButton.Link
+                            label="Profile & Address"
+                            labelIcon={<User className="h-4 w-4 text-emerald-600" />}
+                            href="/dashboard/profile"
+                          />
+                          <UserButton.Link
+                            label="My Orders"
+                            labelIcon={<Package className="h-4 w-4 text-amber-600" />}
+                            href="/orders"
+                          />
+                          <UserButton.Link
+                            label="My Wishlist"
+                            labelIcon={<Heart className="h-4 w-4 text-rose-500" />}
+                            href="/wishlist"
+                          />
+                          <UserButton.Link
+                            label="Switch to Artisan Studio"
+                            labelIcon={<Sparkles className="h-4 w-4 text-amber-500" />}
+                            href="/switch-role?to=artisan"
+                          />
+                        </>
                       )}
                       <UserButton.Action label="manageAccount" />
                     </UserButton.MenuItems>
@@ -246,6 +286,9 @@ export function Header() {
                           <DropdownMenuItem asChild>
                             <Link href="/artisan/orders" className="cursor-pointer">Artisan Orders</Link>
                           </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/switch-role?to=buyer" className="cursor-pointer text-amber-600 font-medium">Switch to Customer Mode</Link>
+                          </DropdownMenuItem>
                         </>
                       ) : (
                         <>
@@ -254,6 +297,12 @@ export function Header() {
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
                             <Link href="/orders" className="cursor-pointer">My Orders</Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/wishlist" className="cursor-pointer">My Wishlist</Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/switch-role?to=artisan" className="cursor-pointer text-amber-600 font-medium">Switch to Artisan Studio</Link>
                           </DropdownMenuItem>
                         </>
                       )}
@@ -272,7 +321,7 @@ export function Header() {
                   <Link href="/login">{t('nav.login')}</Link>
                 </Button>
                 <Button asChild className="text-primary-foreground rounded-md transition-all ease-out duration-300 bg-primary hover:bg-primary/90 text-sm font-medium">
-                  <Link href="/login">{t('nav.signUp')}</Link>
+                  <Link href="/login?mode=signup">{t('nav.signUp')}</Link>
                 </Button>
               </div>
             )}
@@ -328,7 +377,7 @@ export function Header() {
                             <Link href="/login">{t('nav.login') || 'Login'}</Link>
                           </Button>
                           <Button asChild className="w-full text-primary-foreground bg-primary hover:bg-primary/90">
-                            <Link href="/login">Sign Up</Link>
+                            <Link href="/login?mode=signup">Sign Up</Link>
                           </Button>
                         </div>
                       )}

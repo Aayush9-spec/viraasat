@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 
 export function Background3D() {
+    const [mounted, setMounted] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const rafId = useRef<number | null>(null);
     const lastUpdateTime = useRef<number>(0);
@@ -45,8 +46,12 @@ export function Background3D() {
     const rotateX = useMemo(() => mousePosition.y * 5, [mousePosition.y]);
     const rotateY = useMemo(() => mousePosition.x * 5, [mousePosition.x]);
 
+    if (!mounted) {
+        return null;
+    }
+
     return (
-        <div className="fixed inset-0 -z-30 overflow-hidden pointer-events-none perspective-container bg-background/50"
+        <div suppressHydrationWarning className="fixed inset-0 -z-30 overflow-hidden pointer-events-none perspective-container bg-background/50"
             style={{
                 perspective: '1200px',
                 willChange: 'transform'

@@ -20,65 +20,36 @@ export function useUserRole() {
 
   useEffect(() => {
     const syncRole = async () => {
-      const cachedRole = typeof window !== 'undefined' ? (localStorage.getItem(LS_ROLE_KEY) as UserRole | null) : null;
+      if (typeof window === 'undefined') return;
+
+      const cachedRole = localStorage.getItem(LS_ROLE_KEY) as UserRole | null;
       const metaRole = user?.unsafeMetadata?.role as UserRole | undefined;
-      const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase();
 
-      // Priority 1: Explicit artisan role from local session or Clerk metadata
-      let detectedRole: UserRole | null = null;
-      if (cachedRole === 'artisan' || metaRole === 'artisan') {
-        detectedRole = 'artisan';
-      } else if (metaRole) {
-        detectedRole = metaRole;
-      } else if (cachedRole) {
-        detectedRole = cachedRole;
+      // Priority 1: User's explicitly chosen session role in localStorage takes precedence
+      // Priority 2: Clerk metadata role
+      // Priority 3: Default to 'buyer' (customer)
+      let detectedRole: UserRole = cachedRole || metaRole || 'buyer';
+
+      setRole(detectedRole);
+      localStorage.setItem(LS_ROLE_KEY, detectedRole);
+      if (user?.id) {
+        localStorage.setItem(LS_UID_KEY, user.id);
       }
 
-      // Priority 2: Check database/users.json via /api/users for verified artisan email
-      if ((!detectedRole || detectedRole === 'buyer') && userEmail) {
+      // Align Clerk's unsafeMetadata so server-side checks and future sessions match
+      if (user && typeof user.update === 'function' && user.unsafeMetadata?.role !== detectedRole) {
         try {
-          const res = await fetch('/api/users');
-          if (res.ok) {
-            const users = await res.json();
-             
-            const matched = users.find((u: any) => u.email?.toLowerCase() === userEmail);
-            if (matched?.role === 'artisan') {
-              detectedRole = 'artisan';
-            }
-          }
+          await user.update({
+            unsafeMetadata: {
+              ...user.unsafeMetadata,
+              role: detectedRole,
+            },
+          });
         } catch {
-          // ignore network failure
+          // non-fatal
         }
       }
-
-      if (detectedRole) {
-        setRole(detectedRole);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(LS_ROLE_KEY, detectedRole);
-          if (user?.id) localStorage.setItem(LS_UID_KEY, user.id);
-        }
-
-        // Align Clerk's unsafeMetadata so server-side checks and future sessions match
-        if (user && typeof user.update === 'function' && user.unsafeMetadata?.role !== detectedRole) {
-          try {
-            await user.update({
-              unsafeMetadata: {
-                ...user.unsafeMetadata,
-                role: detectedRole,
-              },
-            });
-          } catch {
-            // non-fatal
-          }
-        }
-        setLoading(false);
-      } else {
-        if (!isLoaded) {
-          return;
-        }
-        setRole(null);
-        setLoading(false);
-      }
+      setLoading(false);
     };
 
     syncRole();

@@ -38,7 +38,7 @@ export default async function CategoryPage({ params }: PageProps) {
     <div className="bg-background min-h-screen">
       <header className="relative py-20 overflow-hidden bg-[#fbf7f0] border-b border-primary/5">
         <div className="absolute inset-0 opacity-[0.03] clay-texture pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
           <Badge variant="outline" className="mb-4 border-primary/20 text-primary px-4 py-1 uppercase tracking-widest text-[10px]">Collection</Badge>
           <h1 className="text-4xl md:text-5xl font-heading font-normal text-[#5e2c18]">{category}</h1>
           <p className="mt-4 max-w-2xl text-lg text-[#8b4513]/70 font-serif italic">
@@ -66,7 +66,7 @@ export default async function CategoryPage({ params }: PageProps) {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <main className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 py-16">
         {items.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {items.map((product) => (

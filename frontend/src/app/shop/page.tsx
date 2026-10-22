@@ -84,7 +84,7 @@ function ShopPageContent() {
             const json = await res.json();
             serverProducts = json?.data?.products || [];
           }
-        } catch (e) {}
+        } catch (e) { }
 
         const map = new Map<string, Product>();
 
@@ -146,7 +146,7 @@ function ShopPageContent() {
       setSemanticScores({});
       return;
     }
-    
+
     const delayDebounce = setTimeout(async () => {
       try {
         const res = await fetch(`${BACKEND_URL}/api/search/semantic?q=${encodeURIComponent(searchQuery)}`);
@@ -162,7 +162,7 @@ function ShopPageContent() {
         console.warn("Semantic search offline, falling back to local query terms matching.");
       }
     }, 300);
-    
+
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
 
@@ -283,8 +283,8 @@ function ShopPageContent() {
       <header className="relative py-24 overflow-hidden bg-[#fbf7f0] border-b border-primary/5">
         <div className="absolute inset-0 opacity-[0.03] clay-texture pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(94,44,24,0.05),transparent_40%)]" />
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+
+        <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10 text-center">
           <Badge variant="outline" className="mb-4 border-primary/20 text-primary px-4 py-1 uppercase tracking-widest text-[10px]">The Viraasat Gallery</Badge>
           <h1 className="text-5xl md:text-7xl font-heading font-normal text-[#5e2c18] mb-6">Masterpieces</h1>
           <p className="max-w-2xl mx-auto text-lg text-[#8b4513]/70 font-serif italic">
@@ -293,9 +293,9 @@ function ShopPageContent() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <main className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          
+
           {/* Desktop Filters */}
           <aside className="hidden lg:block lg:col-span-3 sticky top-24 h-fit">
             <div className="bg-secondary/30 p-8 border border-primary/10 rounded-none clay-texture">
@@ -305,13 +305,13 @@ function ShopPageContent() {
 
           {/* Main content area */}
           <div className="lg:col-span-9 space-y-8">
-            
+
             {/* Control Bar */}
             <div className="flex flex-col md:flex-row gap-6 justify-between items-center bg-card p-4 border border-border shadow-sm">
               <div className="relative w-full md:max-w-sm">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Search the collection..." 
+                <Input
+                  placeholder="Search the collection..."
                   className="pl-10 rounded-none border-none bg-secondary/50 focus-visible:ring-primary/20"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}

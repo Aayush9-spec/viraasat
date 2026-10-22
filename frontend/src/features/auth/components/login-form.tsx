@@ -46,7 +46,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
   const handleFacebookAuth = () => handleSocialAuth('oauth_facebook');
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-3 sm:p-6 md:p-8 bg-background dark:bg-background overflow-x-hidden">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-3 sm:p-6 md:p-8 bg-transparent overflow-x-hidden">
       <Card className="w-full max-w-sm sm:max-w-md md:max-w-lg border border-border shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden bg-card text-card-foreground transition-all duration-300">
         
         {/* Top Brand Banner matching Viraasat Theme */}
@@ -327,8 +327,8 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
         )}
 
         <div className="border-t border-border bg-muted/30 p-3.5 text-center">
-          <Link href="/login" className="text-xs text-muted-foreground hover:text-primary font-medium transition-colors inline-flex items-center gap-1">
-            ← Back to Login Portal Options
+          <Link href={isArtisan ? "/login?role=customer" : "/login?role=artisan"} className="text-xs text-muted-foreground hover:text-primary font-medium transition-colors inline-flex items-center gap-1">
+            {isArtisan ? "Looking for Customer shopping? Switch to Customer Login →" : "Are you an Artisan partner? Switch to Artisan Studio →"}
           </Link>
         </div>
       </Card>

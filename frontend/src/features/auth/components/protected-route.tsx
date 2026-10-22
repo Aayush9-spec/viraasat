@@ -61,10 +61,8 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
       const metaRole = user.unsafeMetadata?.role as UserRole | undefined;
       const userEmail = user.primaryEmailAddress?.emailAddress?.toLowerCase();
 
-      // Priority 1: explicitly selected/cached artisan role
-      let finalRole: UserRole | null = (cachedRole === 'artisan' || activeLocalRole === 'artisan' || metaRole === 'artisan')
-        ? 'artisan'
-        : (metaRole || activeLocalRole || cachedRole || null);
+      // Priority 1: active session role in localStorage, or Clerk metadata
+      let finalRole: UserRole | null = cachedRole || metaRole || 'buyer';
 
       // Priority 2: check verified artisan status by email
       if ((!finalRole || finalRole === 'buyer') && userEmail) {

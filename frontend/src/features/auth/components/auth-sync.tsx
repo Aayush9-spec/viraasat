@@ -17,82 +17,64 @@ export function AuthSync() {
     async function syncUser() {
       if (!isLoaded || !isSignedIn || !user) return;
 
-      const now = new Date().toISOString();
       const name =
-        user.fullName || user.username || user.primaryEmailAddress?.emailAddress || 'User';
+        user.fullName || user.username || user.primaryEmailAddress?.emailAddress?.split('@')[0] || 'Customer';
       const email = user.primaryEmailAddress?.emailAddress || '';
       const imageUrl = user.imageUrl || '';
       const metaRole = user.unsafeMetadata?.role as string | undefined;
 
       try {
-        // Check if user row already exists (PGRST116 = not found, that's fine)
-        const { data: existing } = await supabase
-          .from('users')
-          .select('id, role')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        // Resolve role — never downgrade an artisan role
         const cachedRole = typeof window !== 'undefined' ? localStorage.getItem(LS_ROLE_KEY) : null;
-        const supabaseRole = existing?.role as string | undefined;
-        const role = (cachedRole === 'artisan' || metaRole === 'artisan')
-          ? 'artisan'
-          : (metaRole || supabaseRole || cachedRole || null);
+        
+        // Active chosen session role in localStorage takes precedence, followed by Clerk metadata, then 'buyer'
+        const role = (cachedRole || metaRole || 'buyer') as string;
 
-        if (role) {
-          localStorage.setItem(LS_ROLE_KEY, role);
-          localStorage.setItem(LS_UID_KEY, user.id);
-
-          if (user && typeof user.update === 'function' && user.unsafeMetadata?.role !== role) {
-            user.update({
-              unsafeMetadata: {
-                ...user.unsafeMetadata,
-                role,
-              },
-            }).catch(() => {});
-          }
-
-          await supabase.from('users').upsert({
+        localStorage.setItem(LS_ROLE_KEY, role);
+        localStorage.setItem(LS_UID_KEY, user.id);
+        localStorage.setItem(
+          'viraasat_demo_user',
+          JSON.stringify({
             id: user.id,
+            name,
             email,
-            display_name: name,
-            avatar_url: imageUrl,
             role,
-          });
-        } else {
-          // No role anywhere — redirect to role selection
-          if (
-            pathname !== '/select-role' &&
-            !pathname.startsWith('/login') &&
-            !pathname.startsWith('/signup')
-          ) {
-            router.push('/select-role');
-          }
+          })
+        );
+        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new Event('viraasat_auth_change'));
+
+        if (user && typeof user.update === 'function' && user.unsafeMetadata?.role !== role) {
+          user.update({
+            unsafeMetadata: {
+              ...user.unsafeMetadata,
+              role,
+            },
+          }).catch(() => {});
         }
+
+        // Attempt Supabase sync non-fatally (users table may have uuid constraints)
+        await supabase.from('users').upsert({
+          email,
+          display_name: name,
+          avatar_url: imageUrl,
+          role,
+        });
       } catch (error) {
-        console.error('[AuthSync] Supabase sync error:', error);
-
-        // Fallback: use Clerk metadata + localStorage so the session still works
-        const cachedRole = localStorage.getItem(LS_ROLE_KEY);
-        const cachedUid  = localStorage.getItem(LS_UID_KEY);
-
-        if (metaRole === 'artisan' || metaRole === 'buyer') {
-          if (cachedUid !== user.id) {
-            localStorage.setItem(LS_ROLE_KEY, metaRole);
-            localStorage.setItem(LS_UID_KEY, user.id);
-          }
-          return;
-        }
-
-        if (cachedRole && cachedUid === user.id) return;
-
-        if (
-          pathname !== '/select-role' &&
-          !pathname.startsWith('/login') &&
-          !pathname.startsWith('/signup')
-        ) {
-          router.push('/select-role');
-        }
+        // Fallback when Supabase is unconfigured or network is unavailable
+        const cachedRole = (typeof window !== 'undefined' ? localStorage.getItem(LS_ROLE_KEY) : null) || metaRole || 'buyer';
+        localStorage.setItem(LS_ROLE_KEY, cachedRole);
+        localStorage.setItem(LS_UID_KEY, user.id);
+        localStorage.setItem(
+          'viraasat_demo_user',
+          JSON.stringify({
+            id: user.id,
+            name,
+            email,
+            role: cachedRole,
+          })
+        );
+        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new Event('viraasat_auth_change'));
       }
     }
 

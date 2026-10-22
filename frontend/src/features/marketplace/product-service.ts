@@ -37,7 +37,7 @@ export class ProductService {
     const map = new Map<string, Product>();
     // Deduplicate by normalized product name so static seeds and database items merge cleanly.
     // Priority order: local artisan creations first, then live database products, then static fallback.
-    [...localProds, ...dbProducts, ...products].forEach((p) => {
+    [...dbProducts, ...localProds, ...products].forEach((p) => {
       if (!p) return;
       const key = (p.name || '').trim().toLowerCase() || p.id;
       if (!map.has(key)) {

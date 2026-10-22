@@ -73,6 +73,10 @@ viraasat.db-*
 # clerk configuration (can include secrets)
 /.clerk/
 
+# understand-anything data directories
+.understand-anything/
+.ua/
+
 # Local workspace backups
 auth_collection/
 

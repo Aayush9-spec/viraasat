@@ -1,26 +1,51 @@
-import { SignUp } from "@clerk/nextjs";
+'use client';
+
+import { Suspense, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import { LoginForm } from '@/features/auth/components/login-form';
+import { Login3DBackground } from '@/components/shared/visuals/login-3d-background';
 
 export default function SignUpPage() {
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center p-4 sm:p-6 bg-background gap-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl sm:text-4xl font-heading font-bold text-primary">
-          Welcome to Viraasat
-        </h1>
-        <p className="text-base text-muted-foreground font-medium">
-          Preserving Heritage. Empowering Artisans.
-        </p>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Viraasat registration...</div>}>
+      <SignUpContent />
+    </Suspense>
+  );
+}
+
+function SignUpContent() {
+  const { isSignedIn, isLoaded, user } = useUser();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const roleParam = searchParams.get('role');
+  const userType = roleParam === 'artisan' ? 'Artisan' : 'Customer';
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      const role = user?.unsafeMetadata?.role;
+      if (role === 'artisan') {
+        router.push('/artisan/dashboard');
+      } else {
+        router.push('/shop');
+      }
+    }
+  }, [isLoaded, isSignedIn, user, router]);
+
+  if (isLoaded && isSignedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-muted-foreground">
+        Redirecting...
       </div>
-      <SignUp
-        appearance={{
-          elements: {
-            formButtonPrimary: 'bg-primary hover:bg-primary/90 text-primary-foreground',
-            card: 'border-2 shadow-lg rounded-2xl',
-          },
-        }}
-        fallbackRedirectUrl="/select-role"
-        signInUrl="/login"
-      />
+    );
+  }
+
+  return (
+    <div className="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center py-6 px-3 sm:px-6 overflow-hidden">
+      <Login3DBackground />
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto">
+        <LoginForm userType={userType} initialIsSignUp={true} />
+      </div>
     </div>
   );
 }

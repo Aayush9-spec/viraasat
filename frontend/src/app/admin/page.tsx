@@ -76,7 +76,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="bg-background min-h-screen">
       <header className="border-b border-primary/10 bg-[#fbf7f0] py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-primary font-bold mb-2">
             <Shield className="h-4 w-4" />
             Admin Console
@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <main className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 py-10">
         <Tabs defaultValue="applications" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 max-w-md">
             <TabsTrigger value="applications" className="flex items-center gap-2">

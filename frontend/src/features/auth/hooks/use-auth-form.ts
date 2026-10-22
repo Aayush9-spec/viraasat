@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useClerk, useSignIn, useSignUp } from '@clerk/nextjs';
 import { useToast } from '@/core/hooks/use-toast';
@@ -14,6 +14,10 @@ export interface UseAuthFormOptions {
 
 export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOptions) {
   const [isSignUp, setIsSignUp] = useState(initialIsSignUp);
+
+  useEffect(() => {
+    setIsSignUp(initialIsSignUp);
+  }, [initialIsSignUp]);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -85,7 +89,33 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
         throw new Error('Sign-in service is initializing. Please try again in a moment.');
       }
 
-      const res = await activeSignIn.create({ identifier: email });
+      let res: any = null;
+      try {
+        res = await activeSignIn.create({ identifier: email });
+      } catch (signInErr: any) {
+        const errCode = signInErr?.errors?.[0]?.code;
+        // If account does not exist yet, seamlessly create it via OTP sign-up
+        if (errCode === 'form_identifier_not_found') {
+          const activeSignUp = signUp || (clerk as any)?.client?.signUp;
+          if (activeSignUp && typeof activeSignUp.create === 'function') {
+            await activeSignUp.create({
+              emailAddress: email,
+              unsafeMetadata: { role },
+            });
+            if (typeof activeSignUp.prepareEmailAddressVerification === 'function') {
+              await activeSignUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+            }
+            setVerificationFactorType('sign_up');
+            setIsVerifying(true);
+            toast({
+              title: 'Verification Code Sent',
+              description: `Creating your account! A 6-digit verification code was sent to ${email}.`,
+            });
+            return;
+          }
+        }
+        throw signInErr;
+      }
 
       if (res.status === 'needs_first_factor') {
         setVerificationFactorType('first_factor');
@@ -277,10 +307,18 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
 
         let res: any = null;
         try {
-          res = await activeSignIn.create({ identifier, password });
+          // Step 1: Initialize sign-in attempt with identifier
+          res = await activeSignIn.create({ identifier });
         } catch (signInErr: any) {
           const errCode = signInErr?.errors?.[0]?.code;
-          // If user account does not have a password configured (e.g. Google OAuth or OTP), seamlessly fall back to OTP
+          if (errCode === 'form_identifier_not_found') {
+            toast({
+              title: 'Account Not Found',
+              description: 'No existing account found. Switched to Sign Up so you can register now!',
+            });
+            setIsSignUp(true);
+            return;
+          }
           if (errCode === 'strategy_for_user_invalid') {
             toast({
               title: 'Email Code Verification',
@@ -290,6 +328,40 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
             return;
           }
           throw signInErr;
+        }
+
+        // Step 2: If user provided a password, attempt password factor verification
+        if (password && (res.status === 'needs_first_factor' || !res.status)) {
+          const hasPasswordStrategy = res.supportedFirstFactors?.some(
+            (f: any) => f.strategy === 'password'
+          );
+
+          if (hasPasswordStrategy || typeof activeSignIn.attemptFirstFactor === 'function') {
+            try {
+              res = await activeSignIn.attemptFirstFactor({
+                strategy: 'password',
+                password,
+              });
+            } catch (pwdErr: any) {
+              const pCode = pwdErr?.errors?.[0]?.code;
+              if (pCode === 'form_password_incorrect') {
+                toast({
+                  title: 'Incorrect Password',
+                  description: 'The password entered does not match our records. Please try again or use "Sign in with Gmail OTP" below.',
+                  variant: 'destructive',
+                });
+                return;
+              }
+              throw pwdErr;
+            }
+          } else {
+            toast({
+              title: 'Email Code Verification',
+              description: 'This account does not use passwords. Sending an instant 6-digit OTP to your Gmail...',
+            });
+            await handleOtpSignIn(identifier);
+            return;
+          }
         }
 
         const sessionId = res?.createdSessionId || activeSignIn?.createdSessionId;
@@ -426,11 +498,19 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
             router.push(targetRedirect);
             return;
           }
-          throw new Error(
-            res?.status
+          const vErr = res?.firstFactorVerification?.error;
+          const failureMsg =
+            vErr?.longMessage ||
+            vErr?.message ||
+            (res?.status
               ? `Sign-in status: ${res.status}. Please check your credentials.`
-              : 'Sign-in could not be completed. Please check your password and try again.'
-          );
+              : 'Sign-in could not be completed. Please check your password or use "Sign in with Gmail OTP" below.');
+          toast({
+            title: 'Sign In Failed',
+            description: failureMsg,
+            variant: 'destructive',
+          });
+          return;
         }
       }
     } catch (err: unknown) {

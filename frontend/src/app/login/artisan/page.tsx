@@ -1,13 +1,24 @@
 'use client';
 
 import { Suspense, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { LoginForm } from '@/features/auth/components/login-form';
+import { Login3DBackground } from '@/components/shared/visuals/login-3d-background';
 
 export default function ArtisanLoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Artisan Portal...</div>}>
+      <ArtisanLoginContent />
+    </Suspense>
+  );
+}
+
+function ArtisanLoginContent() {
   const { isSignedIn, isLoaded, user } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isSignUp = searchParams.get('mode') === 'signup' || searchParams.get('mode') === 'register';
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
@@ -22,19 +33,20 @@ export default function ArtisanLoginPage() {
     }
   }, [isLoaded, isSignedIn, user, router]);
 
-  if (!isLoaded) {
-    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
-  }
-
-  if (isSignedIn) {
-    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Redirecting to your dashboard...</div>;
+  if (isLoaded && isSignedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-muted-foreground">
+        Redirecting to your dashboard...
+      </div>
+    );
   }
 
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading artisan portal...</div>}>
-      <LoginForm userType="Artisan" initialIsSignUp={false} />
-    </Suspense>
+    <div className="relative w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center py-6 px-3 sm:px-6 overflow-hidden">
+      <Login3DBackground />
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto">
+        <LoginForm userType="Artisan" initialIsSignUp={isSignUp} />
+      </div>
+    </div>
   );
 }
-
-

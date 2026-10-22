@@ -1,127 +1,148 @@
 'use client';
 
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Twitter, Facebook, Instagram } from 'lucide-react';
-import { NewsletterForm } from '@/components/shared/common/newsletter-form';
+import { Instagram, Facebook, Youtube, Linkedin, Shield } from 'lucide-react';
+import { useToast } from '@/core/hooks/use-toast';
 
 export function Footer() {
-  return (
-    <footer className="bg-secondary/50 border-t border-primary/20 pt-16 pb-8 relative overflow-hidden">
-      {/* Decorative top gradient */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+  const { toast } = useToast();
+  const [email, setEmail] = useState('');
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          {/* Brand Column */}
-          <div className="col-span-1 md:col-span-1 space-y-4">
-            <Link href="/" className="inline-block">
-              <span className="font-heading text-3xl font-bold text-foreground">Viraasat</span>
-            </Link>
-            <p className="text-foreground/80 text-sm leading-relaxed font-light">
-              Celebrating the timeless art of Indian craftsmanship. Every piece tells a story of heritage, skill, and dedication.
+  const handleNewsletter = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    toast({
+      title: 'Namaste! Welcome to The Viraasat Circle 📜',
+      description: 'Your ₹1,500 heirloom welcome credit has been sent to ' + email + '.',
+    });
+    setEmail('');
+  };
+
+  return (
+    <footer id="about-viraasat" className="bg-[#221C18] text-[#FAF7F2] pt-16 pb-12 border-t-2 border-[#C59B4B] relative z-20">
+      <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
+        {/* Top Newsletter Row */}
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-14 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="space-y-1 text-center md:text-left">
+            <span className="text-xs uppercase tracking-widest text-[#C59B4B] font-bold">
+              The Viraasat Circle
+            </span>
+            <h3 className="font-serif text-2xl font-normal text-white">
+              Receive Private Previews of Masterpiece Drops
+            </h3>
+            <p className="text-xs text-[#655B53] text-stone-400">
+              Join 34,000+ art lovers. Enjoy ₹1,500 off your inaugural heirloom acquisition.
             </p>
-            <div className="flex space-x-4 pt-4">
-              <a
-                href="https://x.com/aayush03061102"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter"
-                className="p-2 bg-background rounded-full text-primary hover:text-primary/80 hover:bg-secondary transition-all duration-300"
-              >
-                <Twitter className="h-4 w-4" />
-              </a>
-              <a
-                href="#"
-                aria-label="Facebook"
-                className="p-2 bg-background rounded-full text-primary hover:text-primary/80 hover:bg-secondary transition-all duration-300"
-              >
-                <Facebook className="h-4 w-4" />
-              </a>
+          </div>
+          <form onSubmit={handleNewsletter} className="flex w-full md:w-auto max-w-md gap-2">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
+              className="bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#C59B4B] w-full sm:w-64"
+            />
+            <button
+              type="submit"
+              className="bg-[#C59B4B] hover:bg-[#E8CA82] text-[#221C18] font-bold text-xs uppercase tracking-wider px-6 py-2.5 rounded-full transition-colors whitespace-nowrap cursor-pointer shadow"
+            >
+              Join Circle
+            </button>
+          </form>
+        </div>
+
+        {/* Links Column Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-14 text-xs font-light">
+          {/* Col 1: Brand */}
+          <div className="col-span-2 space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="font-serif text-2xl font-bold tracking-wider text-[#E8CA82] uppercase">
+                Viraasat
+              </span>
+            </div>
+            <p className="text-stone-400 leading-relaxed max-w-sm">
+              India's foremost collective for Geographical Indication (GI) tagged handicrafts, heritage weaves, and ancestral lost arts. Directly empowering indigenous guilds with dignity and fair trade.
+            </p>
+            <div className="flex items-center space-x-4 pt-2 text-[#E8CA82]">
               <a
                 href="https://www.instagram.com/aasr_233/"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="p-2 bg-background rounded-full text-primary hover:text-primary/80 hover:bg-secondary transition-all duration-300"
+                className="hover:text-white transition-colors"
+                title="Instagram"
               >
-                <Instagram className="h-4 w-4" />
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a href="#" className="hover:text-white transition-colors" title="Facebook">
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a href="#" className="hover:text-white transition-colors" title="Youtube">
+                <Youtube className="w-4 h-4" />
+              </a>
+              <a href="#" className="hover:text-white transition-colors" title="LinkedIn">
+                <Linkedin className="w-4 h-4" />
               </a>
             </div>
           </div>
 
-          {/* Discover Links */}
-          <div className="col-span-1">
-            <h3 className="font-serif text-primary tracking-wider uppercase text-sm mb-6">Discover</h3>
-            <ul className="space-y-3 text-sm text-foreground/80">
-              <li>
-                <Link href="/shop" className="hover:text-primary transition-colors">
-                  Our Collection
-                </Link>
-              </li>
-              <li>
-                <Link href="/#mission" className="hover:text-primary transition-colors">
-                  The Mission
-                </Link>
-              </li>
-              <li>
-                <Link href="/artisans" className="hover:text-primary transition-colors">
-                  Meet the Artisans
-                </Link>
-              </li>
-              <li>
-                <Link href="/journal" className="hover:text-primary transition-colors">
-                  Heritage Journal
-                </Link>
-              </li>
+          {/* Col 2: Geographical Crafts */}
+          <div className="space-y-3">
+            <h4 className="font-serif text-sm font-bold uppercase tracking-wider text-white">
+              Heritage Guilds
+            </h4>
+            <ul className="space-y-2 text-stone-400">
+              <li><Link href="/shop?category=pottery" className="hover:text-[#C59B4B] transition-colors">Jaipur Blue Pottery</Link></li>
+              <li><Link href="/shop?category=shawls" className="hover:text-[#C59B4B] transition-colors">Kashmiri Kani Shawls</Link></li>
+              <li><Link href="/shop?category=metal" className="hover:text-[#C59B4B] transition-colors">Bastar Dhokra Bronze</Link></li>
+              <li><Link href="/shop?category=paintings" className="hover:text-[#C59B4B] transition-colors">Mithila Madhubani</Link></li>
+              <li><Link href="/shop?category=textiles" className="hover:text-[#C59B4B] transition-colors">Banarasi Brocade Silks</Link></li>
+              <li><Link href="/shop?category=metal" className="hover:text-[#C59B4B] transition-colors">Bidriware Silver Inlay</Link></li>
             </ul>
           </div>
 
-          {/* Support Links */}
-          <div className="col-span-1">
-            <h3 className="font-serif text-primary tracking-wider uppercase text-sm mb-6">Support</h3>
-            <ul className="space-y-3 text-sm text-foreground/80">
-              <li>
-                <Link href="/faq" className="hover:text-primary transition-colors">
-                  Help & FAQs
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" className="hover:text-primary transition-colors">
-                  Shipping & Customs
-                </Link>
-              </li>
-              <li>
-                <Link href="/refund" className="hover:text-primary transition-colors">
-                  Returns & Refunds
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-primary transition-colors">
-                  Contact Us
-                </Link>
-              </li>
+          {/* Col 3: Artisan Ecosystem */}
+          <div className="space-y-3">
+            <h4 className="font-serif text-sm font-bold uppercase tracking-wider text-white">
+              Artisan Support
+            </h4>
+            <ul className="space-y-2 text-stone-400">
+              <li><Link href="/login/artisan" className="hover:text-[#C59B4B] transition-colors font-medium text-[#E8CA82]">Artisan Portal Login</Link></li>
+              <li><Link href="/apply" className="hover:text-[#C59B4B] transition-colors">Cooperative Grants</Link></li>
+              <li><Link href="/artisan/provenance" className="hover:text-[#C59B4B] transition-colors">GI Verification Hub</Link></li>
+              <li><Link href="/about" className="hover:text-[#C59B4B] transition-colors">Natural Dye Sourcing</Link></li>
+              <li><Link href="/shipping" className="hover:text-[#C59B4B] transition-colors">Rural Packaging Hubs</Link></li>
             </ul>
           </div>
 
-          {/* Newsletter Column */}
-          <div className="col-span-1">
-            <h3 className="font-serif text-primary tracking-wider uppercase text-sm mb-6">Stay Connected</h3>
-            <p className="text-foreground/80 text-sm mb-4 leading-relaxed font-light">
-              Subscribe to discover artisan tales, craft histories, and early access to curated collections.
-            </p>
-            <NewsletterForm />
+          {/* Col 4: Assurance & Policies */}
+          <div className="space-y-3">
+            <h4 className="font-serif text-sm font-bold uppercase tracking-wider text-white">
+              Provenance & Trust
+            </h4>
+            <ul className="space-y-2 text-stone-400">
+              <li><Link href="/about" className="hover:text-[#C59B4B] transition-colors">Authenticity Certificate</Link></li>
+              <li><Link href="/shipping" className="hover:text-[#C59B4B] transition-colors">Global Fragile Transit</Link></li>
+              <li><Link href="/faq" className="hover:text-[#C59B4B] transition-colors">Heirloom Care Guide</Link></li>
+              <li><Link href="/contact" className="hover:text-[#C59B4B] transition-colors">Bespoke Architectural Orders</Link></li>
+              <li><Link href="/refund" className="hover:text-[#C59B4B] transition-colors">Fair Trade Transparency</Link></li>
+            </ul>
           </div>
         </div>
 
-        <div className="border-t border-border/40 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-foreground/75">
-          <p>© {new Date().getFullYear()} Viraasat Platform. Rooted in tradition, built with pride.</p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="/privacy" className="hover:text-primary transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-primary transition-colors">
-              Terms of Service
-            </Link>
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-[11px] text-stone-400 gap-4">
+          <div>
+            © {new Date().getFullYear()} Viraasat Marketplace Pvt. Ltd. (virrasat.in). All rights reserved.
+          </div>
+          <div className="flex items-center space-x-6">
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Charter</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Heritage Trade</Link>
+            <Link href="/about" className="hover:text-white transition-colors">GI Compliance</Link>
+            <span className="text-[#C59B4B] flex items-center gap-1">
+              <Shield className="w-3.5 h-3.5" /> Government Handloom Board Certified
+            </span>
           </div>
         </div>
       </div>

@@ -1,382 +1,528 @@
 [
   {
-    "id": "creation-1791983576643",
-    "artisanId": "artisan-1",
+    "id": "f83a21b4-5e92-4f1a-b0c3-1d89e4720999",
+    "artisan_id": "4b825e21-36af-4f6a-94be-40128b2a9cdd",
     "name": "Channapatna Wooden Toy Train",
-    "description": "Harvested from sustainably sourced forests and seasoned for months before a chisel ever touches it, this \"Channapatna Wooden Toy Train\" speaks in the language of grain and form. The master carver from Saharanpur or Jodhpur reads the wood's natural patterns, coaxing motifs of lotus, paisley, and flowing vines from the timber rather than imposing them. The result is furniture and craft that feel organic — as though the design always existed within the wood, waiting to be revealed.",
-    "price": 590,
-    "currency": "INR",
     "category": "Home Decor",
-    "stock": 10,
+    "description": "Harvested from sustainably sourced Aale Mara softwood and turned on foot-pedal lathes. Colored with non-toxic natural vegetable lac and turmeric dyes.",
+    "price": 590,
+    "stock": 25,
     "images": [
-      "https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300"
+      "/images/products/clean/channapatna-wooden-toy-train.jpg"
     ],
-    "region": "Rajasthan",
-    "aiInsights": {
+    "region": "Karnataka",
+    "ai_insights": {
       "keyFeatures": [
-        "100% Handcrafted by Master Artisans",
-        "Made from Sustainable & Locally Sourced Raw Materials",
-        "Authentic Regional Craft Motif & Pattern",
-        "Eco-Friendly Natural Finish & Durable Weave"
+        "100% Non-Toxic",
+        "Natural Lacquer",
+        "Soft Ivory Wood"
       ],
       "styleTags": [
-        "Artisanal",
-        "Heritage Craft",
-        "Boho Chic",
-        "Handmade Elegant",
-        "Ethnic Traditional"
+        "Heritage Toy",
+        "Eco Friendly",
+        "Artisanal"
       ],
       "useCases": [
-        "Home Decor Statement Piece",
-        "Festive Gift for Loved Ones",
-        "Heritage Collection Accent",
-        "Daily Elegant Use"
+        "Nursery Decor",
+        "Children Toy",
+        "Collector Item"
       ]
     },
-    "isActive": true,
-    "status": "active",
-    "createdAt": "2026-10-14T13:12:56.643Z",
-    "updatedAt": "2026-10-14T13:12:59.015Z"
+    "created_at": "2026-10-18T04:51:59.846Z"
   },
   {
-    "id": "creation-1791982412164",
-    "artisanId": "artisan-1",
-    "name": "Kashmiri Walnut Carved Box",
-    "description": "Exquisite hand-carved walnut wood keepsake box from the Kashmir valley.",
-    "price": 850,
-    "currency": "INR",
+    "id": "e0574ed8-07fc-4c1c-b622-ef68d643d131",
+    "artisan_id": "478bee0b-6033-49e9-8d8d-e73184ad006e",
+    "name": "Jaipur Cobalt Blue Pottery Urn",
     "category": "Home Decor",
-    "stock": 12,
+    "description": "Traditional quartz-stone powder pottery fired at low temperatures without clay. Glazed with Persian cobalt copper oxide.",
+    "price": 4900,
+    "stock": 7,
     "images": [
-      "/images/products/wood-carving.jpg"
+      "/images/products/clean/jaipur-blue-pottery-urn.jpg"
+    ],
+    "region": "Rajasthan",
+    "ai_insights": null,
+    "created_at": "2026-10-17T16:38:06.293612+00:00"
+  },
+  {
+    "id": "65de1162-5da1-4673-914a-12b3c5af56eb",
+    "artisan_id": "6b47d23c-0852-4d31-99e3-ac51403efd7e",
+    "name": "Madhubani Tree of Life Folio",
+    "category": "Painting",
+    "description": "Painted with natural vegetable dyes and cow dung wash on handmade bamboo paper. Depicting celestial harmony and nature.",
+    "price": 6200,
+    "stock": 4,
+    "images": [
+      "/images/products/clean/madhubani-tree-of-life-folio.jpg"
+    ],
+    "region": "Bihar",
+    "ai_insights": null,
+    "created_at": "2026-10-17T16:38:05.72075+00:00"
+  },
+  {
+    "id": "fafa8b3c-6178-4879-9699-9217b1f65f39",
+    "artisan_id": "edfe6af7-78aa-45ef-8e8a-86c798019e90",
+    "name": "Royal Kashmiri Sozni Pashmina Shawl",
+    "category": "Textiles",
+    "description": "Hand-spun 100% Changthangi Ladakh cashmere with intricate paper-mache sozni needlepoint embroidery. 180 days of handwork.",
+    "price": 24500,
+    "stock": 3,
+    "images": [
+      "/images/products/clean/kashmiri-sozni-pashmina-shawl.jpg"
     ],
     "region": "Kashmir",
-    "aiInsights": null,
-    "isActive": true,
-    "status": "active",
-    "createdAt": "2026-10-14T12:53:32.164Z",
-    "updatedAt": "2026-10-14T12:53:32.164Z"
+    "ai_insights": null,
+    "created_at": "2026-10-17T16:38:05.127078+00:00"
   },
   {
-    "id": "prod-1",
-    "name": "Azure Ceramic Vase",
-    "category": "Home Decor",
-    "region": "Rajasthan",
-    "price": 650,
-    "description": "A stunning handcrafted ceramic vase, glazed in a deep azure blue. Perfect as a centerpiece or for holding your favorite flowers. Its unique shape is inspired by the waves of the ocean.",
+    "id": "d671577c-4640-4c09-8665-af63392e7314",
+    "artisan_id": "510b234b-894c-4f62-a285-d496bb1e932f",
+    "name": "The Lost-Wax Dancing Bull",
+    "category": "Metal",
+    "description": "Handmade by Shilp Guru Bannuram Baid using 4,000-year-old Bastar Dhokra lost-wax metallurgy. Cast using the ancient lost-wax technique in Kondagaon, Bastar.",
+    "price": 7800,
+    "stock": 5,
     "images": [
-      "https://images.unsplash.com/photo-1597696929736-6d13bed8e6a8?q=80&w=1080",
-      "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=1080",
-      "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?q=80&w=1080"
-    ]
+      "/images/products/clean/bastar-dhokra-dancing-bull.jpg"
+    ],
+    "region": "Chhattisgarh",
+    "ai_insights": null,
+    "created_at": "2026-10-17T16:37:04.526802+00:00"
   },
   {
-    "id": "prod-2",
-    "name": "Sunset Tapestry",
-    "category": "Textiles",
-    "region": "Gujarat",
-    "price": 1800,
-    "description": "A large, handwoven wall tapestry depicting a vibrant sunset over the desert. Made with naturally dyed wool and cotton fibers.",
-    "images": [
-      "https://images.unsplash.com/photo-1562869929-bda0650edb1f?q=80&w=1080",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1080"
-    ]
-  },
-  {
-    "id": "prod-3",
-    "name": "Earthenware Mug Set",
-    "category": "Kitchenware",
-    "region": "Rajasthan",
-    "price": 380,
-    "description": "Set of two rustic earthenware mugs, perfect for your morning coffee or tea. The textured finish provides a comfortable, earthy grip.",
-    "images": [
-      "https://images.unsplash.com/photo-1708368952731-db40e6a86d21?q=80&w=1080"
-    ]
-  },
-  {
-    "id": "prod-4",
-    "name": "Geometric Print Scarf",
-    "category": "Accessories",
-    "region": "Gujarat",
-    "price": 250,
-    "description": "A lightweight cotton scarf with a hand-block printed geometric pattern. Versatile and stylish for any season.",
-    "images": [
-      "https://images.unsplash.com/photo-1609803384370-0e73ef8d424f?q=80&w=1080"
-    ]
-  },
-  {
-    "id": "prod-5",
-    "name": "Terracotta Planter",
-    "category": "Gardening",
-    "region": "Rajasthan",
-    "price": 220,
-    "description": "A simple yet elegant terracotta planter with a subtle etched pattern. Includes a drainage hole and matching saucer.",
-    "images": [
-      "https://images.unsplash.com/photo-1728463098232-4ab2f94f53f2?q=80&w=1080"
-    ]
-  },
-  {
-    "id": "prod-6",
+    "id": "f080ca1b-6cb2-5242-98ed-4612ac098b94",
+    "artisan_id": "478bee0b-6033-49e9-8d8d-e73184ad006e",
     "name": "Glazed Soup Bowls",
     "category": "Kitchenware",
-    "region": "Rajasthan",
-    "price": 750,
     "description": "Set of four ceramic soup bowls with a unique reactive glaze. Each bowl has a slightly different pattern, making them one-of-a-kind.",
+    "price": 750,
+    "stock": 10,
     "images": [
-      "https://images.unsplash.com/photo-1648889095175-1757165415e5?q=80&w=1080"
-    ]
+      "/images/products/clean/glazed-soup-bowls.jpg"
+    ],
+    "region": "Rajasthan",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-7",
+    "id": "fc407d89-26e4-55ce-a2dc-fdae931500f1",
+    "artisan_id": "eefed6d6-e1ea-40f5-9fb5-c29b55daa534",
     "name": "Embroidered Cushion Cover",
     "category": "Textiles",
-    "region": "Gujarat",
-    "price": 480,
     "description": "A vibrant, hand-embroidered cushion cover from Kutch. Features traditional mirror work and colorful thread.",
+    "price": 480,
+    "stock": 10,
     "images": [
-      "https://images.unsplash.com/photo-1689413182146-14b0a9b972b7?q=80&w=1080"
-    ]
+      "/images/products/clean/embroidered-cushion-cover.jpg"
+    ],
+    "region": "Gujarat",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-8",
+    "id": "69d2e248-598e-501c-a2eb-fb4fb8ccf487",
+    "artisan_id": "478bee0b-6033-49e9-8d8d-e73184ad006e",
     "name": "Ceramic Tea Set",
     "category": "Kitchenware",
-    "region": "Rajasthan",
-    "price": 1100,
     "description": "A complete tea set for two, including a teapot, two cups, and a serving tray. Finished with a delicate crackle glaze.",
+    "price": 1100,
+    "stock": 10,
     "images": [
-      "https://images.unsplash.com/photo-1721373489867-b95a7b3fe16c?q=80&w=1080"
-    ]
+      "/images/products/clean/ceramic-tea-set.jpg"
+    ],
+    "region": "Rajasthan",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-9",
+    "id": "4b343160-5928-5bdb-83ef-2c0f9faba1dd",
+    "artisan_id": "8ba17eda-6a02-47cf-984a-ec5f4aa97e67",
     "name": "Hand-painted Wooden Box",
     "category": "Home Decor",
-    "region": "Rajasthan",
-    "price": 320,
     "description": "A small wooden box, hand-painted with intricate floral motifs. Perfect for storing jewelry or keepsakes.",
+    "price": 320,
+    "stock": 10,
     "images": [
-      "https://images.unsplash.com/photo-1614623171216-7755e8650e8e?q=80&w=1080"
-    ]
+      "/images/products/clean/hand-painted-wooden-box.jpg"
+    ],
+    "region": "Rajasthan",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-10",
+    "id": "f25d4264-170c-53c4-9bec-44c6cc02bec1",
+    "artisan_id": "eefed6d6-e1ea-40f5-9fb5-c29b55daa534",
     "name": "Natural Dye Table Runner",
     "category": "Textiles",
-    "region": "Gujarat",
-    "price": 350,
     "description": "A beautiful table runner made from handwoven cotton and colored with natural, plant-based dyes.",
+    "price": 350,
+    "stock": 10,
     "images": [
-      "https://images.unsplash.com/photo-1591011094220-0d66c676a6f7?q=80&w=1080"
-    ]
+      "/images/products/clean/natural-dye-table-runner.jpg"
+    ],
+    "region": "Gujarat",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-11",
+    "id": "94b27be8-f38e-50c6-978f-caa99baf2580",
+    "artisan_id": "478bee0b-6033-49e9-8d8d-e73184ad006e",
     "name": "Silver Jhumka Earrings",
     "category": "Jewelry",
-    "region": "Rajasthan",
-    "price": 850,
     "description": "Traditional silver jhumka earrings with delicate filigree work. Lightweight and perfect for any occasion.",
+    "price": 850,
+    "stock": 10,
     "images": [
-      "https://images.unsplash.com/photo-1663170808179-06942aa40a56?q=80&w=1080"
-    ]
+      "/images/products/clean/silver-jhumka-earrings.jpg"
+    ],
+    "region": "Rajasthan",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-12",
+    "id": "92dbe614-e148-511e-853b-de065c98595a",
+    "artisan_id": "4b825e21-36af-4f6a-94be-40128b2a9cdd",
     "name": "Block-Printed Quilt",
     "category": "Textiles",
-    "region": "Gujarat",
-    "price": 1400,
     "description": "A soft, breathable cotton quilt featuring a classic Rajasthani block-print pattern. Reversible design.",
+    "price": 1400,
+    "stock": 10,
     "images": [
-      "https://images.unsplash.com/photo-1700530501759-189d3dbfe2d0?q=80&w=1080"
-    ]
+      "/images/products/clean/block-printed-quilt.jpg"
+    ],
+    "region": "Gujarat",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-13",
+    "id": "12df86c0-4c46-5d86-a7f9-3fe121ae91df",
+    "artisan_id": "8ba17eda-6a02-47cf-984a-ec5f4aa97e67",
     "name": "Agra Marble Inlay Plate",
     "category": "Home Decor",
-    "region": "Uttar Pradesh",
-    "price": 2200,
     "description": "Taj Mahal-style stone inlay artistry (Pietra Dura). This handcrafted marble plate features intricate floral patterns inlaid with semi-precious stones, a craft perfected in Agra.",
+    "price": 2200,
+    "stock": 10,
     "images": [
-      "/images/products/marble-inlay.jpg"
-    ]
+      "/images/products/clean/agra-marble-inlay-plate.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-14",
+    "id": "345d0e56-e2b0-567b-913d-9eeaeffe5b2a",
+    "artisan_id": "4b825e21-36af-4f6a-94be-40128b2a9cdd",
     "name": "Moradabad Brass Ganesh Idol",
     "category": "Home Decor",
-    "region": "Uttar Pradesh",
-    "price": 550,
     "description": "Exquisite brass idol from the Brass City of India, Moradabad. This meticulously crafted Ganesh statue brings a golden glow of tradition to your home.",
+    "price": 550,
+    "stock": 10,
     "images": [
-      "/images/products/brassware.jpg"
-    ]
+      "/images/products/clean/moradabad-brass-ganesh-idol.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-15",
+    "id": "67ddb23a-1cab-56ce-a5d8-007cdc2ea574",
+    "artisan_id": "4b825e21-36af-4f6a-94be-40128b2a9cdd",
     "name": "Aligarh Antique Padlock",
     "category": "Home Decor",
-    "region": "Uttar Pradesh",
-    "price": 280,
     "description": "A robust and decorative antique-style padlock from Aligarh, known globally for its quality locks. Fully functional with a unique key mechanism.",
+    "price": 280,
+    "stock": 10,
     "images": [
-      "/images/products/aligarh-lock.jpg"
-    ]
+      "/images/products/clean/aligarh-antique-padlock.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-16",
+    "id": "5e44f6d7-1cc8-5edc-aa41-9a4a276641fc",
+    "artisan_id": "cb5acf04-a2ae-442d-b541-88bf66e8792e",
     "name": "Gorakhpur Terracotta Horse",
     "category": "Home Decor",
-    "region": "Uttar Pradesh",
-    "price": 700,
     "description": "UNESCO-recognized terracotta artistry from Gorakhpur. This large, ornate horse statue is handmade from natural clay and fired to perfection.",
+    "price": 700,
+    "stock": 10,
     "images": [
-      "/images/products/terracotta-horse.jpg"
-    ]
+      "/images/products/clean/gorakhpur-terracotta-horse.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-17",
+    "id": "37a779a1-1019-5360-a620-e4ecb22a0ad7",
+    "artisan_id": "4b825e21-36af-4f6a-94be-40128b2a9cdd",
     "name": "Firozabad Glass Bangle Set",
     "category": "Jewelry",
-    "region": "Uttar Pradesh",
-    "price": 120,
     "description": "A dazzling set of glass bangles from Firozabad, the glass capital of India. Features intricate hand-painted designs and vibrant colors.",
+    "price": 120,
+    "stock": 10,
     "images": [
-      "/images/products/glass-bangles.jpg"
-    ]
-  },
-  {
-    "id": "prod-18",
-    "name": "Mathura Sanjhi Art Stencil",
-    "category": "Painting",
+      "/images/products/clean/firozabad-glass-bangles.jpg"
+    ],
     "region": "Uttar Pradesh",
-    "price": 180,
-    "description": "Delicate hand-cut paper stencils of Radha-Krishna from Mathura. A traditional temple art form that creates intricate patterns on water or floors.",
-    "images": [
-      "/images/products/sanjhi-art.jpg"
-    ]
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-19",
+    "id": "a9db23aa-1685-5f58-8beb-3c1c13702b6a",
+    "artisan_id": "eefed6d6-e1ea-40f5-9fb5-c29b55daa534",
+    "name": "Sunset Tapestry",
+    "category": "Textiles",
+    "description": "A large, handwoven wall tapestry depicting a vibrant sunset over the desert. Made with naturally dyed wool and cotton fibers.",
+    "price": 1800,
+    "stock": 10,
+    "images": [
+      "/images/products/clean/sunset-tapestry.jpg"
+    ],
+    "region": "Gujarat",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
+  },
+  {
+    "id": "b9694ec4-1463-5d61-86e0-a4312966ea42",
+    "artisan_id": "478bee0b-6033-49e9-8d8d-e73184ad006e",
     "name": "Khairabad Blue Pottery Vase",
     "category": "Home Decor",
-    "region": "Uttar Pradesh",
-    "price": 420,
     "description": "Stunning blue-glazed pottery from Khairabad, Sitapur. This vase is fired at low temperatures and features Persian-influenced floral designs.",
+    "price": 420,
+    "stock": 10,
     "images": [
-      "/images/products/blue-pottery.jpg"
-    ]
+      "/images/products/clean/jaipur-blue-pottery-urn.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-20",
+    "id": "3a9c0564-2a3e-5ec4-95ef-ec7fffd10127",
+    "artisan_id": "eefed6d6-e1ea-40f5-9fb5-c29b55daa534",
     "name": "Lucknowi Chikankari Fabric",
     "category": "Textiles",
-    "region": "Uttar Pradesh",
-    "price": 950,
     "description": "The most refined hand embroidery in the world from Lucknow. Detailed thread work on fine fabric, featuring the famous \"shadow work\".",
+    "price": 950,
+    "stock": 10,
     "images": [
-      "/images/products/chikankari.jpg"
-    ]
+      "/images/products/clean/lucknowi-chikankari-fabric.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-21",
+    "id": "bc63a621-ab25-58a2-a60f-493887bb2aec",
+    "artisan_id": "8ba17eda-6a02-47cf-984a-ec5f4aa97e67",
     "name": "Saharanpur Hand-Carved Box",
     "category": "Home Decor",
-    "region": "Uttar Pradesh",
-    "price": 580,
     "description": "Export-quality carved wooden box from Saharanpur. Expertly crafted from Sheesham wood with intricate floral jaali (lattice) work.",
+    "price": 580,
+    "stock": 10,
     "images": [
-      "/images/products/wood-carving.jpg"
-    ]
+      "/images/products/clean/saharanpur-carved-wooden-box.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-22",
+    "id": "4c5d5945-ddbd-5e05-b9a1-919acd22650f",
+    "artisan_id": "edfe6af7-78aa-45ef-8e8a-86c798019e90",
     "name": "Banarasi Silk Saree",
     "category": "Textiles",
-    "region": "Uttar Pradesh",
-    "price": 3800,
     "description": "Regal, luxurious silk saree with gold zari work from the looms of Varanasi. A masterpiece of Indian weaving tradition.",
+    "price": 3800,
+    "stock": 10,
     "images": [
-      "/images/products/banarasi-silk.jpg"
-    ]
+      "/images/products/clean/banarasi-silk-saree.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-23",
+    "id": "018fefc2-38fb-5f92-8391-2fe032547753",
+    "artisan_id": "478bee0b-6033-49e9-8d8d-e73184ad006e",
+    "name": "Azure Ceramic Vase",
+    "category": "Home Decor",
+    "description": "A stunning handcrafted ceramic vase, glazed in a deep azure blue. Perfect as a centerpiece or for holding your favorite flowers. Its unique shape is inspired by the waves of the ocean.",
+    "price": 650,
+    "stock": 10,
+    "images": [
+      "/images/products/clean/azure-ceramic-vase.jpg"
+    ],
+    "region": "Rajasthan",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
+  },
+  {
+    "id": "c671d4d0-7386-5077-9f2c-ece536ceb295",
+    "artisan_id": "4b825e21-36af-4f6a-94be-40128b2a9cdd",
     "name": "Mathura Brass Chariot",
     "category": "Home Decor",
-    "region": "Uttar Pradesh",
-    "price": 1200,
     "description": "Detailed metal sculpting from Mathura. A handcrafted brass chariot featuring intricate figurines and traditional motifs, reflecting the city\\",
+    "price": 1200,
+    "stock": 10,
     "images": [
-      "/images/products/metal-sculpting.jpg"
-    ]
+      "/images/products/clean/mathura-brass-chariot.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-24",
+    "id": "f931e81a-1863-5633-85f1-b23bda1b48be",
+    "artisan_id": "478bee0b-6033-49e9-8d8d-e73184ad006e",
     "name": "Khurja Ceramic Dinner Set",
     "category": "Kitchenware",
-    "region": "Uttar Pradesh",
-    "price": 900,
     "description": "A complete hand-painted ceramic dinner set from the Ceramic City, Khurja. Food safe and microwave friendly with vibrant traditional patterns.",
+    "price": 900,
+    "stock": 10,
     "images": [
-      "/images/products/khurja-ceramics.jpg"
-    ]
+      "/images/products/clean/khurja-ceramic-dinner-set.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-25",
+    "id": "6c8da8e2-3572-5b83-b724-9043e70a88ba",
+    "artisan_id": "edfe6af7-78aa-45ef-8e8a-86c798019e90",
     "name": "Mirzapur Handloom Dhurrie",
     "category": "Home Decor",
-    "region": "Uttar Pradesh",
-    "price": 450,
     "description": "Durable and export-quality floor rug (dhurrie) woven in Mirzapur. Geometric patterns made from high-quality cotton yarn.",
+    "price": 450,
+    "stock": 10,
     "images": [
-      "/images/products/handloom-dhurries.jpg"
-    ]
+      "/images/products/clean/mirzapur-handloom-dhurrie.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-26",
+    "id": "8d2dfebc-923e-524f-908c-df295ec2bdd8",
+    "artisan_id": "eefed6d6-e1ea-40f5-9fb5-c29b55daa534",
     "name": "Bareilly Zardozi Wall Art",
     "category": "Home Decor",
-    "region": "Uttar Pradesh",
-    "price": 1600,
     "description": "Royal gold and silver threadwork (Zardozi) on velvet. This framed piece showcases the opulent embroidery style originally crafted for kings.",
+    "price": 1600,
+    "stock": 10,
     "images": [
-      "/images/products/zardozi-embroidery.jpg"
-    ]
+      "/images/products/clean/bareilly-zardozi-wall-art.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-27",
+    "id": "f10fe4ee-33ab-55a4-b74b-ef56f4d8479e",
+    "artisan_id": "edfe6af7-78aa-45ef-8e8a-86c798019e90",
     "name": "Bhadohi Hand-Knotted Carpet",
     "category": "Home Decor",
-    "region": "Uttar Pradesh",
-    "price": 4500,
     "description": "A premium wool carpet from Bhadohi, the Carpet City of India. Densely knotted by hand for unmatched durability and intricate designs.",
+    "price": 4500,
+    "stock": 10,
     "images": [
-      "/images/products/bhadohi-carpets.jpg"
-    ]
+      "/images/products/clean/bhadohi-hand-knotted-carpet.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-28",
+    "id": "d633f6a3-905c-56ab-8a5f-b4f97c9bc274",
+    "artisan_id": "4b825e21-36af-4f6a-94be-40128b2a9cdd",
     "name": "Varanasi Silver Filigree Box",
     "category": "Home Decor",
-    "region": "Uttar Pradesh",
-    "price": 1800,
     "description": "Exquisite Silver Filigree (Tarkashi) work from Varanasi. This decorative box is made from twisted silver wire, forming delicate lace-like patterns.",
+    "price": 1800,
+    "stock": 10,
     "images": [
-      "/images/products/silver-filigree.jpg"
-    ]
+      "/images/products/clean/varanasi-silver-filigree-box.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   },
   {
-    "id": "prod-29",
+    "id": "6be642c1-2c41-5f67-bf7d-8566096e4fc2",
+    "artisan_id": "510b234b-894c-4f62-a285-d496bb1e932f",
     "name": "Kanpur Leather Messenger Bag",
     "category": "Accessories",
-    "region": "Uttar Pradesh",
-    "price": 950,
     "description": "High-quality handcrafted leather messenger bag from Kanpur. Made from full-grain leather that ages beautifully, perfect for modern daily use.",
+    "price": 950,
+    "stock": 10,
     "images": [
-      "/images/products/leather-craft.jpg"
-    ]
+      "/images/products/clean/kanpur-leather-messenger-bag.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
+  },
+  {
+    "id": "f1e7f90d-8658-5657-81ad-08b5e7be52a7",
+    "artisan_id": "6b47d23c-0852-4d31-99e3-ac51403efd7e",
+    "name": "Mathura Sanjhi Art Stencil",
+    "category": "Painting",
+    "description": "Delicate hand-cut paper stencils of Radha-Krishna from Mathura. A traditional temple art form that creates intricate patterns on water or floors.",
+    "price": 180,
+    "stock": 10,
+    "images": [
+      "/images/products/clean/mathura-sanjhi-art-stencil.jpg"
+    ],
+    "region": "Uttar Pradesh",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
+  },
+  {
+    "id": "868b1dbf-370d-5142-be8c-5a80dfad818d",
+    "artisan_id": "478bee0b-6033-49e9-8d8d-e73184ad006e",
+    "name": "Earthenware Mug Set",
+    "category": "Kitchenware",
+    "description": "Set of two rustic earthenware mugs, perfect for your morning coffee or tea. The textured finish provides a comfortable, earthy grip.",
+    "price": 380,
+    "stock": 10,
+    "images": [
+      "/images/products/clean/earthenware-mug-set.jpg"
+    ],
+    "region": "Rajasthan",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
+  },
+  {
+    "id": "9502494a-7b3f-5213-8df6-4e5e5e22101f",
+    "artisan_id": "eefed6d6-e1ea-40f5-9fb5-c29b55daa534",
+    "name": "Geometric Print Scarf",
+    "category": "Accessories",
+    "description": "A lightweight cotton scarf with a hand-block printed geometric pattern. Versatile and stylish for any season.",
+    "price": 250,
+    "stock": 10,
+    "images": [
+      "/images/products/clean/geometric-print-scarf.jpg"
+    ],
+    "region": "Gujarat",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
+  },
+  {
+    "id": "0a1506ca-ede6-548b-91b8-0730277089b0",
+    "artisan_id": "cb5acf04-a2ae-442d-b541-88bf66e8792e",
+    "name": "Terracotta Planter",
+    "category": "Gardening",
+    "description": "A simple yet elegant terracotta planter with a subtle etched pattern. Includes a drainage hole and matching saucer.",
+    "price": 220,
+    "stock": 10,
+    "images": [
+      "/images/products/clean/terracotta-planter.jpg"
+    ],
+    "region": "Rajasthan",
+    "ai_insights": null,
+    "created_at": "2026-10-12T07:10:46.897217+00:00"
   }
 ]

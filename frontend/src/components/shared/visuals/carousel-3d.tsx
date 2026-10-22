@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { useRef, useState, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Image, Environment, ScrollControls, useScroll } from '@react-three/drei';
+import { Image, ScrollControls, useScroll } from '@react-three/drei';
 // @ts-ignore
 import { easing } from 'maath';
 import '@/lib/three-utils';
@@ -46,7 +46,10 @@ export const Carousel3D = () => {
                         <Carousel radius={2.2} items={carouselProducts} />
                     </Rig>
                 </ScrollControls>
-                <Environment preset="dawn" blur={0.5} />
+                <ambientLight intensity={0.8} />
+                <directionalLight position={[10, 10, 10]} intensity={1.2} />
+                <directionalLight position={[-10, 5, -5]} intensity={0.6} />
+                <hemisphereLight args={["#ffffff", "#f4ede4", 0.5]} />
             </Canvas>
             <div className="absolute bottom-4 left-0 right-0 text-center pointer-events-none text-gray-500 text-sm">
                 Scroll to explore &bull; Click to view details
