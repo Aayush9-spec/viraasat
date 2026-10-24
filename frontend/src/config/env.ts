@@ -25,10 +25,7 @@ export const env = {
     environment: getEnvVar('NEXT_PUBLIC_VERCEL_ENV', getEnvVar('NODE_ENV', 'development')),
   },
   clerk: {
-    publishableKey: getEnvVar(
-      'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
-      'pk_test_c2hpbmluZy1mcm9nLTU3LmNsZXJrLmFjY291bnRzLmRldiQ'
-    ),
+    publishableKey: getEnvVar('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', ''),
     secretKey: getEnvVar('CLERK_SECRET_KEY', ''),
     signInUrl: getEnvVar('NEXT_PUBLIC_CLERK_SIGN_IN_URL', '/sign-in'),
     signUpUrl: getEnvVar('NEXT_PUBLIC_CLERK_SIGN_UP_URL', '/sign-up'),

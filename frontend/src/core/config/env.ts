@@ -3,22 +3,6 @@
  * Validates and provides sensible fallbacks for both client-side and server-side environments.
  */
 
-// Detect and sanitize broken legacy key that points to non-existent clerk.viraasat-eta.vercel.app
-const isBrokenClerkKey = (val?: string) =>
-  Boolean(val && (val.includes("dmlyYWFzYXQtZXRh") || val.includes("Y2xlcmsudmlyYWFzYXQtZXRh")));
-
-if (typeof process !== "undefined" && process.env) {
-  if (isBrokenClerkKey(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)) {
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA";
-  }
-  if (isBrokenClerkKey(process.env.CLERK_PUBLISHABLE_KEY)) {
-    process.env.CLERK_PUBLISHABLE_KEY = "pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA";
-  }
-  if (!process.env.CLERK_SECRET_KEY || isBrokenClerkKey(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)) {
-    process.env.CLERK_SECRET_KEY = "sk_test_aJ5w4a5QHqS3UiaxXzFR64HA2fIZViqiQEM5MwZtE0";
-  }
-}
-
 function getEnvVar(key: string, fallback = ''): string {
   if (typeof process !== 'undefined' && process.env) {
     return process.env[key] ?? fallback;
@@ -41,11 +25,8 @@ export const env = {
     environment: getEnvVar('NEXT_PUBLIC_VERCEL_ENV', getEnvVar('NODE_ENV', 'development')),
   },
   clerk: {
-    publishableKey: getEnvVar(
-      'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
-      'pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA'
-    ),
-    secretKey: getEnvVar('CLERK_SECRET_KEY', 'sk_test_aJ5w4a5QHqS3UiaxXzFR64HA2fIZViqiQEM5MwZtE0'),
+    publishableKey: getEnvVar('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', ''),
+    secretKey: getEnvVar('CLERK_SECRET_KEY', ''),
     signInUrl: getEnvVar('NEXT_PUBLIC_CLERK_SIGN_IN_URL', '/sign-in'),
     signUpUrl: getEnvVar('NEXT_PUBLIC_CLERK_SIGN_UP_URL', '/sign-up'),
     signInFallbackRedirect: getEnvVar('NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL', '/'),
