@@ -36,7 +36,7 @@ ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.getenv(
         "ALLOWED_ORIGINS",
-        "http://localhost:9002,http://localhost:3000",
+        "http://localhost:9002,http://localhost:3000,https://virrasat.in,https://www.virrasat.in,https://viraasat-eta.vercel.app",
     ).split(",")
     if origin.strip()
 ]
