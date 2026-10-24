@@ -16,9 +16,10 @@ import styles from './product-card.module.css';
 interface ProductCardProps {
   product: Product;
   variant?: 'mission' | 'grid';
+  priority?: boolean;
 }
 
-export default function ProductCard({ product, variant = 'mission' }: ProductCardProps) {
+export default function ProductCard({ product, variant = 'mission', priority = false }: ProductCardProps) {
   const artisan = artisans.find(a => a.id === product.artisanId);
   const { addItem } = useCart();
   const { toast } = useToast();
@@ -76,6 +77,7 @@ export default function ProductCard({ product, variant = 'mission' }: ProductCar
               alt={product.name}
               width={400}
               height={400}
+              priority={priority}
               className={styles.productImage}
               data-ai-hint="product image"
             />

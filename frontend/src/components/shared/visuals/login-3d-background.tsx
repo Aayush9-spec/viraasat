@@ -1,137 +1,103 @@
 'use client';
 
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Sparkles, MeshDistortMaterial, Sphere, OrbitControls, Stars } from '@react-three/drei';
-import { Suspense } from 'react';
-import { useRef, memo } from 'react';
-import * as THREE from 'three';
-import { useTheme } from 'next-themes';
+import { memo } from 'react';
 
+/**
+ * Static Heritage Background for Viraasat Authentication Pages.
+ * Replaces the heavy WebGL 3D canvas with an elegant, authentic
+ * Indian craft aesthetic featuring subtle jali lattice motifs,
+ * warm ambient glow, and static artisan heritage badges.
+ */
 export const Login3DBackground = memo(function Login3DBackground() {
-    return (
-        <div className="absolute inset-0 -z-10">
-            <Canvas camera={{ position: [0, 0, 8], fov: 50 }} dpr={[1, 1.5]}>
-                <Suspense fallback={null}>
-                    <SceneContent />
-                </Suspense>
-            </Canvas>
+  return (
+    <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none select-none bg-background">
+      {/* Soft Ambient Warm Gradients */}
+      <div 
+        className="absolute -top-32 -left-32 w-96 h-96 sm:w-[500px] sm:h-[500px] rounded-full bg-gradient-to-br from-amber-500/15 via-orange-400/10 to-transparent blur-3xl"
+        aria-hidden="true" 
+      />
+      <div 
+        className="absolute -bottom-32 -right-32 w-96 h-96 sm:w-[500px] sm:h-[500px] rounded-full bg-gradient-to-tl from-amber-600/15 via-amber-400/10 to-transparent blur-3xl" 
+        aria-hidden="true" 
+      />
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-amber-400/[0.04] blur-2xl" 
+        aria-hidden="true" 
+      />
+
+      {/* Subtle Heritage Jali / Lattice SVG Pattern Overlay */}
+      <svg
+        className="absolute inset-0 w-full h-full opacity-[0.035] dark:opacity-[0.06] text-amber-950 dark:text-amber-200"
+        xmlns="http://www.w3.org/2000/svg"
+        width="100%"
+        height="100%"
+        aria-hidden="true"
+      >
+        <defs>
+          <pattern id="heritage-lattice" width="60" height="60" patternUnits="userSpaceOnUse">
+            {/* Traditional Indian Geometric Jali Motif */}
+            <circle cx="30" cy="30" r="16" fill="none" stroke="currentColor" strokeWidth="1.2" />
+            <circle cx="30" cy="30" r="8" fill="none" stroke="currentColor" strokeWidth="0.8" />
+            <path d="M0,30 L60,30 M30,0 L30,60" stroke="currentColor" strokeWidth="0.8" />
+            <path d="M0,0 L60,60 M60,0 L0,60" stroke="currentColor" strokeWidth="0.6" strokeDasharray="2,2" />
+            <rect x="22" y="22" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="0.8" transform="rotate(45 30 30)" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#heritage-lattice)" />
+      </svg>
+
+      {/* Decorative Heritage Corner Ornaments (Subtle Mandala Accents) */}
+      <div className="absolute top-8 left-8 hidden lg:block opacity-20 dark:opacity-30">
+        <HeritageMandala />
+      </div>
+      <div className="absolute bottom-8 right-8 hidden lg:block opacity-20 dark:opacity-30 rotate-180">
+        <HeritageMandala />
+      </div>
+
+      {/* Static Peripheral Heritage Badges (Desktop Viewport) */}
+      <div className="hidden xl:flex flex-col gap-3 absolute top-28 left-12 max-w-[240px]">
+        <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-card/75 dark:bg-card/60 backdrop-blur-md border border-border/80 shadow-xs text-xs font-medium text-foreground">
+          <span className="text-base">🪔</span>
+          <span>100% Direct Artisan Support</span>
         </div>
-    );
+        <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-card/75 dark:bg-card/60 backdrop-blur-md border border-border/80 shadow-xs text-xs font-medium text-foreground">
+          <span className="text-base">🏛️</span>
+          <span>GI-Certified Heritage Crafts</span>
+        </div>
+      </div>
+
+      <div className="hidden xl:flex flex-col gap-3 absolute bottom-24 right-12 max-w-[250px] text-right">
+        <div className="flex items-center justify-end gap-2.5 px-3.5 py-2 rounded-xl bg-card/75 dark:bg-card/60 backdrop-blur-md border border-border/80 shadow-xs text-xs font-medium text-foreground">
+          <span>Cryptographic Provenance</span>
+          <span className="text-base">🔒</span>
+        </div>
+        <div className="flex items-center justify-end gap-2.5 px-3.5 py-2 rounded-xl bg-card/75 dark:bg-card/60 backdrop-blur-md border border-border/80 shadow-xs text-xs font-medium text-foreground">
+          <span>12,400+ Master Craftsmen</span>
+          <span className="text-base">🇮🇳</span>
+        </div>
+      </div>
+    </div>
+  );
 });
 
-const SceneContent = memo(function SceneContent() {
-    const { theme } = useTheme();
-    // Adjusted colors for a more premium look
-    const primaryColor = theme === 'dark' ? '#fbbf24' : '#f59e0b'; // Amber
-    const secondaryColor = theme === 'dark' ? '#8b5cf6' : '#7c3aed'; // Violet (more contrast)
-    const accentColor = '#10b981'; // Emerald
-
-    return (
-        <>
-            {/* Self-contained ambient, directional and specular lighting (No external HDR network dependency) */}
-            <ambientLight intensity={theme === 'dark' ? 0.4 : 0.7} />
-            <hemisphereLight args={[primaryColor, secondaryColor, 0.5]} />
-            <directionalLight position={[10, 10, 5]} intensity={1.4} color={primaryColor} />
-            <directionalLight position={[-10, -8, -5]} intensity={0.8} color={secondaryColor} />
-            <pointLight position={[0, 0, 6]} intensity={1.0} color="#ffffff" />
-            <pointLight position={[10, 10, 10]} intensity={1.5} color={primaryColor} />
-            <pointLight position={[-10, -10, -10]} intensity={0.5} color={secondaryColor} />
-
-            {/* Background Depth */}
-            <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-
-            {/* Floating Geometric Shapes */}
-            <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-                <DistortedSphere position={[-3, 2, -2]} color={primaryColor} speed={2} distort={0.4} />
-            </Float>
-
-            <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.8}>
-                <DistortedSphere position={[3, -1, -3]} color={secondaryColor} scale={0.8} speed={3} distort={0.5} />
-            </Float>
-
-            <Float speed={2.5} rotationIntensity={0.4} floatIntensity={0.6}>
-                <DistortedSphere position={[0, 3, -4]} color={accentColor} scale={0.6} speed={1.5} distort={0.3} />
-            </Float>
-
-            {/* Rotating Rings */}
-            <RotatingRing position={[2, 1, -5]} color={primaryColor} />
-            <RotatingRing position={[-2, -2, -6]} color={secondaryColor} rotation={[Math.PI / 2, 0, 0]} />
-
-            {/* Sparkles for magic effect */}
-            <Sparkles
-                count={80}
-                scale={12}
-                size={3}
-                speed={0.4}
-                opacity={0.5}
-                color={primaryColor}
-            />
-
-            <OrbitControls
-                enableZoom={false}
-                enablePan={false}
-                autoRotate
-                autoRotateSpeed={0.5}
-                maxPolarAngle={Math.PI / 2}
-                minPolarAngle={Math.PI / 2}
-            />
-        </>
-    );
-});
-
-const DistortedSphere = memo(function DistortedSphere({
-    position,
-    color,
-    scale = 1,
-    speed = 2,
-    distort = 0.4
-}: {
-    position: [number, number, number],
-    color: string,
-    scale?: number,
-    speed?: number,
-    distort?: number
-}) {
-    return (
-        <mesh position={position} scale={scale}>
-            <sphereGeometry args={[1, 64, 64]} />
-            <MeshDistortMaterial
-                color={color}
-                attach="material"
-                distort={distort}
-                speed={speed}
-                roughness={0.1}
-                metalness={0.9}
-                transparent
-                opacity={0.8}
-            />
-        </mesh>
-    );
-});
-
-const RotatingRing = memo(function RotatingRing({ position, color, rotation = [0, 0, 0] }: { position: [number, number, number], color: string, rotation?: [number, number, number] }) {
-    const ringRef = useRef<THREE.Mesh>(null);
-
-    useFrame((state) => {
-        if (ringRef.current) {
-            ringRef.current.rotation.z += 0.005;
-            ringRef.current.rotation.x = rotation[0] + Math.sin(state.clock.elapsedTime * 0.3) * 0.1;
-            ringRef.current.rotation.y += 0.002;
-        }
-    });
-
-    return (
-        <mesh ref={ringRef} position={position} rotation={rotation}>
-            <torusGeometry args={[1.5, 0.05, 32, 100]} />
-            <meshStandardMaterial
-                color={color}
-                metalness={1}
-                roughness={0.1}
-                transparent
-                opacity={0.6}
-                emissive={color}
-                emissiveIntensity={0.2}
-            />
-        </mesh>
-    );
-});
+function HeritageMandala() {
+  return (
+    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-primary">
+      <circle cx="60" cy="60" r="50" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
+      <circle cx="60" cy="60" r="38" stroke="currentColor" strokeWidth="1" />
+      <circle cx="60" cy="60" r="24" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="60" cy="60" r="10" fill="currentColor" fillOpacity="0.1" stroke="currentColor" strokeWidth="1.5" />
+      {/* 8-petal radial florets */}
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+        <path
+          key={angle}
+          d="M60 22 C64 34, 56 34, 60 22"
+          stroke="currentColor"
+          strokeWidth="1.2"
+          fill="none"
+          transform={`rotate(${angle} 60 60)`}
+        />
+      ))}
+    </svg>
+  );
+}

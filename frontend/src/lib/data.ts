@@ -24,11 +24,34 @@ export function getLocalProducts(): Product[] {
       price: Number(r.price) || 0,
       currency: r.currency || 'INR',
       stock: r.stock ?? 10,
-      images: (r.name && r.name.toLowerCase().includes("channapatna")) 
-    ? ["/images/products/clean/channapatna-wooden-toy-train.jpg"]
-    : (Array.isArray(r.images) && r.images.length > 0 && !r.images[0].includes("1610701596007"))
-      ? r.images 
-      : ["/images/products/clean/channapatna-wooden-toy-train.jpg"],
+      images: (() => {
+        if (Array.isArray(r.images) && r.images.length > 0 && !r.images[0].includes("1610701596007")) {
+          return r.images;
+        }
+        const n = (r.name || '').toLowerCase();
+        if (n.includes('diya') || n.includes('deepam') || n.includes('lamp') || n.includes('candle')) {
+          return ['/images/products/clean/handcrafted-terracotta-diya.jpg'];
+        }
+        if (n.includes('channapatna') || n.includes('toy') || n.includes('train')) {
+          return ['/images/products/clean/channapatna-wooden-toy-train.jpg'];
+        }
+        if (n.includes('blue pottery') || n.includes('pottery') || n.includes('vase') || n.includes('urn')) {
+          return ['/images/products/clean/jaipur-blue-pottery-urn.jpg'];
+        }
+        if (n.includes('pashmina') || n.includes('shawl') || n.includes('sozni')) {
+          return ['/images/products/clean/kashmiri-sozni-pashmina-shawl.jpg'];
+        }
+        if (n.includes('brass') || n.includes('dhokra') || n.includes('metal')) {
+          return ['/images/products/clean/moradabad-brass-ganesh-idol.jpg'];
+        }
+        if (n.includes('carpet') || n.includes('dhurrie')) {
+          return ['/images/products/clean/bhadohi-hand-knotted-carpet.jpg'];
+        }
+        if (n.includes('saree') || n.includes('silk') || n.includes('chikankari')) {
+          return ['/images/products/clean/banarasi-silk-saree.jpg'];
+        }
+        return ['/images/products/clean/handcrafted-terracotta-diya.jpg'];
+      })(),
       region: r.region || 'Rajasthan',
       aiInsights: r.ai_insights || r.aiInsights,
       isActive: r.isActive ?? true,

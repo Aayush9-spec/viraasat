@@ -79,13 +79,14 @@ export function Header() {
     setLocalUser(null);
     setIsClientAuth(false);
     try {
-      if (isSignedIn && clerk?.signOut) {
-        await clerk.signOut();
+      if (clerk?.signOut) {
+        await clerk.signOut({ redirectUrl: '/' });
       }
     } catch (e) {
       console.warn('Sign out notice:', e);
     }
-    router.push('/login');
+    router.push('/');
+    router.refresh();
   };
 
   const isArtisanRole = mounted ? Boolean(isArtisan) : false;
@@ -195,57 +196,32 @@ export function Header() {
                     }}
                   >
                     <UserButton.MenuItems>
-                      {isArtisan ? (
-                        <>
-                          <UserButton.Link
-                            label="Artisan Dashboard"
-                            labelIcon={<LayoutDashboard className="h-4 w-4 text-primary" />}
-                            href="/artisan/dashboard"
-                          />
-                          <UserButton.Link
-                            label="Artisan Studio Profile"
-                            labelIcon={<User className="h-4 w-4 text-emerald-600" />}
-                            href="/artisan/profile"
-                          />
-                          <UserButton.Link
-                            label="Artisan Products"
-                            labelIcon={<Package className="h-4 w-4 text-amber-600" />}
-                            href="/artisan/products"
-                          />
-                          <UserButton.Link
-                            label="Switch to Customer Mode"
-                            labelIcon={<ShoppingBag className="h-4 w-4 text-amber-600" />}
-                            href="/switch-role?to=buyer"
-                          />
-                        </>
-                      ) : (
-                        <>
-                          <UserButton.Link
-                            label="My Dashboard"
-                            labelIcon={<LayoutDashboard className="h-4 w-4 text-primary" />}
-                            href="/dashboard"
-                          />
-                          <UserButton.Link
-                            label="Profile & Address"
-                            labelIcon={<User className="h-4 w-4 text-emerald-600" />}
-                            href="/dashboard/profile"
-                          />
-                          <UserButton.Link
-                            label="My Orders"
-                            labelIcon={<Package className="h-4 w-4 text-amber-600" />}
-                            href="/orders"
-                          />
-                          <UserButton.Link
-                            label="My Wishlist"
-                            labelIcon={<Heart className="h-4 w-4 text-rose-500" />}
-                            href="/wishlist"
-                          />
-                          <UserButton.Link
-                            label="Switch to Artisan Studio"
-                            labelIcon={<Sparkles className="h-4 w-4 text-amber-500" />}
-                            href="/switch-role?to=artisan"
-                          />
-                        </>
+                      <UserButton.Link
+                        label={isArtisan ? "Artisan Dashboard" : "My Dashboard"}
+                        labelIcon={<LayoutDashboard className="h-4 w-4 text-primary" />}
+                        href={isArtisan ? "/artisan/dashboard" : "/dashboard"}
+                      />
+                      <UserButton.Link
+                        label={isArtisan ? "Artisan Studio Profile" : "Profile & Address"}
+                        labelIcon={<User className="h-4 w-4 text-emerald-600" />}
+                        href={isArtisan ? "/artisan/profile" : "/dashboard/profile"}
+                      />
+                      <UserButton.Link
+                        label={isArtisan ? "Artisan Products" : "My Orders"}
+                        labelIcon={<Package className="h-4 w-4 text-amber-600" />}
+                        href={isArtisan ? "/artisan/products" : "/orders"}
+                      />
+                      <UserButton.Link
+                        label={isArtisan ? "Switch to Customer Mode" : "My Wishlist"}
+                        labelIcon={isArtisan ? <ShoppingBag className="h-4 w-4 text-amber-600" /> : <Heart className="h-4 w-4 text-rose-500" />}
+                        href={isArtisan ? "/switch-role?to=buyer" : "/wishlist"}
+                      />
+                      {!isArtisan && (
+                        <UserButton.Link
+                          label="Switch to Artisan Studio"
+                          labelIcon={<Sparkles className="h-4 w-4 text-amber-500" />}
+                          href="/switch-role?to=artisan"
+                        />
                       )}
                       <UserButton.Action label="manageAccount" />
                     </UserButton.MenuItems>

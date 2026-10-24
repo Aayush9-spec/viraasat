@@ -175,7 +175,33 @@ export function ProductForm({ product }: ProductFormProps) {
       const dbArtisanId = isValidUuid(artisanId) ? artisanId : '1e5f1a27-4c4e-5b84-b4dd-5227b40c755d';
 
       const numPrice = Number(values.price) || 0;
-      const finalImages = images.length > 0 ? images : ['https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300'];
+      const getContextualCraftImage = (name: string, category: string) => {
+        const n = (name || '').toLowerCase();
+        if (n.includes('diya') || n.includes('deepam') || n.includes('lamp') || n.includes('candle')) {
+          return '/images/products/clean/handcrafted-terracotta-diya.jpg';
+        }
+        if (n.includes('pottery') || n.includes('vase') || n.includes('urn') || n.includes('ceramic')) {
+          return '/images/products/clean/jaipur-blue-pottery-urn.jpg';
+        }
+        if (n.includes('channapatna') || n.includes('toy') || n.includes('train')) {
+          return '/images/products/clean/channapatna-wooden-toy-train.jpg';
+        }
+        if (n.includes('shawl') || n.includes('pashmina') || n.includes('sozni')) {
+          return '/images/products/clean/kashmiri-sozni-pashmina-shawl.jpg';
+        }
+        if (n.includes('brass') || n.includes('dhokra') || n.includes('idol') || n.includes('metal')) {
+          return '/images/products/clean/moradabad-brass-ganesh-idol.jpg';
+        }
+        if (n.includes('carpet') || n.includes('dhurrie')) {
+          return '/images/products/clean/bhadohi-hand-knotted-carpet.jpg';
+        }
+        if (n.includes('saree') || n.includes('silk') || n.includes('chikankari')) {
+          return '/images/products/clean/banarasi-silk-saree.jpg';
+        }
+        return '/images/products/clean/handcrafted-terracotta-diya.jpg';
+      };
+
+      const finalImages = images.length > 0 ? images : [getContextualCraftImage(values.name, values.category)];
 
       const supabasePayload = {
         artisan_id: dbArtisanId,

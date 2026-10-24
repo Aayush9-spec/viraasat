@@ -29,8 +29,18 @@ export default function ImageEnhancer({ images, setImages }: ImageEnhancerProps)
       setOriginalFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
-        setOriginalImage(e.target?.result as string);
+        const dataUrl = e.target?.result as string;
+        setOriginalImage(dataUrl);
         setEnhancedImage(null);
+        // Automatically add the uploaded image so it is never dropped on form submission
+        setImages((prev) => {
+          if (prev.includes(dataUrl)) return prev;
+          return [dataUrl, ...prev];
+        });
+        toast({
+          title: 'Photo Added to Creation',
+          description: 'Your craft photo has been attached. You can optionally enhance it with AI below.',
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -43,7 +53,9 @@ export default function ImageEnhancer({ images, setImages }: ImageEnhancerProps)
     try {
       const { enhancedImageUri } = await enhanceImageQuality({ imageUri: originalImage });
       setEnhancedImage(enhancedImageUri);
-      toast({ title: 'Image Enhanced!', description: 'AI has improved your image quality.' });
+      // Automatically update the images list to use the enhanced version
+      setImages((prev) => prev.map((img) => (img === originalImage ? enhancedImageUri : img)));
+      toast({ title: 'Image Enhanced!', description: 'AI has improved your craft image quality.' });
     } catch (error) {
       console.error('Image enhancement error:', error);
       toast({ variant: 'destructive', title: 'Enhancement Failed', description: 'Could not enhance image.' });
