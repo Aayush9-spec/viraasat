@@ -25,6 +25,30 @@ const WISHLIST_KEY = STORAGE_KEYS.WISHLIST;
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+async function resolveSupabaseUserId(user: { id: string; primaryEmailAddress?: { emailAddress?: string } | null }): Promise<string | null> {
+  if (UUID_REGEX.test(user.id)) return user.id;
+
+  const email = user.primaryEmailAddress?.emailAddress;
+  if (!email) return null;
+
+  try {
+    const { data } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .maybeSingle();
+
+    if (data?.id && UUID_REGEX.test(data.id)) {
+      return data.id;
+    }
+  } catch (err) {
+    console.warn('[Wishlist] Could not resolve Supabase UUID:', err);
+  }
+  return null;
+}
+
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const { isSignedIn, user } = useUser();
   const [wishlist, setWishlist] = useState<Product[]>([]);
@@ -51,51 +75,73 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   // When signed in, load wishlist from Supabase and subscribe to realtime changes.
   useEffect(() => {
     if (!isSignedIn || !user) return;
-    const userId = user.id;
 
-    async function loadWishlist() {
-      const { data, error } = await supabase
-        .from('wishlists')
-        .select('product_id, products(*)')
-        .eq('user_id', userId);
-      if (error) {
-        console.warn('[Wishlist] Load failed (RLS or network):', error.message ?? error);
+    let isMounted = true;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    async function initWishlist() {
+      if (!user) return;
+      const dbUserId = await resolveSupabaseUserId(user);
+      if (!isMounted || !dbUserId) {
+        // Fall back to local storage without throwing UUID query error
         return;
       }
-      const items = (data ?? [])
-        .map((row) => row.products as unknown as Product)
-        .filter(Boolean);
-      setWishlist(items);
+
+      async function loadWishlist() {
+        const { data, error } = await supabase
+          .from('wishlists')
+          .select('product_id, products(*)')
+          .eq('user_id', dbUserId);
+        if (error) {
+          console.warn('[Wishlist] Load failed (RLS or network):', error.message ?? error);
+          return;
+        }
+        if (!isMounted) return;
+        const items = (data ?? [])
+          .map((row) => row.products as unknown as Product)
+          .filter(Boolean);
+        setWishlist(items);
+      }
+
+      await loadWishlist();
+      if (!isMounted) return;
+
+      // Realtime subscription with unique channel ID to prevent reuse of already-subscribed channels
+      const channelName = `wishlist-${dbUserId}-${Math.random().toString(36).slice(2, 8)}`;
+      channel = supabase
+        .channel(channelName)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'wishlists', filter: `user_id=eq.${dbUserId}` },
+          () => { void loadWishlist(); },
+        )
+        .subscribe();
     }
 
-    loadWishlist();
+    void initWishlist();
 
-    // Realtime subscription
-    const channel = supabase
-      .channel(`wishlist-${userId}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'wishlists', filter: `user_id=eq.${userId}` },
-        () => { void loadWishlist(); },
-      )
-      .subscribe();
-
-    return () => { void supabase.removeChannel(channel); };
+    return () => {
+      isMounted = false;
+      if (channel) void supabase.removeChannel(channel);
+    };
   }, [isSignedIn, user]);
 
   const persistRemote = useCallback(
     async (productId: string, data: Product | null) => {
       if (!isSignedIn || !user) return;
       try {
+        const dbUserId = await resolveSupabaseUserId(user);
+        if (!dbUserId) return;
+
         if (data) {
           await supabase
             .from('wishlists')
-            .upsert({ user_id: user.id, product_id: productId });
+            .upsert({ user_id: dbUserId, product_id: productId });
         } else {
           await supabase
             .from('wishlists')
             .delete()
-            .eq('user_id', user.id)
+            .eq('user_id', dbUserId)
             .eq('product_id', productId);
         }
       } catch (error) {

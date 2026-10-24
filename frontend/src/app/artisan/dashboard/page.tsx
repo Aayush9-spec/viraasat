@@ -36,7 +36,7 @@ export default function ArtisanDashboardPage() {
       });
 
     const channel = supabase
-      .channel(`artisan-products-${artisanId}`)
+      .channel(`artisan-products-${artisanId}-${Math.random().toString(36).slice(2, 8)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
         const { data } = await supabase.from('products').select('*').or(`artisan_id.eq.${artisanId},artisan_id.eq.artisan-1`);
         if (data) setMyProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);

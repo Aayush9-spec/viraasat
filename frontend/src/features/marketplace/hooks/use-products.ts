@@ -110,7 +110,7 @@ export function useProducts(opts: { max?: number } = {}): ProductsResult {
 
     // Realtime subscription from Supabase
     const channel = supabase
-      .channel('products-list')
+      .channel(`products-list-${Math.random().toString(36).slice(2, 8)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
         refreshFromDb();
       })

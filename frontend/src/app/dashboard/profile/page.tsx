@@ -229,7 +229,7 @@ export default function CustomerProfilePage() {
     : 'Recent';
 
   return (
-    <ProtectedRoute allowedRoles={['buyer']}>
+    <ProtectedRoute allowedRoles={['buyer', 'artisan']}>
       <div className="max-w-4xl mx-auto space-y-8 p-4 sm:p-6 md:p-8">
         {/* Header Hero Banner */}
         <div className="relative rounded-3xl bg-gradient-to-r from-amber-800 via-primary to-amber-900 p-6 sm:p-8 text-white shadow-xl overflow-hidden">

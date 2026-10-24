@@ -68,7 +68,7 @@ export function useAdminDashboard() {
       });
 
     const channelProducts = supabase
-      .channel('admin-products')
+      .channel(`admin-products-${Math.random().toString(36).slice(2, 8)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
         const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
         if (data) {
@@ -85,7 +85,7 @@ export function useAdminDashboard() {
       .subscribe();
 
     const channelApps = supabase
-      .channel('admin-applications')
+      .channel(`admin-applications-${Math.random().toString(36).slice(2, 8)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'artisan_applications' }, async () => {
         const { data } = await supabase
           .from('artisan_applications')
