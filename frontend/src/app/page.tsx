@@ -350,9 +350,9 @@ export default function Marketplace() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 2xl:gap-20 items-center">
             {/* Left Headline & Pitch */}
             <div className="lg:col-span-7 xl:col-span-7 space-y-6 xl:space-y-8 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EDE2] border border-[#C59B4B]/30 text-xs text-[#8F6826] font-medium tracking-wide">
-                <span className="w-2 h-2 rounded-full bg-[#C59B4B] animate-pulse" />
-                <span className="uppercase text-[11px] font-semibold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EDE2] border border-[#C59B4B]/40 text-xs text-[#5E2C18] font-medium tracking-wide">
+                <span className="w-2 h-2 rounded-full bg-[#701D24] animate-pulse" />
+                <span className="uppercase text-[11px] font-bold text-[#5E2C18]">
                   Direct GI-Origin Craft Marketplace • Live Database Connected
                 </span>
               </div>
@@ -522,7 +522,7 @@ export default function Marketplace() {
                 <div className="absolute -top-5 -left-5 w-16 h-16 rounded-full bg-[#F3EDE2] border border-[#C59B4B]/40 flex items-center justify-center shadow-lg pointer-events-none">
                   <span className="font-serif text-xs text-[#701D24] font-bold text-center leading-none">
                     विरासत<br />
-                    <span className="text-[8px] text-[#C59B4B]">EST. 2018</span>
+                    <span className="text-[8px] text-[#701D24] font-bold">EST. 2018</span>
                   </span>
                 </div>
               </div>
@@ -535,7 +535,7 @@ export default function Marketplace() {
       <section id="heritage-crafts" className="py-20 bg-[#F3EDE2]/40 border-b border-[#E8DCCB]">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="text-center max-w-3xl mx-auto mb-14">
-            <span className="text-xs uppercase tracking-widest text-[#8F6826] font-semibold">
+            <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
               Ancestral Regional Disciplines
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-2">
@@ -679,7 +679,7 @@ export default function Marketplace() {
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
-              <span className="text-xs uppercase tracking-widest text-[#8F6826] font-semibold">
+              <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
                 Curated Guild Acquisitions
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-1">
@@ -825,10 +825,10 @@ export default function Marketplace() {
 
                       {/* Card Content */}
                       <div className="p-5">
-                        <div className="flex items-center justify-between text-[11px] text-[#8F6826] font-medium mb-1">
-                          <span className="uppercase tracking-wider font-semibold">{p.category || "Heritage"}</span>
-                          <span className="flex items-center gap-1 text-amber-600 font-bold">
-                            <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                        <div className="flex items-center justify-between text-[11px] text-[#6B480F] font-semibold mb-1">
+                          <span className="uppercase tracking-wider">{p.category || "Heritage"}</span>
+                          <span className="flex items-center gap-1 text-amber-800 font-bold">
+                            <Star className="w-3 h-3 fill-amber-700 text-amber-700" />
                             {p.rating || "4.9"}
                           </span>
                         </div>
@@ -885,7 +885,7 @@ export default function Marketplace() {
       <section id="artisan-lineage" className="py-20 bg-[#F3EDE2]/60 border-b border-[#E8DCCB] relative overflow-hidden">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs uppercase tracking-widest text-[#8F6826] font-semibold">
+            <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
               The Custodians of Culture
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-2">
@@ -1013,7 +1013,7 @@ export default function Marketplace() {
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-5 space-y-6">
-              <span className="text-xs uppercase tracking-widest text-[#8F6826] font-semibold">
+              <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
                 Ethical Craft Infrastructure
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal leading-tight">
@@ -1115,7 +1115,7 @@ export default function Marketplace() {
       <section className="py-20 bg-[#F3EDE2]/40 border-b border-[#E8DCCB]">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs uppercase tracking-widest text-[#8F6826] font-semibold">
+            <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
               Patrons of Viraasat
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-2">
@@ -1160,7 +1160,7 @@ export default function Marketplace() {
                 </div>
                 <div className="mt-6 pt-4 border-t border-[#E8DCCB]/60 flex items-center justify-between">
                   <span className="text-xs font-bold text-[#701D24]">{rev.reviewer_name}</span>
-                  <span className="text-[10px] text-stone-400">Verified Patron</span>
+                  <span className="text-[10px] text-stone-600 font-medium">Verified Patron</span>
                 </div>
               </div>
             ))}
@@ -1173,7 +1173,7 @@ export default function Marketplace() {
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="flex items-end justify-between mb-12">
             <div>
-              <span className="text-xs uppercase tracking-widest text-[#8F6826] font-semibold">
+              <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
                 Chronicles of Lost Arts
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-1">
@@ -1263,7 +1263,7 @@ export default function Marketplace() {
 
               <div className="p-6 sm:p-8 flex flex-col justify-between">
                 <div>
-                  <div className="inline-block px-2.5 py-0.5 bg-[#F3EDE2] text-[#8F6826] text-[10px] font-bold uppercase tracking-wider rounded mb-2">
+                  <div className="inline-block px-2.5 py-0.5 bg-[#F3EDE2] text-[#5E2C18] text-[10px] font-bold uppercase tracking-wider rounded mb-2">
                     {quickViewProduct.region ? `GI Tag: ${quickViewProduct.region}` : "Certified GI Origin"}
                   </div>
                   <h3 className="font-serif text-2xl font-bold text-[#221C18]">
@@ -1326,7 +1326,7 @@ export default function Marketplace() {
                 />
               </div>
               <div>
-                <span className="text-[10px] font-bold text-[#8F6826] uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-[#701D24] uppercase tracking-widest">
                   {artisanStory.location}
                 </span>
                 <h3 className="font-serif text-2xl font-bold text-[#221C18]">
