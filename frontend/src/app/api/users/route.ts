@@ -17,7 +17,7 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from('users')
-      .select('id, email, display_name as name, role');
+      .select('id, email, name:display_name, role');
 
     if (error) throw error;
 

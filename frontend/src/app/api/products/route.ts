@@ -78,11 +78,28 @@ export async function POST(req: NextRequest) {
       price: Number(body.price) || 0,
       currency: body.currency || 'INR',
       category: body.category || 'Home Decor',
-      stock: Number(body.stock) || 10,
-      images: Array.isArray(body.images) && body.images.length > 0 
-        ? body.images 
-        : ['https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300'],
-      region: body.region || 'Rajasthan',
+      images: (() => {
+        if (Array.isArray(body.images) && body.images.length > 0 && !body.images[0].includes('1610701596007')) {
+          return body.images;
+        }
+        const n = String(body.name || '').toLowerCase();
+        if (n.includes('diya') || n.includes('deepam') || n.includes('lamp')) {
+          return ['/images/products/clean/handcrafted-terracotta-diya.jpg'];
+        }
+        if (n.includes('pottery') || n.includes('vase') || n.includes('urn')) {
+          return ['/images/products/clean/jaipur-blue-pottery-urn.jpg'];
+        }
+        if (n.includes('channapatna') || n.includes('toy') || n.includes('train')) {
+          return ['/images/products/clean/channapatna-wooden-toy-train.jpg'];
+        }
+        if (n.includes('shawl') || n.includes('pashmina')) {
+          return ['/images/products/clean/kashmiri-sozni-pashmina-shawl.jpg'];
+        }
+        if (n.includes('brass') || n.includes('dhokra')) {
+          return ['/images/products/clean/moradabad-brass-ganesh-idol.jpg'];
+        }
+        return ['/images/products/clean/handcrafted-terracotta-diya.jpg'];
+      })(),
       aiInsights: body.aiInsights || body.ai_insights || null,
       isActive: true,
       status: 'active',
