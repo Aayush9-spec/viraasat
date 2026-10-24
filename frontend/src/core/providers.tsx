@@ -29,7 +29,12 @@ export function AppProviders({ children }: AppProvidersProps) {
         signUpUrl="/signup"
         signInFallbackRedirectUrl="/"
         signUpFallbackRedirectUrl="/select-role"
-        allowedRedirectOrigins={[env.app.url]}
+        allowedRedirectOrigins={[
+          env.app.url,
+          'https://virrasat.in',
+          'https://www.virrasat.in',
+          'https://viraasat-eta.vercel.app',
+        ].filter(Boolean)}
         appearance={{ theme: shadcn }}
       >
         <PWALifecycle />
