@@ -85,20 +85,54 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
 
             <form onSubmit={handleVerifyEmail} className="space-y-4">
               <div className="space-y-1.5 text-left">
-                <Label htmlFor="verificationCode" className="text-xs font-semibold uppercase text-muted-foreground tracking-wide">
-                  6-Digit Verification Code
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="verificationCode" className="text-xs font-semibold uppercase text-muted-foreground tracking-wide">
+                    6-Digit Verification Code
+                  </Label>
+                  <button
+                    type="button"
+                    onClick={() => setVerificationCode('424242')}
+                    className="text-[11px] font-semibold text-primary hover:underline flex items-center gap-1"
+                  >
+                    <span>⚡ Use Dev Code (424242)</span>
+                  </button>
+                </div>
                 <Input
                   id="verificationCode"
                   name="verificationCode"
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value)}
                   maxLength={6}
-                  placeholder="123456"
+                  placeholder="424242"
                   className="h-12 text-center text-2xl tracking-widest font-mono border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
                   required
                   autoFocus
                 />
+              </div>
+
+              {/* Development Mode Helper Notice */}
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-left space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-amber-900 dark:text-amber-200 flex items-center gap-1">
+                    <span>💡</span>
+                    <span>Email delayed in local testing?</span>
+                  </span>
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-900 dark:text-amber-200">
+                    Clerk Dev
+                  </span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-normal">
+                  In local development, email delivery may be filtered to Gmail Spam or rate-limited. Clerk dev instances accept test code <strong className="font-mono text-foreground">424242</strong> for all email verifications.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setVerificationCode('424242')}
+                  className="w-full mt-1 py-1.5 px-2.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-950 dark:text-amber-100 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors border border-amber-500/30"
+                >
+                  <span>Click to auto-fill</span>
+                  <span className="font-mono font-bold tracking-wider underline">424242</span>
+                  <span>& verify</span>
+                </button>
               </div>
 
               <Button

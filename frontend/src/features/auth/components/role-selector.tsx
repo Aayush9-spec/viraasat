@@ -40,6 +40,13 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
         },
       });
 
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('viraasat_session_role', role);
+        localStorage.setItem('viraasat_session_uid', user.id);
+        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new Event('viraasat_auth_change'));
+      }
+
       if (onRoleSelected) {
         onRoleSelected(role);
       }

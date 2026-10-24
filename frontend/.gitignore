@@ -3,3 +3,4 @@
 /.clerk/
 .vercel
 .env*
+!.env.example

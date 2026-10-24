@@ -5,7 +5,13 @@ import { AuthenticateWithRedirectCallback } from "@clerk/nextjs";
 import { STORAGE_KEYS } from "@/core/config/constants";
 
 export default function SSOCallbackPage() {
-  const [isArtisan, setIsArtisan] = useState(false);
+  const [isArtisan, setIsArtisan] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedRole = localStorage.getItem(STORAGE_KEYS.SESSION_ROLE);
+      return savedRole === "artisan";
+    }
+    return false;
+  });
 
   useEffect(() => {
     if (typeof window !== "undefined") {

@@ -52,13 +52,18 @@ export function AuthSync() {
           }).catch(() => {});
         }
 
-        // Attempt Supabase sync non-fatally (users table may have uuid constraints)
-        await supabase.from('users').upsert({
-          email,
-          display_name: name,
-          avatar_url: imageUrl,
-          role,
-        });
+        // Attempt Supabase sync non-fatally with email conflict resolution
+        if (email) {
+          await supabase.from('users').upsert(
+            {
+              email: email.toLowerCase(),
+              display_name: name,
+              avatar_url: imageUrl,
+              role,
+            },
+            { onConflict: 'email' }
+          );
+        }
       } catch (error) {
         // Fallback when Supabase is unconfigured or network is unavailable
         const cachedRole = (typeof window !== 'undefined' ? localStorage.getItem(LS_ROLE_KEY) : null) || metaRole || 'buyer';
