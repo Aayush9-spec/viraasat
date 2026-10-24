@@ -1,5 +1,28 @@
 [
   {
+    "id": "creation-1792711896618",
+    "artisanId": "artisan-1",
+    "name": "Diya",
+    "description": "Cast using the lost-wax process that predates written history, this \"Diya\" is a triumph of Indian metallurgy. The artisan sculpts every detail in beeswax, encases it in clay, then melts the wax away and pours molten metal into the void it leaves behind. What emerges is polished, chiselled, and sometimes gilded until it blazes with a presence that is both ancient and immediate — a devotional object and a work of art in equal measure.",
+    "price": 20,
+    "currency": "INR",
+    "category": "Home Decor",
+    "stock": 10,
+    "images": [
+      "/images/products/clean/handcrafted-terracotta-diya.jpg"
+    ],
+    "region": "Rajasthan",
+    "aiInsights": {
+      "keyFeatures": [],
+      "styleTags": [],
+      "useCases": []
+    },
+    "isActive": true,
+    "status": "active",
+    "createdAt": "2026-10-22T23:31:36.618Z",
+    "updatedAt": "2026-10-22T23:31:36.894Z"
+  },
+  {
     "id": "f83a21b4-5e92-4f1a-b0c3-1d89e4720999",
     "artisan_id": "4b825e21-36af-4f6a-94be-40128b2a9cdd",
     "name": "Channapatna Wooden Toy Train",
