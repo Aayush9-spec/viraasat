@@ -91,7 +91,7 @@ export function ProductDetailPageClient({
       }
     }
     fetchProvenance();
-  }, [product?.id, product?.artisanName, product?.region, backendGet]);
+  }, [product, backendGet]);
 
   const artisan = product ? artisans.find((a) => a.id === product.artisanId) : undefined;
 
@@ -108,7 +108,7 @@ export function ProductDetailPageClient({
       const hb = (seed * b.id.length * 2654435761) >>> 0;
       return ha - hb;
     }).slice(0, 4);
-  }, [product?.id, product?.category, product?.region]);
+  }, [product]);
 
   if (!product) {
     if (!hasCheckedClient) {

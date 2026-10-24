@@ -118,9 +118,9 @@ export default function CustomerProfilePage() {
 
       // Check Clerk unsafeMetadata fallback
       const meta = user.unsafeMetadata as Record<string, unknown> | undefined;
-      if (meta?.phone && !phone) setPhone(String(meta.phone));
-      if (meta?.interests && Array.isArray(meta.interests) && selectedInterests.length === 0) {
-        setSelectedInterests(meta.interests as string[]);
+      if (meta?.phone) setPhone((prev) => prev || String(meta.phone));
+      if (meta?.interests && Array.isArray(meta.interests)) {
+        setSelectedInterests((prev) => (prev.length === 0 ? (meta.interests as string[]) : prev));
       }
     }
   }, [user]);

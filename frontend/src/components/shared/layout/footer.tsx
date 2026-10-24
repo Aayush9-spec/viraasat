@@ -63,7 +63,7 @@ export function Footer() {
               </span>
             </div>
             <p className="text-stone-400 leading-relaxed max-w-sm">
-              India's foremost collective for Geographical Indication (GI) tagged handicrafts, heritage weaves, and ancestral lost arts. Directly empowering indigenous guilds with dignity and fair trade.
+              India&apos;s foremost collective for Geographical Indication (GI) tagged handicrafts, heritage weaves, and ancestral lost arts. Directly empowering indigenous guilds with dignity and fair trade.
             </p>
             <div className="flex items-center space-x-4 pt-2 text-[#E8CA82]">
               <a

@@ -180,8 +180,8 @@ export default function ArtisanProfilePage() {
 
     if (user) {
       const clerkName = user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim();
-      if (clerkName && (!artisanName || artisanName === DEFAULT_PROFILE.artisanName)) {
-        setArtisanName(clerkName);
+      if (clerkName) {
+        setArtisanName((prev) => (!prev || prev === DEFAULT_PROFILE.artisanName ? clerkName : prev));
       }
 
       const meta = user.unsafeMetadata as Record<string, unknown> | undefined;

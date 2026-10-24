@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -110,7 +110,7 @@ export function ArtisanAnalyticsDashboard() {
   }, []);
 
   // Fetch AI Demand Forecast from backend
-  const fetchDemandForecast = async (region: string, category: string) => {
+  const fetchDemandForecast = useCallback(async (region: string, category: string) => {
     setIsLoadingForecast(true);
     try {
       const data = await backend.get<any>(
@@ -149,11 +149,11 @@ export function ArtisanAnalyticsDashboard() {
     } finally {
       setIsLoadingForecast(false);
     }
-  };
+  }, [backend]);
 
   useEffect(() => {
     fetchDemandForecast(forecastRegion, forecastCategory);
-  }, [forecastRegion, forecastCategory]);
+  }, [forecastRegion, forecastCategory, fetchDemandForecast]);
 
   // Dynamic Sales Trend Data based on Time Range
   const salesTrendData = useMemo(() => {

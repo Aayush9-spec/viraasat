@@ -358,7 +358,7 @@ export default function Marketplace() {
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-serif font-bold text-[#221C18] leading-[1.12] tracking-tight">
-                Preserving <span className="text-[#8C2B2B] italic">India's Living Heritage</span>, One Handcrafted Heirloom at a Time.
+                Preserving <span className="text-[#8C2B2B] italic">India&apos;s Living Heritage</span>, One Handcrafted Heirloom at a Time.
               </h1>
 
               <p className="text-[#655B53] text-base sm:text-lg xl:text-xl max-w-2xl xl:max-w-3xl font-light leading-relaxed mx-auto lg:mx-0">
@@ -1155,7 +1155,7 @@ export default function Marketplace() {
                     ))}
                   </div>
                   <p className="font-serif text-sm italic text-[#221C18] leading-relaxed">
-                    "{rev.comment}"
+                    &ldquo;{rev.comment}&rdquo;
                   </p>
                 </div>
                 <div className="mt-6 pt-4 border-t border-[#E8DCCB]/60 flex items-center justify-between">
@@ -1340,7 +1340,7 @@ export default function Marketplace() {
 
             <div className="space-y-3 text-xs text-[#221C18]/80 leading-relaxed bg-white p-5 rounded-xl border border-[#E8DCCB]">
               <h4 className="font-serif text-sm font-bold text-[#221C18]">
-                The Master's Chronicle & Craft Ethos
+                The Master&apos;s Chronicle &amp; Craft Ethos
               </h4>
               <p>{artisanStory.bio}</p>
               <p className="text-[#655B53]">

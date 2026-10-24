@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -107,7 +107,7 @@ export default function ArtisanApplicationPage() {
     },
   });
 
-  const watchedPincode = form.watch('pincode');
+  const watchedPincode = useWatch({ control: form.control, name: 'pincode' });
 
   useEffect(() => {
     if (watchedPincode && watchedPincode.length === 6 && /^\d{6}$/.test(watchedPincode)) {
