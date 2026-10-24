@@ -732,7 +732,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
         'Please check your details and try again.';
 
       if (errObj?.code === 'dev_browser_unauthenticated') {
-        message = 'Clerk development keys detected on a custom domain. Please test locally on http://localhost:9002 or set your production Clerk keys (pk_live_...) in Vercel.';
+        message = 'Clerk development keys detected on a custom domain. Please test locally on http://localhost:9002 or set your production Clerk keys in Vercel.';
       } else if (errObj?.code === 'form_identifier_not_found') {
         message = 'No account found with this email. Click "SIGN UP" above to register.';
       } else if (errObj?.code === 'form_password_incorrect') {
@@ -1108,7 +1108,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
         toast({
           title: 'Development Instance Notice',
           description:
-            'Clerk development keys cannot authenticate browsers on custom domains. Please test on http://localhost:9002 or add your production keys (pk_live_...) in Vercel.',
+            'Clerk development keys cannot authenticate browsers on custom domains. Please test on http://localhost:9002 or add your production keys in Vercel.',
           variant: 'destructive',
         });
         return;
