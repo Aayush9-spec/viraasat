@@ -1058,35 +1058,45 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
       const primary = isSignUp ? (activeSignUp || activeSignIn) : (activeSignIn || activeSignUp);
       const secondary = isSignUp ? (activeSignIn || activeSignUp) : (activeSignUp || activeSignIn);
 
-      if (!primary || typeof primary.authenticateWithRedirect !== 'function') {
+      if (primary && typeof primary.authenticateWithRedirect === 'function') {
+        const redirectParams = {
+          strategy,
+          redirectUrl: redirectCallbackUrl,
+          redirectUrlComplete: redirectUrl,
+          continueSignUp: true,
+          continueSignIn: true,
+        };
+
+        try {
+          await primary.authenticateWithRedirect(redirectParams);
+        } catch (primaryErr: any) {
+          const primaryCode = primaryErr?.errors?.[0]?.code;
+          if (primaryCode === 'dev_browser_unauthenticated') {
+            clearTimeout(timeoutId);
+            throw primaryErr;
+          }
+
+          // Fall back to secondary resource if primary encounters a state or requirement mismatch
+          if (secondary && typeof secondary.authenticateWithRedirect === 'function') {
+            await secondary.authenticateWithRedirect(redirectParams);
+          } else {
+            clearTimeout(timeoutId);
+            throw primaryErr;
+          }
+        }
+      } else if (primary && typeof (primary as any).sso === 'function') {
+        const res = await (primary as any).sso({
+          strategy,
+          redirectUrl,
+          redirectCallbackUrl,
+        });
+
+        if (res?.error) {
+          throw res.error;
+        }
+      } else {
         clearTimeout(timeoutId);
         throw new Error('Social sign-in service is initializing. Please try again in a few seconds.');
-      }
-
-      const redirectParams = {
-        strategy,
-        redirectUrl: redirectCallbackUrl,
-        redirectUrlComplete: redirectUrl,
-        continueSignUp: true,
-        continueSignIn: true,
-      };
-
-      try {
-        await primary.authenticateWithRedirect(redirectParams);
-      } catch (primaryErr: any) {
-        const primaryCode = primaryErr?.errors?.[0]?.code;
-        if (primaryCode === 'dev_browser_unauthenticated') {
-          clearTimeout(timeoutId);
-          throw primaryErr;
-        }
-
-        // Fall back to secondary resource if primary encounters a state or requirement mismatch
-        if (secondary && typeof secondary.authenticateWithRedirect === 'function') {
-          await secondary.authenticateWithRedirect(redirectParams);
-        } else {
-          clearTimeout(timeoutId);
-          throw primaryErr;
-        }
       }
     } catch (err: unknown) {
       clearTimeout(timeoutId);
