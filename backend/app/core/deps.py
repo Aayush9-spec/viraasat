@@ -209,3 +209,16 @@ def require_role(*roles: str):
         return user
 
     return _checker
+
+
+async def get_optional_user(
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(_bearer),
+) -> Optional[Dict[str, Any]]:
+    """Attempt to decode Clerk JWT if provided; return None gracefully if missing."""
+    if not creds or not creds.credentials:
+        return None
+    try:
+        return await get_current_user(creds)
+    except Exception:
+        return None
+

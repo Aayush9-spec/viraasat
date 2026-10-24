@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.api.deps import get_current_user, require_role
+from typing import Optional
+from app.api.deps import get_current_user, get_optional_user, require_role
 from ai.pricing import PricePredictionInput, calculate_predicted_price
 from ai.forecasting import calculate_demand_forecast
 from ai.graph import traverse_knowledge_graph
@@ -134,15 +135,16 @@ async def get_evaluation_metrics(request: Request):
 
 
 
-# ---- Authenticated (blockchain reads) ----
+# ---- Blockchain Provenance & Trust Layer (Public Reads & Minting) ----
 @api_router.get("/blockchain/provenance/{product_id}")
 @_limiter.limit("60/minute")
 async def get_provenance(
     request: Request,
     product_id: str,
-    user: dict = Depends(get_current_user),
+    user: Optional[dict] = Depends(get_optional_user),
 ):
     ledger = get_existing_ledger(product_id)
+    user_id = user.get("userId") if user else "public-viewer"
     if not ledger:
         return {
             "product_id": product_id,
@@ -150,7 +152,7 @@ async def get_provenance(
             "authenticity_score": 0,
             "provenance_status": "Unverified",
             "blockchain_network": "Viraasat Ledger Mainnet (Proof of Work)",
-            "requested_by": user.get("userId"),
+            "requested_by": user_id,
         }
 
     chain_valid = is_chain_valid(ledger)
@@ -163,19 +165,18 @@ async def get_provenance(
         "authenticity_score": score,
         "provenance_status": "Verified (PoW)" if chain_valid else "Unverified",
         "blockchain_network": "Viraasat Ledger Mainnet (Proof of Work)",
-        "requested_by": user.get("userId"),
+        "requested_by": user_id,
     }
 
 
-# ---- Authenticated (blockchain writes) ----
 @api_router.post("/blockchain/generate/{product_id}")
-@_limiter.limit("20/minute")
+@_limiter.limit("30/minute")
 async def generate_provenance(
     request: Request,
     product_id: str,
-    user: dict = Depends(get_current_user),
+    user: Optional[dict] = Depends(get_optional_user),
 ):
-    """Mint (or return existing) a provenance passport for a product."""
+    """Mint (or return existing) a provenance passport for a product with SHA-256 Proof of Work."""
     existing = get_existing_ledger(product_id)
     if existing:
         chain_valid = is_chain_valid(existing)
