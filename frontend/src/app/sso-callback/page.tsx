@@ -21,7 +21,7 @@ export default function SSOCallbackPage() {
   }, []);
 
   const targetUrl = isArtisan ? "/artisan/dashboard" : "/shop";
-  const continueUrl = isArtisan ? "/signup/artisan" : "/select-role";
+  const continueUrl = isArtisan ? "/artisan/dashboard" : "/select-role";
   const loginUrl = isArtisan ? "/login/artisan" : "/login/customer";
   const signupUrl = isArtisan ? "/signup/artisan" : "/signup/customer";
 

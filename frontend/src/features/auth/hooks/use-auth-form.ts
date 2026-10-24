@@ -522,6 +522,15 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
                 strategy: 'password',
                 password,
               });
+
+              if (res?.firstFactorVerification?.status === 'failed') {
+                toast({
+                  title: 'Incorrect Password',
+                  description: 'The password entered does not match our records. Please try again or use "Sign in with Gmail OTP" below.',
+                  variant: 'destructive',
+                });
+                return;
+              }
             } catch (pwdErr: any) {
               const pCode = pwdErr?.errors?.[0]?.code;
               if (pCode === 'form_password_incorrect') {
@@ -537,7 +546,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
           } else {
             toast({
               title: 'Email Code Verification',
-              description: 'This account does not use passwords. Sending an instant 6-digit OTP to your Gmail...',
+              description: 'This account signs in via instant code. Sending a 6-digit OTP to your email...',
             });
             await handleOtpSignIn(identifier);
             return;
@@ -679,12 +688,16 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
             return;
           }
           const vErr = res?.firstFactorVerification?.error;
-          const failureMsg =
-            vErr?.longMessage ||
-            vErr?.message ||
-            (res?.status && res.status !== 'undefined'
-              ? `Sign-in status: ${res.status}. Please check your credentials.`
-              : 'Sign-in could not be completed. Please check your password or use "Sign in with Gmail OTP" below.');
+          let failureMsg = vErr?.longMessage || vErr?.message;
+          if (!failureMsg) {
+            if (res?.firstFactorVerification?.status === 'failed') {
+              failureMsg = 'Incorrect password. Please try again or use "Sign in with Gmail OTP" below.';
+            } else if (res?.status && res.status !== 'undefined') {
+              failureMsg = `Sign-in status: ${res.status}. Please check your credentials or use "Sign in with Gmail OTP" below.`;
+            } else {
+              failureMsg = 'Sign-in could not be completed. Please check your password or use "Sign in with Gmail OTP" below.';
+            }
+          }
           toast({
             title: 'Sign In Failed',
             description: failureMsg,
@@ -718,7 +731,9 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
         (err as Error)?.message ||
         'Please check your details and try again.';
 
-      if (errObj?.code === 'form_identifier_not_found') {
+      if (errObj?.code === 'dev_browser_unauthenticated') {
+        message = 'Clerk development keys detected on a custom domain. Please test locally on http://localhost:9002 or set your production Clerk keys (pk_live_...) in Vercel.';
+      } else if (errObj?.code === 'form_identifier_not_found') {
         message = 'No account found with this email. Click "SIGN UP" above to register.';
       } else if (errObj?.code === 'form_password_incorrect') {
         message = 'Incorrect password. Please try again or use "Sign In with Email OTP".';
@@ -1008,6 +1023,11 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
   const handleSocialAuth = async (strategy: 'oauth_google' | 'oauth_facebook') => {
     setIsSocialLoading(true);
 
+    // Safeguard: Ensure isSocialLoading resets after 6s if provider or browser blocks navigation
+    const timeoutId = setTimeout(() => {
+      setIsSocialLoading(false);
+    }, 6000);
+
     try {
       if (typeof window !== 'undefined') {
         localStorage.setItem(STORAGE_KEYS.SESSION_ROLE, role);
@@ -1016,6 +1036,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
 
       // If user is already authenticated in Clerk, redirect directly to their dashboard/shop
       if (clerk.session && clerk.user) {
+        clearTimeout(timeoutId);
         toast({
           title: 'Already Signed In',
           description: `Welcome back, ${clerk.user.fullName || clerk.user.primaryEmailAddress?.emailAddress}!`,
@@ -1030,39 +1051,70 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
         window.location.origin
       ).toString();
       const redirectCallbackUrl = new URL('/sso-callback', window.location.origin).toString();
-      const authResource = isSignUp ? signUp : signIn;
 
-      if (authResource && typeof authResource.authenticateWithRedirect === 'function') {
-        await authResource.authenticateWithRedirect({
-          strategy,
-          redirectUrl: redirectCallbackUrl,
-          redirectUrlComplete: redirectUrl,
-          continueSignUp: true,
-          continueSignIn: true,
-        });
-      } else if (authResource && typeof authResource.sso === 'function') {
-        const { error } = await authResource.sso({
-          strategy,
-          redirectUrl,
-          redirectCallbackUrl,
-        });
+      // Resolve primary and secondary Clerk auth resources
+      const activeSignIn = signIn || (clerk as any)?.client?.signIn;
+      const activeSignUp = signUp || (clerk as any)?.client?.signUp;
+      const primary = isSignUp ? (activeSignUp || activeSignIn) : (activeSignIn || activeSignUp);
+      const secondary = isSignUp ? (activeSignIn || activeSignUp) : (activeSignUp || activeSignIn);
 
-        if (error) {
-          throw error;
+      if (!primary || typeof primary.authenticateWithRedirect !== 'function') {
+        clearTimeout(timeoutId);
+        throw new Error('Social sign-in service is initializing. Please try again in a few seconds.');
+      }
+
+      const redirectParams = {
+        strategy,
+        redirectUrl: redirectCallbackUrl,
+        redirectUrlComplete: redirectUrl,
+        continueSignUp: true,
+        continueSignIn: true,
+      };
+
+      try {
+        await primary.authenticateWithRedirect(redirectParams);
+      } catch (primaryErr: any) {
+        const primaryCode = primaryErr?.errors?.[0]?.code;
+        if (primaryCode === 'dev_browser_unauthenticated') {
+          clearTimeout(timeoutId);
+          throw primaryErr;
         }
-      } else {
-        throw new Error('Social sign-in is temporarily unavailable. Please try again in a few seconds.');
+
+        // Fall back to secondary resource if primary encounters a state or requirement mismatch
+        if (secondary && typeof secondary.authenticateWithRedirect === 'function') {
+          await secondary.authenticateWithRedirect(redirectParams);
+        } else {
+          clearTimeout(timeoutId);
+          throw primaryErr;
+        }
       }
     } catch (err: unknown) {
+      clearTimeout(timeoutId);
       console.error('Social Auth Error:', err);
+      setIsSocialLoading(false);
        
-      const message = (err as any)?.errors?.[0]?.message || (err as Error)?.message || 'Social authentication failed';
+      const errCode = (err as any)?.errors?.[0]?.code;
+      if (errCode === 'dev_browser_unauthenticated') {
+        toast({
+          title: 'Development Instance Notice',
+          description:
+            'Clerk development keys cannot authenticate browsers on custom domains. Please test on http://localhost:9002 or add your production keys (pk_live_...) in Vercel.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const message =
+        (err as any)?.errors?.[0]?.longMessage ||
+        (err as any)?.errors?.[0]?.message ||
+        (err as Error)?.message ||
+        'Social authentication failed. Please try again.';
+
       toast({
         title: 'Authentication Failed',
         description: message,
         variant: 'destructive',
       });
-      setIsSocialLoading(false);
     }
   };
 
