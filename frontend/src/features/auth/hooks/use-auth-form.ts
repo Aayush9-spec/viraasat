@@ -26,8 +26,8 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
   const [verificationCode, setVerificationCode] = useState('');
   const [currentEmail, setCurrentEmail] = useState('');
   const [currentName, setCurrentName] = useState('');
-  const [verificationFactorType, setVerificationFactorType] = useState<'first_factor' | 'second_factor' | 'sign_up'>('first_factor');
-   
+  const [verificationFactorType, setVerificationFactorType] = useState<'first_factor' | 'second_factor' | 'sign_up' | 'reset_password'>('first_factor');
+  const [resetPassword, setResetPassword] = useState('');
   const [activeFactor, setActiveFactor] = useState<any>(null);
 
   const router = useRouter();
@@ -463,7 +463,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
           if (errCode === 'form_password_incorrect') {
             toast({
               title: 'Incorrect Password',
-              description: 'The password entered does not match our records. Please try again or use "Sign in with Gmail OTP" below.',
+              description: 'The password entered does not match our records. Please try again or click "Forgot Password?" to reset it.',
               variant: 'destructive',
             });
             return;
@@ -690,12 +690,12 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
           const vErr = res?.firstFactorVerification?.error;
           let failureMsg = vErr?.longMessage || vErr?.message;
           if (!failureMsg) {
-            if (res?.firstFactorVerification?.status === 'failed') {
-              failureMsg = 'Incorrect password. Please try again or use "Sign in with Gmail OTP" below.';
+            if (res?.firstFactorVerification?.status === 'failed' || res?.firstFactorVerification?.status === 'unverified') {
+              failureMsg = 'Incorrect password. Please try again or click "Forgot Password?" to reset it.';
             } else if (res?.status && res.status !== 'undefined') {
-              failureMsg = `Sign-in status: ${res.status}. Please check your credentials or use "Sign in with Gmail OTP" below.`;
+              failureMsg = `Sign-in status: ${res.status}. Please check your credentials.`;
             } else {
-              failureMsg = 'Sign-in could not be completed. Please check your password or use "Sign in with Gmail OTP" below.';
+              failureMsg = 'Incorrect credentials. Please check your password or click "Forgot Password?".';
             }
           }
           toast({
@@ -751,6 +751,55 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
     }
   };
 
+  const handleForgotPassword = async (emailToUse?: string) => {
+    const email = (emailToUse || currentEmail).trim();
+    if (!email) {
+      toast({
+        title: 'Email Required',
+        description: 'Please enter your email address above, then click Forgot Password.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setCurrentEmail(email);
+    setIsLoading(true);
+
+    try {
+      const activeSignIn = signIn || (clerk as any)?.client?.signIn;
+      if (!activeSignIn || typeof activeSignIn.create !== 'function') {
+        throw new Error('Sign-in service is initializing. Please try again in a moment.');
+      }
+
+      await activeSignIn.create({
+        strategy: 'reset_password_email_code',
+        identifier: email,
+      });
+
+      setVerificationFactorType('reset_password');
+      setIsVerifying(true);
+      toast({
+        title: 'Password Reset Code Sent',
+        description: `We've sent a 6-digit reset code to ${email}. Please enter it and choose your new password.`,
+      });
+    } catch (err: any) {
+      console.error('Password reset error:', err);
+      const errObj = err?.errors?.[0];
+      const message =
+        errObj?.longMessage ||
+        errObj?.message ||
+        err?.message ||
+        'Could not initiate password reset. Please check your email and try again.';
+      toast({
+        title: 'Password Reset',
+        description: message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleVerifyEmail = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     const code = verificationCode.trim();
@@ -765,7 +814,54 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
 
     setIsLoading(true);
     try {
-      if (verificationFactorType === 'sign_up') {
+      if (verificationFactorType === 'reset_password') {
+        const activeSignIn = signIn || (clerk as any)?.client?.signIn;
+        if (!activeSignIn || typeof activeSignIn.attemptFirstFactor !== 'function') {
+          throw new Error('Password reset service is not ready. Please try again.');
+        }
+
+        if (!resetPassword || resetPassword.length < 8) {
+          toast({
+            title: 'New Password Required',
+            description: 'Please enter a new password with at least 8 characters.',
+            variant: 'destructive',
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        const completeReset = await activeSignIn.attemptFirstFactor({
+          strategy: 'reset_password_email_code',
+          code,
+          password: resetPassword,
+        });
+
+        const sessionId = completeReset?.createdSessionId || activeSignIn?.createdSessionId;
+        if (completeReset?.status === 'complete' && sessionId) {
+          const setActiveFn = setSignInActive || (clerk as any)?.setActive;
+          if (setActiveFn) {
+            await setActiveFn({ session: sessionId });
+          }
+
+          if (typeof window !== 'undefined') {
+            const uid = completeReset.createdUserId || activeSignIn?.createdUserId || `user-${Date.now()}`;
+            localStorage.setItem(STORAGE_KEYS.SESSION_ROLE, role);
+            localStorage.setItem('viraasat_session_role', role);
+            localStorage.setItem('viraasat_session_uid', uid);
+            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new Event('viraasat_auth_change'));
+          }
+
+          toast({
+            title: 'Password Updated!',
+            description: 'Your password was successfully updated and you are now signed in. Welcome back!',
+          });
+          router.push(targetRedirect);
+          return;
+        } else {
+          throw new Error('Password reset could not be completed. Please check your verification code.');
+        }
+      } else if (verificationFactorType === 'sign_up') {
         const activeSignUp = signUp || (clerk as any)?.client?.signUp;
         if (!activeSignUp || typeof activeSignUp.attemptEmailAddressVerification !== 'function') {
           throw new Error('Sign-up verification service is not ready. Please try again.');
@@ -965,7 +1061,19 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
   const handleResendCode = async () => {
     setIsLoading(true);
     try {
-      if (verificationFactorType === 'sign_up') {
+      if (verificationFactorType === 'reset_password') {
+        const activeSignIn = signIn || (clerk as any)?.client?.signIn;
+        if (activeSignIn && typeof activeSignIn.create === 'function') {
+          await activeSignIn.create({
+            strategy: 'reset_password_email_code',
+            identifier: currentEmail,
+          });
+          toast({
+            title: 'Reset Code Resent',
+            description: `A new 6-digit password reset code was sent to ${currentEmail || 'your email'}.`,
+          });
+        }
+      } else if (verificationFactorType === 'sign_up') {
         const activeSignUp = signUp || (clerk as any)?.client?.signUp;
         if (activeSignUp && typeof activeSignUp.prepareEmailAddressVerification === 'function') {
           await activeSignUp.prepareEmailAddressVerification({ strategy: 'email_code' });
@@ -1145,6 +1253,10 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
     handleVerifyEmail,
     handleResendCode,
     handleOtpSignIn,
+    handleForgotPassword,
+    verificationFactorType,
+    resetPassword,
+    setResetPassword,
     isArtisan,
     role,
     handleSubmit,

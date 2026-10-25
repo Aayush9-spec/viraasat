@@ -35,6 +35,10 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
     handleVerifyEmail,
     handleResendCode,
     handleOtpSignIn,
+    handleForgotPassword,
+    verificationFactorType,
+    resetPassword,
+    setResetPassword,
     isArtisan,
     handleSubmit,
     handleSocialAuth,
@@ -73,13 +77,15 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
           <CardContent className="p-6 sm:p-8 space-y-6 text-center">
             <div className="space-y-2">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary text-xl font-bold">
-                ✉️
+                {verificationFactorType === 'reset_password' ? '🔑' : '✉️'}
               </div>
               <h3 className="text-xl font-heading font-bold text-foreground">
-                Verify Your Email
+                {verificationFactorType === 'reset_password' ? 'Reset Your Password' : 'Verify Your Email'}
               </h3>
               <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
-                We sent a 6-digit verification code to <span className="font-semibold text-foreground">{currentEmail || 'your email'}</span>.
+                {verificationFactorType === 'reset_password'
+                  ? `Enter the 6-digit reset code sent to ${currentEmail || 'your email'} and your new password below.`
+                  : `We sent a 6-digit verification code to ${currentEmail || 'your email'}.`}
               </p>
             </div>
 
@@ -109,6 +115,24 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                   autoFocus
                 />
               </div>
+
+              {verificationFactorType === 'reset_password' && (
+                <div className="space-y-1.5 text-left">
+                  <Label htmlFor="newPassword" className="text-xs font-semibold uppercase text-muted-foreground tracking-wide">
+                    New Password
+                  </Label>
+                  <Input
+                    id="newPassword"
+                    name="newPassword"
+                    type="password"
+                    value={resetPassword}
+                    onChange={(e) => setResetPassword(e.target.value)}
+                    placeholder="Minimum 8 characters"
+                    className="h-11 sm:h-12 text-base sm:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+                    required
+                  />
+                </div>
+              )}
 
               {/* Development Mode Helper Notice */}
               <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-left space-y-1.5">
@@ -140,7 +164,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                 className="w-full h-11 sm:h-12 text-sm font-bold tracking-wider rounded-xl shadow-md text-white bg-primary hover:bg-primary/90"
                 disabled={isLoading}
               >
-                {isLoading ? 'Verifying...' : 'VERIFY & CONTINUE'}
+                {isLoading ? 'Processing...' : (verificationFactorType === 'reset_password' ? 'UPDATE PASSWORD & SIGN IN' : 'VERIFY & CONTINUE')}
               </Button>
             </form>
 
@@ -226,12 +250,16 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <Label htmlFor="password" className="text-xs font-semibold uppercase text-muted-foreground tracking-wide">
-                      Password {!isSignUp && <span className="text-[10px] lowercase text-muted-foreground">(optional if using OTP)</span>}
+                      Password
                     </Label>
                     {!isSignUp && (
-                      <Link href="/sign-in" className="text-xs text-primary hover:underline font-medium">
+                      <button
+                        type="button"
+                        onClick={() => handleForgotPassword(inputEmail)}
+                        className="text-xs text-primary hover:underline font-medium cursor-pointer"
+                      >
                         Forgot Password?
-                      </Link>
+                      </button>
                     )}
                   </div>
                   <Input
@@ -240,7 +268,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                     type="password"
                     placeholder="••••••••"
                     className="h-11 sm:h-12 text-base sm:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
-                    required={isSignUp}
+                    required
                   />
                 </div>
 
@@ -291,15 +319,16 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                   </Button>
 
                   {!isSignUp && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleOtpSignIn(inputEmail)}
-                      disabled={isLoading || isSocialLoading}
-                      className="w-full h-11 text-xs sm:text-sm font-semibold border-primary/30 hover:bg-primary/10 text-primary rounded-xl transition-colors flex items-center justify-center gap-2"
-                    >
-                      <span>✉️ Sign in with Gmail OTP (Instant Code)</span>
-                    </Button>
+                    <div className="text-center pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => handleOtpSignIn(inputEmail)}
+                        disabled={isLoading || isSocialLoading}
+                        className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer py-1"
+                      >
+                        <span>Or sign in with email OTP code instead →</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               </form>
