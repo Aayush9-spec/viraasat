@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useClerk, useSignIn, useSignUp } from '@clerk/nextjs';
 import { useToast } from '@/core/hooks/use-toast';
@@ -51,7 +51,47 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
    
   const signUpHook = useSignUp() as any;
 
-  // Resolve active Clerk resources safely
+  // Track active SignIn / SignUp resource instances across async lifecycle transitions
+  const currentSignInAttemptRef = useRef<any>(null);
+  const currentSignUpAttemptRef = useRef<any>(null);
+
+  // Safely resolve the most capable SignIn object available
+  const getActiveSignIn = () => {
+    const candidates = [
+      currentSignInAttemptRef.current,
+      (clerk as any)?.client?.signIn,
+      signInHook?.signIn,
+      (clerk as any)?.signIn,
+    ].filter(Boolean);
+
+    return (
+      candidates.find((c) => typeof c.attemptFirstFactor === 'function') ||
+      candidates.find((c) => typeof c.create === 'function') ||
+      candidates.find((c) => typeof c.sso === 'function' || typeof c.authenticateWithRedirect === 'function') ||
+      candidates[0] ||
+      null
+    );
+  };
+
+  // Safely resolve the most capable SignUp object available
+  const getActiveSignUp = () => {
+    const candidates = [
+      currentSignUpAttemptRef.current,
+      (clerk as any)?.client?.signUp,
+      signUpHook?.signUp,
+      (clerk as any)?.signUp,
+    ].filter(Boolean);
+
+    return (
+      candidates.find((c) => typeof c.attemptEmailAddressVerification === 'function') ||
+      candidates.find((c) => typeof c.create === 'function') ||
+      candidates.find((c) => typeof c.sso === 'function' || typeof c.authenticateWithRedirect === 'function') ||
+      candidates[0] ||
+      null
+    );
+  };
+
+  // Resolve active Clerk resources safely for render
   const signIn = signInHook?.signIn || (clerk as any)?.client?.signIn;
    
   const setSignInActive = signInHook?.setActive || (clerk as any)?.setActive;
@@ -84,7 +124,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
     setIsLoading(true);
 
     try {
-      const activeSignIn = signIn || (clerk as any)?.client?.signIn;
+      const activeSignIn = getActiveSignIn();
       if (!activeSignIn || typeof activeSignIn.create !== 'function') {
         throw new Error('Sign-in service is initializing. Please try again in a moment.');
       }
@@ -101,7 +141,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
         if (errCode === 'strategy_for_user_invalid' && activeSignIn.status === 'needs_first_factor') {
           res = activeSignIn;
         } else if (errCode === 'form_identifier_not_found') {
-          const activeSignUp = signUp || (clerk as any)?.client?.signUp;
+          const activeSignUp = getActiveSignUp();
           if (activeSignUp) {
             // If sign-up is already in progress, prompt user for code
             if (activeSignUp.status === 'missing_requirements') {
@@ -301,7 +341,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
     try {
       if (isSignUp) {
         setVerificationFactorType('sign_up');
-        const activeSignUp = signUp || (clerk as any)?.client?.signUp;
+        const activeSignUp = getActiveSignUp();
         if (!activeSignUp) {
           throw new Error('Sign-up service is loading. Please try again in a moment.');
         }
@@ -338,6 +378,9 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
             lastName,
             unsafeMetadata: { role },
           });
+          if (res) {
+            currentSignUpAttemptRef.current = res;
+          }
         } catch (signUpErr: any) {
           const errCode = signUpErr?.errors?.[0]?.code;
           // If user already exists in Clerk, seamlessly fall back to OTP sign-in
@@ -419,7 +462,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
           });
         }
       } else {
-        const activeSignIn = signIn || (clerk as any)?.client?.signIn;
+        const activeSignIn = getActiveSignIn();
         if (!activeSignIn || typeof activeSignIn.create !== 'function') {
           throw new Error('Sign-in service is loading. Please try again in a moment.');
         }
@@ -435,12 +478,15 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
           } else {
             res = await activeSignIn.create({ identifier });
           }
+          if (res) {
+            currentSignInAttemptRef.current = res;
+          }
         } catch (signInErr: any) {
           const errCode = signInErr?.errors?.[0]?.code;
 
           // Check if user has an unverified sign-up in progress
           if (errCode === 'form_identifier_not_found') {
-            const activeSignUp = signUp || (clerk as any)?.client?.signUp;
+            const activeSignUp = getActiveSignUp();
             if (activeSignUp && activeSignUp.status === 'missing_requirements') {
               setCurrentEmail(identifier);
               setVerificationFactorType('sign_up');
@@ -766,15 +812,19 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
     setIsLoading(true);
 
     try {
-      const activeSignIn = signIn || (clerk as any)?.client?.signIn;
+      const activeSignIn = getActiveSignIn();
       if (!activeSignIn || typeof activeSignIn.create !== 'function') {
         throw new Error('Sign-in service is initializing. Please try again in a moment.');
       }
 
-      await activeSignIn.create({
+      const res = await activeSignIn.create({
         strategy: 'reset_password_email_code',
         identifier: email,
       });
+
+      if (res) {
+        currentSignInAttemptRef.current = res;
+      }
 
       setVerificationFactorType('reset_password');
       setIsVerifying(true);
@@ -815,10 +865,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
     setIsLoading(true);
     try {
       if (verificationFactorType === 'reset_password') {
-        const activeSignIn = signIn || (clerk as any)?.client?.signIn;
-        if (!activeSignIn || typeof activeSignIn.attemptFirstFactor !== 'function') {
-          throw new Error('Password reset service is not ready. Please try again.');
-        }
+        const activeSignIn = getActiveSignIn();
 
         if (!resetPassword || resetPassword.length < 8) {
           toast({
@@ -830,21 +877,59 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
           return;
         }
 
-        const completeReset = await activeSignIn.attemptFirstFactor({
-          strategy: 'reset_password_email_code',
-          code,
-          password: resetPassword,
-        });
+        let completeReset: any = null;
 
-        const sessionId = completeReset?.createdSessionId || activeSignIn?.createdSessionId;
-        if (completeReset?.status === 'complete' && sessionId) {
+        if (activeSignIn && typeof activeSignIn.attemptFirstFactor === 'function') {
+          completeReset = await activeSignIn.attemptFirstFactor({
+            strategy: 'reset_password_email_code',
+            code,
+            password: resetPassword,
+          });
+        } else if (activeSignIn?.resetPasswordEmailCode && typeof activeSignIn.resetPasswordEmailCode.verifyCode === 'function') {
+          await activeSignIn.resetPasswordEmailCode.verifyCode({ code });
+          if (typeof activeSignIn.resetPasswordEmailCode.submitPassword === 'function') {
+            completeReset = await activeSignIn.resetPasswordEmailCode.submitPassword({ password: resetPassword });
+          }
+        } else if (activeSignIn && typeof activeSignIn.resetPassword === 'function') {
+          completeReset = await activeSignIn.resetPassword({
+            password: resetPassword,
+          });
+        } else {
+          const clientSignIn = (clerk as any)?.client?.signIn;
+          if (clientSignIn && typeof clientSignIn.attemptFirstFactor === 'function') {
+            completeReset = await clientSignIn.attemptFirstFactor({
+              strategy: 'reset_password_email_code',
+              code,
+              password: resetPassword,
+            });
+          } else {
+            throw new Error('Password reset service is not ready. Please click Resend Code to request a fresh reset code.');
+          }
+        }
+
+        if (completeReset?.status === 'needs_new_password' && typeof activeSignIn?.resetPassword === 'function') {
+          completeReset = await activeSignIn.resetPassword({
+            password: resetPassword,
+          });
+        }
+
+        const sessionId =
+          completeReset?.createdSessionId ||
+          activeSignIn?.createdSessionId ||
+          (clerk as any)?.client?.signIn?.createdSessionId;
+
+        if ((completeReset?.status === 'complete' || activeSignIn?.status === 'complete') && sessionId) {
           const setActiveFn = setSignInActive || (clerk as any)?.setActive;
           if (setActiveFn) {
             await setActiveFn({ session: sessionId });
           }
 
           if (typeof window !== 'undefined') {
-            const uid = completeReset.createdUserId || activeSignIn?.createdUserId || `user-${Date.now()}`;
+            const uid =
+              completeReset?.createdUserId ||
+              activeSignIn?.createdUserId ||
+              (clerk as any)?.client?.signIn?.createdUserId ||
+              `user-${Date.now()}`;
             localStorage.setItem(STORAGE_KEYS.SESSION_ROLE, role);
             localStorage.setItem('viraasat_session_role', role);
             localStorage.setItem('viraasat_session_uid', uid);
@@ -862,7 +947,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
           throw new Error('Password reset could not be completed. Please check your verification code.');
         }
       } else if (verificationFactorType === 'sign_up') {
-        const activeSignUp = signUp || (clerk as any)?.client?.signUp;
+        const activeSignUp = getActiveSignUp();
         if (!activeSignUp || typeof activeSignUp.attemptEmailAddressVerification !== 'function') {
           throw new Error('Sign-up verification service is not ready. Please try again.');
         }
@@ -911,7 +996,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
           throw new Error('Sign-up verification was not completed. Please check your code.');
         }
       } else {
-        const activeSignIn = signIn || (clerk as any)?.client?.signIn;
+        const activeSignIn = getActiveSignIn();
         if (!activeSignIn) {
           throw new Error('Sign-in service is not ready. Please try again.');
         }
@@ -1043,11 +1128,21 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
         return;
       }
 
-      const message =
-        (err as any)?.errors?.[0]?.longMessage ||
-        (err as any)?.errors?.[0]?.message ||
+      const errObj = (err as any)?.errors?.[0];
+      let message =
+        errObj?.longMessage ||
+        errObj?.message ||
         (err as Error)?.message ||
         'Invalid verification code. Please check your code or use test code 424242 in development.';
+
+      if (errObj?.code === 'form_password_pwned') {
+        message = 'The chosen password was found in a known data breach. Please choose a different, stronger password.';
+      } else if (errObj?.code === 'form_code_incorrect') {
+        message = 'The verification code entered is incorrect. Please recheck your email for the 6-digit code or use 424242.';
+      } else if (errObj?.code === 'verification_expired') {
+        message = 'The verification code has expired. Please click "Resend Code" to receive a fresh code.';
+      }
+
       toast({
         title: 'Verification Failed',
         description: message,
@@ -1062,19 +1157,24 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
     setIsLoading(true);
     try {
       if (verificationFactorType === 'reset_password') {
-        const activeSignIn = signIn || (clerk as any)?.client?.signIn;
+        const activeSignIn = getActiveSignIn();
         if (activeSignIn && typeof activeSignIn.create === 'function') {
-          await activeSignIn.create({
+          const res = await activeSignIn.create({
             strategy: 'reset_password_email_code',
             identifier: currentEmail,
           });
+          if (res) {
+            currentSignInAttemptRef.current = res;
+          }
           toast({
             title: 'Reset Code Resent',
             description: `A new 6-digit password reset code was sent to ${currentEmail || 'your email'}.`,
           });
+          return;
         }
+        throw new Error('Sign-in service is not ready. Please try again in a moment.');
       } else if (verificationFactorType === 'sign_up') {
-        const activeSignUp = signUp || (clerk as any)?.client?.signUp;
+        const activeSignUp = getActiveSignUp();
         if (activeSignUp && typeof activeSignUp.prepareEmailAddressVerification === 'function') {
           await activeSignUp.prepareEmailAddressVerification({ strategy: 'email_code' });
           toast({
@@ -1083,7 +1183,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
           });
         }
       } else {
-        const activeSignIn = signIn || (clerk as any)?.client?.signIn;
+        const activeSignIn = getActiveSignIn();
         if (!activeSignIn) {
           throw new Error('Sign-in service is not ready.');
         }
@@ -1161,8 +1261,8 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
       const redirectCallbackUrl = new URL('/sso-callback', window.location.origin).toString();
 
       // Resolve primary and secondary Clerk auth resources
-      const activeSignIn = signIn || (clerk as any)?.client?.signIn;
-      const activeSignUp = signUp || (clerk as any)?.client?.signUp;
+      const activeSignIn = getActiveSignIn();
+      const activeSignUp = getActiveSignUp();
       const primary = isSignUp ? (activeSignUp || activeSignIn) : (activeSignIn || activeSignUp);
       const secondary = isSignUp ? (activeSignIn || activeSignUp) : (activeSignUp || activeSignIn);
 

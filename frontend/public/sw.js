@@ -47,6 +47,9 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== location.origin) return;
   if (request.url.startsWith('chrome-extension://')) return;
 
+  // Cache API only supports GET requests. Non-GET requests (POST, PUT, DELETE, etc.) are left to the browser.
+  if (request.method !== 'GET') return;
+
   // API calls: network only, never cache.
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(fetch(request));
