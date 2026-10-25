@@ -26,20 +26,49 @@ export default function ArtisanDashboardPage() {
     window.addEventListener('storage', refreshLocal);
     window.addEventListener('viraasat_products_updated', refreshLocal);
 
-    const artisanId = user?.id || 'artisan-1';
-    supabase
-      .from('products')
-      .select('*')
-      .or(`artisan_id.eq.${artisanId},artisan_id.eq.artisan-1`)
-      .then(({ data }) => {
-        if (data) setMyProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
-      });
+    const isValidUuid = (val?: string | null): boolean =>
+      typeof val === 'string' &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
 
+    let productsQuery = supabase.from('products').select('*');
+    if (isValidUuid(user?.id)) {
+      productsQuery = productsQuery.eq('artisan_id', user.id);
+    }
+
+    productsQuery
+      .then(({ data, error }) => {
+        if (!error && data) {
+          setMyProducts(
+            data.map((r) => ({
+              ...r,
+              artisanId: r.artisan_id,
+              createdAt: r.created_at,
+              aiInsights: r.ai_insights,
+            })) as Product[]
+          );
+        }
+      })
+      .catch(() => {});
+
+    const channelId = isValidUuid(user?.id) ? user.id : 'default';
     const channel = supabase
-      .channel(`artisan-products-${artisanId}-${Math.random().toString(36).slice(2, 8)}`)
+      .channel(`artisan-products-${channelId}-${Math.random().toString(36).slice(2, 8)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
-        const { data } = await supabase.from('products').select('*').or(`artisan_id.eq.${artisanId},artisan_id.eq.artisan-1`);
-        if (data) setMyProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
+        let refreshQuery = supabase.from('products').select('*');
+        if (isValidUuid(user?.id)) {
+          refreshQuery = refreshQuery.eq('artisan_id', user.id);
+        }
+        const { data, error } = await refreshQuery;
+        if (!error && data) {
+          setMyProducts(
+            data.map((r) => ({
+              ...r,
+              artisanId: r.artisan_id,
+              createdAt: r.created_at,
+              aiInsights: r.ai_insights,
+            })) as Product[]
+          );
+        }
       })
       .subscribe();
 
@@ -51,21 +80,26 @@ export default function ArtisanDashboardPage() {
       supabase
         .from('orders')
         .select('id', { count: 'exact', head: true })
-        .or(`artisan_id.eq.${artisanId},artisan_id.eq.artisan-1`)
         .in('status', ['Processing', 'Pending', 'Shipped']),
       supabase
         .from('orders')
         .select('total_amount')
-        .or(`artisan_id.eq.${artisanId},artisan_id.eq.artisan-1`)
         .gte('created_at', firstOfMonth.toISOString()),
-    ]).then(([ordersRes, revenueRes]) => {
-      if (ordersRes.count !== null) setOrdersCount(ordersRes.count);
-      if (revenueRes.data) {
-        const total = revenueRes.data.reduce((sum: number, r: { total_amount: number }) => sum + (r.total_amount || 0), 0);
-        setMonthlyRevenue(total);
-      }
-      setMetricsLoading(false);
-    }).catch(() => setMetricsLoading(false));
+    ])
+      .then(([ordersRes, revenueRes]) => {
+        if (ordersRes && !ordersRes.error && ordersRes.count !== null) {
+          setOrdersCount(ordersRes.count);
+        }
+        if (revenueRes && !revenueRes.error && revenueRes.data) {
+          const total = revenueRes.data.reduce(
+            (sum: number, r: { total_amount: number }) => sum + (r.total_amount || 0),
+            0
+          );
+          setMonthlyRevenue(total);
+        }
+        setMetricsLoading(false);
+      })
+      .catch(() => setMetricsLoading(false));
 
     return () => {
       window.removeEventListener('focus', refreshLocal);

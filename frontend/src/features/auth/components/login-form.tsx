@@ -118,19 +118,27 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
 
               {verificationFactorType === 'reset_password' && (
                 <div className="space-y-1.5 text-left">
-                  <Label htmlFor="newPassword" className="text-xs font-semibold uppercase text-muted-foreground tracking-wide">
-                    New Password
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="newPassword" className="text-xs font-semibold uppercase text-muted-foreground tracking-wide">
+                      New Password
+                    </Label>
+                    <span className="text-[11px] font-medium text-amber-700 dark:text-amber-400">
+                      Min 15 characters
+                    </span>
+                  </div>
                   <Input
                     id="newPassword"
                     name="newPassword"
                     type="password"
                     value={resetPassword}
                     onChange={(e) => setResetPassword(e.target.value)}
-                    placeholder="Minimum 8 characters"
+                    placeholder="Minimum 15 characters (e.g. secure passphrase)"
                     className="h-11 sm:h-12 text-base sm:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
                     required
                   />
+                  <p className="text-[11px] text-muted-foreground">
+                    Clerk domain security requires at least 15 characters (e.g., a memorable passphrase).
+                  </p>
                 </div>
               )}
 

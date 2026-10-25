@@ -25,16 +25,16 @@ export const env = {
     environment: getEnvVar('NEXT_PUBLIC_VERCEL_ENV', getEnvVar('NODE_ENV', 'development')),
   },
   clerk: {
-    publishableKey: getEnvVar('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', ''),
+    publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || getEnvVar('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', ''),
     secretKey: getEnvVar('CLERK_SECRET_KEY', ''),
-    signInUrl: getEnvVar('NEXT_PUBLIC_CLERK_SIGN_IN_URL', '/sign-in'),
-    signUpUrl: getEnvVar('NEXT_PUBLIC_CLERK_SIGN_UP_URL', '/sign-up'),
-    signInFallbackRedirect: getEnvVar('NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL', '/'),
-    signUpFallbackRedirect: getEnvVar('NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL', '/'),
+    signInUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || getEnvVar('NEXT_PUBLIC_CLERK_SIGN_IN_URL', '/login'),
+    signUpUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL || getEnvVar('NEXT_PUBLIC_CLERK_SIGN_UP_URL', '/signup'),
+    signInFallbackRedirect: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL || getEnvVar('NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL', '/'),
+    signUpFallbackRedirect: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL || getEnvVar('NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL', '/select-role'),
   },
   supabase: {
-    url: getEnvVar('NEXT_PUBLIC_SUPABASE_URL', ''),
-    anonKey: getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY', ''),
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mkeowabbnpyenqeiybzw.supabase.co',
+    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_4nl6lN1iiYt-N5dfu4L6qg_2y_EZNE0',
     get isConfigured(): boolean {
       return Boolean(this.url && this.anonKey);
     },

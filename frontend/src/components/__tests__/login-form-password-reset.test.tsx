@@ -96,7 +96,7 @@ describe('LoginForm password reset flow', () => {
     const codeInput = screen.getByPlaceholderText('424242');
     fireEvent.change(codeInput, { target: { value: '926194' } });
 
-    const newPasswordInput = screen.getByPlaceholderText(/Minimum 8 characters/i);
+    const newPasswordInput = screen.getByPlaceholderText(/Minimum 15 characters/i);
     fireEvent.change(newPasswordInput, { target: { value: 'SecureNewPass123!' } });
 
     // Step 3: Submit reset

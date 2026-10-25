@@ -867,10 +867,10 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
       if (verificationFactorType === 'reset_password') {
         const activeSignIn = getActiveSignIn();
 
-        if (!resetPassword || resetPassword.length < 8) {
+        if (!resetPassword || resetPassword.length < 15) {
           toast({
-            title: 'New Password Required',
-            description: 'Please enter a new password with at least 8 characters.',
+            title: 'Password Too Short',
+            description: 'Clerk domain security policy requires passwords to be at least 15 characters. Please enter a longer password or passphrase.',
             variant: 'destructive',
           });
           setIsLoading(false);
@@ -1141,6 +1141,12 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
         message = 'The verification code entered is incorrect. Please recheck your email for the 6-digit code or use 424242.';
       } else if (errObj?.code === 'verification_expired') {
         message = 'The verification code has expired. Please click "Resend Code" to receive a fresh code.';
+      } else if (
+        errObj?.code === 'form_password_length_too_short' ||
+        message.toLowerCase().includes('15 characters') ||
+        message.toLowerCase().includes('characters or more')
+      ) {
+        message = errObj?.longMessage || errObj?.message || 'Passwords must be 15 characters or more to satisfy domain security policy.';
       }
 
       toast({

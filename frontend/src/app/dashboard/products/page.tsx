@@ -41,20 +41,54 @@ export default function ProductsPage() {
   useEffect(() => {
     if (!user) return;
 
-    supabase
-      .from('products')
-      .select('*')
-      .eq('artisan_id', user.id)
+    const isValidUuid = (val?: string | null): boolean =>
+      typeof val === 'string' &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
+
+    let query = supabase.from('products').select('*');
+    if (isValidUuid(user.id)) {
+      query = query.eq('artisan_id', user.id);
+    }
+
+    query
       .order('created_at', { ascending: false })
-      .then(({ data }) => {
-        if (data) setDbProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
-      });
+      .then(({ data, error }) => {
+        if (!error && data) {
+          setDbProducts(
+            data.map((r) => ({
+              ...r,
+              artisanId: r.artisan_id,
+              createdAt: r.created_at,
+              aiInsights: r.ai_insights,
+            })) as Product[]
+          );
+        }
+      })
+      .catch(() => {});
+
+    const channelFilter = isValidUuid(user.id) ? `artisan_id=eq.${user.id}` : undefined;
+    const channelConfig = channelFilter
+      ? { event: '*', schema: 'public', table: 'products', filter: channelFilter }
+      : { event: '*', schema: 'public', table: 'products' };
 
     const channel = supabase
       .channel(`dashboard-prods-${user.id}-${Math.random().toString(36).slice(2, 8)}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'products', filter: `artisan_id=eq.${user.id}` }, async () => {
-        const { data } = await supabase.from('products').select('*').eq('artisan_id', user.id);
-        if (data) setDbProducts(data.map((r) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })) as Product[]);
+      .on('postgres_changes', channelConfig as any, async () => {
+        let refresh = supabase.from('products').select('*');
+        if (isValidUuid(user.id)) {
+          refresh = refresh.eq('artisan_id', user.id);
+        }
+        const { data, error } = await refresh;
+        if (!error && data) {
+          setDbProducts(
+            data.map((r) => ({
+              ...r,
+              artisanId: r.artisan_id,
+              createdAt: r.created_at,
+              aiInsights: r.ai_insights,
+            })) as Product[]
+          );
+        }
       })
       .subscribe();
 
