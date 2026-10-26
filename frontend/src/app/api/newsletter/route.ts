@@ -4,15 +4,7 @@ import fs from "fs";
 import path from "path";
 
 function getFilePath(): string {
-  const possiblePaths = [
-    path.resolve(process.cwd(), "../database/newsletter.json"),
-    path.resolve(process.cwd(), "database/newsletter.json"),
-    path.resolve("/Users/aayushkumarsingh/Desktop/viraasat/viraasat/database/newsletter.json"),
-  ];
-  for (const p of possiblePaths) {
-    if (fs.existsSync(p)) return p;
-  }
-  return possiblePaths[0];
+  return path.join(process.cwd(), 'database', 'newsletter.json');
 }
 
 export async function POST(req: NextRequest) {

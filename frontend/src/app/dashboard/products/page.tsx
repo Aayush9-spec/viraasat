@@ -45,14 +45,13 @@ export default function ProductsPage() {
       typeof val === 'string' &&
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
 
-    let query = supabase.from('products').select('*');
-    if (isValidUuid(user.id)) {
-      query = query.eq('artisan_id', user.id);
-    }
-
-    query
-      .order('created_at', { ascending: false })
-      .then(({ data, error }) => {
+    const loadProducts = async () => {
+      try {
+        let query = supabase.from('products').select('*');
+        if (isValidUuid(user.id)) {
+          query = query.eq('artisan_id', user.id);
+        }
+        const { data, error } = await query.order('created_at', { ascending: false });
         if (!error && data) {
           setDbProducts(
             data.map((r) => ({
@@ -63,8 +62,9 @@ export default function ProductsPage() {
             })) as Product[]
           );
         }
-      })
-      .catch(() => {});
+      } catch {}
+    };
+    void loadProducts();
 
     const channelFilter = isValidUuid(user.id) ? `artisan_id=eq.${user.id}` : undefined;
     const channelConfig = channelFilter

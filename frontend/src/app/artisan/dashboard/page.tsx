@@ -30,13 +30,14 @@ export default function ArtisanDashboardPage() {
       typeof val === 'string' &&
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
 
-    let productsQuery = supabase.from('products').select('*');
-    if (isValidUuid(user?.id)) {
-      productsQuery = productsQuery.eq('artisan_id', user.id);
-    }
-
-    productsQuery
-      .then(({ data, error }) => {
+    const userId = user?.id;
+    const loadProducts = async () => {
+      try {
+        let productsQuery = supabase.from('products').select('*');
+        if (userId && isValidUuid(userId)) {
+          productsQuery = productsQuery.eq('artisan_id', userId);
+        }
+        const { data, error } = await productsQuery;
         if (!error && data) {
           setMyProducts(
             data.map((r) => ({
@@ -47,28 +48,31 @@ export default function ArtisanDashboardPage() {
             })) as Product[]
           );
         }
-      })
-      .catch(() => {});
+      } catch {}
+    };
+    void loadProducts();
 
-    const channelId = isValidUuid(user?.id) ? user.id : 'default';
+    const channelId = userId && isValidUuid(userId) ? userId : 'default';
     const channel = supabase
       .channel(`artisan-products-${channelId}-${Math.random().toString(36).slice(2, 8)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
-        let refreshQuery = supabase.from('products').select('*');
-        if (isValidUuid(user?.id)) {
-          refreshQuery = refreshQuery.eq('artisan_id', user.id);
-        }
-        const { data, error } = await refreshQuery;
-        if (!error && data) {
-          setMyProducts(
-            data.map((r) => ({
-              ...r,
-              artisanId: r.artisan_id,
-              createdAt: r.created_at,
-              aiInsights: r.ai_insights,
-            })) as Product[]
-          );
-        }
+        try {
+          let refreshQuery = supabase.from('products').select('*');
+          if (userId && isValidUuid(userId)) {
+            refreshQuery = refreshQuery.eq('artisan_id', userId);
+          }
+          const { data, error } = await refreshQuery;
+          if (!error && data) {
+            setMyProducts(
+              data.map((r) => ({
+                ...r,
+                artisanId: r.artisan_id,
+                createdAt: r.created_at,
+                aiInsights: r.ai_insights,
+              })) as Product[]
+            );
+          }
+        } catch {}
       })
       .subscribe();
 
