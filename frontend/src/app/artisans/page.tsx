@@ -33,7 +33,7 @@ export default function ArtisansPage() {
                   src={artisan.profilePicture}
                   alt={artisan.name}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="object-cover object-[center_top] group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/50 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">

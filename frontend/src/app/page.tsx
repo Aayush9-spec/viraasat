@@ -507,7 +507,7 @@ export default function Marketplace() {
                         }
                         alt={heroArtisan.name}
                         fill
-                        className="object-cover"
+                        className="object-cover object-top"
                       />
                     </div>
                     <div>
@@ -576,7 +576,7 @@ export default function Marketplace() {
                   src="/images/artisans/ghulam-nabi.jpg"
                   alt="Kashmiri Pashmina"
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover object-[center_top] group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
               <h3 className="font-serif font-bold text-sm text-[#221C18] group-hover:text-[#701D24] transition-colors">
@@ -597,7 +597,7 @@ export default function Marketplace() {
                   src="/images/artisans/dulari-devi.jpg"
                   alt="Madhubani Paintings"
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover object-[center_top] group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
               <h3 className="font-serif font-bold text-sm text-[#221C18] group-hover:text-[#701D24] transition-colors">
@@ -958,7 +958,7 @@ export default function Marketplace() {
                 className="bg-white rounded-2xl overflow-hidden border border-[#E8DCCB] p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
-                  <div className="relative w-full h-56 rounded-xl overflow-hidden mb-5">
+                  <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden mb-5 bg-[#FAF7F2]">
                     <Image
                       src={
                         art.avatarUrl ||
@@ -966,7 +966,7 @@ export default function Marketplace() {
                       }
                       alt={art.name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="object-cover object-[center_top] group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute bottom-3 left-3 bg-[#221C18]/80 backdrop-blur-sm text-[#E8CA82] text-[11px] font-semibold px-2.5 py-1 rounded flex items-center gap-1">
                       <MapPin className="w-3 h-3" /> {art.region || "India"}
@@ -1208,7 +1208,7 @@ export default function Marketplace() {
                       src={coverImg}
                       alt={article.title}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="object-cover object-[center_top] group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-[#701D24] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">
                       {article.category || "Heritage"}
@@ -1322,7 +1322,7 @@ export default function Marketplace() {
                   src={artisanStory.img}
                   alt={artisanStory.name}
                   fill
-                  className="object-cover"
+                  className="object-cover object-[center_top]"
                 />
               </div>
               <div>
