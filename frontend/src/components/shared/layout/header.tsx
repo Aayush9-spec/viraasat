@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles, ShoppingBag } from 'lucide-react';
+import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles, ShoppingBag, Shield } from 'lucide-react';
 import { useTranslation } from '@/core/hooks/use-translation';
 import { useCart } from '@/context/cart-context';
 import { useUserRole } from '@/features/auth/hooks/use-user-role';
@@ -27,7 +27,7 @@ export function Header() {
   const { t } = useTranslation();
   const { cartItems, setCartOpen } = useCart();
   const itemCount = cartItems.length;
-  const { isArtisan } = useUserRole();
+  const { isArtisan, isAdmin } = useUserRole();
   const { isSignedIn, user } = useUser();
   const clerk = useClerk();
   const router = useRouter();
@@ -90,9 +90,10 @@ export function Header() {
   };
 
   const isArtisanRole = mounted ? Boolean(isArtisan) : false;
-  const displayName = localUser?.name || user?.fullName || (isArtisanRole ? 'Artisan Partner' : 'Valued Customer');
+  const isAdminRole = mounted ? Boolean(isAdmin || localUser?.role === 'admin') : false;
+  const displayName = localUser?.name || user?.fullName || (isAdminRole ? 'Administrator' : isArtisanRole ? 'Artisan Partner' : 'Valued Customer');
   const displayEmail = localUser?.email || user?.primaryEmailAddress?.emailAddress || 'Active Session';
-  const initialLetter = displayName ? displayName.charAt(0).toUpperCase() : (isArtisanRole ? 'A' : 'C');
+  const initialLetter = displayName ? displayName.charAt(0).toUpperCase() : (isAdminRole ? 'A' : isArtisanRole ? 'A' : 'C');
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
@@ -136,7 +137,15 @@ export function Header() {
             </div>
 
             {/* Role Switcher CTA */}
-            {mounted && isSignedIn && isArtisan ? (
+            {mounted && isAdminRole ? (
+              <Link
+                href="/admin"
+                className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-400 hover:bg-red-600 hover:text-white transition-all duration-300"
+              >
+                <Shield className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
+                <span>Admin Console</span>
+              </Link>
+            ) : mounted && isSignedIn && isArtisan ? (
               <Link
                 href="/switch-role?to=buyer"
                 className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-amber-600/40 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-600 hover:text-white transition-all duration-300"
@@ -196,6 +205,13 @@ export function Header() {
                     }}
                   >
                     <UserButton.MenuItems>
+                      {isAdminRole && (
+                        <UserButton.Link
+                          label="Admin Console"
+                          labelIcon={<Shield className="h-4 w-4 text-red-600" />}
+                          href="/admin"
+                        />
+                      )}
                       <UserButton.Link
                         label={isArtisan ? "Artisan Dashboard" : "My Dashboard"}
                         labelIcon={<LayoutDashboard className="h-4 w-4 text-primary" />}
@@ -245,13 +261,30 @@ export function Header() {
                           <p className="text-xs leading-none text-muted-foreground">{displayEmail}</p>
                           <div className="pt-1">
                             <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                              {isArtisanRole ? 'Artisan' : 'Customer'}
+                              {isAdminRole ? 'Admin' : isArtisanRole ? 'Artisan' : 'Customer'}
                             </span>
                           </div>
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      {isArtisanRole ? (
+                      {isAdminRole ? (
+                        <>
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin" className="cursor-pointer font-semibold text-red-600 flex items-center gap-1.5">
+                              <Shield className="h-4 w-4" /> Admin Console
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/artisan/dashboard" className="cursor-pointer">Artisan Dashboard</Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/shop" className="cursor-pointer">Browse Shop</Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/switch-role?to=buyer" className="cursor-pointer text-amber-600 font-medium">Switch to Customer Mode</Link>
+                          </DropdownMenuItem>
+                        </>
+                      ) : isArtisanRole ? (
                         <>
                           <DropdownMenuItem asChild>
                             <Link href="/artisan/dashboard" className="cursor-pointer">Artisan Dashboard</Link>
@@ -317,6 +350,11 @@ export function Header() {
                   </SheetHeader>
                   <div className="flex flex-col gap-6 mt-8">
                     <nav className="flex flex-col space-y-4">
+                      {isAdminRole && (
+                        <Link href="/admin" className="text-lg font-semibold text-red-600 hover:text-red-700 transition-colors flex items-center gap-2">
+                          <Shield className="h-5 w-5" /> Admin Console
+                        </Link>
+                      )}
                       <Link href="/shop" className="text-lg font-medium hover:text-primary transition-colors">
                         {t('nav.shop')}
                       </Link>

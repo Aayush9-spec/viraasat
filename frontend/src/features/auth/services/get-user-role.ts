@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser as clerkCurrentUser } from "@clerk/nextjs/server";
 import { getUser } from "@/lib/firebase/users";
 import { getServerUser } from "@/lib/firebase/server-user";
 import { UserRole } from "@/types/user";
@@ -18,7 +18,16 @@ export async function getUserRole(targetUserId?: string): Promise<UserRole | nul
     if (serverUser?.role) return serverUser.role;
 
     const userDoc = await getUser(userId);
-    return userDoc?.role || null;
+    if (userDoc?.role) return userDoc.role;
+
+    // Fall back to Clerk current user metadata (e.g. if user role was set in Clerk or Firestore is offline)
+    const clerkUser = await clerkCurrentUser();
+    if (clerkUser) {
+      const metaRole = (clerkUser.publicMetadata?.role || clerkUser.unsafeMetadata?.role) as UserRole | undefined;
+      if (metaRole) return metaRole;
+    }
+
+    return null;
   } catch (error) {
     if ((error as any)?.digest === "DYNAMIC_SERVER_USAGE" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) {
       throw error;

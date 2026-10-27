@@ -55,7 +55,7 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
         // Redirect immediately — no need to poll Firestore.
         // ProtectedRoute and useUserRole both fall back to unsafeMetadata.role
         // when Firestore is unavailable, so the page will render correctly.
-        router.push(role === 'artisan' ? '/artisan/dashboard' : '/dashboard');
+        router.push(role === 'admin' ? '/admin' : role === 'artisan' ? '/artisan/dashboard' : '/dashboard');
         router.refresh();
       }
     } catch (err: unknown) {
@@ -197,6 +197,16 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
             </Button>
           </div>
         </div>
+      </div>
+
+      <div className="text-center pt-2">
+        <button
+          type="button"
+          onClick={() => !isSubmitting && handleSelectRole('admin')}
+          className="text-xs text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1.5 underline underline-offset-4"
+        >
+          Administrator Account? Access Admin Console →
+        </button>
       </div>
     </div>
   );

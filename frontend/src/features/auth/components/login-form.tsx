@@ -13,7 +13,7 @@ import { ViraasatLogo } from '@/components/shared/visuals/viraasat-logo';
 import { useAuthForm } from '@/features/auth/hooks/use-auth-form';
 
 interface LoginFormProps {
-  userType: 'Artisan' | 'Customer';
+  userType: 'Artisan' | 'Customer' | 'Admin';
   initialIsSignUp?: boolean;
 }
 
@@ -40,6 +40,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
     resetPassword,
     setResetPassword,
     isArtisan,
+    isAdmin,
     handleSubmit,
     handleSocialAuth,
   } = useAuthForm({ userType, initialIsSignUp });
@@ -55,9 +56,11 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
         
         {/* Top Brand Banner matching Viraasat Theme */}
         <div className={`py-6 px-4 text-center text-white relative bg-gradient-to-r ${
-          isArtisan 
-            ? 'from-amber-700 via-orange-600 to-amber-800' 
-            : 'from-amber-800 via-primary to-amber-900'
+          isAdmin
+            ? 'from-slate-900 via-zinc-800 to-amber-950'
+            : isArtisan 
+              ? 'from-amber-700 via-orange-600 to-amber-800' 
+              : 'from-amber-800 via-primary to-amber-900'
         } shadow-inner`}>
           <div className="flex justify-center mb-2">
             <div className="bg-white/15 p-2.5 rounded-full backdrop-blur-md border border-white/20 shadow-sm">
@@ -68,7 +71,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
             VIRAASAT
           </h2>
           <p className="text-xs sm:text-sm text-white/90 font-medium max-w-xs mx-auto mt-0.5">
-            {isArtisan ? 'Artisan Partner Portal' : 'Preserving Heritage. Empowering Artisans.'}
+            {isAdmin ? 'Admin Console & Moderation Portal' : isArtisan ? 'Artisan Partner Portal' : 'Preserving Heritage. Empowering Artisans.'}
           </p>
         </div>
 
@@ -398,8 +401,15 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
         )}
 
         <div className="border-t border-border bg-muted/30 p-3.5 text-center">
-          <Link href={isArtisan ? "/login?role=customer" : "/login?role=artisan"} className="text-xs text-muted-foreground hover:text-primary font-medium transition-colors inline-flex items-center gap-1">
-            {isArtisan ? "Looking for Customer shopping? Switch to Customer Login →" : "Are you an Artisan partner? Switch to Artisan Studio →"}
+          <Link
+            href={isAdmin ? "/login" : isArtisan ? "/login?role=customer" : "/login?role=artisan"}
+            className="text-xs text-muted-foreground hover:text-primary font-medium transition-colors inline-flex items-center gap-1"
+          >
+            {isAdmin
+              ? "← Return to Marketplace Shopping"
+              : isArtisan
+                ? "Looking for Customer shopping? Switch to Customer Login →"
+                : "Are you an Artisan partner? Switch to Artisan Studio →"}
           </Link>
         </div>
       </Card>

@@ -31,8 +31,9 @@ function SwitchRoleContent() {
   const { user, isLoaded } = useUser();
 
   const toParam = searchParams.get('to');
-  const targetRole = toParam === 'artisan' ? 'artisan' : 'buyer';
+  const targetRole = toParam === 'admin' ? 'admin' : toParam === 'artisan' ? 'artisan' : 'buyer';
   const isTargetArtisan = targetRole === 'artisan';
+  const isTargetAdmin = targetRole === 'admin';
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -62,16 +63,24 @@ function SwitchRoleContent() {
       }).catch(() => {});
     }
 
-    const destination = isTargetArtisan ? '/artisan/dashboard' : '/shop';
+    const destination = isTargetAdmin
+      ? '/admin'
+      : isTargetArtisan
+        ? '/artisan/dashboard'
+        : '/shop';
     router.replace(destination);
-  }, [targetRole, isTargetArtisan, isLoaded, user, router]);
+  }, [targetRole, isTargetArtisan, isTargetAdmin, isLoaded, user, router]);
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-background">
       <div className="text-center space-y-3">
         <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
         <p className="text-sm text-muted-foreground font-medium">
-          {isTargetArtisan ? 'Opening Artisan Studio...' : 'Opening Customer Gallery...'}
+          {isTargetAdmin
+            ? 'Opening Admin Console...'
+            : isTargetArtisan
+              ? 'Opening Artisan Studio...'
+              : 'Opening Customer Gallery...'}
         </p>
       </div>
     </div>

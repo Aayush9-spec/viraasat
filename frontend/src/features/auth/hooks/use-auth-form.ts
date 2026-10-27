@@ -8,7 +8,7 @@ import { STORAGE_KEYS, USER_ROLES } from '@/core/config/constants';
 import type { UserRole } from '@/types/user';
 
 export interface UseAuthFormOptions {
-  userType: 'Artisan' | 'Customer';
+  userType: 'Artisan' | 'Customer' | 'Admin';
   initialIsSignUp?: boolean;
 }
 
@@ -101,12 +101,19 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
   const setSignUpActive = signUpHook?.setActive || (clerk as any)?.setActive;
 
   const isArtisan = userType === 'Artisan';
-  const role: UserRole = isArtisan ? USER_ROLES.ARTISAN : USER_ROLES.BUYER;
+  const isAdmin = userType === 'Admin';
+  const role: UserRole = isAdmin
+    ? (USER_ROLES.ADMIN as UserRole)
+    : isArtisan
+      ? USER_ROLES.ARTISAN
+      : USER_ROLES.BUYER;
   const rawRedirect =
     searchParams && typeof searchParams.get === 'function' ? searchParams.get('redirectUrl') : null;
-  const targetRedirect = isArtisan
-    ? (rawRedirect && rawRedirect.startsWith('/artisan') ? rawRedirect : '/artisan/dashboard')
-    : (rawRedirect || '/shop');
+  const targetRedirect = isAdmin
+    ? (rawRedirect || '/admin')
+    : isArtisan
+      ? (rawRedirect && rawRedirect.startsWith('/artisan') ? rawRedirect : '/artisan/dashboard')
+      : (rawRedirect || '/shop');
 
   // Dedicated helper to trigger Clerk Email OTP (First Factor)
   const handleOtpSignIn = async (emailToUse?: string) => {
@@ -1364,6 +1371,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
     resetPassword,
     setResetPassword,
     isArtisan,
+    isAdmin,
     role,
     handleSubmit,
     handleSocialAuth,

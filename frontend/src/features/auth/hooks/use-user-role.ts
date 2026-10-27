@@ -68,5 +68,6 @@ export function useUserRole() {
     loading,
     isBuyer: effectiveRole === 'buyer',
     isArtisan: effectiveRole === 'artisan',
+    isAdmin: effectiveRole === 'admin',
   };
 }
