@@ -72,8 +72,8 @@ _REGION_MULT = {
 
 
 def _current_month_idx() -> int:
-    from datetime import datetime
-    return datetime.utcnow().month - 1  # 0-based
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).month - 1  # 0-based
 
 
 def _seasonal_label(month_idx: int, category: str) -> str:

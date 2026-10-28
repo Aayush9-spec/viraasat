@@ -9,6 +9,22 @@ from ai.forecasting import calculate_demand_forecast
 from ai.fraud import ReviewAnomalyInput, detect_review_fraud
 from ai.blockchain import get_or_create_ledger, perform_transfer_ownership, is_chain_valid
 from ai.graph import traverse_knowledge_graph
+from ai.market_prediction import (
+    MarketPredictionInput,
+    predict_product_sales,
+    get_market_trends,
+    get_top_products,
+)
+from ai.recommendations import (
+    RecommendationInput,
+    get_recommendations,
+    get_similar_items,
+)
+from ai.user_identification import (
+    UserBehaviorInput,
+    score_user,
+    get_segment_overview,
+)
 
 def test_pricing():
     print("\n--- Testing Pricing Model ---")
@@ -100,6 +116,70 @@ def test_graph():
     assert result["is_simulated"] is False
     print("NetworkX Graph traversal, degree centrality, and shortest-path checks passed.")
 
+def test_market_prediction():
+    print("\n--- Testing Market Prediction Ensemble ---")
+    payload = MarketPredictionInput(
+        product_name="Kashmir Pashmina Shawl",
+        category="Textiles",
+        region="Kashmir",
+        base_price=5000.0,
+        gi_tag=True,
+        forecast_months=6,
+    )
+    res = predict_product_sales(payload)
+    print("Market forecast:", res["product_name"], "Months:", len(res["forecast"]))
+    assert res["is_simulated"] is False
+    assert len(res["forecast"]) == 6
+
+    trends = get_market_trends()
+    print("Top sellers count:", len(trends["top_sellers"]))
+    assert len(trends["top_sellers"]) > 0
+
+    top_prods = get_top_products(category="Textiles", limit=3)
+    print("Top products count:", len(top_prods["products"]))
+    assert len(top_prods["products"]) > 0
+    print("Market prediction checks passed.")
+
+def test_recommendations():
+    print("\n--- Testing Recommendation Two-Tower + Ranker ---")
+    payload = RecommendationInput(
+        user_region="Rajasthan",
+        preferred_category="Home Decor",
+        price_tier="mid",
+        gi_preference=True,
+        top_k=5,
+    )
+    res = get_recommendations(payload)
+    print("Recommendations count:", len(res["recommendations"]))
+    assert res["is_simulated"] is False
+    assert len(res["recommendations"]) == 5
+
+    sim = get_similar_items("prod-1", limit=3)
+    print("Similar items for prod-1:", len(sim["similar_items"]))
+    assert sim["is_simulated"] is False
+    assert len(sim["similar_items"]) > 0
+    print("Recommendation checks passed.")
+
+def test_user_identification():
+    print("\n--- Testing Promising User Identification ---")
+    payload = UserBehaviorInput(
+        user_id="artisan-supporter-1",
+        recency_days=7,
+        total_spend_inr=20000.0,
+        purchase_count=8,
+        is_verified=True,
+    )
+    res = score_user(payload)
+    print("User score:", res["promising_score"], "Tier:", res["segment_tier"])
+    assert res["is_simulated"] is False
+    assert 0.0 <= res["promising_score"] <= 1.0
+
+    overview = get_segment_overview()
+    print("Segments count:", len(overview["segments"]))
+    assert overview["is_simulated"] is False
+    assert len(overview["segments"]) > 0
+    print("User identification checks passed.")
+
 if __name__ == "__main__":
     try:
         test_pricing()
@@ -107,6 +187,9 @@ if __name__ == "__main__":
         test_fraud()
         test_blockchain()
         test_graph()
+        test_market_prediction()
+        test_recommendations()
+        test_user_identification()
         print("\nALL AI, BLOCKCHAIN & GRAPH CORE MODEL INTEGRATION TESTS PASSED SUCCESSFULLY!")
     except Exception as e:
         print("\nTEST FAILED:", e)
