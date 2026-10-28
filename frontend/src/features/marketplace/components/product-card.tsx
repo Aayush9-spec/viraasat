@@ -161,11 +161,15 @@ export default function ProductCard({
 
               {/* Master Artisan Attribution Chip */}
               <div className="mt-2.5 flex items-center gap-2 py-1.5 px-2 rounded-lg bg-[#FAF7F2] border border-[#E8DCCB]/60">
-                <img
-                  src={artisan?.profilePicture || '/images/artisans/bannuram-baid.jpg'}
-                  alt={artisan?.name || 'Master Artisan'}
-                  className="w-6 h-6 rounded-full object-cover border border-[#C59B4B] shrink-0"
-                />
+                <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#C59B4B] shrink-0">
+                  <Image
+                    src={artisan?.profilePicture || '/images/artisans/bannuram-baid.jpg'}
+                    alt={artisan?.name || 'Master Artisan'}
+                    fill
+                    sizes="24px"
+                    className="object-cover object-top"
+                  />
+                </div>
                 <div className="truncate">
                   <span className="text-[10px] text-[#221C18] font-bold block leading-tight truncate">
                     {artisan?.name || product.artisanName || 'Master Artisan'}

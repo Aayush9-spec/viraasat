@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
+import Image from 'next/image';
 import ProductCard from '@/features/marketplace/components/product-card';
 import { ProductService, watchCategories } from '@/features/marketplace/product-service';
 import { Button } from '@/components/ui/button';
@@ -941,14 +942,16 @@ function ShopPageContent() {
               <div className="lg:col-span-6 bg-[#F3EDE2]/60 p-6 flex flex-col justify-between">
                 <div className="space-y-4">
                   <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-white border border-[#E8DCCB] shadow-sm">
-                    <img
+                    <Image
                       src={
                         Array.isArray(inspectedProduct.images) && inspectedProduct.images[inspectedActiveImgIdx]
                           ? inspectedProduct.images[inspectedActiveImgIdx]
                           : getProductImage(inspectedProduct.images)
                       }
                       alt={inspectedProduct.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover"
                     />
                     <span className="absolute top-3 left-3 bg-[#FAF7F2]/95 backdrop-blur-md text-[#221C18] text-[10px] font-bold px-2.5 py-1 rounded-md border border-[#C59B4B] flex items-center gap-1 shadow-xs">
                       <ShieldCheck className="w-3.5 h-3.5 text-[#C59B4B]" />
@@ -964,11 +967,11 @@ function ShopPageContent() {
                           key={idx}
                           type="button"
                           onClick={() => setInspectedActiveImgIdx(idx)}
-                          className={`aspect-square rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                          className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
                             inspectedActiveImgIdx === idx ? 'border-[#C59B4B] shadow-sm' : 'border-[#E8DCCB] opacity-75 hover:opacity-100'
                           }`}
                         >
-                          <img src={img} alt={`Process ${idx + 1}`} className="w-full h-full object-cover" />
+                          <Image src={img} alt={`Process ${idx + 1}`} fill sizes="80px" className="object-cover" />
                         </button>
                       ))}
                     </div>
@@ -1013,11 +1016,15 @@ function ShopPageContent() {
 
                   {/* Master Artisan Chip */}
                   <div className="flex items-center gap-3 mt-4 p-3 rounded-xl bg-white border border-[#E8DCCB]">
-                    <img
-                      src={inspectedArtisan?.profilePicture || '/images/artisans/bannuram-baid.jpg'}
-                      alt={inspectedArtisan?.name || 'Master Artisan'}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-[#C59B4B] shrink-0"
-                    />
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-[#C59B4B] shrink-0">
+                      <Image
+                        src={inspectedArtisan?.profilePicture || '/images/artisans/bannuram-baid.jpg'}
+                        alt={inspectedArtisan?.name || 'Master Artisan'}
+                        fill
+                        sizes="48px"
+                        className="object-cover object-top"
+                      />
+                    </div>
                     <div>
                       <p className="text-xs font-bold text-[#221C18]">
                         {inspectedArtisan?.name || inspectedProduct.artisanName || 'Master Artisan'}
