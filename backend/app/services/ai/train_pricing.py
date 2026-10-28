@@ -202,9 +202,89 @@ def generate_pricing_data(num_samples=2500):
 
     return df_gen
 
+def load_kaggle_pricing_data(max_samples: int = 4000) -> pd.DataFrame:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.abspath(os.path.join(current_dir, "../../../../database/kaggle_data/flipkart_com-ecommerce_sample.csv")),
+        os.path.abspath(os.path.join(current_dir, "../../database/kaggle_data/flipkart_com-ecommerce_sample.csv")),
+        os.path.abspath(os.path.join(os.getcwd(), "database/kaggle_data/flipkart_com-ecommerce_sample.csv")),
+        os.path.abspath(os.path.join(os.getcwd(), "../database/kaggle_data/flipkart_com-ecommerce_sample.csv")),
+    ]
+    fk_path = next((c for c in candidates if os.path.exists(c)), None)
+    if not fk_path:
+        print("Notice: Kaggle Flipkart dataset not found, falling back to synthetic generator.")
+        return generate_pricing_data()
+
+    print(f"Loading real Kaggle Indian product pricing dataset from: {fk_path}")
+    df = pd.read_csv(fk_path).dropna(subset=["retail_price", "product_name"])
+    df["retail_price"] = pd.to_numeric(df["retail_price"], errors="coerce")
+    df = df[(df["retail_price"] >= 60) & (df["retail_price"] <= 35000)]
+
+    rows = []
+    for _, r in df.head(max_samples).iterrows():
+        name = str(r["product_name"])
+        desc = str(r["description"]).lower() if pd.notna(r["description"]) else ""
+        tree = str(r["product_category_tree"]).lower()
+        price = float(r["retail_price"])
+
+        # Category mapping
+        if any(k in tree or k in name.lower() for k in ["jewel", "necklace", "ring", "bangle", "earring"]):
+            cat = "Jewelry"
+        elif any(k in tree or k in name.lower() for k in ["saree", "clothing", "textile", "shawl", "fabric", "dress", "kurti"]):
+            cat = "Textiles"
+        elif any(k in tree or k in name.lower() for k in ["decor", "furniture", "painting", "cushion", "tapestry"]):
+            cat = "Home Decor"
+        elif any(k in tree or k in name.lower() for k in ["kitchen", "dining", "tableware", "cup", "mug"]):
+            cat = "Kitchenware"
+        else:
+            cat = "Accessories"
+
+        # Material detection
+        if any(w in desc or w in name.lower() for w in ["silk", "zari"]):
+            mat = "Mulberry & Tussar Silk"
+        elif any(w in desc or w in name.lower() for w in ["wool", "cashmere", "pashmina"]):
+            mat = "Changthangi Cashmere Wool"
+        elif any(w in desc or w in name.lower() for w in ["silver", "chandi"]):
+            mat = "Pure Chandi / Silver Alloy"
+        elif any(w in desc or w in name.lower() for w in ["brass", "bronze", "bell metal"]):
+            mat = "Brass & Bell Metal"
+        elif any(w in desc or w in name.lower() for w in ["wood", "sheesham", "teak"]):
+            mat = "Sheesham & Teak Wood"
+        elif any(w in desc or w in name.lower() for w in ["clay", "terracotta", "earthen"]):
+            mat = "Terracotta & Natural Clay"
+        elif any(w in desc or w in name.lower() for w in ["ceramic", "pottery"]):
+            mat = "Multani Mitti & Quartz"
+        else:
+            mat = "Khadi Cotton"
+
+        is_org = any(w in desc or w in name.lower() for w in ["handcrafted", "handmade", "natural", "organic", "cotton", "silk", "wood"])
+        labor = max(0.5, min(40.0, price / 160.0))
+        size = max(0.2, min(10.0, price / 450.0))
+        tier = detect_tier_for_desc(name, desc, cat, size, labor)
+
+        rows.append({
+            "category": cat,
+            "material": mat,
+            "labor_hours": round(labor, 1),
+            "size_sqft": round(size, 2),
+            "is_organic": is_org,
+            "tier": tier,
+            "price": price
+        })
+
+    df_kaggle = pd.DataFrame(rows)
+    real_rows = load_real_product_data()
+    if real_rows:
+        df_real = pd.DataFrame(real_rows)
+        # Combine Kaggle Indian products + live catalog products
+        df_combined = pd.concat([df_kaggle, df_real, df_real, df_real], ignore_index=True)
+        return df_combined
+
+    return df_kaggle
+
 def train_model():
-    print("Generating Indian local artisan pricing dataset...")
-    df = generate_pricing_data()
+    print("Loading Indian artisan pricing dataset from Kaggle and platform catalog...")
+    df = load_kaggle_pricing_data()
 
     X = df.drop("price", axis=1)
     y = df["price"]
@@ -220,10 +300,10 @@ def train_model():
 
     pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor),
-        ('regressor', RandomForestRegressor(n_estimators=120, max_depth=16, random_state=42))
+        ('regressor', RandomForestRegressor(n_estimators=100, max_depth=16, random_state=42))
     ])
 
-    print("Training RandomForest Regression model on Indian artisan dataset...")
+    print("Training RandomForest Regression model on real product pricing dataset...")
     pipeline.fit(X_train, y_train)
 
     # Independent evaluation on test set split
@@ -236,10 +316,6 @@ def train_model():
     print(f"Model trained successfully. Evaluation R^2 score: {r2:.4f}, MAE: Rs.{mae:.2f}, Verified Accuracy: {verified_accuracy:.4f}")
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    model_dir = os.path.abspath(os.path.join(current_dir, "../../database"))
-    os.makedirs(model_dir, exist_ok=True)
-    model_path = os.path.join(model_dir, "pricing_model.pkl")
-
     evaluation_metrics = {
         "r2_score": round(r2, 4),
         "mae": round(mae, 2),
@@ -248,12 +324,22 @@ def train_model():
         "is_evaluated": True
     }
 
-    with open(model_path, "wb") as f:
-        pickle.dump({
-            "pipeline": pipeline,
-            "evaluation_metrics": evaluation_metrics
-        }, f)
-    print(f"Pricing model saved with evaluation metrics to {model_path}")
+    save_dirs = [
+        os.path.abspath(os.path.join(current_dir, "../../database")),
+        os.path.abspath(os.path.join(current_dir, "../../../../database"))
+    ]
+    for mdir in save_dirs:
+        try:
+            os.makedirs(mdir, exist_ok=True)
+            mpath = os.path.join(mdir, "pricing_model.pkl")
+            with open(mpath, "wb") as f:
+                pickle.dump({
+                    "pipeline": pipeline,
+                    "evaluation_metrics": evaluation_metrics
+                }, f)
+            print(f"Pricing model saved with evaluation metrics to {mpath}")
+        except Exception as e:
+            print(f"Warning: Failed saving to {mdir}: {e}")
 
 if __name__ == "__main__":
     train_model()

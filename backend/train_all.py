@@ -33,7 +33,7 @@ MODELS = [
     ("Fraud Model", "ai.train_fraud", "fraud_model.pkl"),
     ("Market Prediction Model", "ai.train_market_prediction", "market_prediction_model.pkl"),
     ("Recommendation Model", "ai.train_recommendations", "recommendation_model.pkl"),
-    ("User Identification Model", "ai.train_user_identification", "train_model"),
+    ("User Identification Model", "ai.train_user_identification", "user_identification_model.pkl"),
 ]
 
 

@@ -92,15 +92,54 @@ def _year_trend(year: int) -> float:
     return 1.0 + (year - 2023) * 0.085
 
 
+def load_kaggle_market_weights():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.abspath(os.path.join(current_dir, "../../../../database/kaggle_data")),
+        os.path.abspath(os.path.join(current_dir, "../../database/kaggle_data")),
+        os.path.abspath(os.path.join(os.getcwd(), "database/kaggle_data")),
+        os.path.abspath(os.path.join(os.getcwd(), "../database/kaggle_data")),
+    ]
+    kdir = next((c for c in candidates if os.path.exists(os.path.join(c, "List of Orders.csv"))), None)
+    if not kdir:
+        return {}, {}
+    try:
+        orders = pd.read_csv(os.path.join(kdir, "List of Orders.csv"))
+        details = pd.read_csv(os.path.join(kdir, "Order Details.csv"))
+        merged = pd.merge(orders, details, on="Order ID")
+        merged["date"] = pd.to_datetime(merged["Order Date"], format="%d-%m-%Y", errors="coerce")
+        merged["month"] = merged["date"].dt.strftime("%b")
+        merged["State"] = merged["State"].str.strip().replace({
+            "Jammu and Kashmir": "Kashmir",
+            "Kerala ": "Kerala",
+            "Delhi": "Uttar Pradesh"
+        })
+        month_w = merged.groupby("month")["Quantity"].sum()
+        month_weights = (month_w / max(1.0, month_w.mean())).to_dict()
+        state_w = merged.groupby("State")["Quantity"].sum()
+        state_weights = (state_w / max(1.0, state_w.mean())).to_dict()
+        return month_weights, state_weights
+    except Exception as e:
+        print(f"Notice: Failed loading Kaggle weights: {e}")
+        return {}, {}
+
 def generate_market_dataset() -> pd.DataFrame:
     np.random.seed(42)
-    rows = []
+    k_month_w, k_state_w = load_kaggle_market_weights()
+    if k_month_w:
+        print("Incorporating empirical Kaggle transaction weights into market forecasting dataset...")
 
+    rows = []
     for year in range(2023, 2026):
         for month_idx, month in enumerate(MONTHS):
             for prod in PRODUCTS:
                 rm = REGION_MULT.get(prod["region"], 1.0)
                 sm = SEASONAL.get(prod["category"], [1.0] * 12)[month_idx]
+                if month in k_month_w:
+                    sm = 0.5 * sm + 0.5 * float(k_month_w[month])
+                if prod["region"] in k_state_w:
+                    rm = 0.5 * rm + 0.5 * float(k_state_w[prod["region"]])
+
                 trend = _year_trend(year)
                 noise = np.random.uniform(0.92, 1.08)
 
@@ -488,15 +527,24 @@ def train_model():
         "evaluation_metrics": evaluation_metrics,
     }
 
-    print(f"\n[5/5] Saving model artifact to {model_path} ...")
-    with open(model_path, "wb") as f:
-        pickle.dump(artifact, f)
+    save_dirs = [
+        os.path.abspath(os.path.join(current_dir, "../../database")),
+        os.path.abspath(os.path.join(current_dir, "../../../../database"))
+    ]
+    for sdir in save_dirs:
+        try:
+            os.makedirs(sdir, exist_ok=True)
+            mpath = os.path.join(sdir, "market_prediction_model.pkl")
+            with open(mpath, "wb") as f:
+                pickle.dump(artifact, f)
+            print(f"Market prediction model saved to {mpath}")
+        except Exception as e:
+            print(f"Warning: Failed saving to {sdir}: {e}")
 
     print("\n" + "=" * 60)
     print(f"Market Prediction Model trained and saved successfully.")
     print(f"  Ensemble accuracy : {verified_accuracy * 100:.1f}%")
     print(f"  GBT revenue R2    : {r2_gbt_rev:.4f}")
-    print(f"  Artifact path     : {model_path}")
     print("=" * 60)
 
 

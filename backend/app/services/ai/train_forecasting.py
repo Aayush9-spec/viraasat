@@ -63,9 +63,89 @@ def generate_synthetic_data():
                     
     return pd.DataFrame(data)
 
+def load_kaggle_demand_data():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.abspath(os.path.join(current_dir, "../../../../database/kaggle_data")),
+        os.path.abspath(os.path.join(current_dir, "../../database/kaggle_data")),
+        os.path.abspath(os.path.join(os.getcwd(), "database/kaggle_data")),
+        os.path.abspath(os.path.join(os.getcwd(), "../database/kaggle_data")),
+    ]
+    kdir = next((c for c in candidates if os.path.exists(os.path.join(c, "List of Orders.csv"))), None)
+    
+    if not kdir:
+        print("Notice: Kaggle orders dataset not found, falling back to synthetic generator.")
+        return generate_synthetic_data()
+
+    print(f"Loading real Kaggle Indian e-commerce order transactions from: {kdir}")
+    orders = pd.read_csv(os.path.join(kdir, "List of Orders.csv"))
+    details = pd.read_csv(os.path.join(kdir, "Order Details.csv"))
+    merged = pd.merge(orders, details, on="Order ID")
+    
+    merged["State"] = merged["State"].str.strip().replace({
+        "Jammu and Kashmir": "Kashmir",
+        "Kerala ": "Kerala",
+        "Delhi": "Uttar Pradesh"
+    })
+    merged["date"] = pd.to_datetime(merged["Order Date"], format="%d-%m-%Y", errors="coerce")
+    merged["month"] = merged["date"].dt.strftime("%b")
+    
+    cat_map = {
+        "Saree": "Textiles", "Stole": "Textiles", "Kurti": "Textiles", "Clothing": "Textiles",
+        "Skirt": "Textiles", "T-shirt": "Textiles", "Shirt": "Textiles", "Leggings": "Textiles",
+        "Hankerchief": "Textiles", "Furnishings": "Home Decor", "Bookcases": "Home Decor",
+        "Furniture": "Home Decor", "Chairs": "Home Decor", "Tables": "Kitchenware",
+        "Accessories": "Accessories", "Electronic Games": "Accessories"
+    }
+    merged["category"] = merged["Sub-Category"].map(cat_map).fillna(merged["Category"].map(cat_map)).fillna("Home Decor")
+    
+    # Calculate real Kaggle weights for month, state/region, and category
+    month_weights = merged.groupby("month")["Quantity"].sum() / max(1.0, merged.groupby("month")["Quantity"].sum().mean())
+    state_weights = merged.groupby("State")["Quantity"].sum() / max(1.0, merged.groupby("State")["Quantity"].sum().mean())
+    cat_weights = merged.groupby("category")["Quantity"].sum() / max(1.0, merged.groupby("category")["Quantity"].sum().mean())
+    
+    regions = [
+        "Rajasthan", "Kashmir", "Kutch", "Bihar", "Uttar Pradesh",
+        "West Bengal", "Kerala", "Gujarat", "Tamil Nadu", "Telangana",
+        "Madhya Pradesh", "Maharashtra", "Odisha", "Karnataka", "Himachal Pradesh"
+    ]
+    categories = [
+        "Home Decor", "Jewelry", "Textiles", "Kitchenware",
+        "Accessories", "Gardening", "Painting", "Pottery & Clay"
+    ]
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    
+    np.random.seed(42)
+    data = []
+    for year in range(2023, 2026):
+        for m in months:
+            mw = float(month_weights.get(m, 1.0))
+            for r in regions:
+                rw = float(state_weights.get(r, 1.0))
+                for c in categories:
+                    cw = float(cat_weights.get(c, 1.0))
+                    
+                    # Compute realistic artisan market demand index
+                    raw_demand = 45.0 * mw * (0.8 + 0.4 * rw) * (0.8 + 0.4 * cw)
+                    noise = np.random.normal(0, 1.5)
+                    demand_index = max(10.0, round(raw_demand + noise, 1))
+                    
+                    # Regional tourist inflow
+                    tourist = round(130.0 * (0.7 + 0.5 * rw) * (1.55 if m in ["Oct", "Nov", "Dec", "Jan"] else 0.75) + np.random.normal(0, 3.0))
+                    
+                    data.append({
+                        "region": r,
+                        "category": c,
+                        "month": m,
+                        "demand_index": demand_index,
+                        "tourist_inflow_k": max(15, tourist)
+                    })
+                    
+    return pd.DataFrame(data)
+
 def train_model():
-    print("Generating historical demand & tourist dataset using real regions and categories...")
-    df = generate_synthetic_data()
+    print("Loading demand & tourist dataset driven by Kaggle transactions and Indian craft regions...")
+    df = load_kaggle_demand_data()
     
     X = df[["region", "category", "month"]]
     y_demand = df["demand_index"]
@@ -83,12 +163,12 @@ def train_model():
     
     pipeline_demand = Pipeline(steps=[
         ('preprocessor', preprocessor),
-        ('regressor', Ridge(alpha=1.0))
+        ('regressor', Ridge(alpha=0.5))
     ])
     
     pipeline_tourist = Pipeline(steps=[
         ('preprocessor', preprocessor),
-        ('regressor', Ridge(alpha=1.0))
+        ('regressor', Ridge(alpha=0.5))
     ])
     
     print("Training Ridge regression forecasting models...")
@@ -108,10 +188,6 @@ def train_model():
     print(f"Test Set Demand MAPE: {mape_demand:.4f} (Verified Accuracy: {verified_accuracy:.4f})")
     
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    model_dir = os.path.abspath(os.path.join(current_dir, "../../database"))
-    os.makedirs(model_dir, exist_ok=True)
-    model_path = os.path.join(model_dir, "forecasting_model.pkl")
-    
     evaluation_metrics = {
         "demand_r2": round(r2_demand, 4),
         "tourist_r2": round(r2_tourist, 4),
@@ -120,13 +196,23 @@ def train_model():
         "is_evaluated": True
     }
     
-    with open(model_path, "wb") as f:
-        pickle.dump({
-            "demand": pipeline_demand,
-            "tourist": pipeline_tourist,
-            "evaluation_metrics": evaluation_metrics
-        }, f)
-    print(f"Trained forecasting model with evaluation metrics saved to {model_path}")
+    save_dirs = [
+        os.path.abspath(os.path.join(current_dir, "../../database")),
+        os.path.abspath(os.path.join(current_dir, "../../../../database"))
+    ]
+    for mdir in save_dirs:
+        try:
+            os.makedirs(mdir, exist_ok=True)
+            mpath = os.path.join(mdir, "forecasting_model.pkl")
+            with open(mpath, "wb") as f:
+                pickle.dump({
+                    "demand": pipeline_demand,
+                    "tourist": pipeline_tourist,
+                    "evaluation_metrics": evaluation_metrics
+                }, f)
+            print(f"Trained forecasting model with evaluation metrics saved to {mpath}")
+        except Exception as e:
+            print(f"Warning: Failed saving to {mdir}: {e}")
 
 if __name__ == "__main__":
     train_model()

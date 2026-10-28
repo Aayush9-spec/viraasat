@@ -306,6 +306,78 @@ def train_kmeans(df: pd.DataFrame):
     }
 
 
+def load_kaggle_user_data(seed: int = 42) -> pd.DataFrame:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.abspath(os.path.join(current_dir, "../../../../database/kaggle_data/customer_shopping_behavior.csv")),
+        os.path.abspath(os.path.join(current_dir, "../../database/kaggle_data/customer_shopping_behavior.csv")),
+        os.path.abspath(os.path.join(os.getcwd(), "database/kaggle_data/customer_shopping_behavior.csv")),
+        os.path.abspath(os.path.join(os.getcwd(), "../database/kaggle_data/customer_shopping_behavior.csv")),
+    ]
+    c_path = next((c for c in candidates if os.path.exists(c)), None)
+    if not c_path:
+        print("Notice: Kaggle customer dataset not found, falling back to synthetic generator.")
+        return generate_user_dataset()
+
+    print(f"Loading real Kaggle Indian customer shopping behavior from: {c_path}")
+    df = pd.read_csv(c_path)
+    np.random.seed(seed)
+
+    freq_map = {'Weekly': 7, 'Bi-Weekly': 14, 'Fortnightly': 14, 'Monthly': 30, 'Quarterly': 90, 'Annually': 365, 'Rarely': 180}
+    user_groups = df.groupby('Customer ID')
+
+    records = []
+    trad_items = ['saree', 'kurti', 'silk', 'hand', 'craft', 'textile', 'decor', 'jewelry', 'scarf', 'shawl', 'dress', 'tapestry']
+    amount_col = [c for c in df.columns if 'Purchase Amount' in c][0]
+
+    for cid, g in user_groups:
+        freq_str = g['Frequency of Purchases'].iloc[0] if 'Frequency of Purchases' in g.columns else 'Monthly'
+        base_rec = freq_map.get(str(freq_str), 30)
+        recency = int(np.clip(np.random.normal(base_rec, 5), 1, 365))
+        
+        prev_pur = float(g['Previous Purchases'].iloc[0]) if 'Previous Purchases' in g.columns else 2.0
+        pur_count = int(prev_pur + len(g))
+        
+        total_spend = float(g[amount_col].sum() * (1.0 + prev_pur * 0.45))
+        avg_order = float(total_spend / max(1, pur_count))
+        
+        gi_matches = sum(1 for it in g['Item Purchased'] if any(t in str(it).lower() for t in trad_items))
+        gi_pct = float(np.clip((gi_matches / max(1, len(g))) + np.random.uniform(0.15, 0.45), 0.05, 0.98))
+        
+        ret_rate = float((g['Return Status'].astype(str).str.lower() == 'returned').mean()) if 'Return Status' in g.columns else 0.05
+        avg_rating = float(g['Review Rating'].mean()) if 'Review Rating' in g.columns else 4.0
+        is_ver = bool(g['Subscription Status'].iloc[0] == 'Yes') if 'Subscription Status' in g.columns else False
+        
+        sess = int(np.clip(pur_count * 2.2 + np.random.uniform(3, 10), 2, 80))
+        wish = int(np.clip(pur_count * 0.7 + (4 if is_ver else 1), 1, 30))
+        srch = int(np.clip(sess * 1.4, 2, 90))
+        rev = int(np.clip(len(g) + prev_pur * 0.3, 1, 25))
+        ctr = float(np.clip(0.20 + (avg_rating / 12.0) + (0.1 if is_ver else 0.0), 0.05, 0.90))
+        age = int(np.clip(pur_count * 24 + np.random.uniform(30, 90), 30, 900))
+        
+        is_promising = int(total_spend >= 7500 or (pur_count >= 7 and ret_rate <= 0.15) or (is_ver and avg_rating >= 4.0))
+        
+        records.append({
+            'recency_days': recency,
+            'purchase_count': pur_count,
+            'total_spend_inr': round(total_spend, 2),
+            'avg_order_inr': round(avg_order, 2),
+            'gi_affinity_pct': round(gi_pct, 4),
+            'session_count': sess,
+            'wishlist_count': wish,
+            'search_count': srch,
+            'review_count': rev,
+            'recommendation_ctr': round(ctr, 4),
+            'return_rate': round(ret_rate, 4),
+            'review_helpfulness': round(avg_rating, 2),
+            'account_age_days': age,
+            'is_verified': is_ver,
+            'is_promising': is_promising
+        })
+
+    return pd.DataFrame(records)
+
+
 # ---------------------------------------------------------------------------
 # Main training pipeline
 # ---------------------------------------------------------------------------
@@ -315,12 +387,11 @@ def train_model():
     print("Viraasat Promising User Identification - Training")
     print("=" * 62)
 
-    print("\n[1/5] Generating synthetic user behaviour dataset...")
-    df = generate_user_dataset(n_users=2000)
+    print("\n[1/5] Loading user behaviour dataset from Kaggle customer shopping trends...")
+    df = load_kaggle_user_data()
     pos = int(df["is_promising"].sum())
     neg = len(df) - pos
     print(f"      {len(df):,} users  (promising={pos}  other={neg})")
-    print(f"      Archetypes: { {k: int(v) for k, v in df['true_archetype'].value_counts().to_dict().items()} }")
 
     print("\n[2/5] Training GBT classifier (Model A - supervised)...")
     clf, scaler_clf, clf_metrics = train_gbt(df)
@@ -358,15 +429,6 @@ def train_model():
     # Save artifact
     print("\n[5/5] Saving model artifact...")
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    db_candidates = [
-        os.path.abspath(os.path.join(current_dir, "../../../../database")),
-        os.path.abspath(os.path.join(current_dir, "../../database")),
-        os.path.abspath(os.path.join(os.getcwd(), "database")),
-    ]
-    db_dir = next((d for d in db_candidates if os.path.isdir(d)), db_candidates[0])
-    os.makedirs(db_dir, exist_ok=True)
-    model_path = os.path.join(db_dir, "user_identification_model.pkl")
-
     evaluation_metrics = {
         "gbt_auc_roc":          clf_metrics["auc_roc"],
         "gbt_avg_precision":    clf_metrics["avg_precision"],
@@ -393,15 +455,25 @@ def train_model():
         "evaluation_metrics": evaluation_metrics,
     }
 
-    with open(model_path, "wb") as f:
-        pickle.dump(artifact, f)
+    save_dirs = [
+        os.path.abspath(os.path.join(current_dir, "../../database")),
+        os.path.abspath(os.path.join(current_dir, "../../../../database"))
+    ]
+    for sdir in save_dirs:
+        try:
+            os.makedirs(sdir, exist_ok=True)
+            mpath = os.path.join(sdir, "user_identification_model.pkl")
+            with open(mpath, "wb") as f:
+                pickle.dump(artifact, f)
+            print(f"Promising User Identification model saved to {mpath}")
+        except Exception as e:
+            print(f"Warning: Failed saving to {sdir}: {e}")
 
     print("\n" + "=" * 62)
     print("Promising User Identification model saved.")
     print(f"  GBT AUC-ROC         : {clf_metrics['auc_roc']:.4f}")
     print(f"  GBT Accuracy        : {clf_metrics['accuracy']:.4f}")
     print(f"  K-Means clusters    : {cluster_labels}")
-    print(f"  Artifact            : {model_path}")
     print("=" * 62)
 
 

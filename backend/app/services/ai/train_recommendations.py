@@ -253,6 +253,78 @@ def generate_interactions(n_users=800, n_interactions=12000, seed=42):
     return df
 
 
+def load_kaggle_interactions() -> pd.DataFrame:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.abspath(os.path.join(current_dir, "../../../../database/kaggle_data/customer_shopping_behavior.csv")),
+        os.path.abspath(os.path.join(current_dir, "../../database/kaggle_data/customer_shopping_behavior.csv")),
+        os.path.abspath(os.path.join(os.getcwd(), "database/kaggle_data/customer_shopping_behavior.csv")),
+        os.path.abspath(os.path.join(os.getcwd(), "../database/kaggle_data/customer_shopping_behavior.csv")),
+    ]
+    c_path = next((c for c in candidates if os.path.exists(c)), None)
+    if not c_path:
+        print("Notice: Kaggle customer behavior dataset not found, falling back to synthetic interactions.")
+        return generate_interactions(n_users=800, n_interactions=12000)
+
+    print(f"Loading real Kaggle Indian customer shopping interactions from: {c_path}")
+    df_cust = pd.read_csv(c_path)
+
+    loc_map = {
+        "Chennai": "Tamil Nadu", "Mumbai": "Maharashtra", "Hyderabad": "Telangana",
+        "Kolkata": "West Bengal", "Delhi": "Uttar Pradesh", "Bangalore": "Karnataka",
+        "Jaipur": "Rajasthan", "Ahmedabad": "Gujarat", "Kochi": "Kerala",
+        "Bhopal": "Madhya Pradesh", "Lucknow": "Uttar Pradesh", "Patna": "Bihar",
+        "Bhubaneswar": "Odisha", "Srinagar": "Kashmir"
+    }
+
+    cat_map = {
+        "Clothing": "Textiles", "Footwear": "Accessories", "Outerwear": "Textiles",
+        "Accessories": "Accessories", "Home Decor": "Home Decor", "Kitchen": "Kitchenware"
+    }
+
+    amount_col = [c for c in df_cust.columns if 'Purchase Amount' in c][0]
+    rows = []
+    np.random.seed(42)
+
+    for _, r in df_cust.iterrows():
+        loc = str(r.get("Location", "")).strip()
+        u_region = loc_map.get(loc, "Rajasthan")
+        raw_cat = str(r.get("Category", "Textiles")).strip()
+        u_cat = cat_map.get(raw_cat, "Textiles")
+        amt = float(r[amount_col]) if pd.notna(r[amount_col]) else 1200.0
+        u_tier = _price_tier(amt)
+        rating = float(r.get("Review Rating", 4.0)) if pd.notna(r.get("Review Rating")) else 4.0
+        is_ver = str(r.get("Subscription Status", "No")) == "Yes"
+        u_gi = 1 if (is_ver or rating >= 4.0) else 0
+
+        candidates = [p for p in PRODUCTS if p["category"] == u_cat or p["region"] == u_region]
+        if not candidates:
+            candidates = PRODUCTS
+
+        pos = candidates[np.random.randint(len(candidates))]
+        pos_id = pos["id"]
+
+        rows.append({
+            "u_region": u_region, "u_cat": u_cat,
+            "u_tier": u_tier, "u_gi_pref": u_gi,
+            "prod_id": pos_id, "label": 1 if rating >= 3.0 else 0,
+            "category": pos["category"], "region": pos["region"],
+            "price": pos["price"], "gi": int(pos["gi"]),
+        })
+
+        neg_pool = [p for p in PRODUCTS if p["id"] != pos_id]
+        neg = neg_pool[np.random.randint(len(neg_pool))]
+        rows.append({
+            "u_region": u_region, "u_cat": u_cat,
+            "u_tier": u_tier, "u_gi_pref": u_gi,
+            "prod_id": neg["id"], "label": 0,
+            "category": neg["category"], "region": neg["region"],
+            "price": neg["price"], "gi": int(neg["gi"]),
+        })
+
+    return pd.DataFrame(rows)
+
+
 # -- Item-to-Item co-purchase matrix ------------------------------------------
 
 def build_copurchase_matrix(df: pd.DataFrame, prod_ids: list) -> np.ndarray:
@@ -301,8 +373,8 @@ def train_model():
     item_dim = (len(CATEGORIES) + len(REGIONS) + len(PRICE_TIERS) +
                 len(MATERIALS) + 1 + 1)
 
-    print(f"\n[1/5] Generating synthetic interaction dataset...")
-    df = generate_interactions(n_users=800, n_interactions=12000)
+    print(f"\n[1/5] Loading interaction dataset from Kaggle Indian customer shopping behavior...")
+    df = load_kaggle_interactions()
     print(f"      {len(df):,} interaction rows  "
           f"(pos={df['label'].sum():,}  neg={(df['label']==0).sum():,})")
 
@@ -429,7 +501,6 @@ def train_model():
         "dataset_interactions": len(df),
     }
 
-    print(f"\n[5/5] Saving artifact to {model_path} ...")
     artifact = {
         "two_tower": {
             "Wu1": net.Wu1, "bu1": net.bu1,
@@ -446,15 +517,26 @@ def train_model():
         "user_dim":          user_dim,
         "item_dim":          item_dim,
     }
-    with open(model_path, "wb") as f:
-        pickle.dump(artifact, f)
+
+    save_dirs = [
+        os.path.abspath(os.path.join(current_dir, "../../database")),
+        os.path.abspath(os.path.join(current_dir, "../../../../database"))
+    ]
+    for sdir in save_dirs:
+        try:
+            os.makedirs(sdir, exist_ok=True)
+            mpath = os.path.join(sdir, "recommendation_model.pkl")
+            with open(mpath, "wb") as f:
+                pickle.dump(artifact, f)
+            print(f"Recommendation model saved to {mpath}")
+        except Exception as e:
+            print(f"Warning: Failed saving to {sdir}: {e}")
 
     print("\n" + "=" * 62)
     print("Recommendation model saved successfully.")
     print(f"  Two-Tower P@10      : {precision_at_10*100:.1f}%")
     print(f"  Ranker AUC-ROC      : {auc_roc:.4f}")
     print(f"  Verified accuracy   : {verified_accuracy*100:.1f}%")
-    print(f"  Artifact            : {model_path}")
     print("=" * 62)
 
 

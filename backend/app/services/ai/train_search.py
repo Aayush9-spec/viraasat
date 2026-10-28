@@ -64,16 +64,69 @@ def enrich_product_text(p: dict) -> str:
             
     return f"{text_content} {' '.join(expanded)}"
 
+def load_kaggle_search_products(max_items: int = 500) -> list:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.abspath(os.path.join(current_dir, "../../../../database/kaggle_data/flipkart_com-ecommerce_sample.csv")),
+        os.path.abspath(os.path.join(current_dir, "../../database/kaggle_data/flipkart_com-ecommerce_sample.csv")),
+        os.path.abspath(os.path.join(os.getcwd(), "database/kaggle_data/flipkart_com-ecommerce_sample.csv")),
+        os.path.abspath(os.path.join(os.getcwd(), "../database/kaggle_data/flipkart_com-ecommerce_sample.csv")),
+    ]
+    fk_path = next((c for c in candidates if os.path.exists(c)), None)
+    if not fk_path:
+        return []
+
+    try:
+        import pandas as pd
+        df = pd.read_csv(fk_path).dropna(subset=["product_name", "description"])
+        craft_keywords = [
+            "handicraft", "handmade", "pottery", "saree", "silk", "brass", "wood",
+            "terracotta", "clay", "channapatna", "pashmina", "shawl", "carpet",
+            "embroider", "zari", "jhumka", "bangle", "painting", "madhubani", "warli", "dokra", "dhokra"
+        ]
+        pattern = "|".join(craft_keywords)
+        mask = df["product_name"].str.contains(pattern, case=False, na=False) | df["description"].str.contains(pattern, case=False, na=False)
+        filtered = df[mask].head(max_items)
+        
+        kaggle_products = []
+        for idx, r in filtered.iterrows():
+            name = str(r["product_name"]).strip()
+            desc = str(r["description"]).strip()
+            price = float(r["retail_price"]) if pd.notna(r.get("retail_price")) else 1000.0
+            
+            region = "India"
+            for state in ["Rajasthan", "Kashmir", "Kutch", "Gujarat", "Uttar Pradesh", "West Bengal", "Kerala", "Tamil Nadu", "Karnataka", "Bihar", "Odisha", "Maharashtra"]:
+                if state.lower() in desc.lower() or state.lower() in name.lower():
+                    region = state
+                    break
+                    
+            kaggle_products.append({
+                "id": f"kg-{idx}",
+                "name": name,
+                "category": "Textiles" if ("saree" in name.lower() or "silk" in name.lower()) else "Home Decor",
+                "region": region,
+                "price": price,
+                "description": desc
+            })
+        print(f"Enriched search catalog with {len(kaggle_products)} authentic craft products from Kaggle.")
+        return kaggle_products
+    except Exception as e:
+        print(f"Notice: Failed to load Kaggle products for search: {e}")
+        return []
+
 def train_and_evaluate_search_model():
     print("Loading authentic Viraasat artisan product catalog...")
     products = load_products()
     print(f"Loaded {len(products)} products from platform catalog.")
     
+    kaggle_prods = load_kaggle_search_products()
+    all_products = products + kaggle_prods
+    
     corpus = []
     product_ids = []
     product_metadata = []
     
-    for p in products:
+    for p in all_products:
         p_id = p.get("id") or p.get("_id")
         product_ids.append(p_id)
         corpus.append(enrich_product_text(p))
