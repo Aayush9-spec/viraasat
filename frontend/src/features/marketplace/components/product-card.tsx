@@ -148,7 +148,7 @@ export default function ProductCard({
                 <span className="text-[#655B53] font-semibold flex items-center gap-1 text-[11px]">
                   <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
                   {!ratingLoading && rating.count > 0 ? rating.avg.toFixed(1) : '4.9'}
-                  <span className="text-[#655B53]/60 font-normal">
+                  <span className="text-[#655B53] font-normal">
                     ({!ratingLoading && rating.count > 0 ? rating.count : 24})
                   </span>
                 </span>
@@ -203,7 +203,7 @@ export default function ProductCard({
                       ₹{safePrice.toFixed(0)}
                     </span>
                     {safePrice > 400 && (
-                      <span className="text-xs text-[#655B53]/70 line-through">
+                      <span className="text-xs text-[#655B53] line-through">
                         ₹{Math.round(safePrice * 1.2).toFixed(0)}
                       </span>
                     )}
