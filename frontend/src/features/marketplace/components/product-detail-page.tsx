@@ -185,7 +185,37 @@ export function ProductDetailPageClient({
               </p>
             </div>
 
-            <p className="text-lg">{product.description}</p>
+            {/* Product Description with Multilingual Tabs if English / Native available */}
+            {product.englishDescription && product.description !== product.englishDescription ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 border-b pb-2">
+                  <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                    <Globe2 className="h-3.5 w-3.5 text-primary" /> Available In:
+                  </span>
+                  <div className="flex gap-1.5">
+                    <Badge
+                      variant="outline"
+                      className="cursor-pointer hover:bg-muted text-xs font-normal border-primary/30"
+                      onClick={() => setTranslatedDesc('')}
+                    >
+                      {product.originalLanguage || 'Native Script'}
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="cursor-pointer hover:bg-muted text-xs font-normal border-primary/30"
+                      onClick={() => setTranslatedDesc(product.englishDescription || '')}
+                    >
+                      English
+                    </Badge>
+                  </div>
+                </div>
+                <p className="text-lg leading-relaxed text-foreground">
+                  {translatedDesc || product.description}
+                </p>
+              </div>
+            ) : (
+              <p className="text-lg leading-relaxed text-foreground">{translatedDesc || product.description}</p>
+            )}
 
             {/* Translation Section */}
             <div className="flex flex-col gap-3 rounded-lg border border-border/50 bg-muted/30 p-4">

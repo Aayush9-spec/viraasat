@@ -6,6 +6,9 @@ export type Product = {
   description: string;
   tagline: string;
   originalDescription?: string;
+  originalLanguage?: string;
+  englishDescription?: string;
+  descriptions?: Record<string, string>;
   price: number;
   currency: string;
   stock: number;

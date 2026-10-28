@@ -36,6 +36,7 @@ import VoiceRecorder from '@/features/ai/components/voice-recorder';
 import ImageEnhancer from './image-enhancer';
 import { generateProductInsights } from '@/ai/flows/generate-product-insights';
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
+import { SUPPORTED_LANGUAGES, getLanguageCode } from '@/ai/languages';
 import { analyzeImage } from '@/ai/flows/analyze-image';
 import { useToast } from '@/core/hooks/use-toast';
 import { useBackend } from '@/hooks/use-backend';
@@ -59,12 +60,16 @@ import {
   Package,
   Info,
   CheckCircle2,
+  Globe2,
 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 
 const productSchema = z.object({
   name: z.string().min(3, 'Product name must be at least 3 characters'),
+  inputLanguage: z.string().default('Hindi'),
+  descriptionLanguage: z.string().default('Hindi'),
   description: z.string().min(10, 'Description is too short'),
+  englishDescription: z.string().optional(),
   price: z.coerce.number().positive('Price must be a positive number'),
   category: z.string().min(1, 'Please select a category'),
   region: z.string().min(1, 'Please select your state/region'),
@@ -121,7 +126,10 @@ export function ProductForm({ product }: ProductFormProps) {
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: product?.name || '',
+      inputLanguage: product?.originalLanguage || 'Hindi',
+      descriptionLanguage: 'Hindi',
       description: product?.description || '',
+      englishDescription: product?.englishDescription || product?.descriptions?.en || '',
       price: product?.price || 450,
       category: product?.category || 'Home Decor & Wall Art',
       region: product?.region || 'Rajasthan',
@@ -158,6 +166,7 @@ export function ProductForm({ product }: ProductFormProps) {
   const laborTimeValue = form.watch('laborTimeValue') || 1;
   const craftsmanshipVal = form.watch('craftsmanship');
   const giCertifiedVal = form.watch('giCertified');
+  const descriptionLanguageVal = form.watch('descriptionLanguage') || 'Native';
 
   // Compute normalized size_sqft reactively
   const computedSizeSqft = (() => {
@@ -338,10 +347,19 @@ export function ProductForm({ product }: ProductFormProps) {
         packageContents: values.packageContents || '',
       };
 
+      const primaryLangCode = getLanguageCode(values.descriptionLanguage || 'Hindi');
+      const descriptionsDict: Record<string, string> = {
+        [primaryLangCode]: values.description.trim(),
+      };
+      if (values.englishDescription && values.englishDescription.trim()) {
+        descriptionsDict['en'] = values.englishDescription.trim();
+      }
+
       const supabasePayload = {
         artisan_id: dbArtisanId,
         name: values.name.trim(),
         description: values.description.trim(),
+        original_language: values.inputLanguage || 'Hindi',
         category: values.category,
         region: values.region,
         price: numPrice,
@@ -352,6 +370,9 @@ export function ProductForm({ product }: ProductFormProps) {
           styleTags: styleTags,
           useCases: useCases,
           craftDetails: craftDetails,
+          descriptions: descriptionsDict,
+          englishDescription: values.englishDescription || '',
+          originalLanguage: values.inputLanguage || 'Hindi',
         },
         updated_at: now,
       };
@@ -362,6 +383,9 @@ export function ProductForm({ product }: ProductFormProps) {
         artisanId: artisanId,
         name: values.name.trim(),
         description: values.description.trim(),
+        originalLanguage: values.inputLanguage || 'Hindi',
+        englishDescription: values.englishDescription || '',
+        descriptions: descriptionsDict,
         category: values.category,
         region: values.region,
         price: numPrice,
@@ -378,12 +402,18 @@ export function ProductForm({ product }: ProductFormProps) {
           styleTags: styleTags,
           useCases: useCases,
           craftDetails: craftDetails,
+          descriptions: descriptionsDict,
+          englishDescription: values.englishDescription || '',
+          originalLanguage: values.inputLanguage || 'Hindi',
         },
         aiInsights: {
           keyFeatures: features,
           styleTags: styleTags,
           useCases: useCases,
           craftDetails: craftDetails,
+          descriptions: descriptionsDict,
+          englishDescription: values.englishDescription || '',
+          originalLanguage: values.inputLanguage || 'Hindi',
         },
         created_at: now,
         createdAt: now,
@@ -480,7 +510,7 @@ export function ProductForm({ product }: ProductFormProps) {
 
   const handleGenerateDescription = async () => {
     const name = form.getValues('name');
-    if (!name || name.length < 3) {
+    if (!name || name.trim().length < 3) {
       toast({
         variant: 'destructive',
         title: 'Product Name Required',
@@ -491,11 +521,23 @@ export function ProductForm({ product }: ProductFormProps) {
 
     setIsGeneratingDesc(true);
     try {
-      const result = await generateProductDescription({ productName: name });
+      const inputLang = form.getValues('inputLanguage') || 'Hindi';
+      const outLang = form.getValues('descriptionLanguage') || 'Hindi';
+      const result = await generateProductDescription({
+        productName: name.trim(),
+        inputLanguage: inputLang,
+        outputLanguage: outLang,
+        generateEnglish: true,
+      });
+
       form.setValue('description', result.description);
+      if (result.englishDescription) {
+        form.setValue('englishDescription', result.englishDescription);
+      }
+
       toast({
-        title: '✨ Description Generated!',
-        description: 'AI has crafted a culturally rich description for your product.',
+        title: result.isFallback ? '✨ Description Ready (Heritage Fallback)' : '✨ Multilingual Description Generated!',
+        description: `Generated authentic description in ${result.outputLanguage || outLang} and English.`,
       });
     } catch (error) {
       console.error(error);
@@ -524,10 +566,17 @@ export function ProductForm({ product }: ProductFormProps) {
           <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Product Details</CardTitle>
-                <CardDescription>
-                  Enter the main details for your product.
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Product Details</CardTitle>
+                    <CardDescription>
+                      Enter the main details for your product in your preferred language.
+                    </CardDescription>
+                  </div>
+                  <Badge variant="outline" className="text-xs gap-1 border-primary/20 text-[#8b4513]">
+                    <Globe2 className="h-3 w-3" /> Multilingual AI
+                  </Badge>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <FormField
@@ -535,22 +584,80 @@ export function ProductForm({ product }: ProductFormProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Product Name</FormLabel>
+                      <FormLabel>Product Name (उत्पाद का नाम)</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. Azure Ceramic Vase" {...field} />
+                        <Input placeholder="e.g. हाथ से बनी बनारसी रेशमी साड़ी, Azure Ceramic Vase..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
+                {/* Multilingual Controls for Name & Description */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-muted/30 border rounded-md">
+                  <FormField
+                    control={form.control}
+                    name="inputLanguage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                          <Globe2 className="h-3 w-3 text-primary" /> Product Name Language
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="text-xs h-8 bg-background">
+                              <SelectValue placeholder="Input language" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="max-h-56">
+                            {SUPPORTED_LANGUAGES.map((l) => (
+                              <SelectItem key={`in-${l.value}`} value={l.value} className="text-xs">
+                                {l.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="descriptionLanguage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                          <Globe2 className="h-3 w-3 text-primary" /> Primary Description Language
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="text-xs h-8 bg-background">
+                              <SelectValue placeholder="Output language" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="max-h-56">
+                            {SUPPORTED_LANGUAGES.map((l) => (
+                              <SelectItem key={`out-${l.value}`} value={l.value} className="text-xs">
+                                {l.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Primary Description in Selected Language */}
                 <FormField
                   control={form.control}
                   name="description"
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center justify-between">
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel className="flex items-center gap-1.5">
+                          Description ({descriptionLanguageVal})
+                        </FormLabel>
                         <Button
                           type="button"
                           variant="ghost"
@@ -562,12 +669,12 @@ export function ProductForm({ product }: ProductFormProps) {
                           {isGeneratingDesc ? (
                             <>
                               <Loader2 className="h-3 w-3 animate-spin" />
-                              Generating...
+                              Generating Multilingual...
                             </>
                           ) : (
                             <>
                               <Wand2 className="h-3 w-3" />
-                              AI Generate
+                              AI Generate (Native + English)
                             </>
                           )}
                         </Button>
@@ -575,8 +682,8 @@ export function ProductForm({ product }: ProductFormProps) {
                       <div className="relative">
                         <FormControl>
                           <Textarea
-                            placeholder="Describe your product..."
-                            rows={6}
+                            placeholder="Describe your product in the selected language..."
+                            rows={5}
                             {...field}
                           />
                         </FormControl>
@@ -586,6 +693,32 @@ export function ProductForm({ product }: ProductFormProps) {
                           }
                         />
                       </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Corresponding English Description (Editable & Saved) */}
+                <FormField
+                  control={form.control}
+                  name="englishDescription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center justify-between">
+                        <FormLabel className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                          <Globe2 className="h-3.5 w-3.5 text-primary" />
+                          English Description (अंग्रेजी विवरण / International Listing)
+                        </FormLabel>
+                        <span className="text-[11px] text-muted-foreground">Auto-generated or custom editable</span>
+                      </div>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Corresponding English description for international buyers..."
+                          rows={4}
+                          className="text-xs bg-muted/10"
+                          {...field}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
