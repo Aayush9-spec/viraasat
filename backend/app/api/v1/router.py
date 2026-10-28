@@ -10,6 +10,22 @@ from ai.graph import traverse_knowledge_graph
 from ai.search import semantic_product_search
 from ai.blockchain import get_existing_ledger, get_or_create_ledger, is_chain_valid, perform_transfer_ownership
 from ai.fraud import ReviewAnomalyInput, detect_review_fraud
+from ai.market_prediction import (
+    MarketPredictionInput,
+    predict_product_sales,
+    get_market_trends,
+    get_top_products,
+)
+from ai.recommendations import (
+    RecommendationInput,
+    get_recommendations,
+    get_similar_items,
+)
+from ai.user_identification import (
+    UserBehaviorInput,
+    score_user,
+    get_segment_overview,
+)
 
 api_router = APIRouter()
 
@@ -224,3 +240,84 @@ async def detect_fraud(
     user: dict = Depends(require_role("admin", "artisan")),
 ):
     return detect_review_fraud(payload)
+
+
+# ---- Market Prediction (LSTM + GBT ensemble) ----
+@api_router.post("/market/predict")
+@_limiter.limit("30/minute")
+async def market_predict(request: Request, payload: MarketPredictionInput):
+    """
+    Forecast units sold and revenue for a product over the next N months.
+    Uses an LSTM + gradient-boosted tree ensemble trained on 3 years of
+    Kaggle-style Indian handicrafts market data.
+    """
+    return predict_product_sales(payload)
+
+
+@api_router.get("/market/trends")
+@_limiter.limit("60/minute")
+async def market_trends(request: Request):
+    """
+    Return platform-wide market trends: top sellers, top revenue products,
+    monthly demand curve, and category performance rankings.
+    """
+    return get_market_trends()
+
+
+@api_router.get("/market/top-products")
+@_limiter.limit("60/minute")
+async def market_top_products(
+    request: Request,
+    category: Optional[str] = None,
+    region: Optional[str] = None,
+    limit: int = 10,
+):
+    """
+    Return top N products ranked by 3-month projected sales, optionally
+    filtered by category or region.
+    """
+    return get_top_products(category=category, region=region, limit=min(limit, 29))
+
+
+# ---- Recommendations (Two-Tower + GBT ranker) ----
+@api_router.post("/recommendations")
+@_limiter.limit("30/minute")
+async def recommendations(request: Request, payload: RecommendationInput):
+    """
+    Personalised product recommendations via Two-Tower retrieval (Stage 1)
+    and GBT ranker (Stage 2). Returns top-K ranked items for the given user
+    context (region, preferred category, price tier, GI preference).
+    """
+    return get_recommendations(payload)
+
+
+@api_router.get("/recommendations/similar/{product_id}")
+@_limiter.limit("60/minute")
+async def similar_items(request: Request, product_id: str, limit: int = 5):
+    """
+    Items frequently bought together with the given product,
+    derived from the co-purchase similarity matrix.
+    """
+    return get_similar_items(product_id, limit=min(limit, 10))
+
+
+# ---- Promising User Identification (GBT + K-Means) ----
+@api_router.post("/users/score")
+@_limiter.limit("30/minute")
+async def score_user_endpoint(request: Request, payload: UserBehaviorInput):
+    """
+    Score a user's behavior profile using a GBT classifier (Model A) and
+    assign them to a K-Means segment tier (Model B).
+    Returns a 0-1 promising score, tier label, and an actionable trigger.
+    """
+    return score_user(payload)
+
+
+@api_router.get("/users/segments")
+@_limiter.limit("60/minute")
+async def user_segments(request: Request):
+    """
+    Return platform-wide user segment statistics: distribution, average spend,
+    return rates, and recommended action triggers per tier.
+    """
+    return get_segment_overview()
