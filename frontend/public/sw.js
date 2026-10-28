@@ -7,7 +7,7 @@
 // the new SW within a minute (the periodic update() check) and stop
 // serving HTML/JS bundles from a previous build.
 
-const CACHE_NAME = "viraasat-a16c00be";
+const CACHE_NAME = "viraasat-c97c4314";
 
 const PRECACHE_ASSETS = [
   '/',

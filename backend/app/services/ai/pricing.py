@@ -10,6 +10,7 @@ class PricePredictionInput(BaseModel):
     labor_hours: float = 2.0
     size_sqft: float = 1.0
     is_organic: bool = True
+    craftsmanship: str = "handmade"  # "handmade", "semi_handmade", "machine_assisted"
     name: str = ""
     description: str = ""
     region: str = ""
@@ -101,11 +102,23 @@ def calculate_predicted_price(payload: PricePredictionInput) -> dict:
                 "Terracotta & Natural Clay": 20,
                 "Natural Vegetable Dyes": 20,
                 "Khadi Cotton": 25,
-                "Jute & Bamboo": 20,
+                "Mulberry & Tussar Silk": 110,
+                "Jute & Coir": 18,
+                "Bamboo & Cane": 22,
                 "Sheesham & Teak Wood": 40,
+                "Sandalwood & Rosewood": 180,
+                "Walnut Wood": 90,
                 "Brass & Bell Metal": 70,
+                "Copper & Bronze (Kansa)": 85,
+                "Wrought Iron (Bastar Loha)": 45,
                 "Pure Chandi / Silver Alloy": 250,
+                "Makrana Marble & Soft Stone": 80,
                 "Changthangi Cashmere Wool": 300,
+                "Lac & Natural Resins": 30,
+                "Glass & Mirror Beads": 25,
+                "Vegetable Tanned Leather": 60,
+                "Handmade Cotton Rag Paper": 20,
+                "Sikki Grass & Sabai Grass": 18,
             },
             "default_mat_cost": 25,
             "min_floor": 60,
@@ -121,11 +134,23 @@ def calculate_predicted_price(payload: PricePredictionInput) -> dict:
                 "Terracotta & Natural Clay": 50,
                 "Natural Vegetable Dyes": 50,
                 "Khadi Cotton": 60,
-                "Jute & Bamboo": 40,
+                "Mulberry & Tussar Silk": 240,
+                "Jute & Coir": 40,
+                "Bamboo & Cane": 50,
                 "Sheesham & Teak Wood": 120,
+                "Sandalwood & Rosewood": 400,
+                "Walnut Wood": 220,
                 "Brass & Bell Metal": 200,
+                "Copper & Bronze (Kansa)": 220,
+                "Wrought Iron (Bastar Loha)": 130,
                 "Pure Chandi / Silver Alloy": 500,
+                "Makrana Marble & Soft Stone": 180,
                 "Changthangi Cashmere Wool": 700,
+                "Lac & Natural Resins": 80,
+                "Glass & Mirror Beads": 60,
+                "Vegetable Tanned Leather": 150,
+                "Handmade Cotton Rag Paper": 45,
+                "Sikki Grass & Sabai Grass": 40,
             },
             "default_mat_cost": 60,
             "min_floor": 150,
@@ -141,11 +166,23 @@ def calculate_predicted_price(payload: PricePredictionInput) -> dict:
                 "Terracotta & Natural Clay": 110,
                 "Natural Vegetable Dyes": 90,
                 "Khadi Cotton": 130,
-                "Jute & Bamboo": 90,
+                "Mulberry & Tussar Silk": 550,
+                "Jute & Coir": 85,
+                "Bamboo & Cane": 110,
                 "Sheesham & Teak Wood": 280,
+                "Sandalwood & Rosewood": 900,
+                "Walnut Wood": 480,
                 "Brass & Bell Metal": 450,
+                "Copper & Bronze (Kansa)": 520,
+                "Wrought Iron (Bastar Loha)": 320,
                 "Pure Chandi / Silver Alloy": 1100,
+                "Makrana Marble & Soft Stone": 420,
                 "Changthangi Cashmere Wool": 1800,
+                "Lac & Natural Resins": 160,
+                "Glass & Mirror Beads": 140,
+                "Vegetable Tanned Leather": 380,
+                "Handmade Cotton Rag Paper": 110,
+                "Sikki Grass & Sabai Grass": 90,
             },
             "default_mat_cost": 140,
             "min_floor": 350,
@@ -161,11 +198,23 @@ def calculate_predicted_price(payload: PricePredictionInput) -> dict:
                 "Terracotta & Natural Clay": 350,
                 "Natural Vegetable Dyes": 350,
                 "Khadi Cotton": 450,
-                "Jute & Bamboo": 300,
+                "Mulberry & Tussar Silk": 1800,
+                "Jute & Coir": 280,
+                "Bamboo & Cane": 350,
                 "Sheesham & Teak Wood": 950,
+                "Sandalwood & Rosewood": 2600,
+                "Walnut Wood": 1400,
                 "Brass & Bell Metal": 1400,
+                "Copper & Bronze (Kansa)": 1600,
+                "Wrought Iron (Bastar Loha)": 900,
                 "Pure Chandi / Silver Alloy": 2800,
+                "Makrana Marble & Soft Stone": 1300,
                 "Changthangi Cashmere Wool": 3800,
+                "Lac & Natural Resins": 500,
+                "Glass & Mirror Beads": 450,
+                "Vegetable Tanned Leather": 1100,
+                "Handmade Cotton Rag Paper": 320,
+                "Sikki Grass & Sabai Grass": 280,
             },
             "default_mat_cost": 500,
             "min_floor": 1800,
@@ -179,8 +228,19 @@ def calculate_predicted_price(payload: PricePredictionInput) -> dict:
     size_rate = cfg["size_rate"]
     mat_cost = cfg["mat_costs"].get(payload.material, cfg["default_mat_cost"])
 
-    # Fair labor compensation based on realistic Indian artisan work hours
-    labor_cost = payload.labor_hours * wage_rate
+    # Craftsmanship wage multiplier:
+    # - 100% handmade: full artisan honorarium (1.0x)
+    # - Semi-handmade / Traditional handloom: 0.85x
+    # - Machine-assisted: 0.50x
+    craft_multiplier = 1.0
+    craft_key = (payload.craftsmanship or "handmade").lower()
+    if "machine" in craft_key:
+        craft_multiplier = 0.50
+    elif "semi" in craft_key or "loom" in craft_key:
+        craft_multiplier = 0.85
+
+    # Fair labor compensation based on realistic Indian artisan work hours and craftsmanship mode
+    labor_cost = payload.labor_hours * wage_rate * craft_multiplier
 
     # Clamped size area cost to prevent explosive numbers on small crafts
     effective_size = max(0.1, min(payload.size_sqft, 10.0))
