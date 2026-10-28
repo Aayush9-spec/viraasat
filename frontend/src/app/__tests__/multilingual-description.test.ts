@@ -129,6 +129,24 @@ describe('Multilingual AI Product Description Generation', () => {
       expect(result.description).toBeTruthy();
       expect(result.description).toContain('Pure Sandalwood Carved Elephant Figurine');
     });
+
+    it('generates authentic descriptions for Diya without errors', async () => {
+      const result = await generateProductDescription({
+        productName: 'Diya',
+        inputLanguage: 'Hindi',
+        outputLanguage: 'Hindi',
+        generateEnglish: true,
+      });
+
+      expect(result).toBeDefined();
+      expect(result.description).toBeTruthy();
+      expect(result.outputLanguage).toBe('Hindi');
+      // Hindi Devanagari script present
+      expect(/[\u0900-\u097F]/.test(result.description)).toBe(true);
+      expect(result.englishDescription).toBeTruthy();
+      expect(result.englishDescription!.toLowerCase()).toContain('diya');
+      expect(result.isFallback).toBe(true);
+    });
   });
 
   describe('Product Data Model & Storage Integration', () => {

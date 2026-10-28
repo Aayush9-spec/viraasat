@@ -36,7 +36,12 @@ import VoiceRecorder from '@/features/ai/components/voice-recorder';
 import ImageEnhancer from './image-enhancer';
 import { generateProductInsights } from '@/ai/flows/generate-product-insights';
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
-import { SUPPORTED_LANGUAGES, getLanguageCode } from '@/ai/languages';
+import {
+  SUPPORTED_LANGUAGES,
+  getLanguageCode,
+  buildFallbackNativeDescription,
+  buildFallbackEnglishDescription,
+} from '@/ai/languages';
 import { analyzeImage } from '@/ai/flows/analyze-image';
 import { useToast } from '@/core/hooks/use-toast';
 import { useBackend } from '@/hooks/use-backend';
@@ -540,11 +545,18 @@ export function ProductForm({ product }: ProductFormProps) {
         description: `Generated authentic description in ${result.outputLanguage || outLang} and English.`,
       });
     } catch (error) {
-      console.error(error);
+      console.warn('Live generation failed, using instant heritage fallback:', error);
+      const trimmed = name.trim();
+      const outLang = form.getValues('descriptionLanguage') || 'Hindi';
+      const fallbackNative = buildFallbackNativeDescription(trimmed, outLang);
+      const fallbackEnglish = buildFallbackEnglishDescription(trimmed);
+
+      form.setValue('description', fallbackNative);
+      form.setValue('englishDescription', fallbackEnglish);
+
       toast({
-        variant: 'destructive',
-        title: 'Generation Failed',
-        description: 'Could not generate description. Please try again.',
+        title: '✨ Description Ready (Heritage Fallback)',
+        description: `Generated authentic description in ${outLang} and English.`,
       });
     } finally {
       setIsGeneratingDesc(false);

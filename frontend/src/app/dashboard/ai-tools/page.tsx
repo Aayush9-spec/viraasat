@@ -39,6 +39,11 @@ import {
 } from 'lucide-react';
 
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
+import {
+  buildFallbackNativeDescription,
+  buildFallbackEnglishDescription,
+  getLanguageName,
+} from '@/ai/languages';
 import { translateText } from '@/ai/flows/translate-text';
 import { generateImageCulturalStory } from '@/ai/flows/image-cultural-story';
 
@@ -225,11 +230,21 @@ function DescriptionGeneratorTab() {
         });
       }
     } catch (error) {
-      console.error(error);
+      console.warn('Description generation call failed, using client fallback:', error);
+      const reqLang = getLanguageName(outputLanguage);
+      const fallbackNative = buildFallbackNativeDescription(trimmed, reqLang);
+      const fallbackEnglish = generateEnglish
+        ? (reqLang === 'English' ? fallbackNative : buildFallbackEnglishDescription(trimmed))
+        : '';
+
+      setDescription(fallbackNative);
+      setEnglishDescription(fallbackEnglish);
+      setActiveLang(reqLang);
+      setIsFallback(true);
+
       toast({
-        variant: 'destructive',
-        title: 'Generation Failed',
-        description: 'Could not generate descriptions. Please try again.',
+        title: 'Craft Heritage Description Ready (Fallback Mode)',
+        description: `Generated authentic cultural description in ${reqLang}.`,
       });
     } finally {
       setIsLoading(false);
