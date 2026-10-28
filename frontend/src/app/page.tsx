@@ -507,6 +507,7 @@ export default function Marketplace() {
                         }
                         alt={heroArtisan.name}
                         fill
+                        sizes="48px"
                         className="object-cover object-top"
                       />
                     </div>
@@ -576,6 +577,7 @@ export default function Marketplace() {
                   src="/images/artisans/ghulam-nabi.jpg"
                   alt="Kashmiri Pashmina"
                   fill
+                  sizes="(max-width: 768px) 50vw, 20vw"
                   className="object-cover object-[center_top] group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
@@ -597,6 +599,7 @@ export default function Marketplace() {
                   src="/images/artisans/dulari-devi.jpg"
                   alt="Madhubani Paintings"
                   fill
+                  sizes="(max-width: 768px) 50vw, 20vw"
                   className="object-cover object-[center_top] group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
@@ -779,6 +782,7 @@ export default function Marketplace() {
                           src={imgUrl}
                           alt={p.name}
                           fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                           className="object-cover group-hover:scale-105 transition-transform duration-700"
                         />
 
@@ -966,6 +970,7 @@ export default function Marketplace() {
                       }
                       alt={art.name}
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover object-[center_top] group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute bottom-3 left-3 bg-[#221C18]/80 backdrop-blur-sm text-[#E8CA82] text-[11px] font-semibold px-2.5 py-1 rounded flex items-center gap-1">
@@ -1208,6 +1213,7 @@ export default function Marketplace() {
                       src={coverImg}
                       alt={article.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover object-[center_top] group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-[#701D24] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">
@@ -1322,6 +1328,7 @@ export default function Marketplace() {
                   src={artisanStory.img}
                   alt={artisanStory.name}
                   fill
+                  sizes="64px"
                   className="object-cover object-[center_top]"
                 />
               </div>

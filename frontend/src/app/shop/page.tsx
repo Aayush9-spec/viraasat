@@ -407,7 +407,7 @@ function ShopPageContent() {
   }, [inspectedProduct]);
 
   // Sidebar Component for Desktop & Mobile
-  const FilterSection = () => (
+  const FilterSection = ({ idPrefix = 'desktop' }: { idPrefix?: string }) => (
     <div className="space-y-6">
       <div className="flex items-center justify-between pb-3 border-b border-[#E8DCCB]">
         <h3 className="font-serif text-lg font-bold text-[#221C18] flex items-center gap-2">
@@ -435,14 +435,17 @@ function ShopPageContent() {
           {effectiveCategories.map((cat) => {
             const count = categoryCounts[cat] || 1;
             const isChecked = selectedCategories.includes(cat);
+            const inputId = `${idPrefix}-cat-${cat.replace(/\s+/g, '-').toLowerCase()}`;
             return (
               <label
                 key={cat}
+                htmlFor={inputId}
                 className="flex items-center justify-between cursor-pointer group py-1 text-[#221C18] hover:text-[#701D24] select-none"
               >
                 <div className="flex items-center gap-2.5">
                   <Checkbox
-                    id={`cat-${cat}`}
+                    id={inputId}
+                    aria-label={`Filter by ${cat}`}
                     checked={isChecked}
                     onCheckedChange={() => {
                       setSelectedCategories((prev) =>
@@ -473,14 +476,17 @@ function ShopPageContent() {
           {effectiveRegions.map((region) => {
             const tag = regionTags[region] || 'Handloom Heritage';
             const isChecked = selectedRegions.includes(region);
+            const inputId = `${idPrefix}-reg-${region.replace(/\s+/g, '-').toLowerCase()}`;
             return (
               <label
                 key={region}
+                htmlFor={inputId}
                 className="flex items-center justify-between cursor-pointer group py-1 text-[#221C18] hover:text-[#701D24] select-none"
               >
                 <div className="flex items-center gap-2.5">
                   <Checkbox
-                    id={`reg-${region}`}
+                    id={inputId}
+                    aria-label={`Filter by region ${region}`}
                     checked={isChecked}
                     onCheckedChange={() => {
                       setSelectedRegions((prev) =>
@@ -504,12 +510,20 @@ function ShopPageContent() {
       {/* Group 3: Valuation Range Slider */}
       <div className="pt-4 border-t border-[#E8DCCB]">
         <div className="flex items-center justify-between text-xs font-bold text-[#221C18] uppercase tracking-wider mb-2">
-          <span>Valuation Range</span>
+          <label htmlFor={`${idPrefix}-valuation-range`} className="cursor-pointer">
+            Valuation Range
+          </label>
           <span className="font-serif text-[#701D24] text-sm font-bold">
             {maxPrice >= 35000 ? 'All Valuations' : `Up to ₹${maxPrice.toLocaleString('en-IN')}`}
           </span>
         </div>
         <input
+          id={`${idPrefix}-valuation-range`}
+          name={`${idPrefix}ValuationRange`}
+          aria-label="Filter by maximum price valuation"
+          aria-valuemin={500}
+          aria-valuemax={35000}
+          aria-valuenow={maxPrice}
           type="range"
           min="500"
           max="35000"
@@ -531,9 +545,13 @@ function ShopPageContent() {
           Heritage Provenance
         </span>
 
-        <label className="flex items-center gap-2.5 cursor-pointer text-xs text-[#221C18] select-none">
+        <label
+          htmlFor={`${idPrefix}-filter-gi-only`}
+          className="flex items-center gap-2.5 cursor-pointer text-xs text-[#221C18] select-none"
+        >
           <Checkbox
-            id="filter-gi-only"
+            id={`${idPrefix}-filter-gi-only`}
+            aria-label="Geographical Indication Only"
             checked={onlyGi}
             onCheckedChange={(checked) => setOnlyGi(Boolean(checked))}
           />
@@ -543,9 +561,13 @@ function ShopPageContent() {
           </span>
         </label>
 
-        <label className="flex items-center gap-2.5 cursor-pointer text-xs text-[#221C18] select-none">
+        <label
+          htmlFor={`${idPrefix}-filter-awardees-only`}
+          className="flex items-center gap-2.5 cursor-pointer text-xs text-[#221C18] select-none"
+        >
           <Checkbox
-            id="filter-awardees-only"
+            id={`${idPrefix}-filter-awardees-only`}
+            aria-label="Masterwork and Shilp Guru Creations Only"
             checked={onlyAwardees}
             onCheckedChange={(checked) => setOnlyAwardees(Boolean(checked))}
           />
@@ -611,6 +633,9 @@ function ShopPageContent() {
           <div className="relative flex-1 max-w-lg">
             <Search className="w-4 h-4 text-[#8F6826] absolute left-3.5 top-3.5" />
             <input
+              id="shop-search-input"
+              name="shopSearch"
+              aria-label="Search by craft, artisan, or region"
               type="text"
               placeholder="Search by craft (Dhokra, Pashmina, Blue Pottery), artisan, or region..."
               value={searchQuery}
@@ -623,6 +648,7 @@ function ShopPageContent() {
                 onClick={() => setSearchQuery('')}
                 className="absolute right-3 top-3 text-[#655B53] hover:text-[#221C18] text-xs cursor-pointer"
                 title="Clear Search"
+                aria-label="Clear Search"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -647,7 +673,7 @@ function ShopPageContent() {
                 </button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[320px] overflow-y-auto bg-white p-6">
-                <FilterSection />
+                <FilterSection idPrefix="mobile" />
               </SheetContent>
             </Sheet>
 
@@ -834,7 +860,7 @@ function ShopPageContent() {
           {/* Desktop Left Sidebar */}
           <aside className="hidden lg:block lg:col-span-3 sticky top-24 space-y-6">
             <div className="bg-white rounded-2xl border border-[#E8DCCB] p-5 shadow-sm">
-              <FilterSection />
+              <FilterSection idPrefix="desktop" />
             </div>
           </aside>
 
