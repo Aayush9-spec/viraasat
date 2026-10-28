@@ -13,11 +13,12 @@ export interface UseAuthFormOptions {
 }
 
 export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOptions) {
-  const [isSignUp, setIsSignUp] = useState(initialIsSignUp);
+  const isAdmin = userType === 'Admin';
+  const [isSignUp, setIsSignUp] = useState(isAdmin ? false : initialIsSignUp);
 
   useEffect(() => {
-    setIsSignUp(initialIsSignUp);
-  }, [initialIsSignUp]);
+    setIsSignUp(isAdmin ? false : initialIsSignUp);
+  }, [initialIsSignUp, isAdmin]);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,7 +102,6 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
   const setSignUpActive = signUpHook?.setActive || (clerk as any)?.setActive;
 
   const isArtisan = userType === 'Artisan';
-  const isAdmin = userType === 'Admin';
   const role: UserRole = isAdmin
     ? (USER_ROLES.ADMIN as UserRole)
     : isArtisan
@@ -299,6 +299,23 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
         variant: 'destructive',
       });
       return;
+    }
+
+    if (isAdmin) {
+      const adminPin = (formData.get('adminPin') as string || '').trim();
+      const expectedPin = process.env.NEXT_PUBLIC_ADMIN_PIN || 'Viraasat@Admin2026';
+      if (!adminPin || adminPin !== expectedPin) {
+        toast({
+          title: 'Admin Access Denied',
+          description: 'Invalid Administrator Security Passcode. Access is strictly restricted to system administrators.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.ADMIN_VERIFIED, 'true');
+        window.dispatchEvent(new Event('storage'));
+      }
     }
 
     if (isSignUp && confirmPassword && password !== confirmPassword) {
@@ -1242,6 +1259,15 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
   };
 
   const handleSocialAuth = async (strategy: 'oauth_google' | 'oauth_facebook') => {
+    if (isAdmin) {
+      toast({
+        title: 'Social Login Disabled',
+        description: 'For security reasons, Admin access requires direct email authentication with your Administrator Passcode.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsSocialLoading(true);
 
     // Safeguard: Ensure isSocialLoading resets after 6s if provider or browser blocks navigation

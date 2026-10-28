@@ -30,6 +30,15 @@ export function useUserRole() {
       // Priority 3: Default to 'buyer' (customer)
       let detectedRole: UserRole = cachedRole || metaRole || 'buyer';
 
+      // Admin Guard: Ensure user has verified with the secret Admin Security Passcode
+      if (detectedRole === 'admin') {
+        const isAdminVerified = localStorage.getItem('viraasat_admin_verified') === 'true';
+        if (!isAdminVerified) {
+          detectedRole = 'buyer';
+          localStorage.setItem(LS_ROLE_KEY, 'buyer');
+        }
+      }
+
       setRole(detectedRole);
       localStorage.setItem(LS_ROLE_KEY, detectedRole);
       if (user?.id) {

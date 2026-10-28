@@ -57,18 +57,24 @@ export default function AdminDashboardPage() {
     );
   }
 
-  if (role !== 'admin') {
+  const isVerifiedAdmin = role === 'admin' && (typeof window === 'undefined' || localStorage.getItem('viraasat_admin_verified') === 'true');
+
+  if (!isVerifiedAdmin) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
-        <ShieldAlert className="h-12 w-12 text-red-500" />
-        <h1 className="font-heading text-2xl text-[#5e2c18]">Access Restricted</h1>
-        <p className="max-w-md text-sm text-muted-foreground">
-          This dashboard is reserved for Viraasat administrators. If you believe this is an error,
-          contact an administrator to review your role.
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center px-4">
+        <ShieldAlert className="h-14 w-14 text-amber-700" />
+        <h1 className="font-heading text-2xl md:text-3xl text-[#5e2c18]">Administrator Access Restricted</h1>
+        <p className="max-w-md text-sm text-muted-foreground leading-relaxed">
+          This portal is strictly reserved for authorized Viraasat administrators with a valid security passcode.
         </p>
-        <Button asChild variant="outline" className="mt-2">
-          <Link href="/">← Back to the marketplace</Link>
-        </Button>
+        <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
+          <Button asChild className="bg-amber-800 hover:bg-amber-900 text-white">
+            <Link href="/login/admin">Admin Passcode Login →</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/">← Return to Marketplace</Link>
+          </Button>
+        </div>
       </div>
     );
   }

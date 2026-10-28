@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
+import { ShieldCheck, Lock } from 'lucide-react';
 import { FaFacebook } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { ViraasatLogo } from '@/components/shared/visuals/viraasat-logo';
@@ -199,34 +200,64 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
           </CardContent>
         ) : (
           <>
-            {/* Dual Tabs Header - Sign In / Sign Up */}
-            <div className="flex border-b border-border bg-muted/40">
-              <button
-                type="button"
-                onClick={() => setIsSignUp(false)}
-                className={`flex-1 py-3.5 sm:py-4 text-center text-xs sm:text-sm font-bold tracking-wider uppercase transition-all duration-200 ${
-                  !isSignUp
-                    ? 'text-primary border-b-2 border-primary bg-card shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
-                }`}
-              >
-                SIGN IN
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsSignUp(true)}
-                className={`flex-1 py-3.5 sm:py-4 text-center text-xs sm:text-sm font-bold tracking-wider uppercase transition-all duration-200 ${
-                  isSignUp
-                    ? 'text-primary border-b-2 border-primary bg-card shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
-                }`}
-              >
-                SIGN UP
-              </button>
-            </div>
+            {/* Dual Tabs Header - Sign In / Sign Up (Disabled for Admin) */}
+            {isAdmin ? (
+              <div className="py-3 px-4 bg-muted/60 border-b border-border flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                <ShieldCheck className="w-4 h-4 text-amber-600" />
+                <span>Administrator Authentication</span>
+                <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-500/20 text-amber-950 dark:text-amber-200">Restricted</span>
+              </div>
+            ) : (
+              <div className="flex border-b border-border bg-muted/40">
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(false)}
+                  className={`flex-1 py-3.5 sm:py-4 text-center text-xs sm:text-sm font-bold tracking-wider uppercase transition-all duration-200 ${
+                    !isSignUp
+                      ? 'text-primary border-b-2 border-primary bg-card shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                  }`}
+                >
+                  SIGN IN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(true)}
+                  className={`flex-1 py-3.5 sm:py-4 text-center text-xs sm:text-sm font-bold tracking-wider uppercase transition-all duration-200 ${
+                    isSignUp
+                      ? 'text-primary border-b-2 border-primary bg-card shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                  }`}
+                >
+                  SIGN UP
+                </button>
+              </div>
+            )}
 
             <CardContent className="p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6">
               <form onSubmit={handleSubmit} className="space-y-4">
+                {isAdmin && (
+                  <div className="space-y-1.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="adminPin" className="text-xs font-bold uppercase text-amber-900 dark:text-amber-200 tracking-wide flex items-center gap-1.5">
+                        <Lock className="w-3.5 h-3.5 text-amber-600" />
+                        Admin Security Passcode
+                      </Label>
+                      <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-300">Required</span>
+                    </div>
+                    <Input
+                      id="adminPin"
+                      name="adminPin"
+                      type="password"
+                      placeholder="Enter secret administrator PIN"
+                      className="h-11 sm:h-12 text-base sm:text-sm border-amber-500/40 focus-visible:ring-2 focus-visible:ring-amber-600 rounded-xl bg-background"
+                      required
+                    />
+                    <p className="text-[11px] text-muted-foreground leading-tight">
+                      Access restricted to system administrators with a valid security key.
+                    </p>
+                  </div>
+                )}
                 {isSignUp && (
                   <div className="space-y-1.5">
                     <Label htmlFor="fullname" className="text-xs font-semibold uppercase text-muted-foreground tracking-wide">
@@ -344,56 +375,60 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                 </div>
               </form>
 
-              <>
-                <div className="relative my-3 sm:my-4">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border" />
+              {!isAdmin && (
+                <>
+                  <div className="relative my-3 sm:my-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-border" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-card px-3 text-muted-foreground font-semibold tracking-wider">
+                        Or Continue With
+                      </span>
+                    </div>
                   </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-3 text-muted-foreground font-semibold tracking-wider">
-                      Or Continue With
-                    </span>
-                  </div>
-                </div>
 
-                <div className={`grid grid-cols-1 gap-3 ${!isArtisan ? 'sm:grid-cols-2' : ''}`}>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleGoogleAuth}
-                    className="h-11 sm:h-12 border-input hover:bg-accent hover:text-accent-foreground rounded-xl text-sm font-medium w-full flex items-center justify-center gap-2 transition-colors"
-                    disabled={isLoading || isSocialLoading}
-                  >
-                    <FcGoogle className="h-5 w-5 shrink-0" />
-                    <span>{isSocialLoading ? 'Connecting...' : 'Google'}</span>
-                  </Button>
-                  {!isArtisan && (
+                  <div className={`grid grid-cols-1 gap-3 ${!isArtisan ? 'sm:grid-cols-2' : ''}`}>
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={handleFacebookAuth}
-                      className="h-11 sm:h-12 border-input hover:bg-accent rounded-xl text-sm font-medium text-foreground w-full flex items-center justify-center gap-2 transition-colors"
+                      onClick={handleGoogleAuth}
+                      className="h-11 sm:h-12 border-input hover:bg-accent hover:text-accent-foreground rounded-xl text-sm font-medium w-full flex items-center justify-center gap-2 transition-colors"
                       disabled={isLoading || isSocialLoading}
                     >
-                      <FaFacebook className="h-5 w-5 shrink-0 text-[#1877F2]" />
-                      <span>Facebook</span>
+                      <FcGoogle className="h-5 w-5 shrink-0" />
+                      <span>{isSocialLoading ? 'Connecting...' : 'Google'}</span>
                     </Button>
-                  )}
-                </div>
-              </>
+                    {!isArtisan && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleFacebookAuth}
+                        className="h-11 sm:h-12 border-input hover:bg-accent rounded-xl text-sm font-medium text-foreground w-full flex items-center justify-center gap-2 transition-colors"
+                        disabled={isLoading || isSocialLoading}
+                      >
+                        <FaFacebook className="h-5 w-5 shrink-0 text-[#1877F2]" />
+                        <span>Facebook</span>
+                      </Button>
+                    )}
+                  </div>
+                </>
+              )}
 
               {/* Required by Clerk for bot protection in custom sign-up and OAuth flows. */}
               <div id="clerk-captcha" data-cl-size="flexible" />
 
               <div className="text-center pt-1 text-xs text-muted-foreground leading-relaxed">
-                {isSignUp ? (
+                {isAdmin ? (
+                  <span className="text-amber-800 dark:text-amber-300 font-medium">
+                    Protected Admin Console. Unauthorized access attempts are monitored and logged.
+                  </span>
+                ) : isSignUp ? (
                   <span>By signing up, you agree to Viraasat&apos;s <Link href="/terms" className="text-primary hover:underline font-medium">Terms</Link> & <Link href="/privacy" className="text-primary hover:underline font-medium">Privacy Policy</Link>.</span>
+                ) : isArtisan ? (
+                  <span>Not registered as a Viraasat Artisan? <Link href="/apply" className="text-primary font-semibold hover:underline">Apply Here</Link></span>
                 ) : (
-                  isArtisan ? (
-                    <span>Not registered as a Viraasat Artisan? <Link href="/apply" className="text-primary font-semibold hover:underline">Apply Here</Link></span>
-                  ) : (
-                    <span>Don&apos;t have an account yet? <button type="button" onClick={() => setIsSignUp(true)} className="text-primary font-semibold hover:underline">Sign Up Now</button></span>
-                  )
+                  <span>Don&apos;t have an account yet? <button type="button" onClick={() => setIsSignUp(true)} className="text-primary font-semibold hover:underline">Sign Up Now</button></span>
                 )}
               </div>
             </CardContent>

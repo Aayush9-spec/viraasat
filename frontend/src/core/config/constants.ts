@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
   WISHLIST: 'viraasat-wishlist',
   SESSION_ROLE: 'viraasat_session_role',
   SESSION_UID: 'viraasat_session_uid',
+  ADMIN_VERIFIED: 'viraasat_admin_verified',
   THEME: 'theme',
   LOCALE: 'viraasat_locale',
 } as const;

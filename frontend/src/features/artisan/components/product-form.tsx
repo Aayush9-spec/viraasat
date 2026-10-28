@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { products, categories, saveLocalProduct } from '@/lib/data';
+import { products, categories, regions, saveLocalProduct } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import VoiceRecorder from '@/features/ai/components/voice-recorder';
 import ImageEnhancer from './image-enhancer';
@@ -42,7 +42,24 @@ import { useBackend } from '@/hooks/use-backend';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/services/supabase';
 import { useRouter } from 'next/navigation';
-import { Sparkles, Trash2, X, Wand2, Loader2, Cpu, Clock, Scale, Coins } from 'lucide-react';
+import {
+  Sparkles,
+  Trash2,
+  X,
+  Wand2,
+  Loader2,
+  Cpu,
+  Clock,
+  Scale,
+  Coins,
+  Ruler,
+  Hammer,
+  Award,
+  Layers,
+  Package,
+  Info,
+  CheckCircle2,
+} from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 
 const productSchema = z.object({
@@ -50,10 +67,32 @@ const productSchema = z.object({
   description: z.string().min(10, 'Description is too short'),
   price: z.coerce.number().positive('Price must be a positive number'),
   category: z.string().min(1, 'Please select a category'),
-  region: z.string().min(1, 'Please enter the craft region (e.g. Rajasthan)'),
+  region: z.string().min(1, 'Please select your state/region'),
+  craftsmanship: z.enum(['handmade', 'semi_handmade', 'machine_assisted']).default('handmade'),
+  material: z.string().default('Terracotta & Natural Clay'),
+  
+  // Intuitive Dimensions
+  dimensionType: z.enum(['dimensions', 'apparel', 'circular', 'custom_sqft']).default('dimensions'),
+  dimensionUnit: z.enum(['in', 'cm', 'ft']).default('in'),
+  length: z.coerce.number().min(0).default(12),
+  width: z.coerce.number().min(0).default(8),
+  height: z.coerce.number().min(0).default(4),
+  diameter: z.coerce.number().min(0).default(6),
+  apparelSize: z.string().default('Free Size'),
+  sizeSqft: z.coerce.number().default(0.67),
+
+  // Labor & Crafting Duration
+  laborTimeUnit: z.enum(['hours', 'days']).default('hours'),
+  laborTimeValue: z.coerce.number().min(0.5, 'Must be at least 0.5').default(5),
   laborHours: z.coerce.number().default(5),
-  sizeSqft: z.coerce.number().default(1),
-  material: z.string().default('Natural Vegetable Dyes'),
+
+  // Deep Craft Details
+  craftTechnique: z.string().optional(),
+  weightGrams: z.coerce.number().optional(),
+  giCertified: z.boolean().default(false),
+  giCertificateNumber: z.string().optional(),
+  careInstructions: z.string().optional(),
+  packageContents: z.string().optional(),
 });
 
 interface ProductFormProps {
@@ -84,26 +123,97 @@ export function ProductForm({ product }: ProductFormProps) {
       name: product?.name || '',
       description: product?.description || '',
       price: product?.price || 450,
-      category: product?.category || 'Home Decor',
+      category: product?.category || 'Home Decor & Wall Art',
       region: product?.region || 'Rajasthan',
-      laborHours: 5,
-      sizeSqft: 1,
+      craftsmanship: 'handmade',
       material: 'Terracotta & Natural Clay',
+      dimensionType: 'dimensions',
+      dimensionUnit: 'in',
+      length: 12,
+      width: 8,
+      height: 4,
+      diameter: 6,
+      apparelSize: 'Free Size',
+      sizeSqft: 0.67,
+      laborTimeUnit: 'hours',
+      laborTimeValue: 5,
+      laborHours: 5,
+      craftTechnique: '',
+      weightGrams: 500,
+      giCertified: false,
+      giCertificateNumber: '',
+      careInstructions: 'Wipe with soft clean cloth. Keep away from water and direct harsh sunlight.',
+      packageContents: '1 Handcrafted piece, artisan provenance card',
     },
   });
+
+  // Watch dimension & labor fields for live relatable calculations
+  const dimensionType = form.watch('dimensionType');
+  const dimensionUnit = form.watch('dimensionUnit');
+  const lengthVal = form.watch('length') || 0;
+  const widthVal = form.watch('width') || 0;
+  const diameterVal = form.watch('diameter') || 0;
+  const apparelSizeVal = form.watch('apparelSize');
+  const laborTimeUnit = form.watch('laborTimeUnit');
+  const laborTimeValue = form.watch('laborTimeValue') || 1;
+  const craftsmanshipVal = form.watch('craftsmanship');
+  const giCertifiedVal = form.watch('giCertified');
+
+  // Compute normalized size_sqft reactively
+  const computedSizeSqft = (() => {
+    if (dimensionType === 'custom_sqft') {
+      return Number(form.watch('sizeSqft')) || 1;
+    }
+    if (dimensionType === 'apparel') {
+      switch (apparelSizeVal) {
+        case 'S': return 4.0;
+        case 'M': return 5.0;
+        case 'L': return 6.0;
+        case 'XL': return 7.0;
+        case 'XXL': return 8.0;
+        case 'Saree (5.5m)': return 35.0;
+        case 'Shawl / Stole': return 12.0;
+        case 'Dhurrie / Rug (Small)': return 9.0;
+        case 'Dhurrie / Rug (Medium)': return 24.0;
+        default: return 5.5;
+      }
+    }
+    if (dimensionType === 'circular') {
+      // Area = pi * r^2
+      const radius = (diameterVal || 1) / 2;
+      let areaSqUnits = Math.PI * radius * radius;
+      if (dimensionUnit === 'in') return Math.max(0.05, Number((areaSqUnits / 144).toFixed(2)));
+      if (dimensionUnit === 'cm') return Math.max(0.05, Number((areaSqUnits / 929.03).toFixed(2)));
+      return Math.max(0.05, Number(areaSqUnits.toFixed(2)));
+    }
+    // Standard length x width
+    const l = Math.max(0.1, lengthVal);
+    const w = Math.max(0.1, widthVal);
+    const area = l * w;
+    if (dimensionUnit === 'in') return Math.max(0.05, Number((area / 144).toFixed(2)));
+    if (dimensionUnit === 'cm') return Math.max(0.05, Number((area / 929.03).toFixed(2)));
+    return Math.max(0.05, Number(area.toFixed(2)));
+  })();
+
+  // Compute total labor hours reactively (1 artisan work day = 8 hours)
+  const computedLaborHours = laborTimeUnit === 'days'
+    ? Number((laborTimeValue * 8).toFixed(1))
+    : Number(laborTimeValue);
 
   const handlePredictPrice = async () => {
     setIsPredictingPrice(true);
     try {
       const values = form.getValues();
+      const finalHours = values.laborTimeUnit === 'days' ? (Number(values.laborTimeValue) || 1) * 8 : (Number(values.laborTimeValue) || 5);
       const data = await backendPost<{ recommended_price: number; craft_tier?: string; labor_cost?: number; material_factor?: number; sustainability_premium?: number; price_range?: { min: number; max: number } }>('/api/predict-price', {
         name: values.name || '',
         description: values.description || '',
         region: values.region || '',
-        category: values.category || 'Home Decor',
-        material: values.material || 'Natural Vegetable Dyes',
-        labor_hours: Number(values.laborHours) || 5,
-        size_sqft: Number(values.sizeSqft) || 1,
+        category: values.category || 'Home Decor & Wall Art',
+        material: values.material || 'Terracotta & Natural Clay',
+        labor_hours: finalHours,
+        size_sqft: computedSizeSqft,
+        craftsmanship: values.craftsmanship || 'handmade',
         is_organic: true,
       });
       setPricingInfo(data);
@@ -203,6 +313,31 @@ export function ProductForm({ product }: ProductFormProps) {
 
       const finalImages = images.length > 0 ? images : [getContextualCraftImage(values.name, values.category)];
 
+      const finalLaborHours = values.laborTimeUnit === 'days' ? (Number(values.laborTimeValue) || 1) * 8 : (Number(values.laborTimeValue) || 5);
+
+      const dimensionsDescription = values.dimensionType === 'apparel'
+        ? `Size: ${values.apparelSize}`
+        : values.dimensionType === 'circular'
+          ? `Diameter: ${values.diameter} ${values.dimensionUnit}, Depth/Height: ${values.height} ${values.dimensionUnit}`
+          : values.dimensionType === 'custom_sqft'
+            ? `${values.sizeSqft} sq ft`
+            : `${values.length}L × ${values.width}W × ${values.height}H ${values.dimensionUnit}`;
+
+      const craftDetails = {
+        craftsmanship: values.craftsmanship,
+        craftTechnique: values.craftTechnique || '',
+        material: values.material,
+        dimensions: dimensionsDescription,
+        sizeSqft: computedSizeSqft,
+        laborHours: finalLaborHours,
+        laborDurationText: values.laborTimeUnit === 'days' ? `${values.laborTimeValue} days (~${finalLaborHours} hrs)` : `${values.laborTimeValue} hours`,
+        weightGrams: values.weightGrams || 500,
+        giCertified: values.giCertified,
+        giCertificateNumber: values.giCertificateNumber || '',
+        careInstructions: values.careInstructions || '',
+        packageContents: values.packageContents || '',
+      };
+
       const supabasePayload = {
         artisan_id: dbArtisanId,
         name: values.name.trim(),
@@ -216,6 +351,7 @@ export function ProductForm({ product }: ProductFormProps) {
           keyFeatures: features,
           styleTags: styleTags,
           useCases: useCases,
+          craftDetails: craftDetails,
         },
         updated_at: now,
       };
@@ -231,15 +367,23 @@ export function ProductForm({ product }: ProductFormProps) {
         price: numPrice,
         stock: 10,
         images: finalImages,
+        material: values.material,
+        craftsmanship: values.craftsmanship,
+        dimensions: dimensionsDescription,
+        sizeSqft: computedSizeSqft,
+        laborHours: finalLaborHours,
+        craftDetails: craftDetails,
         ai_insights: {
           keyFeatures: features,
           styleTags: styleTags,
           useCases: useCases,
+          craftDetails: craftDetails,
         },
         aiInsights: {
           keyFeatures: features,
           styleTags: styleTags,
           useCases: useCases,
+          craftDetails: craftDetails,
         },
         created_at: now,
         createdAt: now,
@@ -448,6 +592,126 @@ export function ProductForm({ product }: ProductFormProps) {
                 />
               </CardContent>
             </Card>
+
+            {/* Comprehensive Craft Specifications & Provenance */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Award className="h-5 w-5 text-[#8b4513]" />
+                  <div>
+                    <CardTitle className="text-base">Authenticity & Product Specifications</CardTitle>
+                    <CardDescription className="text-xs">
+                      Provide technical craft details to build buyer trust and display on the provenance certificate.
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="craftTechnique"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-semibold">Craft Technique (शिल्प विधि)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Hand Block Print, Dhokra Casting, Zari Weaving" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="weightGrams"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-semibold">Weight (Approx grams)</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="500" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="p-3 bg-amber-50/60 border border-amber-200/80 rounded-md space-y-3">
+                  <FormField
+                    control={form.control}
+                    name="giCertified"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-between">
+                        <div>
+                          <FormLabel className="text-xs font-semibold text-amber-950 flex items-center gap-1.5 cursor-pointer">
+                            <Award className="h-3.5 w-3.5 text-amber-700" />
+                            GI (Geographical Indication) Certified?
+                          </FormLabel>
+                          <p className="text-[11px] text-amber-800/80">
+                            Check this if your craft has an official Government of India GI registration tag.
+                          </p>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 rounded border-amber-300 text-[#8b4513] focus:ring-[#8b4513]"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {giCertifiedVal && (
+                    <FormField
+                      control={form.control}
+                      name="giCertificateNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[11px] font-medium text-amber-900">GI Registration / Tag No. (Optional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g. GI-APP-NO-124 (Jaipur Blue Pottery)" className="bg-white text-xs h-8" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="careInstructions"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-semibold">Care & Maintenance Instructions</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Dry clean only, gentle damp cloth wipe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="packageContents"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-semibold">Package Contents (डिब्बे में क्या है)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. 1 Ceramic Urn, 1 Artisan Provenance Card" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </CardContent>
+            </Card>
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -580,24 +844,91 @@ export function ProductForm({ product }: ProductFormProps) {
                   )}
                 />
 
+                {/* Craftsmanship Mode: Handmade vs Semi-Handmade vs Machine */}
+                <FormField
+                  control={form.control}
+                  name="craftsmanship"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="flex items-center gap-1.5 font-semibold text-xs">
+                        <Hammer className="h-3.5 w-3.5 text-[#8b4513]" />
+                        Craftsmanship Mode (कारीगरी का प्रकार)
+                      </FormLabel>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => field.onChange('handmade')}
+                          className={`p-2.5 rounded-md border text-left text-xs transition-all flex flex-col gap-1 ${
+                            field.value === 'handmade'
+                              ? 'border-[#8b4513] bg-amber-50 text-amber-950 ring-1 ring-[#8b4513]'
+                              : 'border-border/60 hover:border-border hover:bg-muted/40'
+                          }`}
+                        >
+                          <span className="font-bold flex items-center gap-1">
+                            ✋ 100% Handmade
+                          </span>
+                          <span className="text-[10px] text-muted-foreground leading-tight">
+                            शुद्ध हस्तनिर्मित
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => field.onChange('semi_handmade')}
+                          className={`p-2.5 rounded-md border text-left text-xs transition-all flex flex-col gap-1 ${
+                            field.value === 'semi_handmade'
+                              ? 'border-[#8b4513] bg-amber-50 text-amber-950 ring-1 ring-[#8b4513]'
+                              : 'border-border/60 hover:border-border hover:bg-muted/40'
+                          }`}
+                        >
+                          <span className="font-bold flex items-center gap-1">
+                            🧵 Semi / Handloom
+                          </span>
+                          <span className="text-[10px] text-muted-foreground leading-tight">
+                            पारंपरिक हथकरघा
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => field.onChange('machine_assisted')}
+                          className={`p-2.5 rounded-md border text-left text-xs transition-all flex flex-col gap-1 ${
+                            field.value === 'machine_assisted'
+                              ? 'border-[#8b4513] bg-amber-50 text-amber-950 ring-1 ring-[#8b4513]'
+                              : 'border-border/60 hover:border-border hover:bg-muted/40'
+                          }`}
+                        >
+                          <span className="font-bold flex items-center gap-1">
+                            ⚙️ Machine-Assisted
+                          </span>
+                          <span className="text-[10px] text-muted-foreground leading-tight">
+                            मशीन सहायता प्राप्त
+                          </span>
+                        </button>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Category</FormLabel>
+                      <FormLabel className="text-xs font-semibold">Craft Category (शिल्प श्रेणी)</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
+                          <SelectTrigger className="text-xs">
+                            <SelectValue placeholder="Select a craft category" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="max-h-60">
                           {categories.map((cat) => (
-                            <SelectItem key={cat} value={cat}>
+                            <SelectItem key={cat} value={cat} className="text-xs">
                               {cat}
                             </SelectItem>
                           ))}
@@ -613,10 +944,24 @@ export function ProductForm({ product }: ProductFormProps) {
                   name="region"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Craft Region</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. Rajasthan, Kashmir, Kutch" {...field} />
-                      </FormControl>
+                      <FormLabel className="text-xs font-semibold">Craft Region / State (राज्य व क्षेत्र)</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="text-xs">
+                            <SelectValue placeholder="Select your State / Union Territory" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="max-h-60">
+                          {regions.map((reg) => (
+                            <SelectItem key={reg} value={reg} className="text-xs">
+                              {reg}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -627,29 +972,41 @@ export function ProductForm({ product }: ProductFormProps) {
                   name="material"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Raw Material</FormLabel>
+                      <FormLabel className="text-xs font-semibold">Authentic Raw Material (कच्चा माल)</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select material" />
+                          <SelectTrigger className="text-xs">
+                            <SelectValue placeholder="Select raw material" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="max-h-60">
                           {[
                             "Terracotta & Natural Clay",
                             "Multani Mitti & Quartz",
-                            "Natural Vegetable Dyes",
                             "Khadi Cotton",
-                            "Jute & Bamboo",
+                            "Mulberry & Tussar Silk",
+                            "Natural Vegetable Dyes",
+                            "Changthangi Cashmere Wool",
+                            "Jute & Coir",
+                            "Bamboo & Cane",
+                            "Sikki Grass & Sabai Grass",
                             "Sheesham & Teak Wood",
+                            "Sandalwood & Rosewood",
+                            "Walnut Wood",
                             "Brass & Bell Metal",
+                            "Copper & Bronze (Kansa)",
+                            "Wrought Iron (Bastar Loha)",
                             "Pure Chandi / Silver Alloy",
-                            "Changthangi Cashmere Wool"
+                            "Makrana Marble & Soft Stone",
+                            "Lac & Natural Resins",
+                            "Glass & Mirror Beads",
+                            "Vegetable Tanned Leather",
+                            "Handmade Cotton Rag Paper",
                           ].map((mat) => (
-                            <SelectItem key={mat} value={mat}>
+                            <SelectItem key={mat} value={mat} className="text-xs">
                               {mat}
                             </SelectItem>
                           ))}
@@ -660,34 +1017,292 @@ export function ProductForm({ product }: ProductFormProps) {
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="laborHours"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 opacity-60" /> Labor Hours</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                {/* Labor Time (Hours / Days with Quick Presets) */}
+                <div className="space-y-2 p-3 bg-muted/30 border rounded-md">
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="flex items-center gap-1.5 text-xs font-semibold">
+                      <Clock className="h-3.5 w-3.5 text-primary" /> Crafting Time (बनाने में लगा समय)
+                    </FormLabel>
+                    <div className="flex items-center gap-1 text-[11px] bg-background p-0.5 rounded border">
+                      <button
+                        type="button"
+                        onClick={() => form.setValue('laborTimeUnit', 'hours')}
+                        className={`px-2 py-0.5 rounded ${
+                          laborTimeUnit === 'hours' ? 'bg-[#8b4513] text-white font-semibold' : 'text-muted-foreground'
+                        }`}
+                      >
+                        Hours
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => form.setValue('laborTimeUnit', 'days')}
+                        className={`px-2 py-0.5 rounded ${
+                          laborTimeUnit === 'days' ? 'bg-[#8b4513] text-white font-semibold' : 'text-muted-foreground'
+                        }`}
+                      >
+                        Days
+                      </button>
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="sizeSqft"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1.5"><Scale className="h-3.5 w-3.5 opacity-60" /> Size (sq ft)</FormLabel>
-                        <FormControl>
-                          <Input type="number" step="0.1" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="flex items-center gap-2">
+                    <FormField
+                      control={form.control}
+                      name="laborTimeValue"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step={laborTimeUnit === 'days' ? '0.5' : '1'}
+                              min="0.5"
+                              placeholder={laborTimeUnit === 'days' ? 'e.g. 2' : 'e.g. 6'}
+                              className="text-xs"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <span className="text-xs text-muted-foreground font-medium min-w-[70px]">
+                      {laborTimeUnit === 'days' ? `Days (~${computedLaborHours}h)` : 'Total Hours'}
+                    </span>
+                  </div>
+
+                  {/* Quick Presets */}
+                  <div className="flex items-center gap-1.5 pt-1">
+                    <span className="text-[10px] text-muted-foreground">Quick:</span>
+                    {(laborTimeUnit === 'hours' ? [2, 4, 8, 16] : [1, 2, 5, 10]).map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => form.setValue('laborTimeValue', preset)}
+                        className="text-[10px] px-2 py-0.5 rounded border bg-background hover:bg-muted text-muted-foreground"
+                      >
+                        {preset} {laborTimeUnit === 'hours' ? 'hrs' : 'days'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Relatable Dimensions & Size Selector */}
+                <div className="space-y-2.5 p-3 bg-muted/30 border rounded-md">
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="flex items-center gap-1.5 text-xs font-semibold">
+                      <Ruler className="h-3.5 w-3.5 text-primary" /> Product Dimensions & Size
+                    </FormLabel>
+                    <span className="text-[10px] font-mono bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300">
+                      ≈ {computedSizeSqft} sq ft
+                    </span>
+                  </div>
+
+                  {/* Dimension Type Tabs */}
+                  <div className="grid grid-cols-4 gap-1 text-[11px] bg-background p-0.5 rounded border">
+                    <button
+                      type="button"
+                      onClick={() => form.setValue('dimensionType', 'dimensions')}
+                      className={`py-1 text-center rounded transition-all ${
+                        dimensionType === 'dimensions' ? 'bg-[#8b4513] text-white font-semibold' : 'text-muted-foreground'
+                      }`}
+                    >
+                      L × W × H
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => form.setValue('dimensionType', 'apparel')}
+                      className={`py-1 text-center rounded transition-all ${
+                        dimensionType === 'apparel' ? 'bg-[#8b4513] text-white font-semibold' : 'text-muted-foreground'
+                      }`}
+                    >
+                      Apparel / Fabric
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => form.setValue('dimensionType', 'circular')}
+                      className={`py-1 text-center rounded transition-all ${
+                        dimensionType === 'circular' ? 'bg-[#8b4513] text-white font-semibold' : 'text-muted-foreground'
+                      }`}
+                    >
+                      Round / Pot
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => form.setValue('dimensionType', 'custom_sqft')}
+                      className={`py-1 text-center rounded transition-all ${
+                        dimensionType === 'custom_sqft' ? 'bg-[#8b4513] text-white font-semibold' : 'text-muted-foreground'
+                      }`}
+                    >
+                      Sq Ft Direct
+                    </button>
+                  </div>
+
+                  {/* Standard L x W x H */}
+                  {dimensionType === 'dimensions' && (
+                    <div className="space-y-2 pt-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] text-muted-foreground">Measurement Unit:</span>
+                        <div className="flex items-center gap-1 text-[10px]">
+                          {(['in', 'cm', 'ft'] as const).map((unit) => (
+                            <button
+                              key={unit}
+                              type="button"
+                              onClick={() => form.setValue('dimensionUnit', unit)}
+                              className={`px-2 py-0.5 rounded border ${
+                                dimensionUnit === unit ? 'bg-[#8b4513] text-white font-semibold' : 'bg-background'
+                              }`}
+                            >
+                              {unit === 'in' ? 'Inches (in)' : unit === 'cm' ? 'Centimeters (cm)' : 'Feet (ft)'}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        <FormField
+                          control={form.control}
+                          name="length"
+                          render={({ field }) => (
+                            <FormItem>
+                              <span className="text-[10px] text-muted-foreground">Length ({dimensionUnit})</span>
+                              <FormControl>
+                                <Input type="number" step="0.5" className="text-xs h-8" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="width"
+                          render={({ field }) => (
+                            <FormItem>
+                              <span className="text-[10px] text-muted-foreground">Width ({dimensionUnit})</span>
+                              <FormControl>
+                                <Input type="number" step="0.5" className="text-xs h-8" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="height"
+                          render={({ field }) => (
+                            <FormItem>
+                              <span className="text-[10px] text-muted-foreground">Height ({dimensionUnit})</span>
+                              <FormControl>
+                                <Input type="number" step="0.5" className="text-xs h-8" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Apparel / Fabric Presets */}
+                  {dimensionType === 'apparel' && (
+                    <div className="space-y-2 pt-1">
+                      <FormField
+                        control={form.control}
+                        name="apparelSize"
+                        render={({ field }) => (
+                          <FormItem>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="text-xs h-8">
+                                  <SelectValue placeholder="Select apparel size" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {[
+                                  'Free Size',
+                                  'S (Small)',
+                                  'M (Medium)',
+                                  'L (Large)',
+                                  'XL (Extra Large)',
+                                  'XXL (Double Extra Large)',
+                                  'Saree (5.5m)',
+                                  'Shawl / Stole',
+                                  'Dhurrie / Rug (Small)',
+                                  'Dhurrie / Rug (Medium)',
+                                ].map((size) => (
+                                  <SelectItem key={size} value={size} className="text-xs">
+                                    {size}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+
+                  {/* Circular / Diameter */}
+                  {dimensionType === 'circular' && (
+                    <div className="space-y-2 pt-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] text-muted-foreground">Measurement Unit:</span>
+                        <div className="flex items-center gap-1 text-[10px]">
+                          {(['in', 'cm'] as const).map((unit) => (
+                            <button
+                              key={unit}
+                              type="button"
+                              onClick={() => form.setValue('dimensionUnit', unit)}
+                              className={`px-2 py-0.5 rounded border ${
+                                dimensionUnit === unit ? 'bg-[#8b4513] text-white font-semibold' : 'bg-background'
+                              }`}
+                            >
+                              {unit === 'in' ? 'Inches (in)' : 'Centimeters (cm)'}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <FormField
+                          control={form.control}
+                          name="diameter"
+                          render={({ field }) => (
+                            <FormItem>
+                              <span className="text-[10px] text-muted-foreground">Diameter ({dimensionUnit})</span>
+                              <FormControl>
+                                <Input type="number" step="0.5" className="text-xs h-8" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="height"
+                          render={({ field }) => (
+                            <FormItem>
+                              <span className="text-[10px] text-muted-foreground">Height / Depth ({dimensionUnit})</span>
+                              <FormControl>
+                                <Input type="number" step="0.5" className="text-xs h-8" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Direct Sq Ft Input */}
+                  {dimensionType === 'custom_sqft' && (
+                    <div className="pt-1">
+                      <FormField
+                        control={form.control}
+                        name="sizeSqft"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input type="number" step="0.1" placeholder="1.0" className="text-xs h-8" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {pricingInfo && (

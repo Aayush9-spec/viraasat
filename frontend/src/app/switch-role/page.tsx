@@ -31,11 +31,18 @@ function SwitchRoleContent() {
   const { user, isLoaded } = useUser();
 
   const toParam = searchParams.get('to');
+  const isVerifiedAdmin = typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEYS.ADMIN_VERIFIED) === 'true';
   const targetRole = toParam === 'admin' ? 'admin' : toParam === 'artisan' ? 'artisan' : 'buyer';
   const isTargetArtisan = targetRole === 'artisan';
   const isTargetAdmin = targetRole === 'admin';
 
   useEffect(() => {
+    if (isTargetAdmin && !isVerifiedAdmin) {
+      // Must verify via administrator passcode first
+      router.replace('/login/admin');
+      return;
+    }
+
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEYS.SESSION_ROLE, targetRole);
 
@@ -69,7 +76,7 @@ function SwitchRoleContent() {
         ? '/artisan/dashboard'
         : '/shop';
     router.replace(destination);
-  }, [targetRole, isTargetArtisan, isTargetAdmin, isLoaded, user, router]);
+  }, [toParam, isVerifiedAdmin, isLoaded, user, router]);
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-background">
