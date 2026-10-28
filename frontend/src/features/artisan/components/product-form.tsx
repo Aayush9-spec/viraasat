@@ -528,8 +528,20 @@ export function ProductForm({ product }: ProductFormProps) {
     try {
       const inputLang = form.getValues('inputLanguage') || 'Hindi';
       const outLang = form.getValues('descriptionLanguage') || 'Hindi';
+      const existingDesc = form.getValues('description') || '';
+      const material = form.getValues('material');
+      const region = form.getValues('region');
+      const craftSpecs = [
+        existingDesc.trim(),
+        material ? `Material: ${material}` : '',
+        region ? `Region: ${region}` : '',
+      ]
+        .filter(Boolean)
+        .join('. ');
+
       const result = await generateProductDescription({
         productName: name.trim(),
+        productDetails: craftSpecs || undefined,
         inputLanguage: inputLang,
         outputLanguage: outLang,
         generateEnglish: true,
@@ -548,8 +560,9 @@ export function ProductForm({ product }: ProductFormProps) {
       console.warn('Live generation failed, using instant heritage fallback:', error);
       const trimmed = name.trim();
       const outLang = form.getValues('descriptionLanguage') || 'Hindi';
-      const fallbackNative = buildFallbackNativeDescription(trimmed, outLang);
-      const fallbackEnglish = buildFallbackEnglishDescription(trimmed);
+      const existingDesc = form.getValues('description') || '';
+      const fallbackNative = buildFallbackNativeDescription(trimmed, outLang, existingDesc);
+      const fallbackEnglish = buildFallbackEnglishDescription(trimmed, existingDesc);
 
       form.setValue('description', fallbackNative);
       form.setValue('englishDescription', fallbackEnglish);
@@ -596,7 +609,18 @@ export function ProductForm({ product }: ProductFormProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Product Name (उत्पाद का नाम)</FormLabel>
+                      <div className="flex items-center justify-between">
+                        <FormLabel>Product Name (उत्पाद का नाम)</FormLabel>
+                        <VoiceRecorder
+                          variant="ghost"
+                          size="sm"
+                          buttonLabel="Speak Name"
+                          className="h-6 text-xs text-primary hover:text-primary/80 gap-1 px-1.5"
+                          defaultLanguage={form.watch('inputLanguage') || 'Hindi'}
+                          title="Speak product name in your preferred language"
+                          onTranscriptionComplete={(text) => form.setValue('name', text)}
+                        />
+                      </div>
                       <FormControl>
                         <Input placeholder="e.g. हाथ से बनी बनारसी रेशमी साड़ी, Azure Ceramic Vase..." {...field} />
                       </FormControl>
@@ -670,26 +694,47 @@ export function ProductForm({ product }: ProductFormProps) {
                         <FormLabel className="flex items-center gap-1.5">
                           Description ({descriptionLanguageVal})
                         </FormLabel>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleGenerateDescription}
-                          disabled={isGeneratingDesc}
-                          className="h-7 text-xs gap-1.5 text-primary hover:text-primary/80"
-                        >
-                          {isGeneratingDesc ? (
-                            <>
-                              <Loader2 className="h-3 w-3 animate-spin" />
-                              Generating Multilingual...
-                            </>
-                          ) : (
-                            <>
-                              <Wand2 className="h-3 w-3" />
-                              AI Generate (Native + English)
-                            </>
-                          )}
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <VoiceRecorder
+                            variant="ghost"
+                            size="sm"
+                            buttonLabel="Voice Details"
+                            className="h-7 text-xs gap-1 text-primary hover:text-primary/80"
+                            defaultLanguage={descriptionLanguageVal}
+                            productName={form.watch('name')}
+                            title="Speak craft specifications & generate multilingual descriptions"
+                            onTranscriptionComplete={(text) => {
+                              const current = form.getValues('description');
+                              form.setValue('description', current ? `${current}\n${text}` : text);
+                            }}
+                            onDescriptionsGenerated={({ description, englishDescription }) => {
+                              form.setValue('description', description);
+                              if (englishDescription) {
+                                form.setValue('englishDescription', englishDescription);
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleGenerateDescription}
+                            disabled={isGeneratingDesc}
+                            className="h-7 text-xs gap-1.5 text-primary hover:text-primary/80"
+                          >
+                            {isGeneratingDesc ? (
+                              <>
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                                Generating...
+                              </>
+                            ) : (
+                              <>
+                                <Wand2 className="h-3 w-3" />
+                                AI Generate (Native + English)
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                       <div className="relative">
                         <FormControl>
@@ -699,11 +744,26 @@ export function ProductForm({ product }: ProductFormProps) {
                             {...field}
                           />
                         </FormControl>
-                        <VoiceRecorder
-                          onTranscriptionComplete={(text) =>
-                            form.setValue('description', text)
-                          }
-                        />
+                        <div className="absolute bottom-2.5 right-2.5">
+                          <VoiceRecorder
+                            size="icon"
+                            variant="outline"
+                            className="h-8 w-8 rounded-full bg-background/90 shadow-sm border hover:bg-muted"
+                            defaultLanguage={descriptionLanguageVal}
+                            productName={form.watch('name')}
+                            title="Speak product details & craft notes"
+                            onTranscriptionComplete={(text) => {
+                              const current = form.getValues('description');
+                              form.setValue('description', current ? `${current}\n${text}` : text);
+                            }}
+                            onDescriptionsGenerated={({ description, englishDescription }) => {
+                              form.setValue('description', description);
+                              if (englishDescription) {
+                                form.setValue('englishDescription', englishDescription);
+                              }
+                            }}
+                          />
+                        </div>
                       </div>
                       <FormMessage />
                     </FormItem>

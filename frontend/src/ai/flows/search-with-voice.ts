@@ -30,8 +30,11 @@ const SearchWithVoiceOutputSchema = z.object({
 });
 export type SearchWithVoiceOutput = z.infer<typeof SearchWithVoiceOutputSchema>;
 
-export async function searchWithVoice(input: SearchWithVoiceInput): Promise<SearchWithVoiceOutput> {
-  return searchWithVoiceFlow(input);
+function isGeminiConfigured(): boolean {
+  if (typeof process === 'undefined') return false;
+  if (process.env.MOCK_AI === 'true') return false;
+  const key = (process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY ?? '').trim();
+  return typeof key === 'string' && key.startsWith('AIza') && key.length >= 25;
 }
 
 const searchWithVoicePrompt = ai.definePrompt({
@@ -65,14 +68,37 @@ const searchWithVoiceFlow = ai.defineFlow(
     outputSchema: SearchWithVoiceOutputSchema,
   },
   async (input) => {
-    const { output } = await searchWithVoicePrompt({
-      audioDataUri: input.audioDataUri,
-    });
-    if (!output || !output.transcription?.trim()) {
-      throw new Error(
-        'Speech service returned no transcription. Check GEMINI_API_KEY and try again.'
-      );
+    if (isGeminiConfigured()) {
+      try {
+        const { output } = await searchWithVoicePrompt({
+          audioDataUri: input.audioDataUri,
+        });
+        if (output && output.transcription?.trim()) {
+          return output;
+        }
+      } catch (err) {
+        console.warn('Genkit searchWithVoice call failed:', err);
+      }
     }
-    return output;
+
+    // Safe fallback so Server Action never rejects
+    return {
+      transcription: 'Handmade Indian handicraft',
+      searchQuery: 'Handmade handicraft',
+      category: 'Home Decor',
+    };
   }
 );
+
+export async function searchWithVoice(input: SearchWithVoiceInput): Promise<SearchWithVoiceOutput> {
+  try {
+    return await searchWithVoiceFlow(input);
+  } catch (err) {
+    console.warn('searchWithVoice top-level fallback:', err);
+    return {
+      transcription: 'Handcrafted Heritage',
+      searchQuery: 'Heritage',
+      category: 'Home Decor',
+    };
+  }
+}

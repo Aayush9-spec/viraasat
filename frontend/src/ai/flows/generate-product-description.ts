@@ -23,6 +23,12 @@ export const GenerateProductDescriptionInputSchema = z.object({
     .min(3, 'Product name must be at least 3 characters')
     .max(160, 'Product name must not exceed 160 characters')
     .describe('The name of the traditional handmade product in any supported script.'),
+  productDetails: z
+    .string()
+    .trim()
+    .max(2000, 'Product details must not exceed 2000 characters')
+    .optional()
+    .describe('Artisan-provided specifications, craft technique, materials, regional nuances, colors, dimensions, or spoken notes.'),
   inputLanguage: z
     .string()
     .optional()
@@ -56,6 +62,10 @@ export const GenerateProductDescriptionOutputSchema = z.object({
     .string()
     .optional()
     .describe('The language of the primary description.'),
+  detectedLanguage: z
+    .string()
+    .optional()
+    .describe('The detected language if recognized.'),
   isFallback: z
     .boolean()
     .optional()
@@ -81,16 +91,19 @@ const generateProductDescriptionPrompt = ai.definePrompt({
 
 Input Details:
 - Product Name: {{{productName}}}
+- Artisan Specifications / Spoken Notes: {{{productDetails}}}
 - Source Input Language: {{{inputLanguage}}}
 - Requested Primary Output Language: {{{outputLanguage}}}
 - Generate English Version Also: {{{generateEnglish}}}
 
 Instructions:
 1. Write a beautiful, evocative, culturally accurate product description for the traditional handcrafted item "{{{productName}}}".
-2. The primary description ("description") MUST be written strictly in the requested output language ({{{outputLanguage}}}) using its authentic native script (e.g. Hindi in Devanagari script, Tamil in Tamil script, Bengali in Bengali script, etc.).
-3. If generateEnglish is true or outputLanguage is not English, provide a corresponding English description in the "englishDescription" field. If outputLanguage is English, both "description" and "englishDescription" can be English.
-4. Content Guidelines:
-   - Highlight the craft's cultural significance, regional roots, and artisanal pride without making up false GI tags or historical dates not mentioned in the name.
+2. If artisan details or specifications are provided in {{{productDetails}}}, faithfully integrate those materials, craft techniques, dimensions, and regional nuances.
+3. Strict authenticity: Do NOT invent false GI certifications, fabricated historical dates, or artificial claims not provided by the artisan.
+4. The primary description ("description") MUST be written strictly in the requested output language ({{{outputLanguage}}}) using its authentic native script (e.g. Hindi in Devanagari script, Tamil in Tamil script, Bengali in Bengali script, etc.).
+5. If generateEnglish is true or outputLanguage is not English, provide a corresponding English description in the "englishDescription" field. If outputLanguage is English, both "description" and "englishDescription" can be English.
+6. Content Guidelines:
+   - Highlight the craft's cultural significance, regional roots, and artisanal pride.
    - Mention the tactile feel, craftsmanship, and human dedication.
    - Keep each description concise, natural, informative, and compelling for e-commerce (under 120 words per language).
    - Use flowing prose. Do not use bullet points or markdown headings.
@@ -106,6 +119,7 @@ const generateProductDescriptionFlow = ai.defineFlow(
   },
   async (input) => {
     const trimmedName = (input.productName || '').trim();
+    const trimmedDetails = (input.productDetails || '').trim();
     const reqLang = getLanguageName(input.outputLanguage || 'Hindi');
     const inputLang = getLanguageName(input.inputLanguage || 'Hindi');
     const wantEnglish = input.generateEnglish !== false;
@@ -115,6 +129,7 @@ const generateProductDescriptionFlow = ai.defineFlow(
       try {
         const { output } = await generateProductDescriptionPrompt({
           productName: trimmedName,
+          productDetails: trimmedDetails || undefined,
           inputLanguage: inputLang,
           outputLanguage: reqLang,
           generateEnglish: wantEnglish,
@@ -124,9 +139,10 @@ const generateProductDescriptionFlow = ai.defineFlow(
           return {
             description: output.description,
             englishDescription: wantEnglish
-              ? output.englishDescription || buildFallbackEnglishDescription(trimmedName)
+              ? output.englishDescription || buildFallbackEnglishDescription(trimmedName, trimmedDetails)
               : undefined,
             outputLanguage: reqLang,
+            detectedLanguage: inputLang,
             isFallback: false,
           };
         }
@@ -135,16 +151,17 @@ const generateProductDescriptionFlow = ai.defineFlow(
       }
     }
 
-    // Smart culturally rich fallback
-    const fallbackPrimary = buildFallbackNativeDescription(trimmedName, reqLang);
+    // Smart culturally rich fallback incorporating artisan details
+    const fallbackPrimary = buildFallbackNativeDescription(trimmedName, reqLang, trimmedDetails);
     const fallbackEnglish = wantEnglish
-      ? (reqLang === 'English' ? fallbackPrimary : buildFallbackEnglishDescription(trimmedName))
+      ? (reqLang === 'English' ? fallbackPrimary : buildFallbackEnglishDescription(trimmedName, trimmedDetails))
       : undefined;
 
     return {
       description: fallbackPrimary,
       englishDescription: fallbackEnglish,
       outputLanguage: reqLang,
+      detectedLanguage: inputLang,
       isFallback: true,
     };
   }
@@ -158,6 +175,7 @@ export async function generateProductDescription(
   input: GenerateProductDescriptionInput
 ): Promise<GenerateProductDescriptionOutput> {
   const trimmedName = String(input?.productName || '').trim();
+  const trimmedDetails = String(input?.productDetails || '').trim();
   const reqLang = getLanguageName(input?.outputLanguage || 'Hindi');
   const inputLang = getLanguageName(input?.inputLanguage || 'Hindi');
   const wantEnglish = input?.generateEnglish !== false;
@@ -165,6 +183,7 @@ export async function generateProductDescription(
   try {
     const safeInput: GenerateProductDescriptionInput = {
       productName: trimmedName.length >= 3 ? trimmedName : 'Traditional Indian Handcrafted Item',
+      productDetails: trimmedDetails || undefined,
       inputLanguage: inputLang,
       outputLanguage: reqLang,
       generateEnglish: wantEnglish,
@@ -173,15 +192,16 @@ export async function generateProductDescription(
     return await generateProductDescriptionFlow(safeInput);
   } catch (err) {
     console.warn('generateProductDescription top-level fallback engaged:', err);
-    const fallbackPrimary = buildFallbackNativeDescription(trimmedName || 'Traditional Indian Craft', reqLang);
+    const fallbackPrimary = buildFallbackNativeDescription(trimmedName || 'Traditional Indian Craft', reqLang, trimmedDetails);
     const fallbackEnglish = wantEnglish
-      ? (reqLang === 'English' ? fallbackPrimary : buildFallbackEnglishDescription(trimmedName || 'Traditional Indian Craft'))
+      ? (reqLang === 'English' ? fallbackPrimary : buildFallbackEnglishDescription(trimmedName || 'Traditional Indian Craft', trimmedDetails))
       : undefined;
 
     return {
       description: fallbackPrimary,
       englishDescription: fallbackEnglish,
       outputLanguage: reqLang,
+      detectedLanguage: inputLang,
       isFallback: true,
     };
   }

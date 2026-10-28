@@ -1,37 +1,63 @@
-export const SUPPORTED_LANGUAGES = [
-  { code: 'hi', value: 'Hindi', label: 'हिन्दी (Hindi)' },
-  { code: 'en', value: 'English', label: 'English' },
-  { code: 'hinglish', value: 'Hinglish', label: 'Hinglish (Hindi-English)' },
-  { code: 'ta', value: 'Tamil', label: 'தமிழ் (Tamil)' },
-  { code: 'bn', value: 'Bengali', label: 'বাংলা (Bengali)' },
-  { code: 'te', value: 'Telugu', label: 'తెలుగు (Telugu)' },
-  { code: 'mr', value: 'Marathi', label: 'मराठी (Marathi)' },
-  { code: 'ur', value: 'Urdu', label: 'اردو (Urdu)' },
-  { code: 'gu', value: 'Gujarati', label: 'ગુજરાતી (Gujarati)' },
-  { code: 'kn', value: 'Kannada', label: 'ಕನ್ನಡ (Kannada)' },
-  { code: 'ml', value: 'Malayalam', label: 'മലയാളം (Malayalam)' },
-  { code: 'pa', value: 'Punjabi', label: 'ਪੰਜਾਬੀ (Punjabi)' },
-  { code: 'or', value: 'Odia', label: 'ଓଡ଼ିଆ (Odia)' },
-  { code: 'as', value: 'Assamese', label: 'অসমীয়া (Assamese)' },
+export interface SupportedLanguageItem {
+  code: string;
+  value: string;
+  label: string;
+  speechCode: string;
+}
+
+export const SUPPORTED_LANGUAGES: readonly SupportedLanguageItem[] = [
+  { code: 'hi', value: 'Hindi', label: 'हिन्दी (Hindi)', speechCode: 'hi-IN' },
+  { code: 'en', value: 'English', label: 'English', speechCode: 'en-IN' },
+  { code: 'hinglish', value: 'Hinglish', label: 'Hinglish (Hindi-English)', speechCode: 'hi-IN' },
+  { code: 'ta', value: 'Tamil', label: 'தமிழ் (Tamil)', speechCode: 'ta-IN' },
+  { code: 'bn', value: 'Bengali', label: 'বাংলা (Bengali)', speechCode: 'bn-IN' },
+  { code: 'te', value: 'Telugu', label: 'తెలుగు (Telugu)', speechCode: 'te-IN' },
+  { code: 'mr', value: 'Marathi', label: 'मराठी (Marathi)', speechCode: 'mr-IN' },
+  { code: 'ur', value: 'Urdu', label: 'اردو (Urdu)', speechCode: 'ur-IN' },
+  { code: 'gu', value: 'Gujarati', label: 'ગુજરાતી (Gujarati)', speechCode: 'gu-IN' },
+  { code: 'kn', value: 'Kannada', label: 'ಕನ್ನಡ (Kannada)', speechCode: 'kn-IN' },
+  { code: 'ml', value: 'Malayalam', label: 'മലയാളം (Malayalam)', speechCode: 'ml-IN' },
+  { code: 'pa', value: 'Punjabi', label: 'ਪੰਜਾਬੀ (Punjabi)', speechCode: 'pa-IN' },
+  { code: 'or', value: 'Odia', label: 'ଓଡ଼ିଆ (Odia)', speechCode: 'or-IN' },
+  { code: 'as', value: 'Assamese', label: 'অসমীয়া (Assamese)', speechCode: 'as-IN' },
 ] as const;
 
 export function getLanguageCode(langNameOrCode?: string): string {
   if (!langNameOrCode) return 'en';
   const norm = langNameOrCode.trim().toLowerCase();
-  const match = SUPPORTED_LANGUAGES.find(
-    (l) => l.code === norm || l.value.toLowerCase() === norm || l.label.toLowerCase().includes(norm)
+  const exact = SUPPORTED_LANGUAGES.find(
+    (l) => l.code === norm || l.value.toLowerCase() === norm || l.speechCode.toLowerCase() === norm
   );
+  if (exact) return exact.code;
+
+  const match = SUPPORTED_LANGUAGES.find((l) => l.label.toLowerCase().includes(norm));
   return match ? match.code : norm.slice(0, 5);
 }
 
 export function getLanguageName(codeOrName?: string): string {
   if (!codeOrName) return 'English';
   const norm = codeOrName.trim().toLowerCase();
-  const match = SUPPORTED_LANGUAGES.find(
-    (l) => l.code === norm || l.value.toLowerCase() === norm || l.label.toLowerCase().includes(norm)
+  const exact = SUPPORTED_LANGUAGES.find(
+    (l) => l.code === norm || l.value.toLowerCase() === norm || l.speechCode.toLowerCase() === norm
   );
+  if (exact) return exact.value;
+
+  const match = SUPPORTED_LANGUAGES.find((l) => l.label.toLowerCase().includes(norm));
   return match ? match.value : codeOrName;
 }
+
+export function getSpeechLanguageCode(langOrCode?: string): string {
+  if (!langOrCode) return 'hi-IN';
+  const norm = langOrCode.trim().toLowerCase();
+  const exact = SUPPORTED_LANGUAGES.find(
+    (l) => l.code === norm || l.value.toLowerCase() === norm || l.speechCode.toLowerCase() === norm
+  );
+  if (exact) return exact.speechCode;
+
+  const match = SUPPORTED_LANGUAGES.find((l) => l.label.toLowerCase().includes(norm));
+  return match?.speechCode || 'hi-IN';
+}
+
 
 // Craft-specific fallback descriptions for common Indian handicrafts
 export const CRAFT_DESCRIPTIONS_EN: Record<string, string> = {
@@ -56,12 +82,13 @@ export const CRAFT_DESCRIPTIONS_HI: Record<string, string> = {
   'brass ganesh idol': `पीतल नगरी मुरादाबाद के पारंपरिक धातु शिल्पियों द्वारा ढली यह पीतल की गणेश प्रतिमा सुख, समृद्धि और शुभता का पावन संचार करती है। पारंपरिक सांचे में ढालकर हाथों से पॉलिश की गई यह कलाकृति हर पूजा स्थल व गृह सज्जा को दिव्य सौंदर्य प्रदान करती है।`,
 };
 
-export function buildFallbackEnglishDescription(productName: string): string {
+export function buildFallbackEnglishDescription(productName: string, productDetails?: string): string {
   const lower = productName.toLowerCase().trim();
+  const extra = productDetails && productDetails.trim() ? ' ' + productDetails.trim() : '';
 
   for (const [key, desc] of Object.entries(CRAFT_DESCRIPTIONS_EN)) {
     if (lower === key || lower.includes(key) || key.includes(lower)) {
-      return desc;
+      return extra ? `${desc}${extra}` : desc;
     }
   }
 
@@ -102,15 +129,17 @@ export function buildFallbackEnglishDescription(productName: string): string {
   return `"${productName}" is a genuine handcrafted creation that bridges centuries of traditional Indian craftsmanship with modern living. Hand-finished by skilled artisans, each piece carries subtle nuances that make it truly unique.`;
 }
 
-export function buildFallbackNativeDescription(productName: string, langName: string): string {
+export function buildFallbackNativeDescription(productName: string, langName: string, productDetails?: string): string {
   const lower = productName.toLowerCase().trim();
   const normalizedLang = getLanguageName(langName);
+  const extraHi = productDetails && productDetails.trim() ? ' शिल्पकार विनिर्देश: ' + productDetails.trim() + '।' : '';
+  const extraGeneric = productDetails && productDetails.trim() ? ' (' + productDetails.trim() + ')' : '';
 
   // If Hindi requested, check Hindi craft dictionary
   if (normalizedLang === 'Hindi' || normalizedLang === 'हिन्दी') {
     for (const [key, desc] of Object.entries(CRAFT_DESCRIPTIONS_HI)) {
       if (lower === key || lower.includes(key) || key.includes(lower)) {
-        return desc;
+        return extraHi ? `${desc}${extraHi}` : desc;
       }
     }
 

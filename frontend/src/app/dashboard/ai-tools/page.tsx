@@ -46,6 +46,7 @@ import {
 } from '@/ai/languages';
 import { translateText } from '@/ai/flows/translate-text';
 import { generateImageCulturalStory } from '@/ai/flows/image-cultural-story';
+import VoiceRecorder from '@/features/ai/components/voice-recorder';
 
 // Detect whether Gemini AI is configured with a real key.
 // Valid Google AI Studio keys start with "AIza". The placeholder in .env.local starts with "AQ."
@@ -164,6 +165,7 @@ export default function AIToolsPage() {
 function DescriptionGeneratorTab() {
   const { toast } = useToast();
   const [productName, setProductName] = useState('');
+  const [productDetails, setProductDetails] = useState('');
   const [inputLanguage, setInputLanguage] = useState('Hindi');
   const [outputLanguage, setOutputLanguage] = useState('Hindi');
   const [generateEnglish, setGenerateEnglish] = useState(true);
@@ -209,6 +211,7 @@ function DescriptionGeneratorTab() {
     try {
       const result = await generateProductDescription({
         productName: trimmed,
+        productDetails: productDetails.trim() || undefined,
         inputLanguage,
         outputLanguage,
         generateEnglish,
@@ -232,9 +235,9 @@ function DescriptionGeneratorTab() {
     } catch (error) {
       console.warn('Description generation call failed, using client fallback:', error);
       const reqLang = getLanguageName(outputLanguage);
-      const fallbackNative = buildFallbackNativeDescription(trimmed, reqLang);
+      const fallbackNative = buildFallbackNativeDescription(trimmed, reqLang, productDetails.trim());
       const fallbackEnglish = generateEnglish
-        ? (reqLang === 'English' ? fallbackNative : buildFallbackEnglishDescription(trimmed))
+        ? (reqLang === 'English' ? fallbackNative : buildFallbackEnglishDescription(trimmed, productDetails.trim()))
         : '';
 
       setDescription(fallbackNative);
@@ -279,20 +282,31 @@ function DescriptionGeneratorTab() {
             <div>
               <CardTitle className="text-lg">Multilingual Description Generator</CardTitle>
               <CardDescription>
-                Enter a product name in any Indian language to craft culturally rich native and English descriptions.
+                Enter or speak a product name in any Indian language to craft culturally rich native and English descriptions.
               </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Product Name Input */}
+          {/* Product Name Input with Voice Input */}
           <div className="space-y-2">
-            <label
-              htmlFor="ai-product-name"
-              className="text-sm font-medium leading-none"
-            >
-              Product Name (उत्पाद का नाम)
-            </label>
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="ai-product-name"
+                className="text-sm font-medium leading-none"
+              >
+                Product Name (उत्पाद का नाम)
+              </label>
+              <VoiceRecorder
+                variant="ghost"
+                size="sm"
+                buttonLabel="Speak Name"
+                className="h-6 text-xs text-primary hover:text-primary/80 gap-1 px-1.5"
+                defaultLanguage={inputLanguage}
+                title="Speak product name in your preferred language"
+                onTranscriptionComplete={(text) => setProductName(text)}
+              />
+            </div>
             <Input
               id="ai-product-name"
               placeholder="e.g. हाथ से बनी बनारसी रेशमी साड़ी, Kashmiri Pashmina Shawl, பித்தளை விநாயகர்..."
@@ -300,6 +314,43 @@ function DescriptionGeneratorTab() {
               onChange={(e) => setProductName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
               className="bg-background"
+            />
+          </div>
+
+          {/* Artisan Specifications / Spoken Notes */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="ai-product-details"
+                className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5"
+              >
+                Craft Details & Specifications (शिल्प विवरण / सामग्री / माप)
+              </label>
+              <VoiceRecorder
+                variant="ghost"
+                size="sm"
+                buttonLabel="Speak Details"
+                className="h-6 text-xs text-primary hover:text-primary/80 gap-1 px-1.5"
+                defaultLanguage={inputLanguage}
+                productName={productName}
+                title="Speak materials, region, dimensions, and craft details"
+                onTranscriptionComplete={(text) =>
+                  setProductDetails((prev) => (prev ? `${prev}\n${text}` : text))
+                }
+                onDescriptionsGenerated={({ description: d, englishDescription: ed }) => {
+                  setDescription(d);
+                  if (ed) setEnglishDescription(ed);
+                  setActiveLang(outputLanguage);
+                }}
+              />
+            </div>
+            <Textarea
+              id="ai-product-details"
+              placeholder="Optional: Enter or speak materials (मिट्टी, सिल्क, पीतल), craft technique, region, dimensions, colors..."
+              rows={3}
+              value={productDetails}
+              onChange={(e) => setProductDetails(e.target.value)}
+              className="text-xs bg-background resize-none"
             />
           </div>
 
