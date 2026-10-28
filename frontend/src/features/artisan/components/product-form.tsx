@@ -172,6 +172,8 @@ export function ProductForm({ product }: ProductFormProps) {
   const craftsmanshipVal = form.watch('craftsmanship');
   const giCertifiedVal = form.watch('giCertified');
   const descriptionLanguageVal = form.watch('descriptionLanguage') || 'Native';
+  const inputLanguageVal = form.watch('inputLanguage') || 'Hindi';
+  const productNameVal = form.watch('name') || '';
 
   // Compute normalized size_sqft reactively
   const computedSizeSqft = (() => {
@@ -616,7 +618,7 @@ export function ProductForm({ product }: ProductFormProps) {
                           size="sm"
                           buttonLabel="Speak Name"
                           className="h-6 text-xs text-primary hover:text-primary/80 gap-1 px-1.5"
-                          defaultLanguage={form.watch('inputLanguage') || 'Hindi'}
+                          defaultLanguage={inputLanguageVal}
                           title="Speak product name in your preferred language"
                           onTranscriptionComplete={(text) => form.setValue('name', text)}
                         />
@@ -701,7 +703,7 @@ export function ProductForm({ product }: ProductFormProps) {
                             buttonLabel="Voice Details"
                             className="h-7 text-xs gap-1 text-primary hover:text-primary/80"
                             defaultLanguage={descriptionLanguageVal}
-                            productName={form.watch('name')}
+                            productName={productNameVal}
                             title="Speak craft specifications & generate multilingual descriptions"
                             onTranscriptionComplete={(text) => {
                               const current = form.getValues('description');
@@ -750,7 +752,7 @@ export function ProductForm({ product }: ProductFormProps) {
                             variant="outline"
                             className="h-8 w-8 rounded-full bg-background/90 shadow-sm border hover:bg-muted"
                             defaultLanguage={descriptionLanguageVal}
-                            productName={form.watch('name')}
+                            productName={productNameVal}
                             title="Speak product details & craft notes"
                             onTranscriptionComplete={(text) => {
                               const current = form.getValues('description');

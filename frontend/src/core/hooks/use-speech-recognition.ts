@@ -48,24 +48,30 @@ export interface UseSpeechRecognitionOptions {
   interimResults?: boolean;
 }
 
-export function useSpeechRecognition(options?: UseSpeechRecognitionOptions) {
+export function useSpeechRecognition({
+  defaultLanguage = 'Hindi',
+  language,
+  onFinalTranscript,
+  continuous = true,
+  interimResults = true,
+}: UseSpeechRecognitionOptions = {}) {
   const [isSupported, setIsSupported] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
   const [speechLang, setSpeechLang] = useState(() =>
-    getSpeechLanguageCode(options?.language || options?.defaultLanguage || 'Hindi')
+    getSpeechLanguageCode(language || defaultLanguage)
   );
   const [error, setError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string>('Idle');
 
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const isIntentionalStopRef = useRef(false);
-  const onFinalCallbackRef = useRef(options?.onFinalTranscript);
+  const onFinalCallbackRef = useRef(onFinalTranscript);
 
   useEffect(() => {
-    onFinalCallbackRef.current = options?.onFinalTranscript;
-  }, [options?.onFinalTranscript]);
+    onFinalCallbackRef.current = onFinalTranscript;
+  }, [onFinalTranscript]);
 
   // Check browser support on mount
   useEffect(() => {
@@ -169,8 +175,8 @@ export function useSpeechRecognition(options?: UseSpeechRecognitionOptions) {
 
       try {
         const recognition = new RecognitionClass();
-        recognition.continuous = options?.continuous ?? true;
-        recognition.interimResults = true;
+        recognition.continuous = continuous;
+        recognition.interimResults = interimResults;
         recognition.maxAlternatives = 1;
         recognition.lang = effectiveLang;
 
@@ -248,7 +254,7 @@ export function useSpeechRecognition(options?: UseSpeechRecognitionOptions) {
         setIsListening(false);
       }
     },
-    [options?.continuous, speechLang]
+    [continuous, interimResults, speechLang]
   );
 
   return {
