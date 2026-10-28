@@ -1,4 +1,4 @@
-"""Generate authentic Kaggle-style mock datasets for Viraasat.
+"""""
 
 Datasets generated:
 1. database/mock_kaggle_handicrafts.json & .csv: 50+ GI and traditional Indian craft products
