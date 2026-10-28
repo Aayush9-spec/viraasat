@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, BackgroundTasks
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -301,23 +301,101 @@ async def similar_items(request: Request, product_id: str, limit: int = 5):
     return get_similar_items(product_id, limit=min(limit, 10))
 
 
-# ---- Promising User Identification (GBT + K-Means) ----
-@api_router.post("/users/score")
-@_limiter.limit("30/minute")
-async def score_user_endpoint(request: Request, payload: UserBehaviorInput):
-    """
-    Score a user's behavior profile using a GBT classifier (Model A) and
-    assign them to a K-Means segment tier (Model B).
-    Returns a 0-1 promising score, tier label, and an actionable trigger.
-    """
-    return score_user(payload)
-
-
-@api_router.get("/users/segments")
+# ---- MLOps Health & Retraining Operations ----
+@api_router.get("/health/models")
 @_limiter.limit("60/minute")
-async def user_segments(request: Request):
+async def models_health(request: Request):
     """
-    Return platform-wide user segment statistics: distribution, average spend,
-    return rates, and recommended action triggers per tier.
+    MLOps observability endpoint: inspects all 7 model artifacts in database/,
+    reporting their file modification age, training timestamp, evaluation
+    metrics (accuracy, AUC, R2, P@10), and operational status.
+    Replaces Prometheus/Grafana monitoring for Viraasat's scale.
     """
-    return get_segment_overview()
+    import os, pickle, time
+    from datetime import datetime
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    db_dir = os.path.abspath(os.path.join(base_dir, "../../../database"))
+
+    models_meta = [
+        ("search_model", "search_model.pkl"),
+        ("pricing_model", "pricing_model.pkl"),
+        ("forecasting_model", "forecasting_model.pkl"),
+        ("fraud_model", "fraud_model.pkl"),
+        ("market_prediction_model", "market_prediction_model.pkl"),
+        ("recommendation_model", "recommendation_model.pkl"),
+        ("user_identification_model", "user_identification_model.pkl"),
+    ]
+
+    report = {}
+    now = time.time()
+    all_healthy = True
+
+    for name, fname in models_meta:
+        path = os.path.join(db_dir, fname)
+        exists = os.path.exists(path)
+        if not exists:
+            report[name] = {"status": "missing", "path": path}
+            all_healthy = False
+            continue
+
+        mtime = os.path.getmtime(path)
+        size_bytes = os.path.getsize(path)
+        age_hours = round((now - mtime) / 3600.0, 1)
+
+        eval_metrics = None
+        trained_at = None
+        try:
+            with open(path, "rb") as f:
+                data = pickle.load(f)
+                if isinstance(data, dict):
+                    eval_metrics = data.get("evaluation_metrics")
+                    trained_at = eval_metrics.get("trained_at") if eval_metrics else None
+        except Exception:
+            pass
+
+        report[name] = {
+            "status": "healthy",
+            "file_size_kb": round(size_bytes / 1024.0, 1),
+            "age_hours": age_hours,
+            "file_modified_at": datetime.utcfromtimestamp(mtime).isoformat() + "Z",
+            "trained_at": trained_at,
+            "evaluation_metrics": eval_metrics,
+        }
+
+    return {
+        "status": "operational" if all_healthy else "degraded",
+        "database_dir": db_dir,
+        "models": report,
+        "checked_at": datetime.utcnow().isoformat() + "Z",
+    }
+
+
+@api_router.post("/admin/retrain")
+@_limiter.limit("5/hour")
+async def trigger_retrain(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    user: dict = Depends(require_role("admin")),
+):
+    """
+    Trigger async master training pipeline in a FastAPI background task.
+    Secured by admin role check and rate-limited to 5/hour.
+    """
+    import subprocess, sys
+
+    def _run_train():
+        try:
+            script_path = os.path.abspath(
+                os.path.join(os.path.dirname(__file__), "../../../train_all.py")
+            )
+            subprocess.run([sys.executable, script_path], check=True)
+        except Exception as e:
+            print(f"Background retraining failed: {e}")
+
+    background_tasks.add_task(_run_train)
+    return {
+        "status": "accepted",
+        "message": "Master training pipeline triggered in background.",
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+    }

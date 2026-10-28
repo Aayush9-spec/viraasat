@@ -233,7 +233,7 @@ def train_model():
     mape = float(np.mean(np.abs((y_test - y_pred) / y_test)))
     verified_accuracy = round(max(0.0, 1.0 - mape), 4)
 
-    print(f"Model trained successfully. Evaluation R^2 score: {r2:.4f}, MAE: ₹{mae:.2f}, Verified Accuracy: {verified_accuracy:.4f}")
+    print(f"Model trained successfully. Evaluation R^2 score: {r2:.4f}, MAE: Rs.{mae:.2f}, Verified Accuracy: {verified_accuracy:.4f}")
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     model_dir = os.path.abspath(os.path.join(current_dir, "../../database"))
