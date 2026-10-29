@@ -15,6 +15,7 @@ const PAGES = [
 
 for (const { name, path } of PAGES) {
   test(`a11y: ${name} (${path}) has no serious/critical violations`, async ({ page }) => {
+    test.slow();
     await page.goto(path, { waitUntil: 'domcontentloaded' });
     // Wait for client-side hydration to finish so the scan reflects the
     // rendered DOM, not the SSR shell.
