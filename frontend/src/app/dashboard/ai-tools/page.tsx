@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/core/hooks/use-toast';
 import {
   Sparkles,
@@ -38,8 +39,14 @@ import {
 } from 'lucide-react';
 
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
+import {
+  buildFallbackNativeDescription,
+  buildFallbackEnglishDescription,
+  getLanguageName,
+} from '@/ai/languages';
 import { translateText } from '@/ai/flows/translate-text';
 import { generateImageCulturalStory } from '@/ai/flows/image-cultural-story';
+import VoiceRecorder from '@/features/ai/components/voice-recorder';
 
 // Detect whether Gemini AI is configured with a real key.
 // Valid Google AI Studio keys start with "AIza". The placeholder in .env.local starts with "AQ."
@@ -50,6 +57,8 @@ const AI_CONFIGURED =
 
 const LANGUAGES = [
   { value: 'Hindi', label: 'हिन्दी (Hindi)' },
+  { value: 'English', label: 'English' },
+  { value: 'Hinglish', label: 'Hinglish (Hindi-English)' },
   { value: 'Tamil', label: 'தமிழ் (Tamil)' },
   { value: 'Bengali', label: 'বাংলা (Bengali)' },
   { value: 'Telugu', label: 'తెలుగు (Telugu)' },
@@ -59,6 +68,8 @@ const LANGUAGES = [
   { value: 'Kannada', label: 'ಕನ್ನಡ (Kannada)' },
   { value: 'Malayalam', label: 'മലയാളം (Malayalam)' },
   { value: 'Punjabi', label: 'ਪੰਜਾਬੀ (Punjabi)' },
+  { value: 'Odia', label: 'ଓଡ଼ିଆ (Odia)' },
+  { value: 'Assamese', label: 'অসমীয়া (Assamese)' },
   { value: 'French', label: 'Français (French)' },
   { value: 'Spanish', label: 'Español (Spanish)' },
   { value: 'Arabic', label: 'العربية (Arabic)' },
@@ -154,48 +165,109 @@ export default function AIToolsPage() {
 function DescriptionGeneratorTab() {
   const { toast } = useToast();
   const [productName, setProductName] = useState('');
+  const [productDetails, setProductDetails] = useState('');
+  const [inputLanguage, setInputLanguage] = useState('Hindi');
+  const [outputLanguage, setOutputLanguage] = useState('Hindi');
+  const [generateEnglish, setGenerateEnglish] = useState(true);
   const [description, setDescription] = useState('');
+  const [englishDescription, setEnglishDescription] = useState('');
+  const [activeLang, setActiveLang] = useState('Hindi');
+  const [isFallback, setIsFallback] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copiedPrimary, setCopiedPrimary] = useState(false);
+  const [copiedEnglish, setCopiedEnglish] = useState(false);
 
   const handleGenerate = async () => {
-    if (!productName.trim()) {
+    const trimmed = productName.trim();
+    if (!trimmed) {
       toast({
         variant: 'destructive',
         title: 'Product name required',
-        description: 'Please enter a product name to generate a description.',
+        description: 'Please enter a product name (e.g. हाथ से बनी बनारसी साड़ी).',
+      });
+      return;
+    }
+    if (trimmed.length < 3) {
+      toast({
+        variant: 'destructive',
+        title: 'Product name too short',
+        description: 'Product name must be at least 3 characters long.',
+      });
+      return;
+    }
+    if (trimmed.length > 160) {
+      toast({
+        variant: 'destructive',
+        title: 'Product name too long',
+        description: 'Product name cannot exceed 160 characters.',
       });
       return;
     }
 
     setIsLoading(true);
     setDescription('');
+    setEnglishDescription('');
+    setIsFallback(null);
     try {
       const result = await generateProductDescription({
-        productName: productName.trim(),
+        productName: trimmed,
+        productDetails: productDetails.trim() || undefined,
+        inputLanguage,
+        outputLanguage,
+        generateEnglish,
       });
       setDescription(result.description);
-      toast({
-        title: '✨ Description Generated!',
-        description: 'Your AI-crafted product description is ready.',
-      });
+      setEnglishDescription(result.englishDescription || '');
+      setActiveLang(result.outputLanguage || outputLanguage);
+      setIsFallback(Boolean(result.isFallback));
+
+      if (result.isFallback) {
+        toast({
+          title: 'Craft Heritage Description Ready (Smart Fallback)',
+          description: `Generated authentic cultural description in ${result.outputLanguage || outputLanguage}.`,
+        });
+      } else {
+        toast({
+          title: '✨ Multilingual Descriptions Generated!',
+          description: `Generated ${result.outputLanguage || outputLanguage}${generateEnglish ? ' and English' : ''} descriptions.`,
+        });
+      }
     } catch (error) {
-      console.error(error);
+      console.warn('Description generation call failed, using client fallback:', error);
+      const reqLang = getLanguageName(outputLanguage);
+      const fallbackNative = buildFallbackNativeDescription(trimmed, reqLang, productDetails.trim());
+      const fallbackEnglish = generateEnglish
+        ? (reqLang === 'English' ? fallbackNative : buildFallbackEnglishDescription(trimmed, productDetails.trim()))
+        : '';
+
+      setDescription(fallbackNative);
+      setEnglishDescription(fallbackEnglish);
+      setActiveLang(reqLang);
+      setIsFallback(true);
+
       toast({
-        variant: 'destructive',
-        title: 'Generation Failed',
-        description: 'Could not generate description. Please try again.',
+        title: 'Craft Heritage Description Ready (Fallback Mode)',
+        description: `Generated authentic cultural description in ${reqLang}.`,
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCopy = async () => {
+  const handleCopyPrimary = async () => {
+    if (!description) return;
     await navigator.clipboard.writeText(description);
-    setCopied(true);
-    toast({ title: 'Copied!', description: 'Description copied to clipboard.' });
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedPrimary(true);
+    toast({ title: 'Copied!', description: `${activeLang} description copied to clipboard.` });
+    setTimeout(() => setCopiedPrimary(false), 2000);
+  };
+
+  const handleCopyEnglish = async () => {
+    if (!englishDescription) return;
+    await navigator.clipboard.writeText(englishDescription);
+    setCopiedEnglish(true);
+    toast({ title: 'Copied!', description: 'English description copied to clipboard.' });
+    setTimeout(() => setCopiedEnglish(false), 2000);
   };
 
   return (
@@ -208,30 +280,139 @@ function DescriptionGeneratorTab() {
               <Wand2 className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-lg">Description Generator</CardTitle>
+              <CardTitle className="text-lg">Multilingual Description Generator</CardTitle>
               <CardDescription>
-                Enter a product name to create a culturally rich description
+                Enter or speak a product name in any Indian language to craft culturally rich native and English descriptions.
               </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Product Name Input with Voice Input */}
           <div className="space-y-2">
-            <label
-              htmlFor="ai-product-name"
-              className="text-sm font-medium leading-none"
-            >
-              Product Name
-            </label>
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="ai-product-name"
+                className="text-sm font-medium leading-none"
+              >
+                Product Name (उत्पाद का नाम)
+              </label>
+              <VoiceRecorder
+                variant="ghost"
+                size="sm"
+                buttonLabel="Speak Name"
+                className="h-6 text-xs text-primary hover:text-primary/80 gap-1 px-1.5"
+                defaultLanguage={inputLanguage}
+                title="Speak product name in your preferred language"
+                onTranscriptionComplete={(text) => setProductName(text)}
+              />
+            </div>
             <Input
               id="ai-product-name"
-              placeholder="e.g. Handmade Clay Diya, Pashmina Shawl, Brass Tiffin Box..."
+              placeholder="e.g. हाथ से बनी बनारसी रेशमी साड़ी, Kashmiri Pashmina Shawl, பித்தளை விநாயகர்..."
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
               className="bg-background"
             />
           </div>
+
+          {/* Artisan Specifications / Spoken Notes */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="ai-product-details"
+                className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5"
+              >
+                Craft Details & Specifications (शिल्प विवरण / सामग्री / माप)
+              </label>
+              <VoiceRecorder
+                variant="ghost"
+                size="sm"
+                buttonLabel="Speak Details"
+                className="h-6 text-xs text-primary hover:text-primary/80 gap-1 px-1.5"
+                defaultLanguage={inputLanguage}
+                productName={productName}
+                title="Speak materials, region, dimensions, and craft details"
+                onTranscriptionComplete={(text) =>
+                  setProductDetails((prev) => (prev ? `${prev}\n${text}` : text))
+                }
+                onDescriptionsGenerated={({ description: d, englishDescription: ed }) => {
+                  setDescription(d);
+                  if (ed) setEnglishDescription(ed);
+                  setActiveLang(outputLanguage);
+                }}
+              />
+            </div>
+            <Textarea
+              id="ai-product-details"
+              placeholder="Optional: Enter or speak materials (मिट्टी, सिल्क, पीतल), craft technique, region, dimensions, colors..."
+              rows={3}
+              value={productDetails}
+              onChange={(e) => setProductDetails(e.target.value)}
+              className="text-xs bg-background resize-none"
+            />
+          </div>
+
+          {/* Language Selectors */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-muted-foreground">
+                Input Name Language (नाम की भाषा)
+              </label>
+              <Select value={inputLanguage} onValueChange={setInputLanguage}>
+                <SelectTrigger className="text-xs h-9 bg-background">
+                  <SelectValue placeholder="Select input language" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {LANGUAGES.map((l) => (
+                    <SelectItem key={`in-${l.value}`} value={l.value} className="text-xs">
+                      {l.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-muted-foreground">
+                Primary Output Language (विवरण की भाषा)
+              </label>
+              <Select value={outputLanguage} onValueChange={setOutputLanguage}>
+                <SelectTrigger className="text-xs h-9 bg-background">
+                  <SelectValue placeholder="Select output language" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {LANGUAGES.map((l) => (
+                    <SelectItem key={`out-${l.value}`} value={l.value} className="text-xs">
+                      {l.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Dual English Toggle */}
+          <div className="flex items-center space-x-2.5 p-3 rounded-md bg-muted/40 border border-border/60">
+            <input
+              type="checkbox"
+              id="ai-tools-generate-english"
+              checked={generateEnglish}
+              onChange={(e) => setGenerateEnglish(e.target.checked)}
+              className="h-4 w-4 rounded border-border text-[#8b4513] focus:ring-[#8b4513]"
+            />
+            <label
+              htmlFor="ai-tools-generate-english"
+              className="text-xs font-medium leading-none cursor-pointer flex flex-col gap-0.5"
+            >
+              <span>Generate English version too (अंग्रेजी संस्करण भी बनाएं)</span>
+              <span className="text-[10px] text-muted-foreground">
+                Creates an export-ready English listing alongside your native description.
+              </span>
+            </label>
+          </div>
+
           <Button
             onClick={handleGenerate}
             disabled={isLoading}
@@ -241,33 +422,37 @@ function DescriptionGeneratorTab() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Crafting Description...
+                Crafting Multilingual Descriptions...
               </>
             ) : (
               <>
                 <Sparkles className="mr-2 h-4 w-4" />
-                Generate Description
+                Generate Descriptions
               </>
             )}
           </Button>
 
           {/* Suggestion chips */}
-          <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">Quick suggestions:</p>
+          <div className="space-y-2 pt-1">
+            <p className="text-xs text-muted-foreground">Quick multilingual suggestions:</p>
             <div className="flex flex-wrap gap-2">
               {[
-                'Banarasi Silk Saree',
-                'Chikankari Kurta',
-                'Terracotta Horse',
-                'Marble Inlay Plate',
-              ].map((suggestion) => (
+                { name: 'हाथ से बनी बनारसी रेशमी साड़ी', inLang: 'Hindi', outLang: 'Hindi' },
+                { name: 'Kashmiri Sozni Pashmina Shawl', inLang: 'English', outLang: 'Hindi' },
+                { name: 'பித்தளை விநாயகர் சிலை', inLang: 'Tamil', outLang: 'Tamil' },
+                { name: 'আগ্রার মার্বেল ইনলে প্লেট', inLang: 'Bengali', outLang: 'Bengali' },
+              ].map((s) => (
                 <button
-                  key={suggestion}
+                  key={s.name}
                   type="button"
-                  onClick={() => setProductName(suggestion)}
+                  onClick={() => {
+                    setProductName(s.name);
+                    setInputLanguage(s.inLang);
+                    setOutputLanguage(s.outLang);
+                  }}
                   className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-200"
                 >
-                  {suggestion}
+                  {s.name}
                 </button>
               ))}
             </div>
@@ -276,30 +461,25 @@ function DescriptionGeneratorTab() {
       </Card>
 
       {/* Output Card */}
-      <Card className="border-accent/10 shadow-lg">
+      <Card className="border-accent/10 shadow-lg flex flex-col">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Generated Description</CardTitle>
-            {description && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopy}
-                className="gap-2"
-              >
-                {copied ? (
-                  <Check className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-                {copied ? 'Copied' : 'Copy'}
-              </Button>
+            <div>
+              <CardTitle className="text-lg">Generated Descriptions</CardTitle>
+              <CardDescription className="text-xs">
+                {isFallback ? 'Craft-specific cultural fallback' : 'AI-generated authentic descriptions'}
+              </CardDescription>
+            </div>
+            {isFallback !== null && (
+              <Badge variant={isFallback ? 'secondary' : 'default'} className="text-[10px]">
+                {isFallback ? 'Smart Fallback' : 'Gemini AI'}
+              </Badge>
             )}
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1 flex flex-col space-y-4">
           {isLoading ? (
-            <div className="space-y-3">
+            <div className="space-y-3 py-6">
               <div className="h-4 bg-muted rounded animate-pulse w-full" />
               <div className="h-4 bg-muted rounded animate-pulse w-5/6" />
               <div className="h-4 bg-muted rounded animate-pulse w-4/6" />
@@ -307,21 +487,81 @@ function DescriptionGeneratorTab() {
               <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
             </div>
           ) : description ? (
-            <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 to-accent/5 rounded-lg blur-sm" />
-              <div className="relative bg-background/80 backdrop-blur-sm rounded-lg p-4 border border-primary/10">
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+            <div className="space-y-4 flex-1">
+              {/* Primary Native Language Output */}
+              <div className="space-y-2 p-3.5 rounded-lg border border-primary/20 bg-background/80 relative">
+                <div className="flex items-center justify-between border-b pb-2">
+                  <span className="text-xs font-bold text-primary flex items-center gap-1.5">
+                    <Globe2 className="h-3.5 w-3.5" />
+                    {activeLang} Description ({activeLang === 'Hindi' ? 'हिंदी में' : activeLang})
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopyPrimary}
+                    className="h-7 text-xs gap-1.5"
+                  >
+                    {copiedPrimary ? (
+                      <>
+                        <Check className="h-3.5 w-3.5 text-green-500" />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3.5 w-3.5" />
+                        Copy
+                      </>
+                    )}
+                  </Button>
+                </div>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap font-sans pt-1">
                   {description}
                 </p>
               </div>
+
+              {/* English Version (if enabled) */}
+              {englishDescription && (
+                <div className="space-y-2 p-3.5 rounded-lg border border-accent/30 bg-muted/20 relative">
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <span className="text-xs font-bold text-accent-foreground flex items-center gap-1.5">
+                      <Globe2 className="h-3.5 w-3.5" />
+                      English Version (अंग्रेजी अनुवाद / Listing)
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCopyEnglish}
+                      className="h-7 text-xs gap-1.5"
+                    >
+                      {copiedEnglish ? (
+                        <>
+                          <Check className="h-3.5 w-3.5 text-green-500" />
+                          Copied
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3.5 w-3.5" />
+                          Copy
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground pt-1">
+                    {englishDescription}
+                  </p>
+                </div>
+              )}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="flex flex-col items-center justify-center py-12 text-center my-auto">
               <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
                 <Wand2 className="h-7 w-7 text-muted-foreground/50" />
               </div>
-              <p className="text-sm text-muted-foreground">
-                Your AI-generated description will appear here
+              <p className="text-sm text-muted-foreground font-medium">
+                Enter your product name to see native and English descriptions
+              </p>
+              <p className="text-xs text-muted-foreground/70 mt-1 max-w-xs">
+                Supports Devanagari Hindi, Tamil, Bengali, Telugu, and all major Indian languages.
               </p>
             </div>
           )}

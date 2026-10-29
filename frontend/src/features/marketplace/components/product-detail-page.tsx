@@ -297,8 +297,32 @@ export function ProductDetailPageClient({
 
             {/* Translation & Story Narrative */}
             <div className="space-y-3">
+              {product.englishDescription && product.description !== product.englishDescription && (
+                <div className="flex items-center gap-2 border-b border-[#E8DCCB] pb-2">
+                  <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                    <Globe2 className="h-3.5 w-3.5 text-primary" /> Available In:
+                  </span>
+                  <div className="flex gap-1.5">
+                    <Badge
+                      variant="outline"
+                      className="cursor-pointer hover:bg-muted text-xs font-normal border-primary/30"
+                      onClick={() => setTranslatedDesc('')}
+                    >
+                      {product.originalLanguage || 'Native Script'}
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="cursor-pointer hover:bg-muted text-xs font-normal border-primary/30"
+                      onClick={() => setTranslatedDesc(product.englishDescription || '')}
+                    >
+                      English
+                    </Badge>
+                  </div>
+                </div>
+              )}
+
               <p className="text-sm sm:text-base leading-relaxed text-foreground/80 font-serif">
-                {product.description}
+                {translatedDesc || product.description}
               </p>
 
               <div className="flex items-center gap-2 pt-1">

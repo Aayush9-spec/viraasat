@@ -41,6 +41,20 @@ jest.mock('@clerk/nextjs', () => ({
   UserButton: () => null,
 }));
 
+// Mock Genkit for unit tests so flows can be tested with isolated mocked prompts & flows
+jest.mock('@/ai/genkit', () => ({
+  ai: {
+    definePrompt: jest.fn((config) => {
+      return jest.fn(async (input: any) => ({
+        output: null,
+      }));
+    }),
+    defineFlow: jest.fn((config, fn) => {
+      return jest.fn(async (input: any) => fn(input));
+    }),
+  },
+}));
+
 // Fluid cache clear between tests (firestore hooks cache product lookups).
 afterEach(() => {
   window.localStorage.clear();

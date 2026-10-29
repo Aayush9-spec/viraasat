@@ -9,7 +9,6 @@
 
 const CACHE_NAME = "viraasat-379d631d";
 
-
 const PRECACHE_ASSETS = [
   '/',
   '/offline',

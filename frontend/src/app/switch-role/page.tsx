@@ -76,7 +76,7 @@ function SwitchRoleContent() {
         ? '/artisan/dashboard'
         : '/shop';
     router.replace(destination);
-  }, [toParam, isVerifiedAdmin, isLoaded, user, router]);
+  }, [toParam, isVerifiedAdmin, isLoaded, user, router, isTargetAdmin, isTargetArtisan, targetRole]);
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-background">

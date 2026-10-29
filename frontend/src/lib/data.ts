@@ -53,6 +53,9 @@ export function getLocalProducts(): Product[] {
         return ['/images/products/clean/handcrafted-terracotta-diya.jpg'];
       })(),
       region: r.region || 'Rajasthan',
+      originalLanguage: r.originalLanguage || r.original_language,
+      englishDescription: r.englishDescription || r.english_description,
+      descriptions: r.descriptions || r.ai_insights?.descriptions || r.aiInsights?.descriptions,
       aiInsights: r.ai_insights || r.aiInsights,
       isActive: r.isActive ?? true,
       status: (r.status || 'active') as 'active' | 'archived',
