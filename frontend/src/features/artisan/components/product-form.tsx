@@ -44,6 +44,7 @@ import {
 } from '@/ai/languages';
 import { analyzeImage } from '@/ai/flows/analyze-image';
 import { useToast } from '@/core/hooks/use-toast';
+import { useTranslation } from '@/core/hooks/use-translation';
 import { useBackend } from '@/hooks/use-backend';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/services/supabase';
@@ -126,6 +127,7 @@ export function ProductForm({ product }: ProductFormProps) {
   const [isPredictingPrice, setIsPredictingPrice] = useState(false);
   const [pricingInfo, setPricingInfo] = useState<any>(null);
   const router = useRouter();
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
@@ -595,13 +597,13 @@ export function ProductForm({ product }: ProductFormProps) {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>Product Details</CardTitle>
+                    <CardTitle>{t('artisan.productDetails') || 'Product Details'}</CardTitle>
                     <CardDescription>
-                      Enter the main details for your product in your preferred language.
+                      {t('artisan.productDetailsDesc') || 'Enter the main details for your product in your preferred language.'}
                     </CardDescription>
                   </div>
                   <Badge variant="outline" className="text-xs gap-1 border-primary/20 text-[#8b4513]">
-                    <Globe2 className="h-3 w-3" /> Multilingual AI
+                    <Globe2 className="h-3 w-3" /> {t('artisan.multilingualAi') || 'Multilingual AI'}
                   </Badge>
                 </div>
               </CardHeader>
@@ -612,11 +614,11 @@ export function ProductForm({ product }: ProductFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center justify-between">
-                        <FormLabel>Product Name (उत्पाद का नाम)</FormLabel>
+                        <FormLabel>{t('artisan.productName') || 'Product Name'}</FormLabel>
                         <VoiceRecorder
                           variant="ghost"
                           size="sm"
-                          buttonLabel="Speak Name"
+                          buttonLabel={t('artisan.speakName') || 'Speak Name'}
                           className="h-6 text-xs text-primary hover:text-primary/80 gap-1 px-1.5"
                           defaultLanguage={inputLanguageVal}
                           title="Speak product name in your preferred language"
@@ -624,7 +626,7 @@ export function ProductForm({ product }: ProductFormProps) {
                         />
                       </div>
                       <FormControl>
-                        <Input placeholder="e.g. हाथ से बनी बनारसी रेशमी साड़ी, Azure Ceramic Vase..." {...field} />
+                        <Input placeholder={t('artisan.productNamePlaceholder') || "e.g. हाथ से बनी बनारसी रेशमी साड़ी, Azure Ceramic Vase..."} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -639,7 +641,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-                          <Globe2 className="h-3 w-3 text-primary" /> Product Name Language
+                          <Globe2 className="h-3 w-3 text-primary" /> {t('artisan.productNameLang') || 'Product Name Language'}
                         </FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
@@ -665,7 +667,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-                          <Globe2 className="h-3 w-3 text-primary" /> Primary Description Language
+                          <Globe2 className="h-3 w-3 text-primary" /> {t('artisan.descLang') || 'Primary Description Language'}
                         </FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
@@ -694,13 +696,13 @@ export function ProductForm({ product }: ProductFormProps) {
                     <FormItem>
                       <div className="flex items-center justify-between">
                         <FormLabel className="flex items-center gap-1.5">
-                          Description ({descriptionLanguageVal})
+                          {t('artisan.description') || 'Description'} ({descriptionLanguageVal})
                         </FormLabel>
                         <div className="flex items-center gap-1">
                           <VoiceRecorder
                             variant="ghost"
                             size="sm"
-                            buttonLabel="Voice Details"
+                            buttonLabel={t('artisan.voiceDetails') || 'Voice Details'}
                             className="h-7 text-xs gap-1 text-primary hover:text-primary/80"
                             defaultLanguage={descriptionLanguageVal}
                             productName={productNameVal}
@@ -732,7 +734,7 @@ export function ProductForm({ product }: ProductFormProps) {
                             ) : (
                               <>
                                 <Wand2 className="h-3 w-3" />
-                                AI Generate (Native + English)
+                                {t('artisan.aiGenerate') || 'AI Generate (Native + English)'}
                               </>
                             )}
                           </Button>
@@ -741,7 +743,7 @@ export function ProductForm({ product }: ProductFormProps) {
                       <div className="relative">
                         <FormControl>
                           <Textarea
-                            placeholder="Describe your product in the selected language..."
+                            placeholder={t('artisan.descriptionPlaceholder') || "Describe your product in the selected language..."}
                             rows={5}
                             {...field}
                           />
@@ -781,13 +783,13 @@ export function ProductForm({ product }: ProductFormProps) {
                       <div className="flex items-center justify-between">
                         <FormLabel className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
                           <Globe2 className="h-3.5 w-3.5 text-primary" />
-                          English Description (अंग्रेजी विवरण / International Listing)
+                          {t('artisan.englishDesc') || 'English Description (International Listing)'}
                         </FormLabel>
                         <span className="text-[11px] text-muted-foreground">Auto-generated or custom editable</span>
                       </div>
                       <FormControl>
                         <Textarea
-                          placeholder="Corresponding English description for international buyers..."
+                          placeholder={t('artisan.englishDescPlaceholder') || "Corresponding English description for international buyers..."}
                           rows={4}
                           className="text-xs bg-muted/10"
                           {...field}
@@ -806,7 +808,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 <div className="flex items-center gap-2">
                   <Award className="h-5 w-5 text-[#8b4513]" />
                   <div>
-                    <CardTitle className="text-base">Authenticity & Product Specifications</CardTitle>
+                    <CardTitle className="text-base">{t('artisan.authenticity') || 'Authenticity & Product Specifications'}</CardTitle>
                     <CardDescription className="text-xs">
                       Provide technical craft details to build buyer trust and display on the provenance certificate.
                     </CardDescription>
@@ -820,7 +822,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     name="craftTechnique"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-semibold">Craft Technique (शिल्प विधि)</FormLabel>
+                        <FormLabel className="text-xs font-semibold">{t('artisan.craftTechnique') || 'Craft Technique'}</FormLabel>
                         <FormControl>
                           <Input placeholder="e.g. Hand Block Print, Dhokra Casting, Zari Weaving" {...field} />
                         </FormControl>
@@ -834,7 +836,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     name="weightGrams"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-semibold">Weight (Approx grams)</FormLabel>
+                        <FormLabel className="text-xs font-semibold">{t('artisan.weightGrams') || 'Weight (Approx grams)'}</FormLabel>
                         <FormControl>
                           <Input type="number" placeholder="500" {...field} />
                         </FormControl>
@@ -1010,7 +1012,7 @@ export function ProductForm({ product }: ProductFormProps) {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>Pricing & Category</CardTitle>
+                  <CardTitle>{t('artisan.pricingCategory') || 'Pricing & Category'}</CardTitle>
                   <Button
                     type="button"
                     variant="outline"
@@ -1027,7 +1029,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     ) : (
                       <>
                         <Coins className="h-3 w-3" />
-                        AI Price Predictor
+                        {t('artisan.aiPricePredictor') || 'AI Price Predictor'}
                       </>
                     )}
                   </Button>
@@ -1039,7 +1041,7 @@ export function ProductForm({ product }: ProductFormProps) {
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price</FormLabel>
+                      <FormLabel>{t('artisan.price') || 'Price'}</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">₹</span>
@@ -1059,7 +1061,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     <FormItem className="space-y-2">
                       <FormLabel className="flex items-center gap-1.5 font-semibold text-xs">
                         <Hammer className="h-3.5 w-3.5 text-[#8b4513]" />
-                        Craftsmanship Mode (कारीगरी का प्रकार)
+                        {t('artisan.craftsmanshipMode') || 'Craftsmanship Mode'}
                       </FormLabel>
                       <div className="grid grid-cols-3 gap-2">
                         <button
@@ -1072,10 +1074,7 @@ export function ProductForm({ product }: ProductFormProps) {
                           }`}
                         >
                           <span className="font-bold flex items-center gap-1">
-                            ✋ 100% Handmade
-                          </span>
-                          <span className="text-[10px] text-muted-foreground leading-tight">
-                            शुद्ध हस्तनिर्मित
+                            ✋ {t('artisan.handmade') || '100% Handmade'}
                           </span>
                         </button>
 
@@ -1089,10 +1088,7 @@ export function ProductForm({ product }: ProductFormProps) {
                           }`}
                         >
                           <span className="font-bold flex items-center gap-1">
-                            🧵 Semi / Handloom
-                          </span>
-                          <span className="text-[10px] text-muted-foreground leading-tight">
-                            पारंपरिक हथकरघा
+                            🧵 {t('artisan.semiHandmade') || 'Semi / Handloom'}
                           </span>
                         </button>
 
@@ -1106,10 +1102,7 @@ export function ProductForm({ product }: ProductFormProps) {
                           }`}
                         >
                           <span className="font-bold flex items-center gap-1">
-                            ⚙️ Machine-Assisted
-                          </span>
-                          <span className="text-[10px] text-muted-foreground leading-tight">
-                            मशीन सहायता प्राप्त
+                            ⚙️ {t('artisan.machineAssisted') || 'Machine-Assisted'}
                           </span>
                         </button>
                       </div>
@@ -1123,7 +1116,7 @@ export function ProductForm({ product }: ProductFormProps) {
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-semibold">Craft Category (शिल्प श्रेणी)</FormLabel>
+                      <FormLabel className="text-xs font-semibold">{t('artisan.craftCategory') || 'Craft Category'}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
@@ -1151,7 +1144,7 @@ export function ProductForm({ product }: ProductFormProps) {
                   name="region"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-semibold">Craft Region / State (राज्य व क्षेत्र)</FormLabel>
+                      <FormLabel className="text-xs font-semibold">{t('artisan.craftRegion') || 'Craft Region / State'}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
@@ -1179,7 +1172,7 @@ export function ProductForm({ product }: ProductFormProps) {
                   name="material"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-semibold">Authentic Raw Material (कच्चा माल)</FormLabel>
+                      <FormLabel className="text-xs font-semibold">{t('artisan.rawMaterial') || 'Authentic Raw Material'}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
@@ -1228,7 +1221,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 <div className="space-y-2 p-3 bg-muted/30 border rounded-md">
                   <div className="flex items-center justify-between">
                     <FormLabel className="flex items-center gap-1.5 text-xs font-semibold">
-                      <Clock className="h-3.5 w-3.5 text-primary" /> Crafting Time (बनाने में लगा समय)
+                      <Clock className="h-3.5 w-3.5 text-primary" /> {t('artisan.craftingTime') || 'Crafting Time'}
                     </FormLabel>
                     <div className="flex items-center gap-1 text-[11px] bg-background p-0.5 rounded border">
                       <button
@@ -1238,7 +1231,7 @@ export function ProductForm({ product }: ProductFormProps) {
                           laborTimeUnit === 'hours' ? 'bg-[#8b4513] text-white font-semibold' : 'text-muted-foreground'
                         }`}
                       >
-                        Hours
+                        {t('artisan.hours') || 'Hours'}
                       </button>
                       <button
                         type="button"
@@ -1247,7 +1240,7 @@ export function ProductForm({ product }: ProductFormProps) {
                           laborTimeUnit === 'days' ? 'bg-[#8b4513] text-white font-semibold' : 'text-muted-foreground'
                         }`}
                       >
-                        Days
+                        {t('artisan.days') || 'Days'}
                       </button>
                     </div>
                   </div>
@@ -1297,7 +1290,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 <div className="space-y-2.5 p-3 bg-muted/30 border rounded-md">
                   <div className="flex items-center justify-between">
                     <FormLabel className="flex items-center gap-1.5 text-xs font-semibold">
-                      <Ruler className="h-3.5 w-3.5 text-primary" /> Product Dimensions & Size
+                      <Ruler className="h-3.5 w-3.5 text-primary" /> {t('artisan.dimensions') || 'Product Dimensions & Size'}
                     </FormLabel>
                     <span className="text-[10px] font-mono bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300">
                       ≈ {computedSizeSqft} sq ft
@@ -1546,11 +1539,13 @@ export function ProductForm({ product }: ProductFormProps) {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Actions</CardTitle>
+                <CardTitle>{t('common.save') || 'Actions'}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? 'Saving...' : (product ? 'Save Changes' : 'Create Product')}
+                  {form.formState.isSubmitting
+                    ? (t('artisan.saving') || 'Saving...')
+                    : (product ? (t('artisan.saveProduct') || 'Save Changes') : (t('artisan.saveAndPublish') || 'Create Product'))}
                 </Button>
               </CardContent>
             </Card>

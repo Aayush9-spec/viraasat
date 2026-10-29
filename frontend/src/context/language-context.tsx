@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import en from '@/locales/en.json';
 import hi from '@/locales/hi.json';
 import ta from '@/locales/ta.json';
@@ -12,8 +12,10 @@ import gu from '@/locales/gu.json';
 import kn from '@/locales/kn.json';
 import ml from '@/locales/ml.json';
 import pa from '@/locales/pa.json';
+import or from '@/locales/or.json';
+import as from '@/locales/as.json';
 
-const translations: Record<string, any> = { en, hi, ta, bn, te, mr, ur, gu, kn, ml, pa };
+const translations: Record<string, any> = { en, hi, ta, bn, te, mr, ur, gu, kn, ml, pa, or, as };
 
 // Master Phrase Dictionary for Full Website Translation across all languages
 const PHRASE_DICTIONARY: Record<string, Record<string, string>> = {
@@ -273,7 +275,9 @@ const PHRASE_DICTIONARY: Record<string, Record<string, string>> = {
 interface LanguageContextType {
   language: string;
   setLanguage: (language: string) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
+  dir: 'ltr' | 'rtl';
+  isRTL: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -281,59 +285,120 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState('en');
 
+  const dir: 'ltr' | 'rtl' = language === 'ur' ? 'rtl' : 'ltr';
+  const isRTL = dir === 'rtl';
+
+  const applyDocumentAttributes = useCallback((lang: string) => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ur' ? 'rtl' : 'ltr';
+    }
+  }, []);
+
   useEffect(() => {
     const savedLanguage = localStorage.getItem('viraasat-lang');
     if (savedLanguage && translations[savedLanguage]) {
       setLanguageState(savedLanguage);
+      applyDocumentAttributes(savedLanguage);
+    } else {
+      applyDocumentAttributes('en');
     }
-  }, []);
+  }, [applyDocumentAttributes]);
 
-  const setLanguage = (lang: string) => {
+  const setLanguage = useCallback((lang: string) => {
     localStorage.setItem('viraasat-lang', lang);
     setLanguageState(lang);
-  };
+    applyDocumentAttributes(lang);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('viraasat_language_change', { detail: { language: lang } }));
+    }
+  }, [applyDocumentAttributes]);
 
-  const t = (key: string): string => {
+  const t = useCallback((key: string, params?: Record<string, string | number>): string => {
     if (!key) return '';
+
+    let text = '';
 
     // 1. Direct dictionary phrase match for active language
     if (language !== 'en' && PHRASE_DICTIONARY[language]?.[key]) {
-      return PHRASE_DICTIONARY[language][key];
-    }
+      text = PHRASE_DICTIONARY[language][key];
+    } else {
+      // 2. Dot-notation key resolution
+      const keys = key.split('.');
+      let result = translations[language];
+      for (const k of keys) {
+        result = result?.[k];
+        if (result === undefined) break;
+      }
 
-    // 2. Dot-notation key resolution
-    const keys = key.split('.');
-    let result = translations[language];
-    for (const k of keys) {
-      result = result?.[k];
-      if (result === undefined) {
+      if (result !== undefined && typeof result === 'string') {
+        text = result;
+      } else {
+        // Fallback to English dot-notation
         let fallbackResult = translations['en'];
         for (const fk of keys) {
           fallbackResult = fallbackResult?.[fk];
+          if (fallbackResult === undefined) break;
         }
 
         // 3. Fallback phrase dictionary match if key wasn't dot-notation
         if (language !== 'en' && PHRASE_DICTIONARY[language]?.[fallbackResult || key]) {
-          return PHRASE_DICTIONARY[language][fallbackResult || key];
+          text = PHRASE_DICTIONARY[language][fallbackResult || key];
+        } else {
+          text = typeof fallbackResult === 'string' ? fallbackResult : key;
         }
-
-        return fallbackResult || key;
       }
     }
-    return result || key;
-  };
+
+    // 4. Parameter interpolation: replace {paramName} with value
+    if (params && typeof text === 'string') {
+      for (const [pKey, pVal] of Object.entries(params)) {
+        text = text.replace(new RegExp(`\\{${pKey}\\}`, 'g'), String(pVal));
+      }
+    }
+
+    return text;
+  }, [language]);
+
+  const contextValue = useMemo(() => ({
+    language,
+    setLanguage,
+    t,
+    dir,
+    isRTL,
+  }), [language, setLanguage, t, dir, isRTL]);
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={contextValue}>
       {children}
     </LanguageContext.Provider>
   );
 }
 
-export function useLanguage() {
+const defaultContextValue: LanguageContextType = {
+  language: 'en',
+  setLanguage: () => {},
+  t: (key: string, params?: Record<string, string | number>) => {
+    if (!key) return '';
+    const keys = key.split('.');
+    let res: any = translations['en'];
+    for (const k of keys) {
+      res = res?.[k];
+      if (res === undefined) break;
+    }
+    let text = typeof res === 'string' ? res : key;
+    if (params) {
+      for (const [pKey, pVal] of Object.entries(params)) {
+        text = text.replace(new RegExp(`\\{${pKey}\\}`, 'g'), String(pVal));
+      }
+    }
+    return text;
+  },
+  dir: 'ltr',
+  isRTL: false,
+};
+
+export function useLanguage(): LanguageContextType {
   const context = useContext(LanguageContext);
-  if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
+  return context || defaultContextValue;
 }

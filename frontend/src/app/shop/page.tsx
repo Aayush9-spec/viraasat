@@ -49,6 +49,7 @@ import { categories as staticCategories, regions as staticRegions, getLocalProdu
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
 import { useToast } from '@/core/hooks/use-toast';
+import { useTranslation } from '@/core/hooks/use-translation';
 import { getProductImage } from '@/core/utils/utils';
 import { ProductGridSkeleton } from '@/components/ui/product-skeleton';
 
@@ -66,6 +67,7 @@ function ShopPageContent() {
   const { addItem } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -511,10 +513,10 @@ function ShopPageContent() {
       <div className="pt-4 border-t border-[#E8DCCB]">
         <div className="flex items-center justify-between text-xs font-bold text-[#221C18] uppercase tracking-wider mb-2">
           <label htmlFor={`${idPrefix}-valuation-range`} className="cursor-pointer">
-            Valuation Range
+            {t('marketplace.priceRange') || 'Valuation Range'}
           </label>
           <span className="font-serif text-[#701D24] text-sm font-bold">
-            {maxPrice >= 35000 ? 'All Valuations' : `Up to ₹${maxPrice.toLocaleString('en-IN')}`}
+            {maxPrice >= 35000 ? (t('marketplace.allValuations') || 'All Valuations') : `${t('marketplace.upTo') || 'Up to'} ₹${maxPrice.toLocaleString('en-IN')}`}
           </span>
         </div>
         <input
@@ -542,7 +544,7 @@ function ShopPageContent() {
       {/* Group 4: Heritage Provenance Toggles */}
       <div className="pt-4 border-t border-[#E8DCCB] space-y-2.5">
         <span className="text-xs font-bold text-[#221C18] uppercase tracking-wider block mb-2">
-          Heritage Provenance
+          {t('marketplace.heritageProvenance') || 'Heritage Provenance'}
         </span>
 
         <label
@@ -557,7 +559,7 @@ function ShopPageContent() {
           />
           <span className="flex items-center gap-1.5 font-medium">
             <ShieldCheck className="w-3.5 h-3.5 text-[#C59B4B]" />
-            Geographical Indication (GI) Only
+            {t('marketplace.giOnly') || 'Geographical Indication (GI) Only'}
           </span>
         </label>
 
@@ -573,7 +575,7 @@ function ShopPageContent() {
           />
           <span className="flex items-center gap-1.5 font-medium">
             <Award className="w-3.5 h-3.5 text-[#701D24]" />
-            Masterwork &amp; Shilp Guru Creations
+            {t('marketplace.masterworkOnly') || 'Masterwork & Shilp Guru Creations'}
           </span>
         </label>
       </div>
@@ -582,9 +584,9 @@ function ShopPageContent() {
       <div className="bg-[#FAF7F2] rounded-xl p-3.5 border border-[#C59B4B]/40 text-[11px] leading-relaxed text-[#655B53]">
         <strong className="text-[#221C18] block mb-0.5 font-serif text-xs flex items-center gap-1.5">
           <Handshake className="w-3.5 h-3.5 text-[#C59B4B]" />
-          Viraasat Fair Trade Charter
+          {t('marketplace.fairTradeCharter') || 'Viraasat Fair Trade Charter'}
         </strong>
-        Every purchase directly empowers registered master artisans with transparent escrow, zero middleman cuts, and signed lineage provenance.
+        {t('marketplace.fairTradeDesc') || 'Every purchase directly empowers registered master artisans with transparent escrow, zero middleman cuts, and signed lineage provenance.'}
       </div>
     </div>
   );
@@ -637,7 +639,7 @@ function ShopPageContent() {
               name="shopSearch"
               aria-label="Search by craft, artisan, or region"
               type="text"
-              placeholder="Search by craft (Dhokra, Pashmina, Blue Pottery), artisan, or region..."
+              placeholder={t('marketplace.searchPlaceholder') || "Search by craft (Dhokra, Pashmina, Blue Pottery), artisan, or region..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-[#FAF7F2] border border-[#E8DCCB] rounded-xl py-2.5 pl-10 pr-9 text-xs text-[#221C18] placeholder-[#655B53]/70 focus:outline-none focus:border-[#C59B4B] focus:ring-1 focus:ring-[#C59B4B] transition-all"

@@ -9,6 +9,7 @@ import { artisans } from '@/lib/data';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
 import { useToast } from '@/core/hooks/use-toast';
+import { useTranslation } from '@/core/hooks/use-translation';
 import { useProductReviews } from '@/features/marketplace/hooks/use-product-reviews';
 
 interface ProductCardProps {
@@ -33,6 +34,7 @@ export default function ProductCard({
 
   const { addItem } = useCart();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { rating, loading: ratingLoading } = useProductReviews(product.id);
   const wishlisted = isWishlisted(product.id);
@@ -130,7 +132,7 @@ export default function ProductCard({
                   className="w-full py-2 bg-white/95 backdrop-blur-md text-[#221C18] hover:bg-[#701D24] hover:text-white rounded-xl text-[11px] font-semibold tracking-wider uppercase transition-all shadow-md flex items-center justify-center gap-1.5 border border-[#E8DCCB] cursor-pointer"
                 >
                   <Eye className="w-3.5 h-3.5" />
-                  <span>Inspect Provenance</span>
+                  <span>{t('marketplace.inspectProvenance') || 'Inspect Provenance'}</span>
                 </button>
               </div>
             )}
@@ -196,7 +198,7 @@ export default function ProductCard({
               <div className="flex items-baseline justify-between">
                 <div>
                   <span className="text-[9px] uppercase tracking-wider text-[#655B53] font-semibold block">
-                    Fair Guild Price
+                    {t('marketplace.fairGuildPrice') || 'Fair Guild Price'}
                   </span>
                   <div className="flex items-baseline gap-1.5">
                     <span className="font-serif text-xl font-bold text-[#701D24]">
@@ -216,7 +218,7 @@ export default function ProductCard({
                     title="Transparent revenue sharing"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block" />
-                    84% to Artisan
+                    84% {t('marketplace.toArtisan') || 'to Artisan'}
                   </span>
                 </div>
               </div>
@@ -229,7 +231,7 @@ export default function ProductCard({
                   className="w-full py-2.5 bg-[#FAF7F2] hover:bg-[#701D24] text-[#221C18] hover:text-white rounded-xl text-xs font-semibold tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-2 border border-[#E8DCCB] hover:border-transparent active:scale-[0.99] shadow-xs hover:shadow-md cursor-pointer"
                 >
                   <ShoppingBag className="w-3.5 h-3.5" />
-                  <span>Acquire Heirloom</span>
+                  <span>{t('marketplace.acquireHeirloom') || 'Acquire Heirloom'}</span>
                 </button>
               </div>
             </div>

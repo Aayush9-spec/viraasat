@@ -3,6 +3,6 @@
 import { useLanguage } from '@/context/language-context';
 
 export function useTranslation() {
-  const { t } = useLanguage();
-  return { t };
+  const { t, language, setLanguage, dir, isRTL } = useLanguage();
+  return { t, language, setLanguage, dir, isRTL };
 }

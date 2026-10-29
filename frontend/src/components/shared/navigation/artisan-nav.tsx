@@ -13,25 +13,28 @@ import {
   UserCircle,
 } from 'lucide-react';
 import { cn } from '@/core/utils/utils';
+import { useTranslation } from '@/core/hooks/use-translation';
 
 export const artisanNavItems = [
-  { href: '/artisan/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/artisan/products', label: 'Products', icon: Package },
-  { href: '/artisan/orders', label: 'Orders', icon: ShoppingCart },
-  { href: '/artisan/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/artisan/ai-tools', label: 'AI Tools', icon: Sparkles },
-  { href: '/artisan/business-advisor', label: 'Business Advisor', icon: TrendingUp },
-  { href: '/artisan/provenance', label: 'Provenance', icon: ShieldCheck },
-  { href: '/artisan/profile', label: 'Profile', icon: UserCircle },
+  { href: '/artisan/dashboard', key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/artisan/products', key: 'products', label: 'Products', icon: Package },
+  { href: '/artisan/orders', key: 'orders', label: 'Orders', icon: ShoppingCart },
+  { href: '/artisan/analytics', key: 'analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/artisan/ai-tools', key: 'aiTools', label: 'AI Tools', icon: Sparkles },
+  { href: '/artisan/business-advisor', key: 'businessAdvisor', label: 'Business Advisor', icon: TrendingUp },
+  { href: '/artisan/provenance', key: 'provenance', label: 'Provenance', icon: ShieldCheck },
+  { href: '/artisan/profile', key: 'profile', label: 'Profile', icon: UserCircle },
 ];
 
 export function ArtisanNav() {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   return (
     <nav className="grid items-start gap-1.5 px-2 text-sm font-medium lg:px-4 py-2">
-      {artisanNavItems.map(({ href, label, icon: Icon }) => {
+      {artisanNavItems.map(({ href, key, label, icon: Icon }) => {
         const isActive = pathname === href || (href !== '/artisan/dashboard' && pathname.startsWith(href));
+        const translatedLabel = t(`artisan.${key}`) || label;
         return (
           <Link
             key={href}
@@ -42,7 +45,7 @@ export function ArtisanNav() {
             )}
           >
             <Icon className={cn('h-4 w-4 transition-colors', isActive ? 'text-amber-300 dark:text-amber-400' : 'text-muted-foreground/70')} />
-            {label}
+            <span>{translatedLabel}</span>
           </Link>
         );
       })}

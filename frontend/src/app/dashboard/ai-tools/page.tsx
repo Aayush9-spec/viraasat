@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import {
   Card,
@@ -43,10 +43,14 @@ import {
   buildFallbackNativeDescription,
   buildFallbackEnglishDescription,
   getLanguageName,
+  getLanguageCode,
+  SUPPORTED_LANGUAGES,
 } from '@/ai/languages';
 import { translateText } from '@/ai/flows/translate-text';
 import { generateImageCulturalStory } from '@/ai/flows/image-cultural-story';
 import VoiceRecorder from '@/features/ai/components/voice-recorder';
+import { useLanguage } from '@/context/language-context';
+import { useTranslation } from '@/core/hooks/use-translation';
 
 // Detect whether Gemini AI is configured with a real key.
 // Valid Google AI Studio keys start with "AIza". The placeholder in .env.local starts with "AQ."
@@ -77,6 +81,8 @@ const LANGUAGES = [
 ];
 
 export default function AIToolsPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       {/* Hero Header */}
@@ -87,12 +93,10 @@ export default function AIToolsPage() {
         </div>
         <div className="relative">
           <h1 className="text-2xl md:text-3xl font-bold font-heading tracking-tight">
-            Viraasat AI Studio
+            {t('aiTools.title') || 'Viraasat AI Studio'}
           </h1>
           <p className="text-muted-foreground mt-2 max-w-2xl">
-            Harness the power of AI to create compelling product descriptions,
-            translate content across languages, and discover the cultural stories
-            behind every craft.
+            {t('aiTools.subtitle') || 'Harness the power of AI to create compelling product descriptions, translate content across languages, and discover the cultural stories behind every craft.'}
           </p>
           {/* AI status pill */}
           <div className="mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border
@@ -122,7 +126,7 @@ export default function AIToolsPage() {
             className="flex items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-sm"
           >
             <Wand2 className="h-4 w-4" />
-            <span className="hidden sm:inline">Description</span>
+            <span className="hidden sm:inline">{t('aiTools.descGenerator') || 'Description'}</span>
             <span className="sm:hidden">Desc</span>
           </TabsTrigger>
           <TabsTrigger
@@ -130,7 +134,7 @@ export default function AIToolsPage() {
             className="flex items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-sm"
           >
             <Globe2 className="h-4 w-4" />
-            <span className="hidden sm:inline">Translator</span>
+            <span className="hidden sm:inline">{t('aiTools.translator') || 'Translator'}</span>
             <span className="sm:hidden">Trans</span>
           </TabsTrigger>
           <TabsTrigger
@@ -138,7 +142,7 @@ export default function AIToolsPage() {
             className="flex items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-sm"
           >
             <ImageIcon className="h-4 w-4" />
-            <span className="hidden sm:inline">Image Story</span>
+            <span className="hidden sm:inline">{t('aiTools.culturalStory') || 'Image Story'}</span>
             <span className="sm:hidden">Image</span>
           </TabsTrigger>
         </TabsList>
@@ -576,11 +580,31 @@ function DescriptionGeneratorTab() {
    ========================================== */
 function TranslatorTab() {
   const { toast } = useToast();
+  const { language: globalLanguage, setLanguage: setGlobalLanguage, t } = useLanguage();
   const [sourceText, setSourceText] = useState('');
-  const [language, setLanguage] = useState('');
+  const [language, setLanguage] = useState(() => getLanguageName(globalLanguage) || 'Hindi');
   const [translatedText, setTranslatedText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Keep target language in sync with global language
+  useEffect(() => {
+    if (globalLanguage) {
+      setLanguage(getLanguageName(globalLanguage));
+    }
+  }, [globalLanguage]);
+
+  const handleLanguageChange = (selectedLangName: string) => {
+    setLanguage(selectedLangName);
+    const code = getLanguageCode(selectedLangName);
+    if (code) {
+      setGlobalLanguage(code);
+      toast({
+        title: '🌐 ' + (t('aiTools.websiteUpdated') || 'Website language updated!'),
+        description: `${t('aiTools.applyWebsiteDesc') || 'Switched entire website to'} ${selectedLangName}.`,
+      });
+    }
+  };
 
   const handleTranslate = async () => {
     if (!sourceText.trim()) {
@@ -609,8 +633,8 @@ function TranslatorTab() {
       });
       setTranslatedText(result.translatedText);
       toast({
-        title: '🌐 Translation Complete!',
-        description: `Successfully translated to ${language}.`,
+        title: '🌐 ' + (t('aiTools.translationComplete') || 'Translation Complete!'),
+        description: `${t('aiTools.translationResult') || 'Successfully translated to'} ${language}.`,
       });
     } catch (error) {
       console.error(error);
@@ -627,7 +651,7 @@ function TranslatorTab() {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(translatedText);
     setCopied(true);
-    toast({ title: 'Copied!', description: 'Translation copied to clipboard.' });
+    toast({ title: t('aiTools.copied') || 'Copied!', description: 'Translation copied to clipboard.' });
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -641,9 +665,9 @@ function TranslatorTab() {
               <Languages className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <CardTitle className="text-lg">Source Text</CardTitle>
+              <CardTitle className="text-lg">{t('aiTools.sourceText') || 'Source Text'}</CardTitle>
               <CardDescription>
-                Enter the text you want to translate
+                {t('aiTools.enterSourceText') || 'Enter the text you want to translate'}
               </CardDescription>
             </div>
           </div>
@@ -651,22 +675,28 @@ function TranslatorTab() {
         <CardContent className="space-y-4">
           <Textarea
             id="ai-translate-source"
-            placeholder="Enter text to translate... e.g. product descriptions, artisan stories, marketing copy"
+            placeholder={t('aiTools.enterSourceText') || "Enter text to translate... e.g. product descriptions, artisan stories, marketing copy"}
             value={sourceText}
             onChange={(e) => setSourceText(e.target.value)}
             rows={6}
             className="bg-background resize-none"
           />
           <div className="space-y-2">
-            <label
-              htmlFor="ai-target-language"
-              className="text-sm font-medium leading-none"
-            >
-              Target Language
-            </label>
-            <Select value={language} onValueChange={setLanguage}>
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="ai-target-language"
+                className="text-sm font-medium leading-none"
+              >
+                {t('aiTools.targetLanguage') || 'Target Language'}
+              </label>
+              <span className="text-[11px] text-muted-foreground flex items-center gap-1 font-medium">
+                <Globe2 className="h-3 w-3 text-primary" />
+                {t('aiTools.applyWebsite') || 'Switches Entire Website'}
+              </span>
+            </div>
+            <Select value={language} onValueChange={handleLanguageChange}>
               <SelectTrigger id="ai-target-language" className="bg-background">
-                <SelectValue placeholder="Select language" />
+                <SelectValue placeholder={t('aiTools.selectLanguage') || "Select language"} />
               </SelectTrigger>
               <SelectContent>
                 {LANGUAGES.map((lang) => (
@@ -677,6 +707,22 @@ function TranslatorTab() {
               </SelectContent>
             </Select>
           </div>
+
+          <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-primary/5 border border-primary/20 text-xs">
+            <span className="text-muted-foreground">
+              {t('aiTools.applyWebsiteDesc') || 'Selecting a language here updates the entire website immediately.'}
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handleLanguageChange(language)}
+              className="shrink-0 h-7 text-xs border-primary/40 text-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              {t('common.save') || 'Apply'}
+            </Button>
+          </div>
+
           <Button
             onClick={handleTranslate}
             disabled={isLoading}
@@ -686,12 +732,12 @@ function TranslatorTab() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Translating...
+                {t('aiTools.translating') || 'Translating...'}
               </>
             ) : (
               <>
                 <Globe2 className="mr-2 h-4 w-4" />
-                Translate
+                {t('aiTools.translateButton') || 'Translate Text'}
               </>
             )}
           </Button>
@@ -703,7 +749,7 @@ function TranslatorTab() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">
-              Translation{' '}
+              {t('aiTools.translationResult') || 'Translation'}{' '}
               {language && (
                 <span className="text-sm font-normal text-muted-foreground">
                   → {language}
@@ -722,7 +768,7 @@ function TranslatorTab() {
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
-                {copied ? 'Copied' : 'Copy'}
+                {copied ? (t('aiTools.copied') || 'Copied') : (t('aiTools.copyTranslation') || 'Copy')}
               </Button>
             )}
           </div>

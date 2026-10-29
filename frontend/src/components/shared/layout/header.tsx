@@ -107,23 +107,23 @@ export function Header() {
                 {t('nav.home')}
               </Link>
               <Link href="/#heritage-crafts" className="text-foreground/80 hover:text-primary transition-colors">
-                Heritage Crafts
+                {t('nav.heritageCrafts') || 'Heritage Crafts'}
               </Link>
               <Link href="/#artisan-lineage" className="text-foreground/80 hover:text-primary transition-colors">
-                Master Artisans
+                {t('nav.masterArtisans') || 'Master Artisans'}
               </Link>
               <Link href="/#curated-treasures" className="text-foreground/80 hover:text-primary transition-colors">
-                Curated Heirlooms
+                {t('nav.curatedHeirlooms') || 'Curated Heirlooms'}
               </Link>
               <Link href="/#why-viraasat" className="text-foreground/80 hover:text-primary transition-colors">
-                Philosophy
+                {t('nav.philosophy') || 'Philosophy'}
               </Link>
               <Link href="/shop" className="text-foreground/80 hover:text-primary transition-colors font-semibold text-primary">
                 {t('nav.shop')}
               </Link>
               <Link href="/download" className="text-foreground/80 hover:text-primary transition-colors font-semibold flex items-center gap-1">
                 <Smartphone className="w-3.5 h-3.5 text-[#C59B4B]" />
-                <span>App</span>
+                <span>{t('nav.app') || 'App'}</span>
               </Link>
             </div>
           </div>
@@ -147,7 +147,7 @@ export function Header() {
                 className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-400 hover:bg-red-600 hover:text-white transition-all duration-300"
               >
                 <Shield className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
-                <span>Admin Console</span>
+                <span>{t('nav.adminConsole') || 'Admin Console'}</span>
               </Link>
             ) : mounted && isSignedIn && isArtisan ? (
               <Link
@@ -155,7 +155,7 @@ export function Header() {
                 className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-amber-600/40 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-600 hover:text-white transition-all duration-300"
               >
                 <ShoppingBag className="w-3.5 h-3.5" />
-                <span>Customer Shop</span>
+                <span>{t('nav.customerShop') || 'Customer Shop'}</span>
               </Link>
             ) : (
               <Link
@@ -163,7 +163,7 @@ export function Header() {
                 className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#C59B4B]" />
-                <span>Artisan Portal</span>
+                <span>{t('nav.artisanPortal') || 'Artisan Portal'}</span>
               </Link>
             )}
 
@@ -352,15 +352,25 @@ export function Header() {
                   <SheetHeader>
                     <SheetTitle className="text-left font-heading text-2xl">Menu</SheetTitle>
                   </SheetHeader>
-                  <div className="flex flex-col gap-6 mt-8">
+                  <div className="flex flex-col gap-6 mt-6">
+                    <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border">
+                      <span className="text-xs font-medium text-muted-foreground">{t('common.language') || 'Language'}:</span>
+                      <LanguageSwitcher showLabel />
+                    </div>
                     <nav className="flex flex-col space-y-4">
                       {isAdminRole && (
                         <Link href="/admin" className="text-lg font-semibold text-red-600 hover:text-red-700 transition-colors flex items-center gap-2">
-                          <Shield className="h-5 w-5" /> Admin Console
+                          <Shield className="h-5 w-5" /> {t('nav.adminConsole') || 'Admin Console'}
                         </Link>
                       )}
                       <Link href="/shop" className="text-lg font-medium hover:text-primary transition-colors">
                         {t('nav.shop')}
+                      </Link>
+                      <Link href="/#heritage-crafts" className="text-lg font-medium hover:text-primary transition-colors">
+                        {t('nav.heritageCrafts') || 'Heritage Crafts'}
+                      </Link>
+                      <Link href="/#artisan-lineage" className="text-lg font-medium hover:text-primary transition-colors">
+                        {t('nav.masterArtisans') || 'Master Artisans'}
                       </Link>
                       <Link href="/#mission" className="text-lg font-medium hover:text-primary transition-colors">
                         {t('nav.mission')}
@@ -386,7 +396,7 @@ export function Header() {
                           </div>
                           <Button variant="outline" onClick={handleLogout} className="w-full text-destructive hover:text-destructive">
                             <LogOut className="mr-2 h-4 w-4" />
-                            Log Out
+                            {t('nav.logout') || 'Log Out'}
                           </Button>
                         </div>
                       ) : (
@@ -395,7 +405,7 @@ export function Header() {
                             <Link href="/login">{t('nav.login') || 'Login'}</Link>
                           </Button>
                           <Button asChild className="w-full text-primary-foreground bg-primary hover:bg-primary/90">
-                            <Link href="/login?mode=signup">Sign Up</Link>
+                            <Link href="/login?mode=signup">{t('nav.signUp') || 'Sign Up'}</Link>
                           </Button>
                         </div>
                       )}

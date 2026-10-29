@@ -10,10 +10,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import { artisans, products } from '@/lib/data';
 import ProductCard from '@/features/marketplace/components/product-card';
+import { useTranslation } from '@/core/hooks/use-translation';
 
 const FREE_SHIPPING_THRESHOLD = 5000;
 
 export default function CartSidebar() {
+  const { t } = useTranslation();
   const { isCartOpen, setCartOpen, cartItems, removeItem, updateQuantity, getCartTotal } = useCart();
   const total = getCartTotal();
   const amountLeftForFreeShipping = FREE_SHIPPING_THRESHOLD - total;
@@ -25,19 +27,19 @@ export default function CartSidebar() {
     <Sheet open={isCartOpen} onOpenChange={setCartOpen}>
       <SheetContent className="w-full sm:w-[540px] flex flex-col">
         <SheetHeader>
-          <SheetTitle>Your Cart</SheetTitle>
+          <SheetTitle>{t('cart.title') || 'Your Cart'}</SheetTitle>
         </SheetHeader>
         {cartItems.length > 0 ? (
           <>
             <div className="pr-6">
               {amountLeftForFreeShipping > 0 ? (
                 <div className="mt-4 text-center text-sm text-muted-foreground space-y-2">
-                  <p>You&apos;re <span className="font-semibold text-primary">₹{amountLeftForFreeShipping.toFixed(2)}</span> away from free shipping!</p>
+                  <p>You&apos;re <span className="font-semibold text-primary">₹{amountLeftForFreeShipping.toFixed(2)}</span> {t('cart.awayFromFreeShipping') || 'away from free shipping!'}</p>
                   <Progress value={progressPercentage} className="h-2" />
                 </div>
               ) : (
                 <div className="mt-4 text-center text-sm font-semibold text-green-600">
-                  <p>You&apos;ve unlocked free shipping!</p>
+                  <p>{t('cart.unlockedFreeShipping') || "You've unlocked free shipping!"}</p>
                   <Progress value={100} className="h-2 [&>div]:bg-green-500" />
                 </div>
               )}
@@ -101,7 +103,7 @@ export default function CartSidebar() {
             </ScrollArea>
             <div className="border-t mt-auto pt-4 pr-6 space-y-4">
               <div>
-                <h3 className="font-semibold text-lg mb-4">You might also like</h3>
+                <h3 className="font-semibold text-lg mb-4">{t('cart.mightAlsoLike') || 'You might also like'}</h3>
                 <div className="grid grid-cols-3 gap-4">
                   {recommendedProducts.map(p => (
                     <Link href={`/product/${p.id}`} key={p.id} onClick={() => setCartOpen(false)}>
@@ -111,20 +113,20 @@ export default function CartSidebar() {
                 </div>
               </div>
               <div className="flex justify-between font-bold text-lg">
-                <span>Subtotal</span>
+                <span>{t('cart.subtotal') || 'Subtotal'}</span>
                 <span>₹{total.toFixed(2)}</span>
               </div>
               <Button size="lg" className="w-full" asChild>
-                <Link href="/checkout" onClick={() => setCartOpen(false)}>Proceed to Checkout</Link>
+                <Link href="/checkout" onClick={() => setCartOpen(false)}>{t('cart.checkout') || 'Proceed to Checkout'}</Link>
               </Button>
             </div>
           </>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <p className="text-lg font-semibold">Your cart is empty</p>
-            <p className="text-muted-foreground mt-1">Find something special to add.</p>
+            <p className="text-lg font-semibold">{t('cart.empty') || 'Your cart is empty'}</p>
+            <p className="text-muted-foreground mt-1">{t('cart.emptyDescription') || 'Find something special to add.'}</p>
             <Button asChild className="mt-4" onClick={() => setCartOpen(false)}>
-              <Link href="/shop">Continue Shopping</Link>
+              <Link href="/shop">{t('cart.continueShopping') || 'Continue Shopping'}</Link>
             </Button>
           </div>
         )}
