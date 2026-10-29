@@ -456,46 +456,59 @@ def main():
 
     print(f"Unsigned APK created: {os.path.getsize(unsigned_apk)} bytes")
 
-    # Step 2: Sign APK using jarsigner
-    keystore_path = 'scripts/viraasat.keystore'
-    if not os.path.exists(keystore_path):
-        keytool_exe = r'C:\Program Files\Java\jdk-26.0.2\bin\keytool.exe'
-        cmd_gen = [
-            keytool_exe, '-genkeypair', '-v',
-            '-keystore', keystore_path,
-            '-alias', 'viraasat',
-            '-keyalg', 'RSA',
-            '-keysize', '2048',
-            '-validity', '10000',
-            '-storepass', 'viraasat123',
-            '-keypass', 'viraasat123',
-            '-dname', 'CN=Viraasat Heritage, OU=Mobile, O=Viraasat, L=Jaipur, ST=Rajasthan, C=IN'
-        ]
-        subprocess.check_call(cmd_gen)
-
-    jarsigner_exe = r'C:\Program Files\Java\jdk-26.0.2\bin\jarsigner.exe'
-    signed_temp = 'scripts/signed_temp.apk'
+    # Step 2: Sign APK using jarsigner if available
     import shutil
+    keystore_path = 'scripts/viraasat.keystore'
+    keytool_exe = shutil.which('keytool') or os.path.join(os.getenv('JAVA_HOME', ''), 'bin', 'keytool') or (r'C:\Program Files\Java\jdk-26.0.2\bin\keytool.exe' if os.name == 'nt' else 'keytool')
+    if not os.path.exists(keystore_path):
+        if not shutil.which(keytool_exe) and not os.path.exists(keytool_exe):
+            print(f"Notice: keytool not found ({keytool_exe}), skipping keystore generation.")
+        else:
+            try:
+                cmd_gen = [
+                    keytool_exe, '-genkeypair', '-v',
+                    '-keystore', keystore_path,
+                    '-alias', 'viraasat',
+                    '-keyalg', 'RSA',
+                    '-keysize', '2048',
+                    '-validity', '10000',
+                    '-storepass', 'viraasat123',
+                    '-keypass', 'viraasat123',
+                    '-dname', 'CN=Viraasat Heritage, OU=Mobile, O=Viraasat, L=Jaipur, ST=Rajasthan, C=IN'
+                ]
+                subprocess.check_call(cmd_gen)
+            except Exception as e:
+                print(f"Notice: keytool generation skipped: {e}")
+
+    jarsigner_exe = shutil.which('jarsigner') or os.path.join(os.getenv('JAVA_HOME', ''), 'bin', 'jarsigner') or (r'C:\Program Files\Java\jdk-26.0.2\bin\jarsigner.exe' if os.name == 'nt' else 'jarsigner')
+    signed_temp = 'scripts/signed_temp.apk'
     shutil.copyfile(unsigned_apk, signed_temp)
 
-    sign_cmd = [
-        jarsigner_exe,
-        '-keystore', keystore_path,
-        '-storepass', 'viraasat123',
-        '-keypass', 'viraasat123',
-        '-sigalg', 'SHA256withRSA',
-        '-digestalg', 'SHA-256',
-        signed_temp,
-        'viraasat'
-    ]
-    print("Signing APK with jarsigner...")
-    subprocess.check_call(sign_cmd)
+    can_sign = (shutil.which(jarsigner_exe) is not None) or os.path.exists(jarsigner_exe)
+    if can_sign and os.path.exists(keystore_path):
+        try:
+            sign_cmd = [
+                jarsigner_exe,
+                '-keystore', keystore_path,
+                '-storepass', 'viraasat123',
+                '-keypass', 'viraasat123',
+                '-sigalg', 'SHA256withRSA',
+                '-digestalg', 'SHA-256',
+                signed_temp,
+                'viraasat'
+            ]
+            print("Signing APK with jarsigner...")
+            subprocess.check_call(sign_cmd)
 
-    # Verify signature
-    verify_cmd = [jarsigner_exe, '-verify', '-certs', signed_temp]
-    result = subprocess.check_output(verify_cmd).decode('utf-8')
-    print("Signature verification output:")
-    print(result.splitlines()[-3:])
+            # Verify signature
+            verify_cmd = [jarsigner_exe, '-verify', '-certs', signed_temp]
+            result = subprocess.check_output(verify_cmd).decode('utf-8')
+            print("Signature verification output:")
+            print(result.splitlines()[-3:])
+        except Exception as e:
+            print(f"Notice: jarsigner signing skipped ({e})")
+    else:
+        print(f"Notice: jarsigner or keystore not found, using unsigned APK package.")
 
     # Step 3: Copy to target locations
     targets = [

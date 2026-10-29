@@ -28,10 +28,12 @@ class VerifyPaymentInput(BaseModel):
 @router.post("/create-order")
 @router.post("/razorpay/order")
 async def create_order(payload: CreateOrderInput):
+    if payload.amount < 100:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Amount must be at least 100 paise",
+        )
     amount = payload.amount
-    # If amount is very small but >= 1 (e.g. 50 meaning ₹50), treat as rupees if needed, but respect min 100 paise
-    if amount < 100:
-        amount = amount * 100  # convert rupees to paise
 
     key_id = os.getenv("RAZORPAY_KEY_ID")
     key_secret = os.getenv("RAZORPAY_KEY_SECRET")
