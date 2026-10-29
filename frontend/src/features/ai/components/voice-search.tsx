@@ -72,6 +72,7 @@ export default function VoiceSearch() {
     resetTranscript,
   } = useSpeechRecognition({
     defaultLanguage: 'Hindi',
+    continuous: false,
   });
 
   // Sync speech transcript with the editable voice text input in real-time

@@ -86,7 +86,7 @@ describe('Voice Features: Voice Search & Voice Product Description', () => {
       expect(result.current.isListening).toBe(false);
     });
 
-    it('works with simulated Web Speech API events', () => {
+    it('works with simulated Web Speech API events', async () => {
       // Mock window.SpeechRecognition
       class MockSpeechRecognition {
         continuous = false;
@@ -117,8 +117,8 @@ describe('Voice Features: Voice Search & Voice Product Description', () => {
       expect(result.current.isSupported).toBe(true);
 
       // Start listening
-      act(() => {
-        result.current.startListening('hi-IN');
+      await act(async () => {
+        await result.current.startListening('hi-IN');
       });
       expect(result.current.isListening).toBe(true);
 
@@ -129,6 +129,109 @@ describe('Voice Features: Voice Search & Voice Product Description', () => {
       expect(result.current.isListening).toBe(false);
 
       // Clean up mock
+      delete (window as any).SpeechRecognition;
+    });
+
+    it('accurately distinguishes service-not-allowed from not-allowed permissions denial', async () => {
+      let instanceRef: any = null;
+      class MockSpeechRecognition {
+        continuous = false;
+        interimResults = false;
+        lang = 'hi-IN';
+        onstart: (() => void) | null = null;
+        onresult: ((event: any) => void) | null = null;
+        onerror: ((event: any) => void) | null = null;
+        onend: (() => void) | null = null;
+
+        start() {
+          instanceRef = this;
+          if (this.onstart) this.onstart();
+        }
+        stop() {
+          if (this.onend) this.onend();
+        }
+        abort() {
+          if (this.onend) this.onend();
+        }
+      }
+
+      (window as any).SpeechRecognition = MockSpeechRecognition;
+
+      const { result } = renderHook(() =>
+        useSpeechRecognition({ defaultLanguage: 'Hindi' })
+      );
+
+      // Test service-not-allowed
+      await act(async () => {
+        await result.current.startListening('hi-IN');
+      });
+
+      act(() => {
+        instanceRef.onerror({ error: 'service-not-allowed' });
+      });
+
+      expect(result.current.error).toContain('speech-recognition service is currently unavailable');
+      expect(result.current.error).not.toContain('Microphone permission was denied');
+      expect(result.current.statusMessage).toBe('Speech service unavailable');
+
+      // Test true permission denial not-allowed
+      await act(async () => {
+        await result.current.startListening('hi-IN');
+      });
+
+      act(() => {
+        instanceRef.onerror({ error: 'not-allowed' });
+      });
+
+      expect(result.current.error).toContain('Microphone permission was denied');
+      expect(result.current.statusMessage).toBe('Microphone access denied');
+
+      // Test audio-capture hardware issue
+      await act(async () => {
+        await result.current.startListening('hi-IN');
+      });
+
+      act(() => {
+        instanceRef.onerror({ error: 'audio-capture' });
+      });
+
+      expect(result.current.error).toContain('No microphone hardware was detected');
+
+      // Test network failure
+      await act(async () => {
+        await result.current.startListening('hi-IN');
+      });
+
+      act(() => {
+        instanceRef.onerror({ error: 'network' });
+      });
+
+      expect(result.current.error).toContain('Speech network connection failed');
+
+      // Test no-speech (non-fatal, does not set blocking error)
+      await act(async () => {
+        await result.current.startListening('hi-IN');
+      });
+
+      act(() => {
+        instanceRef.onerror({ error: 'no-speech' });
+      });
+
+      expect(result.current.error).toBeNull();
+      expect(result.current.statusMessage).toContain('No speech detected');
+
+      // Test aborted (non-fatal, does not set blocking error)
+      await act(async () => {
+        await result.current.startListening('hi-IN');
+      });
+
+      act(() => {
+        instanceRef.onerror({ error: 'aborted' });
+      });
+
+      expect(result.current.error).toBeNull();
+      expect(result.current.statusMessage).toBe('Recording stopped');
+
       delete (window as any).SpeechRecognition;
     });
   });

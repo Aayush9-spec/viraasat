@@ -90,6 +90,7 @@ export default function VoiceRecorder({
     transcript,
     interimTranscript,
     error,
+    statusMessage,
     startListening,
     stopListening,
     resetTranscript,
@@ -118,10 +119,8 @@ export default function VoiceRecorder({
     setGeneratedResult(null);
     setEditableText('');
     resetTranscript();
-    // Auto-start listening if supported
-    if (isSupported) {
-      startListening(getSpeechLanguageCode(selectedLang));
-    }
+    // Do NOT auto-start listening on dialog open.
+    // Wait for the artisan to explicitly click the microphone button.
   };
 
   const handleCloseDialog = useCallback(() => {
@@ -342,7 +341,7 @@ export default function VoiceRecorder({
                         <span className="text-destructive font-medium">Listening to {selectedLang}...</span>
                       </>
                     ) : (
-                      <span className="text-muted-foreground">Click the microphone to speak</span>
+                      <span className="text-muted-foreground">{statusMessage || 'Click the microphone to speak'}</span>
                     )}
                   </div>
                   <p className="text-[11px] text-muted-foreground max-w-sm">
