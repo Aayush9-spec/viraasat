@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/context/cart-context";
 import { useWishlist } from "@/context/wishlist-context";
 import { useToast } from "@/core/hooks/use-toast";
+import { useTranslation } from "@/core/hooks/use-translation";
 import { ProductService } from "@/features/marketplace/product-service";
 import { journalArticles } from "@/features/journal/articles";
 import type { Product } from "@/types/product";
@@ -61,6 +62,7 @@ export default function Marketplace() {
   const { addItem, setCartOpen } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const [currency, setCurrency] = useState("INR");
   const [currentFilter, setCurrentFilter] = useState("all");
@@ -383,16 +385,18 @@ export default function Marketplace() {
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EDE2] border border-[#C59B4B]/40 text-xs text-[#5E2C18] font-medium tracking-wide">
                 <span className="w-2 h-2 rounded-full bg-[#701D24] animate-pulse" />
                 <span className="uppercase text-[11px] font-bold text-[#5E2C18]">
-                  Direct GI-Origin Craft Marketplace • Live Database Connected
+                  {t('home.badge') || "Direct GI-Origin Craft Marketplace • Live Database Connected"}
                 </span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-serif font-bold text-[#221C18] leading-[1.12] tracking-tight">
-                Preserving <span className="text-[#8C2B2B] italic">India&apos;s Living Heritage</span>, One Handcrafted Heirloom at a Time.
+                {t('home.heroPart1') || "Preserving"}{" "}
+                <span className="text-[#8C2B2B] italic">{t('home.heroHighlight') || "India's Living Heritage"}</span>
+                {t('home.heroPart2') || ", One Handcrafted Heirloom at a Time."}
               </h1>
 
               <p className="text-[#655B53] text-base sm:text-lg xl:text-xl max-w-2xl xl:max-w-3xl font-light leading-relaxed mx-auto lg:mx-0">
-                Discover authentic Indian handicrafts, each one a unique piece of art, telling a story of tradition and skill. Every single piece is handmade by master artisans across rural India—carrying centuries of lineage, patience, and ancestral soul.
+                {t('home.heroDescription') || "Discover authentic Indian handicrafts, each one a unique piece of art, telling a story of tradition and skill. Every single piece is handmade by master artisans across rural India—carrying centuries of lineage, patience, and ancestral soul."}
               </p>
 
               {/* Dual Action CTAs */}
@@ -405,7 +409,7 @@ export default function Marketplace() {
                   }}
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[#701D24] hover:bg-[#8C2B2B] text-white rounded-full font-medium text-sm tracking-wide transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
                 >
-                  <span>Enter The Viraasat — Explore Collection</span>
+                  <span>{t('home.exploreCollection') || "Enter The Viraasat — Explore Collection"}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
@@ -418,7 +422,7 @@ export default function Marketplace() {
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#F3EDE2]/80 hover:bg-white text-[#221C18] border border-[#E8DCCB] hover:border-[#C59B4B] rounded-full font-medium text-sm transition-all shadow-sm cursor-pointer"
                 >
                   <Users className="w-4 h-4 text-[#8F6826]" />
-                  <span>Meet Master Artisans</span>
+                  <span>{t('home.meetArtisans') || "Meet Master Artisans"}</span>
                 </button>
               </div>
 
@@ -429,8 +433,8 @@ export default function Marketplace() {
                     <Award className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">100% Certified</h4>
-                    <p className="text-[11px] text-[#655B53]">Geographical Indication (GI) tags</p>
+                    <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">{t('home.badgeCertified') || "100% Certified"}</h4>
+                    <p className="text-[11px] text-[#655B53]">{t('home.badgeCertifiedDesc') || "Geographical Indication (GI) tags"}</p>
                   </div>
                 </div>
 
@@ -439,8 +443,8 @@ export default function Marketplace() {
                     <ShieldCheck className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">Fair Wage</h4>
-                    <p className="text-[11px] text-[#655B53]">85%+ direct to artisan guilds</p>
+                    <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">{t('home.badgeFairWage') || "Fair Wage"}</h4>
+                    <p className="text-[11px] text-[#655B53]">{t('home.badgeFairWageDesc') || "85%+ direct to artisan guilds"}</p>
                   </div>
                 </div>
 
@@ -449,8 +453,8 @@ export default function Marketplace() {
                     <Feather className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">Pure Craft</h4>
-                    <p className="text-[11px] text-[#655B53]">Zero factory synthetic molds</p>
+                    <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">{t('home.badgePureCraft') || "Pure Craft"}</h4>
+                    <p className="text-[11px] text-[#655B53]">{t('home.badgePureCraftDesc') || "Zero factory synthetic molds"}</p>
                   </div>
                 </div>
               </div>
@@ -480,7 +484,7 @@ export default function Marketplace() {
                     <div className="absolute top-4 right-4 bg-[#FAF7F2]/90 backdrop-blur-md border border-[#C59B4B] py-1.5 px-3 rounded-full flex items-center gap-1.5 shadow">
                       <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
                       <span className="text-[10px] font-bold uppercase tracking-wider text-[#701D24]">
-                        Masterpiece of the Month
+                        {t('home.masterpieceOfMonth') || "Masterpiece of the Month"}
                       </span>
                     </div>
 
@@ -497,7 +501,7 @@ export default function Marketplace() {
                       </p>
                       <div className="mt-3 flex items-center justify-between pt-2 border-t border-white/20">
                         <div>
-                          <span className="text-[11px] opacity-75">Starting from</span>
+                          <span className="text-[11px] opacity-75">{t('home.startingFrom') || "Starting from"}</span>
                           <p className="text-sm font-semibold text-[#E8CA82]">
                             {formatPrice(heroMasterpiece?.price || 7800)}
                           </p>
@@ -508,7 +512,7 @@ export default function Marketplace() {
                               type="button"
                               onClick={() => setQuickViewProduct(heroMasterpiece)}
                               className="p-2 bg-white/20 hover:bg-white/30 text-white rounded-full transition-colors cursor-pointer"
-                              title="Quick View"
+                              title={t('home.quickView') || "Quick View"}
                             >
                               <Eye className="w-3.5 h-3.5" />
                             </button>
@@ -518,7 +522,7 @@ export default function Marketplace() {
                             onClick={handleAcquireHeroMasterpiece}
                             className="px-4 py-2 bg-white text-[#221C18] hover:bg-[#C59B4B] hover:text-white rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-md cursor-pointer"
                           >
-                            <Plus className="w-3.5 h-3.5" /> Acquire
+                            <Plus className="w-3.5 h-3.5" /> {t('home.acquire') || "Acquire"}
                           </button>
                         </div>
                       </div>
@@ -567,10 +571,10 @@ export default function Marketplace() {
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="text-center max-w-3xl mx-auto mb-14">
             <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
-              Ancestral Regional Disciplines
+              {t('home.ancestralDisciplines') || "Ancestral Regional Disciplines"}
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-2">
-              Browse by Geographical Heritage
+              {t('home.browseGeographical') || "Browse by Geographical Heritage"}
             </h2>
             <div className="w-16 h-0.5 bg-[#C59B4B] mx-auto mt-4" />
           </div>
@@ -713,13 +717,13 @@ export default function Marketplace() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
               <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
-                Curated Guild Acquisitions
+                {t('home.curatedAcquisitions') || "Curated Guild Acquisitions"}
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-1">
-                Authentic Certified Heirlooms
+                {t('home.certifiedHeirlooms') || "Authentic Certified Heirlooms"}
               </h2>
               <p className="text-xs text-[#655B53] mt-1">
-                {products.length} live artifacts currently synchronized from the guild registry database.
+                {products.length} {t('home.liveArtifactsSync') || "live artifacts currently synchronized from the guild registry database."}
               </p>
             </div>
 
@@ -727,7 +731,7 @@ export default function Marketplace() {
             <div className="relative w-full md:w-80">
               <input
                 type="text"
-                placeholder="Search live heirlooms, crafts..."
+                placeholder={t('home.searchLiveHeirlooms') || "Search live heirlooms, crafts..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white border border-[#E8DCCB] rounded-full py-2.5 pl-10 pr-4 text-xs text-[#221C18] placeholder-[#655B53] focus:outline-none focus:border-[#C59B4B] shadow-sm"
@@ -758,7 +762,7 @@ export default function Marketplace() {
                     : "bg-white text-[#655B53] hover:text-[#221C18] border border-[#E8DCCB]"
                 }`}
               >
-                {cat === "all" ? `All Treasures (${products.length})` : cat}
+                {cat === "all" ? `${t('home.allTreasures') || 'All Treasures'} (${products.length})` : cat}
               </button>
             ))}
           </div>
@@ -777,8 +781,8 @@ export default function Marketplace() {
           ) : filteredProducts.length === 0 ? (
             <div className="bg-white rounded-2xl border border-[#E8DCCB] p-12 text-center max-w-md mx-auto my-8">
               <Box className="w-10 h-10 text-stone-400 mx-auto mb-3" />
-              <h3 className="font-serif text-lg font-bold text-[#221C18]">No Heirlooms Found</h3>
-              <p className="text-xs text-[#655B53] mt-1">Try clearing your search query or selecting a different craft category.</p>
+              <h3 className="font-serif text-lg font-bold text-[#221C18]">{t('home.noHeirlooms') || "No Heirlooms Found"}</h3>
+              <p className="text-xs text-[#655B53] mt-1">{t('home.noHeirloomsHelp') || "Try clearing your search query or selecting a different craft category."}</p>
               <button
                 type="button"
                 onClick={() => {
@@ -787,7 +791,7 @@ export default function Marketplace() {
                 }}
                 className="mt-4 px-5 py-2 bg-[#701D24] text-white rounded-full text-xs font-semibold"
               >
-                Reset Filters
+                {t('home.resetFilters') || "Reset Filters"}
               </button>
             </div>
           ) : (
@@ -818,7 +822,7 @@ export default function Marketplace() {
 
                         {/* GI Tag / Region Badge */}
                         <div className="absolute top-3 left-3 bg-[#FAF7F2]/90 backdrop-blur-md px-2.5 py-1 rounded text-[10px] font-bold tracking-wider uppercase text-[#701D24] border border-[#C59B4B]/30 shadow-sm">
-                          {p.region ? `GI • ${p.region}` : "Certified GI"}
+                          {p.region ? `GI • ${p.region}` : (t('home.giTagCertified') || "Certified GI")}
                         </div>
 
                         {/* Wishlist Button */}
@@ -852,7 +856,7 @@ export default function Marketplace() {
                             onClick={() => setQuickViewProduct(p)}
                             className="w-full py-2.5 bg-[#221C18]/90 backdrop-blur-md text-white rounded-xl text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-1.5 hover:bg-[#221C18] transition-colors shadow-lg cursor-pointer"
                           >
-                            <Eye className="w-3.5 h-3.5" /> Quick View
+                            <Eye className="w-3.5 h-3.5" /> {t('home.quickView') || "Quick View"}
                           </button>
                         </div>
                       </div>
@@ -882,7 +886,7 @@ export default function Marketplace() {
                     {/* Price and Cart Action */}
                     <div className="px-5 pb-5 pt-3 border-t border-[#E8DCCB]/60 flex items-center justify-between">
                       <div>
-                        <span className="text-[10px] text-[#655B53] block">Direct Artisan Price</span>
+                        <span className="text-[10px] text-[#655B53] block">{t('home.directArtisanPrice') || "Direct Artisan Price"}</span>
                         <p className="text-base font-serif font-bold text-[#221C18]">
                           {formatPrice(p.price)}
                         </p>
@@ -893,7 +897,7 @@ export default function Marketplace() {
                         onClick={() => handleAddToCart(p)}
                         className="px-4 py-2 bg-[#701D24] hover:bg-[#8C2B2B] text-white rounded-full text-xs font-semibold transition-all shadow hover:shadow-md flex items-center gap-1.5 cursor-pointer"
                       >
-                        <ShoppingBag className="w-3.5 h-3.5" /> Add to Bag
+                        <ShoppingBag className="w-3.5 h-3.5" /> {t('home.addToBag') || "Add to Bag"}
                       </button>
                     </div>
                   </div>
@@ -922,7 +926,7 @@ export default function Marketplace() {
             <div>
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
-                  Personalized Patron Curation
+                  {t('home.patronCuration') || "Personalized Patron Curation"}
                 </span>
                 <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-[#F3EDE2] text-[#701D24] border border-[#C59B4B]/40 rounded-full font-bold">
                   <Sparkles className="w-3 h-3 text-[#C59B4B]" /> Two-Tower Retrieval + GBT Ranker
@@ -934,16 +938,16 @@ export default function Marketplace() {
                 )}
               </div>
               <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal">
-                Curated for Your Taste & Regional Affinity
+                {t('home.curatedForTaste') || "Curated for Your Taste & Regional Affinity"}
               </h2>
               <p className="text-[#655B53] text-sm mt-2 max-w-2xl">
-                Real-time neural matching algorithm connecting your regional preferences with authentic GI-tagged masterpieces.
+                {t('home.neuralMatchingDesc') || "Real-time neural matching algorithm connecting your regional preferences with authentic GI-tagged masterpieces."}
               </p>
             </div>
 
             {/* Preference Region Chips */}
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-semibold text-[#655B53]">Target Origin:</span>
+              <span className="text-xs font-semibold text-[#655B53]">{t('home.targetOrigin') || "Target Origin:"}</span>
               {['Rajasthan', 'Kashmir', 'Kutch', 'Uttar Pradesh', 'Chhattisgarh'].map((reg) => (
                 <button
                   key={reg}
@@ -995,10 +999,10 @@ export default function Marketplace() {
                         />
                         <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
                           <span className="text-[10px] font-bold px-2.5 py-1 bg-[#221C18]/85 text-[#FAF7F2] backdrop-blur-md rounded-full shadow-sm flex items-center gap-1">
-                            <Sparkles className="w-2.5 h-2.5 text-[#C59B4B]" /> {matchScore}% Neural Match
+                            <Sparkles className="w-2.5 h-2.5 text-[#C59B4B]" /> {matchScore}% {t('home.neuralMatch') || "Neural Match"}
                           </span>
                           <span className="text-[10px] font-bold px-2 py-0.5 bg-[#701D24]/90 text-white backdrop-blur-md rounded-full">
-                            GI Certified
+                            {t('home.giTagCertified') || "GI Certified"}
                           </span>
                         </div>
 
@@ -1033,7 +1037,7 @@ export default function Marketplace() {
                             onClick={() => setQuickViewProduct(p)}
                             className="w-full py-2.5 bg-[#221C18]/90 backdrop-blur-md text-white rounded-xl text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-1.5 hover:bg-[#221C18] transition-colors shadow-lg cursor-pointer"
                           >
-                            <Eye className="w-3.5 h-3.5" /> Quick View
+                            <Eye className="w-3.5 h-3.5" /> {t('home.quickView') || "Quick View"}
                           </button>
                         </div>
                       </div>
@@ -1062,7 +1066,7 @@ export default function Marketplace() {
                     {/* Price & Action */}
                     <div className="px-4 pb-4 pt-2 border-t border-[#E8DCCB]/60 flex items-center justify-between">
                       <div>
-                        <span className="text-[10px] text-[#655B53] block">Direct Payout</span>
+                        <span className="text-[10px] text-[#655B53] block">{t('home.directPayout') || "Direct Payout"}</span>
                         <p className="text-base font-serif font-bold text-[#221C18]">
                           {formatPrice(p.price || 2400)}
                         </p>
@@ -1086,7 +1090,7 @@ export default function Marketplace() {
                         }}
                         className="px-3.5 py-2 bg-[#701D24] hover:bg-[#58161C] text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
                       >
-                        <ShoppingBag className="w-3.5 h-3.5" /> Add to Bag
+                        <ShoppingBag className="w-3.5 h-3.5" /> {t('home.addToBag') || "Add to Bag"}
                       </button>
                     </div>
                   </div>
@@ -1102,10 +1106,10 @@ export default function Marketplace() {
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
-              The Custodians of Culture
+              {t('home.custodiansTitle') || "The Custodians of Culture"}
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-2">
-              Meet the Hands Behind the Legacy
+              {t('home.meetHands') || "Meet the Hands Behind the Legacy"}
             </h2>
             <p className="text-[#655B53] text-sm mt-3">
               Master craftsmen from our verified Supabase artisan database, preserving ancestral guilds without middlemen.
@@ -1190,7 +1194,7 @@ export default function Marketplace() {
                     </div>
                   </div>
                   <span className="text-[11px] font-bold text-[#8C2B2B] uppercase tracking-widest">
-                    Verified Master Artisan
+                    {t('home.verifiedMasterArtisan') || "Verified Master Artisan"}
                   </span>
                   <h3 className="font-serif text-2xl font-bold text-[#221C18] mt-1">{art.name}</h3>
                   <p className="text-xs text-[#655B53] mt-2 line-clamp-3 leading-relaxed">
@@ -1200,7 +1204,7 @@ export default function Marketplace() {
 
                 <div className="mt-6 pt-4 border-t border-[#E8DCCB]/70 flex items-center justify-between">
                   <span className="text-xs font-semibold text-[#8F6826]">
-                    GI Lineage Authenticated
+                    {t('home.giLineageAuth') || "GI Lineage Authenticated"}
                   </span>
                   <button
                     type="button"
@@ -1216,7 +1220,7 @@ export default function Marketplace() {
                     }
                     className="text-xs font-bold text-[#701D24] hover:text-[#8C2B2B] underline flex items-center gap-1 cursor-pointer"
                   >
-                    Read Biography <ChevronRight className="w-3.5 h-3.5" />
+                    {t('home.readBiography') || "Read Biography"} <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -1231,10 +1235,10 @@ export default function Marketplace() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-5 space-y-6">
               <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
-                Ethical Craft Infrastructure
+                {t('home.ethicalCraft') || "Ethical Craft Infrastructure"}
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal leading-tight">
-                Why Patrons & Museums Source Through Viraasat
+                {t('home.whySourceTitle') || "Why Patrons & Museums Source Through Viraasat"}
               </h2>
               <p className="text-sm text-[#655B53] font-light leading-relaxed">
                 By bridging indigenous craft clusters directly to global collectors, we eliminate the 7-tier middleman system that historically kept master creators in perpetual economic vulnerability.
@@ -1246,8 +1250,8 @@ export default function Marketplace() {
                     ✓
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-[#221C18]">Full Provenance Transparency</h4>
-                    <p className="text-xs text-[#655B53]">Every acquisition arrives with a signed and sealed Certificate of Lineage with GI authentication.</p>
+                    <h4 className="text-sm font-semibold text-[#221C18]">{t('home.fullProvenance') || "Full Provenance Transparency"}</h4>
+                    <p className="text-xs text-[#655B53]">{t('home.fullProvenanceDesc') || "Every acquisition arrives with a signed and sealed Certificate of Lineage with GI authentication."}</p>
                   </div>
                 </div>
 
@@ -1256,7 +1260,7 @@ export default function Marketplace() {
                     ✓
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-[#221C18]">Insured Global White-Glove Transit</h4>
+                    <h4 className="text-sm font-semibold text-[#221C18]">{t('home.whiteGloveTransit') || "Insured Global White-Glove Transit"}</h4>
                     <p className="text-xs text-[#655B53]">Custom crating for fragile terracotta, bronze statues, and delicate handwoven cashmere.</p>
                   </div>
                 </div>
@@ -1267,25 +1271,25 @@ export default function Marketplace() {
             <div className="lg:col-span-7 grid grid-cols-2 gap-6">
               <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
                 <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">100%</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">Provenance Guaranteed</h4>
+                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.provenanceGuaranteed') || "Provenance Guaranteed"}</h4>
                 <p className="text-xs text-[#655B53] mt-1">Verified with Geographical Indication tags</p>
               </div>
 
               <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
                 <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">85%+</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">Direct Artisan Share</h4>
+                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.directArtisanShare') || "Direct Artisan Share"}</h4>
                 <p className="text-xs text-[#655B53] mt-1">Zero commission deduction for rural guilds</p>
               </div>
 
               <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
                 <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">{products.length}+</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">Live Certified Artifacts</h4>
+                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.liveCertifiedArtifacts') || "Live Certified Artifacts"}</h4>
                 <p className="text-xs text-[#655B53] mt-1">Synchronized directly with database inventory</p>
               </div>
 
               <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
                 <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">{Object.keys(regionalCounts).length || 6}+</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">Heritage GI Clusters</h4>
+                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.heritageGiClusters') || "Heritage GI Clusters"}</h4>
                 <p className="text-xs text-[#655B53] mt-1">Active rural cooperatives and artisan families</p>
               </div>
             </div>
@@ -1299,10 +1303,10 @@ export default function Marketplace() {
           <div className="bg-[#701D24]/90 border border-[#C59B4B]/40 rounded-3xl p-8 sm:p-12 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="space-y-3 max-w-2xl text-center lg:text-left">
               <span className="inline-block px-3 py-1 bg-white/10 text-[#E8CA82] text-[11px] uppercase tracking-widest font-bold rounded-full border border-[#C59B4B]/30">
-                Co-operative & Master Weaver Program
+                {t('home.cooperativeProgram') || "Co-operative & Master Weaver Program"}
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl font-normal leading-tight">
-                Are you an authentic artisan or rural cluster head?
+                {t('home.artisanQuestion') || "Are you an authentic artisan or rural cluster head?"}
               </h2>
               <p className="text-sm text-[#F3EDE2]/80 font-light leading-relaxed">
                 Showcase your heritage to patrons worldwide without middleman exploitation. Receive zero-fee listing onboarding, catalog photography support, and insured worldwide delivery assistance.
@@ -1315,13 +1319,13 @@ export default function Marketplace() {
                 onClick={() => setArtisanModalOpen(true)}
                 className="px-7 py-3.5 bg-[#C59B4B] hover:bg-[#E8CA82] text-[#221C18] font-semibold text-xs tracking-wider uppercase rounded-full shadow transition-all duration-300 text-center cursor-pointer"
               >
-                Apply via Artisan Portal
+                {t('home.applyArtisanPortal') || "Apply via Artisan Portal"}
               </button>
               <Link
                 href="/login/artisan"
                 className="px-6 py-3.5 bg-transparent border border-white/40 hover:bg-white/10 text-white font-medium text-xs tracking-wider uppercase rounded-full transition-all text-center"
               >
-                Artisan Login Portal
+                {t('home.artisanLoginPortal') || "Artisan Login Portal"}
               </Link>
             </div>
           </div>
@@ -1333,10 +1337,10 @@ export default function Marketplace() {
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
-              Patrons of Viraasat
+              {t('home.patronsOfViraasat') || "Patrons of Viraasat"}
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-2">
-              Words from Royal Foundations & Curators
+              {t('home.wordsRoyalFoundations') || "Words from Royal Foundations & Curators"}
             </h2>
           </div>
 
@@ -1377,7 +1381,7 @@ export default function Marketplace() {
                 </div>
                 <div className="mt-6 pt-4 border-t border-[#E8DCCB]/60 flex items-center justify-between">
                   <span className="text-xs font-bold text-[#701D24]">{rev.reviewer_name}</span>
-                  <span className="text-[10px] text-stone-600 font-medium">Verified Patron</span>
+                  <span className="text-[10px] text-stone-600 font-medium">{t('home.verifiedPatron') || "Verified Patron"}</span>
                 </div>
               </div>
             ))}
@@ -1391,17 +1395,17 @@ export default function Marketplace() {
           <div className="flex items-end justify-between mb-12">
             <div>
               <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
-                Chronicles of Lost Arts
+                {t('home.chroniclesLostArts') || "Chronicles of Lost Arts"}
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-1">
-                The Heritage Journal
+                {t('home.heritageJournal') || "The Heritage Journal"}
               </h2>
             </div>
             <Link
               href="/journal"
               className="text-xs uppercase font-bold tracking-wider text-[#701D24] hover:text-[#8C2B2B] flex items-center gap-1"
             >
-              All Essays <ChevronRight className="w-4 h-4" />
+              {t('home.allEssays') || "All Essays"} <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -1507,13 +1511,13 @@ export default function Marketplace() {
                     }}
                     className="w-full py-3 bg-[#701D24] hover:bg-[#8C2B2B] text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition-colors flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <ShoppingBag className="w-4 h-4" /> Add to Collection Bag
+                    <ShoppingBag className="w-4 h-4" /> {t('home.addToCollectionBag') || "Add to Collection Bag"}
                   </button>
                   <Link
                     href={`/product/${quickViewProduct.id}`}
                     className="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-[#221C18] rounded-xl text-xs font-semibold tracking-wider uppercase text-center block transition-colors"
                   >
-                    View Complete Artifact Details
+                    {t('home.viewCompleteDetails') || "View Complete Artifact Details"}
                   </Link>
                 </div>
               </div>
@@ -1579,7 +1583,7 @@ export default function Marketplace() {
                 onClick={() => setArtisanStory(null)}
                 className="px-5 py-2.5 bg-[#221C18] text-white rounded-lg text-xs font-semibold uppercase tracking-wider cursor-pointer"
               >
-                Close Biography
+                {t('home.closeBiography') || "Close Biography"}
               </button>
             </div>
           </div>

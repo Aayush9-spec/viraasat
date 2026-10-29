@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Instagram, Facebook, Youtube, Linkedin, Shield } from 'lucide-react';
 import { useToast } from '@/core/hooks/use-toast';
+import { useTranslation } from '@/core/hooks/use-translation';
 
 export function Footer() {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
 
   const handleNewsletter = (e: React.FormEvent) => {
@@ -26,13 +28,13 @@ export function Footer() {
         <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-14 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center md:text-left">
             <span className="text-xs uppercase tracking-widest text-[#C59B4B] font-bold">
-              The Viraasat Circle
+              {t('footer.circleEyebrow') || "The Viraasat Circle"}
             </span>
             <h3 className="font-serif text-2xl font-normal text-white">
-              Receive Private Previews of Masterpiece Drops
+              {t('footer.circleTitle') || "Receive Private Previews of Masterpiece Drops"}
             </h3>
             <p className="text-xs text-[#655B53] text-stone-400">
-              Join 34,000+ art lovers. Enjoy ₹1,500 off your inaugural heirloom acquisition.
+              {t('footer.circleSubtitle') || "Join 34,000+ art lovers. Enjoy ₹1,500 off your inaugural heirloom acquisition."}
             </p>
           </div>
           <form onSubmit={handleNewsletter} className="flex w-full md:w-auto max-w-md gap-2">
@@ -41,14 +43,14 @@ export function Footer() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email address"
+              placeholder={t('footer.emailPlaceholder') || "Enter your email address"}
               className="bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#C59B4B] w-full sm:w-64"
             />
             <button
               type="submit"
               className="bg-[#C59B4B] hover:bg-[#E8CA82] text-[#221C18] font-bold text-xs uppercase tracking-wider px-6 py-2.5 rounded-full transition-colors whitespace-nowrap cursor-pointer shadow"
             >
-              Join Circle
+              {t('footer.joinCircle') || "Join Circle"}
             </button>
           </form>
         </div>
@@ -90,7 +92,7 @@ export function Footer() {
           {/* Col 2: Geographical Crafts */}
           <div className="space-y-3">
             <h4 className="font-serif text-sm font-bold uppercase tracking-wider text-white">
-              Heritage Guilds
+              {t('footer.heritageGuilds') || "Heritage Guilds"}
             </h4>
             <ul className="space-y-2 text-stone-400">
               <li><Link href="/shop?category=pottery" className="hover:text-[#C59B4B] transition-colors">Jaipur Blue Pottery</Link></li>
@@ -105,7 +107,7 @@ export function Footer() {
           {/* Col 3: Artisan Ecosystem */}
           <div className="space-y-3">
             <h4 className="font-serif text-sm font-bold uppercase tracking-wider text-white">
-              Artisan Support
+              {t('footer.quickLinks') || "Quick Links"}
             </h4>
             <ul className="space-y-2 text-stone-400">
               <li><Link href="/download" className="hover:text-[#C59B4B] transition-colors font-medium text-[#E8CA82] flex items-center gap-1.5">📱 Download Android APK & App</Link></li>
@@ -120,7 +122,7 @@ export function Footer() {
           {/* Col 4: Assurance & Policies */}
           <div className="space-y-3">
             <h4 className="font-serif text-sm font-bold uppercase tracking-wider text-white">
-              Provenance & Trust
+              {t('footer.policies') || "Policies"}
             </h4>
             <ul className="space-y-2 text-stone-400">
               <li><Link href="/about" className="hover:text-[#C59B4B] transition-colors">Authenticity Certificate</Link></li>
@@ -135,7 +137,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-[11px] text-stone-400 gap-4">
           <div>
-            © {new Date().getFullYear()} Viraasat Marketplace Pvt. Ltd. (virrasat.in). All rights reserved.
+            © {new Date().getFullYear()} Viraasat Marketplace Pvt. Ltd. {t('footer.allRightsReserved') || "All rights reserved. Empowering indigenous heritage guilds."}
           </div>
           <div className="flex items-center space-x-6">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Charter</Link>

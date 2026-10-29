@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useToast } from '@/core/hooks/use-toast';
+import { useTranslation } from '@/core/hooks/use-translation';
 import { useSpeechRecognition } from '@/core/hooks/use-speech-recognition';
 import { suggestProducts } from '@/ai/flows/suggest-products';
 import { SUPPORTED_LANGUAGES, getSpeechLanguageCode } from '@/ai/languages';
@@ -42,6 +43,7 @@ import Link from 'next/link';
 export default function VoiceSearch() {
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   // Search input state
   const [searchQuery, setSearchQuery] = useState('');
@@ -179,8 +181,8 @@ export default function VoiceSearch() {
       >
         <Input
           type="search"
-          placeholder="Search heritage..."
-          aria-label="Search authentic handicrafts"
+          placeholder={t('nav.searchPlaceholder') || "Search heritage..."}
+          aria-label={t('nav.searchAria') || "Search authentic handicrafts"}
           className="pr-16 h-9 bg-background/80 border-input rounded-full focus:ring-primary focus:border-primary text-xs sm:text-sm text-foreground placeholder:text-muted-foreground shadow-sm transition-all"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -191,8 +193,8 @@ export default function VoiceSearch() {
             size="icon"
             variant="ghost"
             onClick={handleOpenVoiceSearch}
-            aria-label="Search using your voice"
-            title="Search using voice"
+            aria-label={t('nav.voiceSearchAria') || "Search using your voice"}
+            title={t('nav.voiceSearchAria') || "Search using voice"}
             className="h-7 w-7 text-primary hover:text-primary hover:bg-primary/10 rounded-full transition-transform active:scale-95"
           >
             <Mic className="h-4 w-4" />
@@ -222,7 +224,7 @@ export default function VoiceSearch() {
                   <Volume2 className="h-4 w-4" />
                 </span>
                 <DialogTitle className="text-lg font-bold font-heading">
-                  Voice Product Search
+                  {t('nav.voiceModalTitle') || "Voice Product Search"}
                 </DialogTitle>
               </div>
               {/* Language Selector */}
@@ -246,7 +248,7 @@ export default function VoiceSearch() {
               </div>
             </div>
             <DialogDescription id="voice-search-description" className="text-xs text-muted-foreground">
-              Speak in Hindi, English, Tamil, Bengali, or your preferred language to find authentic handcrafted heirlooms.
+              {t('nav.voiceModalDesc') || "Speak in Hindi, English, Tamil, Bengali, or your preferred language to find authentic handcrafted heirlooms."}
             </DialogDescription>
           </DialogHeader>
 

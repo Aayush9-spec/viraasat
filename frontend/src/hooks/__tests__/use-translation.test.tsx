@@ -12,6 +12,11 @@ function TestTranslationConsumer() {
       <span data-testid="nav-home">{t('nav.home')}</span>
       <span data-testid="artisan-hub">{t('artisan.managementHub')}</span>
       <span data-testid="cart-title">{t('cart.title')}</span>
+      <span data-testid="home-hero-highlight">{t('home.heroHighlight')}</span>
+      <span data-testid="home-explore">{t('home.exploreCollection')}</span>
+      <span data-testid="home-certified">{t('home.badgeCertified')}</span>
+      <span data-testid="home-masterpiece">{t('home.masterpieceOfMonth')}</span>
+      <span data-testid="home-acquire">{t('home.acquire')}</span>
       <span data-testid="param-test">{t('test.interpolated', { name: 'Viraasat' })}</span>
       <button data-testid="switch-hi" onClick={() => setLanguage('hi')}>Switch to Hindi</button>
       <button data-testid="switch-ur" onClick={() => setLanguage('ur')}>Switch to Urdu</button>
@@ -50,6 +55,11 @@ describe('Global Multilingual Translation System', () => {
       </LanguageProvider>
     );
 
+    expect(screen.getByTestId('home-hero-highlight').textContent).toBe("India's Living Heritage");
+    expect(screen.getByTestId('home-explore').textContent).toBe('Enter The Viraasat — Explore Collection');
+    expect(screen.getByTestId('home-masterpiece').textContent).toBe('Masterpiece of the Month');
+    expect(screen.getByTestId('home-acquire').textContent).toBe('Acquire');
+
     act(() => {
       screen.getByTestId('switch-hi').click();
     });
@@ -58,6 +68,10 @@ describe('Global Multilingual Translation System', () => {
     expect(screen.getByTestId('nav-home').textContent).toBe('होम');
     expect(screen.getByTestId('artisan-hub').textContent).toBe('कारीगर प्रबंधन केंद्र');
     expect(screen.getByTestId('cart-title').textContent).toBe('आपकी कार्ट');
+    expect(screen.getByTestId('home-hero-highlight').textContent).toBe('भारत की सजीव धरोहर');
+    expect(screen.getByTestId('home-explore').textContent).toBe('विरासत में प्रवेश करें — संग्रह देखें');
+    expect(screen.getByTestId('home-masterpiece').textContent).toBe('माह की उत्कृष्ट कृति');
+    expect(screen.getByTestId('home-acquire').textContent).toBe('प्राप्त करें');
     expect(localStorage.getItem('viraasat-lang')).toBe('hi');
   });
 

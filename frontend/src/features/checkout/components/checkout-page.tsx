@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { useRazorpay } from 'react-razorpay';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
+import { useTranslation } from '@/core/hooks/use-translation';
 import { GooglePayLogo, PaytmLogo, PhonePeLogo, RazorpayLogo } from '@/components/payment-icons';
 import { QrCode, ShoppingCart, CreditCard, ShieldCheck } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
@@ -45,6 +46,7 @@ export default function CheckoutPage() {
     const { cartItems, getCartTotal, clearCart } = useCart();
     const router = useRouter();
     const { toast } = useToast();
+    const { t } = useTranslation();
     const { user } = useUser();
     const subtotal = getCartTotal();
     const [shippingOption, setShippingOption] = useState('standard');
@@ -286,8 +288,8 @@ export default function CheckoutPage() {
                     {/* Payment Details Section */}
                     <div>
                         <div className='mb-8'>
-                            <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Checkout</h1>
-                            <p className="text-muted-foreground">Complete your order by providing your details.</p>
+                            <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">{t('cart.checkout') || "Checkout"}</h1>
+                            <p className="text-muted-foreground">{t('home.heroDescription') ? 'Complete your order by providing your details.' : 'Complete your order by providing your details.'}</p>
                         </div>
 
                         <div className="space-y-6">
