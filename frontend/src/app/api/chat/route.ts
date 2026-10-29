@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { heritageChatFlow } from '@/ai/flows/chat';
+import { runHeritageChat } from '@/ai/flows/chat';
 import { checkChatBudgetAsync } from '@/lib/rate-limit';
 
 export async function POST(req: Request) {
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     }
 
     const { message, history, imageDataUri } = await req.json();
-    const result = await heritageChatFlow({ message, history, imageDataUri });
+    const result = await runHeritageChat({ message, history, imageDataUri });
 
     return NextResponse.json(result, {
       headers: { 'X-Chat-Remaining': String(budget.remaining) },

@@ -52,7 +52,12 @@ jest.mock('@/ai/genkit', () => ({
     defineFlow: jest.fn((config, fn) => {
       return jest.fn(async (input: any) => fn(input));
     }),
+    generate: jest.fn(async () => ({
+      text: 'Mocked Gemini response',
+    })),
   },
+  isGeminiConfigured: jest.fn(() => false),
+  getGeminiApiKey: jest.fn(() => null),
 }));
 
 // Fluid cache clear between tests (firestore hooks cache product lookups).

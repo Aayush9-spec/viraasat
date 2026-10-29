@@ -48,16 +48,10 @@ import {
 } from '@/ai/languages';
 import { translateText } from '@/ai/flows/translate-text';
 import { generateImageCulturalStory } from '@/ai/flows/image-cultural-story';
+import { getAIServiceStatus, type AIServiceStatus } from '@/ai/actions';
 import VoiceRecorder from '@/features/ai/components/voice-recorder';
 import { useLanguage } from '@/context/language-context';
 import { useTranslation } from '@/core/hooks/use-translation';
-
-// Detect whether Gemini AI is configured with a real key.
-// Valid Google AI Studio keys start with "AIza". The placeholder in .env.local starts with "AQ."
-const AI_CONFIGURED =
-  typeof process !== 'undefined' &&
-  typeof (process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY) === 'string' &&
-  (process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY ?? '').startsWith('AIza');
 
 const LANGUAGES = [
   { value: 'Hindi', label: 'हिन्दी (Hindi)' },
@@ -82,6 +76,23 @@ const LANGUAGES = [
 
 export default function AIToolsPage() {
   const { t } = useTranslation();
+  const [aiStatus, setAiStatus] = useState<AIServiceStatus | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    getAIServiceStatus()
+      .then((status) => {
+        if (isMounted) setAiStatus(status);
+      })
+      .catch(() => {
+        if (isMounted) {
+          setAiStatus({ configured: false, model: 'Gemini 1.5 Flash', provider: 'Google Genkit' });
+        }
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -98,23 +109,27 @@ export default function AIToolsPage() {
           <p className="text-muted-foreground mt-2 max-w-2xl">
             {t('aiTools.subtitle') || 'Harness the power of AI to create compelling product descriptions, translate content across languages, and discover the cultural stories behind every craft.'}
           </p>
-          {/* AI status pill */}
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border
-            bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-300">
-            <AlertTriangle className="h-3 w-3 shrink-0" />
-            Running in Smart Fallback mode — add a valid{' '}
-            <code className="font-mono font-semibold">GOOGLE_GENAI_API_KEY</code>{' '}
-            from{' '}
-            <a
-              href="https://aistudio.google.com/apikey"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-2"
-            >
-              aistudio.google.com
-            </a>{' '}
-            to enable live AI generation.
-          </div>
+          {/* Reactive AI status pill */}
+          {aiStatus === null ? (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border bg-muted/40 border-border text-muted-foreground animate-pulse">
+              <Loader2 className="h-3 w-3 animate-spin shrink-0" />
+              <span>Checking AI service status...</span>
+            </div>
+          ) : aiStatus.configured ? (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/30 dark:border-emerald-800 dark:text-emerald-300">
+              <Zap className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span>Gemini AI Active — Powered by Google {aiStatus.model}</span>
+            </div>
+          ) : (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-300">
+              <AlertTriangle className="h-3 w-3 shrink-0" />
+              <span>
+                Running in Smart Fallback mode — configure{' '}
+                <code className="font-mono font-semibold">GEMINI_API_KEY</code>{' '}
+                in environment variables to activate live AI inference.
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -584,6 +599,7 @@ function TranslatorTab() {
   const [sourceText, setSourceText] = useState('');
   const [language, setLanguage] = useState(() => getLanguageName(globalLanguage) || 'Hindi');
   const [translatedText, setTranslatedText] = useState('');
+  const [isAiGenerated, setIsAiGenerated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -626,22 +642,24 @@ function TranslatorTab() {
 
     setIsLoading(true);
     setTranslatedText('');
+    setIsAiGenerated(null);
     try {
       const result = await translateText({
         text: sourceText.trim(),
         language,
       });
       setTranslatedText(result.translatedText);
+      setIsAiGenerated(result.isAiGenerated ?? true);
       toast({
         title: '🌐 ' + (t('aiTools.translationComplete') || 'Translation Complete!'),
         description: `${t('aiTools.translationResult') || 'Successfully translated to'} ${language}.`,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       toast({
         variant: 'destructive',
         title: 'Translation Failed',
-        description: 'Could not translate text. Please try again.',
+        description: error?.message || 'Could not translate text. Please try again.',
       });
     } finally {
       setIsLoading(false);
@@ -748,14 +766,21 @@ function TranslatorTab() {
       <Card className="border-blue-500/10 shadow-lg">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">
-              {t('aiTools.translationResult') || 'Translation'}{' '}
-              {language && (
-                <span className="text-sm font-normal text-muted-foreground">
-                  → {language}
-                </span>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-lg">
+                {t('aiTools.translationResult') || 'Translation'}{' '}
+                {language && (
+                  <span className="text-sm font-normal text-muted-foreground">
+                    → {language}
+                  </span>
+                )}
+              </CardTitle>
+              {isAiGenerated !== null && (
+                <Badge variant={isAiGenerated ? 'default' : 'secondary'} className="text-[10px]">
+                  {isAiGenerated ? '✨ Gemini AI' : 'Web Translation'}
+                </Badge>
               )}
-            </CardTitle>
+            </div>
             {translatedText && (
               <Button
                 variant="ghost"
@@ -816,8 +841,12 @@ function ImageStoryTab() {
   const { toast } = useToast();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageDataUri, setImageDataUri] = useState<string | null>(null);
+  const [craftContext, setCraftContext] = useState('');
+  const [storyLanguage, setStoryLanguage] = useState('Hindi');
   const [story, setStory] = useState('');
+  const [isAiGenerated, setIsAiGenerated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [copiedStory, setCopiedStory] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -846,6 +875,7 @@ function ImageStoryTab() {
         setImagePreview(dataUri);
         setImageDataUri(dataUri);
         setStory('');
+        setIsAiGenerated(null);
       };
       reader.readAsDataURL(file);
     },
@@ -878,6 +908,7 @@ function ImageStoryTab() {
     setImagePreview(null);
     setImageDataUri(null);
     setStory('');
+    setIsAiGenerated(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -893,25 +924,37 @@ function ImageStoryTab() {
 
     setIsLoading(true);
     setStory('');
+    setIsAiGenerated(null);
     try {
       const result = await generateImageCulturalStory({
         imageDataUri,
+        craftContext: craftContext.trim() || undefined,
+        outputLanguage: storyLanguage,
       });
       setStory(result.story);
+      setIsAiGenerated(result.isAiGenerated ?? true);
       toast({
         title: '📷 Cultural Story Generated!',
         description: 'Discover the heritage behind this craft.',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       toast({
         variant: 'destructive',
         title: 'Analysis Failed',
-        description: 'Could not analyze the image. Please try again.',
+        description: error?.message || 'Could not analyze the image. Please try again.',
       });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCopyStory = async () => {
+    if (!story) return;
+    await navigator.clipboard.writeText(story);
+    setCopiedStory(true);
+    toast({ title: 'Copied!', description: 'Cultural story copied to clipboard.' });
+    setTimeout(() => setCopiedStory(false), 2000);
   };
 
   return (
@@ -943,7 +986,7 @@ function ImageStoryTab() {
 
           {imagePreview ? (
             <div className="relative group">
-              <div className="aspect-square w-full overflow-hidden rounded-lg border border-border">
+              <div className="aspect-square w-full max-h-72 overflow-hidden rounded-lg border border-border">
                 <Image
                   src={imagePreview}
                   alt="Uploaded craft"
@@ -968,7 +1011,7 @@ function ImageStoryTab() {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               className={`
-                aspect-square w-full rounded-lg border-2 border-dashed cursor-pointer 
+                aspect-square w-full max-h-72 rounded-lg border-2 border-dashed cursor-pointer 
                 flex flex-col items-center justify-center gap-3 transition-all duration-300
                 ${
                   isDragging
@@ -995,6 +1038,40 @@ function ImageStoryTab() {
             </div>
           )}
 
+          {/* Craft Context & Language options */}
+          <div className="space-y-3 pt-1">
+            <div className="space-y-1.5">
+              <label htmlFor="ai-craft-context" className="text-xs font-semibold text-muted-foreground">
+                Craft Context / Region (शिल्प संदर्भ - वैकल्पिक)
+              </label>
+              <Input
+                id="ai-craft-context"
+                placeholder="e.g. Jaipur blue pottery, Dokra brass cast from Bastar, Kashmiri walnut wood..."
+                value={craftContext}
+                onChange={(e) => setCraftContext(e.target.value)}
+                className="text-xs bg-background"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="ai-story-language" className="text-xs font-semibold text-muted-foreground">
+                Story Language (कहानी की भाषा)
+              </label>
+              <Select value={storyLanguage} onValueChange={setStoryLanguage}>
+                <SelectTrigger id="ai-story-language" className="text-xs h-9 bg-background">
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {LANGUAGES.map((l) => (
+                    <SelectItem key={`story-${l.value}`} value={l.value} className="text-xs">
+                      {l.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           <Button
             onClick={handleAnalyze}
             disabled={isLoading || !imageDataUri}
@@ -1004,7 +1081,7 @@ function ImageStoryTab() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Analyzing Craft...
+                Analyzing Craft with Gemini...
               </>
             ) : (
               <>
@@ -1017,13 +1094,37 @@ function ImageStoryTab() {
       </Card>
 
       {/* Story Output Card */}
-      <Card className="border-amber-500/10 shadow-lg">
+      <Card className="border-amber-500/10 shadow-lg flex flex-col">
         <CardHeader>
-          <CardTitle className="text-lg">Cultural Story</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-lg">Cultural Story</CardTitle>
+              {isAiGenerated !== null && (
+                <Badge variant={isAiGenerated ? 'default' : 'secondary'} className="text-[10px]">
+                  {isAiGenerated ? '✨ Gemini 1.5 Flash' : 'Fallback'}
+                </Badge>
+              )}
+            </div>
+            {story && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCopyStory}
+                className="gap-2"
+              >
+                {copiedStory ? (
+                  <Check className="h-4 w-4 text-green-500" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+                {copiedStory ? 'Copied' : 'Copy'}
+              </Button>
+            )}
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1 flex flex-col">
           {isLoading ? (
-            <div className="space-y-3">
+            <div className="space-y-3 py-6">
               <div className="h-4 bg-muted rounded animate-pulse w-full" />
               <div className="h-4 bg-muted rounded animate-pulse w-5/6" />
               <div className="h-4 bg-muted rounded animate-pulse w-4/6" />
@@ -1031,28 +1132,26 @@ function ImageStoryTab() {
               <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
               <div className="h-4 bg-muted rounded animate-pulse w-5/6" />
               <div className="h-4 bg-muted rounded animate-pulse w-2/3" />
-              <div className="h-4 bg-muted rounded animate-pulse w-full" />
             </div>
           ) : story ? (
-            <div className="relative">
+            <div className="relative flex-1">
               <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/5 to-orange-500/5 rounded-lg blur-sm" />
-              <div className="relative bg-background/80 backdrop-blur-sm rounded-lg p-4 border border-amber-500/10">
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+              <div className="relative bg-background/80 backdrop-blur-sm rounded-lg p-4 border border-amber-500/10 h-full">
+                <p className="text-sm leading-relaxed whitespace-pre-wrap font-sans">
                   {story}
                 </p>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="flex flex-col items-center justify-center py-12 text-center my-auto">
               <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
                 <Camera className="h-7 w-7 text-muted-foreground/50" />
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground font-medium">
                 Upload a craft image to discover its cultural story
               </p>
               <p className="text-xs text-muted-foreground/70 mt-1 max-w-xs">
-                Our AI will identify the craft, its origin, techniques, and
-                cultural significance
+                Gemini 1.5 Flash Vision identifies the craft, materials, region, and centuries-old cultural significance.
               </p>
             </div>
           )}

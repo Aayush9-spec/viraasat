@@ -16,12 +16,16 @@ const HeritageChatInputSchema = z.object({
   imageDataUri: z.string().optional(),
 });
 
+export type HeritageChatInput = z.infer<typeof HeritageChatInputSchema>;
+
 const HeritageChatOutputSchema = z.object({
   response: z.string(),
   suggestedProductIds: z.array(z.string()).optional(),
   activeAgent: z.string().optional(),
   refused: z.boolean().optional(),
 });
+
+export type HeritageChatOutput = z.infer<typeof HeritageChatOutputSchema>;
 
 // ─── Smart local fallback engine ─────────────────────────────────────────────
 // Answers questions from the product catalog and craft knowledge when Gemini is
@@ -258,7 +262,7 @@ function buildLocalResponse(message: string, history: Array<{role?: string, cont
 
 // ─── Main flow ────────────────────────────────────────────────────────────────
 
-export const heritageChatFlow = ai.defineFlow(
+const heritageChatFlow = ai.defineFlow(
   {
     name: 'heritageChatFlow',
     inputSchema: HeritageChatInputSchema,
@@ -378,3 +382,12 @@ Guidelines:
     };
   }
 );
+
+/**
+ * Server Action entry point for heritage chat flow.
+ * Adheres to Next.js 'use server' requirement of exporting only async functions.
+ */
+export async function runHeritageChat(input: HeritageChatInput): Promise<HeritageChatOutput> {
+  return heritageChatFlow(input);
+}
+

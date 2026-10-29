@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server';
+import { isGeminiConfigured } from '@/ai/genkit';
 
 export async function GET() {
+  const configured = isGeminiConfigured();
   return NextResponse.json({
-    status: 'active',
+    status: configured ? 'active' : 'fallback',
+    configured,
     provider: 'Google Genkit + Gemini',
-    flows: ['chat', 'translate', 'vision']
+    model: 'gemini-1.5-flash',
+    flows: ['description', 'translate', 'vision', 'chat'],
   });
 }

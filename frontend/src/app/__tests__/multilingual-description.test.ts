@@ -1,7 +1,5 @@
-import {
-  generateProductDescription,
-  GenerateProductDescriptionInputSchema,
-} from '@/ai/flows/generate-product-description';
+import { generateProductDescription } from '@/ai/flows/generate-product-description';
+import { GenerateProductDescriptionInputSchema } from '@/ai/schemas/product-description-schemas';
 import {
   getLanguageCode,
   getLanguageName,

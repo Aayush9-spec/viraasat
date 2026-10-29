@@ -1,87 +1,27 @@
 'use server';
 
 /**
- * @fileOverview AI flow to generate culturally rich multilingual product descriptions
- * for traditional handmade items using Gemini and Genkit.
+ * @fileOverview Server Action to generate culturally rich multilingual product descriptions
+ * for traditional handmade items using Google Gemini via Genkit.
  *
  * Supports Hindi (Devanagari), English, Hinglish, Tamil, Bengali, Telugu,
  * Marathi, Urdu, Gujarati, Kannada, Malayalam, Punjabi, Odia, Assamese, etc.
  */
 
-import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { ai, isGeminiConfigured } from '@/ai/genkit';
+import {
+  GenerateProductDescriptionInputSchema,
+  GenerateProductDescriptionOutputSchema,
+  type GenerateProductDescriptionInput,
+  type GenerateProductDescriptionOutput,
+} from '@/ai/schemas/product-description-schemas';
 import {
   getLanguageName,
   buildFallbackNativeDescription,
   buildFallbackEnglishDescription,
 } from '@/ai/languages';
 
-export const GenerateProductDescriptionInputSchema = z.object({
-  productName: z
-    .string()
-    .trim()
-    .min(3, 'Product name must be at least 3 characters')
-    .max(160, 'Product name must not exceed 160 characters')
-    .describe('The name of the traditional handmade product in any supported script.'),
-  productDetails: z
-    .string()
-    .trim()
-    .max(2000, 'Product details must not exceed 2000 characters')
-    .optional()
-    .describe('Artisan-provided specifications, craft technique, materials, regional nuances, colors, dimensions, or spoken notes.'),
-  inputLanguage: z
-    .string()
-    .optional()
-    .default('Hindi')
-    .describe('The language script in which the product name is provided.'),
-  outputLanguage: z
-    .string()
-    .optional()
-    .default('Hindi')
-    .describe('The primary language requested for the product description.'),
-  generateEnglish: z
-    .boolean()
-    .optional()
-    .default(true)
-    .describe('Whether to also generate a corresponding English description.'),
-});
-
-export type GenerateProductDescriptionInput = z.infer<
-  typeof GenerateProductDescriptionInputSchema
->;
-
-export const GenerateProductDescriptionOutputSchema = z.object({
-  description: z
-    .string()
-    .describe('A beautiful, culturally rich product description in the requested output language.'),
-  englishDescription: z
-    .string()
-    .optional()
-    .describe('The corresponding English product description if requested.'),
-  outputLanguage: z
-    .string()
-    .optional()
-    .describe('The language of the primary description.'),
-  detectedLanguage: z
-    .string()
-    .optional()
-    .describe('The detected language if recognized.'),
-  isFallback: z
-    .boolean()
-    .optional()
-    .describe('Indicates whether smart fallback content was returned instead of live AI generation.'),
-});
-
-export type GenerateProductDescriptionOutput = z.infer<
-  typeof GenerateProductDescriptionOutputSchema
->;
-
-function isGeminiConfigured(): boolean {
-  if (typeof process === 'undefined') return false;
-  if (process.env.MOCK_AI === 'true') return false;
-  const key = (process.env.GOOGLE_GENAI_API_KEY ?? process.env.GEMINI_API_KEY ?? '').trim();
-  return typeof key === 'string' && key.startsWith('AIza') && key.length >= 25;
-}
+export type { GenerateProductDescriptionInput, GenerateProductDescriptionOutput };
 
 const generateProductDescriptionPrompt = ai.definePrompt({
   name: 'generateProductDescriptionPrompt',
@@ -124,7 +64,7 @@ const generateProductDescriptionFlow = ai.defineFlow(
     const inputLang = getLanguageName(input.inputLanguage || 'Hindi');
     const wantEnglish = input.generateEnglish !== false;
 
-    // Only attempt live Gemini call if a valid Google AI Studio key starting with AIza is present
+    // Attempt real live Gemini generation if an API key is configured
     if (isGeminiConfigured()) {
       try {
         const { output } = await generateProductDescriptionPrompt({
@@ -147,11 +87,11 @@ const generateProductDescriptionFlow = ai.defineFlow(
           };
         }
       } catch (e) {
-        console.warn('Genkit generateProductDescription call failed. Using culturally grounded fallback.', e);
+        console.warn('Genkit live description generation failed; providing culturally grounded fallback:', e);
       }
     }
 
-    // Smart culturally rich fallback incorporating artisan details
+    // Culturally rich fallback incorporating artisan details when AI key is missing or quota exceeded
     const fallbackPrimary = buildFallbackNativeDescription(trimmedName, reqLang, trimmedDetails);
     const fallbackEnglish = wantEnglish
       ? (reqLang === 'English' ? fallbackPrimary : buildFallbackEnglishDescription(trimmedName, trimmedDetails))
@@ -169,7 +109,7 @@ const generateProductDescriptionFlow = ai.defineFlow(
 
 /**
  * Server Action for multilingual product description generation.
- * Guaranteed never to throw an unhandled exception to the client.
+ * Guaranteed to export only an async function to adhere to Next.js "use server" constraints.
  */
 export async function generateProductDescription(
   input: GenerateProductDescriptionInput
@@ -192,7 +132,11 @@ export async function generateProductDescription(
     return await generateProductDescriptionFlow(safeInput);
   } catch (err) {
     console.warn('generateProductDescription top-level fallback engaged:', err);
-    const fallbackPrimary = buildFallbackNativeDescription(trimmedName || 'Traditional Indian Craft', reqLang, trimmedDetails);
+    const fallbackPrimary = buildFallbackNativeDescription(
+      trimmedName || 'Traditional Indian Craft',
+      reqLang,
+      trimmedDetails
+    );
     const fallbackEnglish = wantEnglish
       ? (reqLang === 'English' ? fallbackPrimary : buildFallbackEnglishDescription(trimmedName || 'Traditional Indian Craft', trimmedDetails))
       : undefined;
