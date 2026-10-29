@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles, ShoppingBag, Shield } from 'lucide-react';
+import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles, ShoppingBag, Shield, Smartphone } from 'lucide-react';
 import { useTranslation } from '@/core/hooks/use-translation';
 import { useCart } from '@/context/cart-context';
 import { useUserRole } from '@/features/auth/hooks/use-user-role';
@@ -120,6 +120,10 @@ export function Header() {
               </Link>
               <Link href="/shop" className="text-foreground/80 hover:text-primary transition-colors font-semibold text-primary">
                 {t('nav.shop')}
+              </Link>
+              <Link href="/download" className="text-foreground/80 hover:text-primary transition-colors font-semibold flex items-center gap-1">
+                <Smartphone className="w-3.5 h-3.5 text-[#C59B4B]" />
+                <span>App</span>
               </Link>
             </div>
           </div>

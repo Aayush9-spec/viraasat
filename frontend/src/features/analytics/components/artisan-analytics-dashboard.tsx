@@ -42,6 +42,11 @@ import { useToast } from '@/core/hooks/use-toast';
 import { useBackend } from '@/hooks/use-backend';
 import { getLocalProducts } from '@/lib/data';
 import { SalesAnalytics } from '../sales-analytics';
+import {
+  MarketService,
+  MarketTrendsResult,
+  TopProjectedProduct,
+} from '@/features/analytics/market-service';
 
 type TimeRange = '7d' | '30d' | '90d' | '1y' | 'all';
 
@@ -94,6 +99,13 @@ export function ArtisanAnalyticsDashboard() {
   const [forecastCategory, setForecastCategory] = useState('Home Decor');
   const [forecastData, setForecastData] = useState<any>(null);
   const [isLoadingForecast, setIsLoadingForecast] = useState(false);
+
+  // Platform Market Prediction States (LSTM + GBT)
+  const [marketTrends, setMarketTrends] = useState<MarketTrendsResult | null>(null);
+  const [topProjected, setTopProjected] = useState<TopProjectedProduct[]>([]);
+  const [marketCategory, setMarketCategory] = useState<string>('all');
+  const [marketRegion, setMarketRegion] = useState<string>('all');
+  const [isLoadingMarket, setIsLoadingMarket] = useState<boolean>(false);
 
   // Load real created products from localStorage/DB
   const [liveProductsCount, setLiveProductsCount] = useState<number>(29);
@@ -154,6 +166,27 @@ export function ArtisanAnalyticsDashboard() {
   useEffect(() => {
     fetchDemandForecast(forecastRegion, forecastCategory);
   }, [forecastRegion, forecastCategory, fetchDemandForecast]);
+
+  // Fetch Platform-wide Market Trends & Projected Demand
+  const fetchMarketData = useCallback(async () => {
+    setIsLoadingMarket(true);
+    try {
+      const [trends, topProds] = await Promise.all([
+        MarketService.getMarketTrends(),
+        MarketService.getTopProducts(marketCategory, marketRegion, 8),
+      ]);
+      setMarketTrends(trends);
+      setTopProjected(topProds);
+    } catch (e) {
+      console.warn('Failed to fetch market trends:', e);
+    } finally {
+      setIsLoadingMarket(false);
+    }
+  }, [marketCategory, marketRegion]);
+
+  useEffect(() => {
+    fetchMarketData();
+  }, [fetchMarketData]);
 
   // Dynamic Sales Trend Data based on Time Range
   const salesTrendData = useMemo(() => {
@@ -399,7 +432,7 @@ export function ArtisanAnalyticsDashboard() {
             <span className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground">
               Artisan Income Multiplier
             </span>
-            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-700">
+            <div className="p-2 rounded-xl bg-amber-500/10 text-[#C59B4B]">
               <TrendingUp className="h-4 w-4" />
             </div>
           </CardHeader>
@@ -409,7 +442,7 @@ export function ArtisanAnalyticsDashboard() {
             </div>
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50 text-[11px]">
               <span className="text-muted-foreground">vs Local Middleman Baseline</span>
-              <span className="text-purple-700 font-bold">+18.2% YoY</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold">+18.2% YoY</span>
             </div>
           </CardContent>
         </Card>
@@ -429,6 +462,12 @@ export function ArtisanAnalyticsDashboard() {
             className="rounded-xl px-4 py-2 font-heading font-semibold text-xs data-[state=active]:bg-[#5E2C18] data-[state=active]:text-[#FAF7F2] data-[state=active]:shadow-sm transition-all"
           >
             🔮 AI Seasonal Demand Predictor
+          </TabsTrigger>
+          <TabsTrigger
+            value="market"
+            className="rounded-xl px-4 py-2 font-heading font-semibold text-xs data-[state=active]:bg-[#5E2C18] data-[state=active]:text-[#FAF7F2] data-[state=active]:shadow-sm transition-all"
+          >
+            📈 Platform Market Trends & Rankings
           </TabsTrigger>
           <TabsTrigger
             value="impact"
@@ -704,7 +743,194 @@ export function ArtisanAnalyticsDashboard() {
           </Card>
         </TabsContent>
 
-        {/* ----------------- TAB 3: ETHICAL & COMMUNITY IMPACT ----------------- */}
+        {/* ----------------- TAB 3: PLATFORM MARKET TRENDS & TOP SELLERS ----------------- */}
+        <TabsContent value="market" className="space-y-6">
+          {/* Market Intelligence MLOps Header */}
+          <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card overflow-hidden">
+            <CardHeader className="pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-lg font-heading text-foreground">
+                      Platform Market Trends & Multi-Month Sales Projections
+                    </CardTitle>
+                    <Badge className="bg-[#FAF7F2] text-[#8C2B2B] border border-[#C59B4B]/30 text-[10px] font-bold">
+                      LSTM + GBT Ensemble (85.1% Accuracy)
+                    </Badge>
+                  </div>
+                  <CardDescription className="text-xs">
+                    Platform-wide aggregate analytics trained on 3 years of Indian craft seasonal transactions, tourism correlations, and export demand.
+                  </CardDescription>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="border-emerald-600/30 text-emerald-800 bg-emerald-50 text-xs font-semibold">
+                    ● Real-time Platform Telemetry
+                  </Badge>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Top Trend Charts Row */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Monthly Demand Trajectory */}
+                <div className="lg:col-span-7 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-heading font-bold text-foreground">Platform Monthly Demand Curve (Handicrafts Volume)</span>
+                    <span className="text-muted-foreground text-[11px]">Units Sold Trajectory</span>
+                  </div>
+                  <div className="h-[280px] w-full pt-2">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={marketTrends?.monthly_trend || []} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="marketDemandGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#8C2B2B" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#C59B4B" stopOpacity={0.02} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
+                        <XAxis dataKey="month" stroke="#8C2B2B" fontSize={11} tickLine={false} />
+                        <YAxis stroke="#8C2B2B" fontSize={11} tickLine={false} />
+                        <Tooltip
+                          contentStyle={{
+                            borderRadius: '12px',
+                            borderColor: '#E8DCCB',
+                            backgroundColor: '#FAF7F2',
+                            fontSize: '12px',
+                          }}
+                          formatter={(val: number, name: string) => [
+                            name === 'total_units' ? `${val.toLocaleString('en-IN')} units` : `₹${val.toLocaleString('en-IN')}`,
+                            name === 'total_units' ? 'Total Demand' : 'Platform Revenue',
+                          ]}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="total_units"
+                          name="total_units"
+                          stroke="#8C2B2B"
+                          strokeWidth={2.5}
+                          fill="url(#marketDemandGrad)"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Category Performance Breakdown */}
+                <div className="lg:col-span-5 space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-heading font-bold text-foreground">Category Performance & Average Price</span>
+                    <span className="text-muted-foreground text-[11px]">Platform Aggregate</span>
+                  </div>
+                  <div className="space-y-2.5 pt-1">
+                    {(marketTrends?.category_perf || []).map((cat) => (
+                      <div key={cat.category} className="p-2.5 rounded-xl border border-[#E8DCCB] bg-[#FAF7F2]/60 space-y-1">
+                        <div className="flex items-center justify-between text-xs font-semibold">
+                          <span className="text-foreground">{cat.category}</span>
+                          <span className="font-mono text-[#8C2B2B]">₹{cat.total_revenue.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                          <span>{cat.total_units.toLocaleString('en-IN')} orders</span>
+                          <span>Avg: ₹{cat.avg_price.toLocaleString('en-IN')} / piece</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* 3-Month Projected Sales Rankings */}
+              <div className="space-y-4 pt-4 border-t border-[#E8DCCB]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-base font-heading font-bold text-foreground">
+                      3-Month Projected Sales Demand Rankings
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Filtered by region & craft category to identify high-velocity handicraft opportunities.
+                    </p>
+                  </div>
+
+                  {/* Filter Controls */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Select value={marketCategory} onValueChange={setMarketCategory}>
+                      <SelectTrigger className="w-[130px] h-8 text-xs font-semibold">
+                        <SelectValue placeholder="Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Categories</SelectItem>
+                        <SelectItem value="Home Decor">Home Decor</SelectItem>
+                        <SelectItem value="Pottery & Clay">Pottery & Clay</SelectItem>
+                        <SelectItem value="Textiles">Textiles</SelectItem>
+                        <SelectItem value="Kitchenware">Kitchenware</SelectItem>
+                        <SelectItem value="Accessories">Accessories</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={marketRegion} onValueChange={setMarketRegion}>
+                      <SelectTrigger className="w-[130px] h-8 text-xs font-semibold">
+                        <SelectValue placeholder="Region" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Regions</SelectItem>
+                        <SelectItem value="Rajasthan">Rajasthan</SelectItem>
+                        <SelectItem value="Kashmir">Kashmir</SelectItem>
+                        <SelectItem value="Gujarat">Gujarat</SelectItem>
+                        <SelectItem value="Uttar Pradesh">Uttar Pradesh</SelectItem>
+                        <SelectItem value="Chhattisgarh">Chhattisgarh</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div className="overflow-x-auto rounded-xl border border-[#E8DCCB]">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-[#FAF7F2] text-muted-foreground uppercase text-[10px] tracking-wider font-bold border-b border-[#E8DCCB]">
+                      <tr>
+                        <th className="py-2.5 px-3">Rank</th>
+                        <th className="py-2.5 px-3">Craft Creation</th>
+                        <th className="py-2.5 px-3">Category</th>
+                        <th className="py-2.5 px-3">Origin Region</th>
+                        <th className="py-2.5 px-3">Base Price</th>
+                        <th className="py-2.5 px-3">GI Tag</th>
+                        <th className="py-2.5 px-3 text-right">Projected 3M Units</th>
+                        <th className="py-2.5 px-3 text-right">Projected 3M Revenue</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/60 font-medium">
+                      {topProjected.map((prod, idx) => (
+                        <tr key={prod.product} className="hover:bg-muted/30 transition-colors">
+                          <td className="py-2.5 px-3 font-mono font-bold text-[#8C2B2B]">#{idx + 1}</td>
+                          <td className="py-2.5 px-3 font-semibold text-foreground">{prod.product}</td>
+                          <td className="py-2.5 px-3 text-muted-foreground">{prod.category}</td>
+                          <td className="py-2.5 px-3 text-muted-foreground">{prod.region}</td>
+                          <td className="py-2.5 px-3 font-mono">₹{prod.base_price_inr.toLocaleString('en-IN')}</td>
+                          <td className="py-2.5 px-3">
+                            {prod.gi_tag ? (
+                              <Badge className="bg-[#FAF7F2] text-[#8C2B2B] border border-[#C59B4B]/40 text-[9px] font-bold">
+                                GI Certified
+                              </Badge>
+                            ) : (
+                              <span className="text-[10px] text-muted-foreground">Standard</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-mono font-bold text-foreground">
+                            {prod.projected_units_3m} units
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-700">
+                            ₹{prod.projected_revenue_3m_inr.toLocaleString('en-IN')}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ----------------- TAB 4: ETHICAL & COMMUNITY IMPACT ----------------- */}
         <TabsContent value="impact" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card p-4 space-y-2">

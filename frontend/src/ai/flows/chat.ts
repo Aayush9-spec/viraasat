@@ -51,7 +51,7 @@ const REGION_INFO: Record<string, string> = {
   odisha: `Odisha's crafts center on the Jagannath temple tradition. Pattachitra scroll painting (palm-leaf or cloth, Lord Jagannath imagery, lacquered with natural gum), Dokra metal casting (Dhenkanal district), Sambalpuri ikat silk (complex warp-weft tie-dye), Kotpad natural-dye cotton, Dhokra brass (lost-wax), Silver filigree (Cuttack Tarakasi — the finest silver wire work in India), Pipili appliqué (bright fabric cut-work canopies), and stone sculpture from Konark village artisans.`,
 };
 
-function buildLocalResponse(message: string, history: Array<{role: string, content: string}> = []): { text: string; agent: string; productIds: string[] } {
+function buildLocalResponse(message: string, history: Array<{role?: string, content?: string}> = []): { text: string; agent: string; productIds: string[] } {
   const q = message.toLowerCase().trim();
   const historyText = history.map(h => h.content).join(' ').toLowerCase();
 

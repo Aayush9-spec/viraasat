@@ -1,6 +1,15 @@
 import os
+import sys
 from datetime import datetime
 from dotenv import load_dotenv
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SERVICES_DIR = os.path.join(BASE_DIR, "app", "services")
+if SERVICES_DIR not in sys.path:
+    sys.path.insert(0, SERVICES_DIR)
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter

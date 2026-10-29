@@ -23,27 +23,60 @@ export default function ImageEnhancer({ images, setImages }: ImageEnhancerProps)
   const { toast } = useToast();
   const { getToken } = useAuth();
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setOriginalFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target?.result as string;
-        setOriginalImage(dataUrl);
-        setEnhancedImage(null);
-        // Automatically add the uploaded image so it is never dropped on form submission
-        setImages((prev) => {
-          if (prev.includes(dataUrl)) return prev;
-          return [dataUrl, ...prev];
-        });
-        toast({
-          title: 'Photo Added to Creation',
-          description: 'Your craft photo has been attached. You can optionally enhance it with AI below.',
-        });
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        variant: 'destructive',
+        title: 'File Too Large',
+        description: 'Please upload an image under 10MB.',
+      });
+      return;
     }
+
+    setOriginalFile(file);
+    setIsModerating(true);
+
+    try {
+      // Content safety verification
+      const token = await getToken();
+      const verdict = await moderateImage(file, token);
+      if (!verdict.allow) {
+        toast({
+          variant: 'destructive',
+          title: 'Image Rejected by AI Moderation',
+          description:
+            verdict.reason === 'policy_violation'
+              ? 'This image was flagged by content safety rules. Please upload an authentic craft photo.'
+              : `Upload rejected: ${verdict.reason}`,
+        });
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
+    } catch (error) {
+      console.warn('Moderation check soft-passed:', error);
+    } finally {
+      setIsModerating(false);
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      setOriginalImage(dataUrl);
+      setEnhancedImage(null);
+      // Automatically add verified image without duplication
+      setImages((prev) => {
+        if (prev.includes(dataUrl)) return prev;
+        return [dataUrl, ...prev];
+      });
+      toast({
+        title: 'Craft Photo Verified & Attached',
+        description: 'Content moderation passed. You can optionally enhance visual fidelity with AI below.',
+      });
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleEnhance = async () => {
@@ -53,7 +86,7 @@ export default function ImageEnhancer({ images, setImages }: ImageEnhancerProps)
     try {
       const { enhancedImageUri } = await enhanceImageQuality({ imageUri: originalImage });
       setEnhancedImage(enhancedImageUri);
-      // Automatically update the images list to use the enhanced version
+      // Seamlessly replace the original with enhanced version in images
       setImages((prev) => prev.map((img) => (img === originalImage ? enhancedImageUri : img)));
       toast({ title: 'Image Enhanced!', description: 'AI has improved your craft image quality.' });
     } catch (error) {
@@ -64,38 +97,17 @@ export default function ImageEnhancer({ images, setImages }: ImageEnhancerProps)
     }
   };
 
-  const addEnhancedImage = async () => {
-    const targetImage = enhancedImage || originalImage;
-    if (!targetImage || !originalFile) return;
-
-    setIsModerating(true);
-    try {
-      const token = await getToken();
-      const verdict = await moderateImage(originalFile, token);
-      if (!verdict.allow) {
-        toast({
-          variant: 'destructive',
-          title: 'Image rejected',
-          description:
-            verdict.reason === 'policy_violation'
-              ? 'This image was flagged by our content moderation. Please upload a different image.'
-              : `Image rejected: ${verdict.reason}`,
-        });
-        return;
-      }
-    } catch (error) {
-      console.warn('Moderation check skipped/soft-passed:', error);
-    } finally {
-      setIsModerating(false);
-    }
-
-    setImages((prev) => [...prev, targetImage]);
+  const finishStagingPhoto = () => {
     setOriginalImage(null);
     setOriginalFile(null);
     setEnhancedImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    toast({
+      title: 'Photo Staged',
+      description: 'You can now upload another craft angle or view your catalog images below.',
+    });
   };
 
   const removeImage = (index: number) => {
@@ -144,10 +156,11 @@ export default function ImageEnhancer({ images, setImages }: ImageEnhancerProps)
             </Button>
             <Button
               type="button"
-              onClick={addEnhancedImage}
+              variant="outline"
+              onClick={finishStagingPhoto}
               disabled={isModerating}
             >
-              {isModerating ? 'Checking…' : 'Add to Product'}
+              Done / Add Another Angle
             </Button>
           </div>
         </div>

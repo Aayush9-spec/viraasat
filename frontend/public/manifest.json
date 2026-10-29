@@ -1,11 +1,11 @@
 {
-    "name": "Viraasat - Artisan Marketplace",
+    "name": "Viraasat - Heritage Artisan Marketplace",
     "short_name": "Viraasat",
-    "description": "A premium marketplace for authentic artisan crafts and heritage products",
+    "description": "India's AI-driven marketplace for authentic traditional artisans & GI crafts",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#0a0a0a",
-    "theme_color": "#8b5cf6",
+    "background_color": "#fbf7f0",
+    "theme_color": "#9c4221",
     "orientation": "portrait-primary",
     "scope": "/",
     "icons": [
@@ -79,9 +79,9 @@
     ],
     "shortcuts": [
         {
-            "name": "Browse Products",
-            "short_name": "Products",
-            "description": "Browse artisan products",
+            "name": "Browse Heritage Catalog",
+            "short_name": "Shop",
+            "description": "Explore authentic handcrafted heritage pieces",
             "url": "/shop",
             "icons": [
                 {
@@ -92,9 +92,9 @@
             ]
         },
         {
-            "name": "Dashboard",
-            "short_name": "Dashboard",
-            "description": "Access your dashboard",
+            "name": "Artisan Studio",
+            "short_name": "Studio",
+            "description": "Artisan creation portal and studio analytics",
             "url": "/dashboard",
             "icons": [
                 {

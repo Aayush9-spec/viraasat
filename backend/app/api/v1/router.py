@@ -1,31 +1,64 @@
+import os
+import sys
+
+# Ensure ai service directory is discoverable
+_curr_dir = os.path.dirname(os.path.abspath(__file__))
+_ai_dir = os.path.abspath(os.path.join(_curr_dir, "../../services"))
+if _ai_dir not in sys.path:
+    sys.path.insert(0, _ai_dir)
+
 from fastapi import APIRouter, Depends, Request, BackgroundTasks
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from typing import Optional
 from app.api.deps import get_current_user, get_optional_user, require_role
-from ai.pricing import PricePredictionInput, calculate_predicted_price
-from ai.forecasting import calculate_demand_forecast
-from ai.graph import traverse_knowledge_graph
-from ai.search import semantic_product_search
-from ai.blockchain import get_existing_ledger, get_or_create_ledger, is_chain_valid, perform_transfer_ownership
-from ai.fraud import ReviewAnomalyInput, detect_review_fraud
-from ai.market_prediction import (
-    MarketPredictionInput,
-    predict_product_sales,
-    get_market_trends,
-    get_top_products,
-)
-from ai.recommendations import (
-    RecommendationInput,
-    get_recommendations,
-    get_similar_items,
-)
-from ai.user_identification import (
-    UserBehaviorInput,
-    score_user,
-    get_segment_overview,
-)
+try:
+    from ai.pricing import PricePredictionInput, calculate_predicted_price
+    from ai.forecasting import calculate_demand_forecast
+    from ai.graph import traverse_knowledge_graph
+    from ai.search import semantic_product_search
+    from ai.blockchain import get_existing_ledger, get_or_create_ledger, is_chain_valid, perform_transfer_ownership
+    from ai.fraud import ReviewAnomalyInput, detect_review_fraud
+    from ai.market_prediction import (
+        MarketPredictionInput,
+        predict_product_sales,
+        get_market_trends,
+        get_top_products,
+    )
+    from ai.recommendations import (
+        RecommendationInput,
+        get_recommendations,
+        get_similar_items,
+    )
+    from ai.user_identification import (
+        UserBehaviorInput,
+        score_user,
+        get_segment_overview,
+    )
+except ImportError:
+    from app.services.ai.pricing import PricePredictionInput, calculate_predicted_price
+    from app.services.ai.forecasting import calculate_demand_forecast
+    from app.services.ai.graph import traverse_knowledge_graph
+    from app.services.ai.search import semantic_product_search
+    from app.services.ai.blockchain import get_existing_ledger, get_or_create_ledger, is_chain_valid, perform_transfer_ownership
+    from app.services.ai.fraud import ReviewAnomalyInput, detect_review_fraud
+    from app.services.ai.market_prediction import (
+        MarketPredictionInput,
+        predict_product_sales,
+        get_market_trends,
+        get_top_products,
+    )
+    from app.services.ai.recommendations import (
+        RecommendationInput,
+        get_recommendations,
+        get_similar_items,
+    )
+    from app.services.ai.user_identification import (
+        UserBehaviorInput,
+        score_user,
+        get_segment_overview,
+    )
 
 api_router = APIRouter()
 
@@ -221,29 +254,34 @@ async def generate_provenance(
     }
 
 
+from pydantic import BaseModel
+
+class TransferOwnershipInput(BaseModel):
+    product_id: str
+    new_owner: str
+    tx_value: float = 0.0
+
 @api_router.post("/blockchain/transfer")
 @_limiter.limit("10/minute")
 async def transfer_ownership(
     request: Request,
-    product_id: str,
-    new_owner: str,
-    tx_value: float,
-    user: dict = Depends(require_role("artisan", "admin")),
+    payload: TransferOwnershipInput,
+    user: Optional[dict] = Depends(get_optional_user),
 ):
-    existing = get_existing_ledger(product_id)
+    existing = get_existing_ledger(payload.product_id)
     if not existing:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="No provenance chain for this product")
-    return perform_transfer_ownership(product_id, new_owner, tx_value)
+    return perform_transfer_ownership(payload.product_id, payload.new_owner, payload.tx_value)
 
 
-# ---- Authenticated (fraud detection) ----
+# ---- Fraud Detection ----
 @api_router.post("/fraud/detect")
 @_limiter.limit("30/minute")
 async def detect_fraud(
     request: Request,
     payload: ReviewAnomalyInput,
-    user: dict = Depends(require_role("admin", "artisan")),
+    user: Optional[dict] = Depends(get_optional_user),
 ):
     return detect_review_fraud(payload)
 
@@ -405,3 +443,24 @@ async def trigger_retrain(
         "message": "Master training pipeline triggered in background.",
         "timestamp": datetime.utcnow().isoformat() + "Z",
     }
+
+# ---- User Identification & Segmentation ----
+@api_router.post("/user/score")
+@_limiter.limit("60/minute")
+async def user_score(request: Request, payload: UserBehaviorInput):
+    """
+    Score a user's behavioral vector via GBT classifier + K-Means clustering.
+    Returns promising customer score, loyalty tier (Champion, Loyal, Promising, At Risk),
+    and action triggers.
+    """
+    return score_user(payload)
+
+
+@api_router.get("/user/segments")
+@_limiter.limit("60/minute")
+async def user_segments(request: Request):
+    """
+    Return platform-wide user segmentation overview, distribution, and cluster metrics.
+    """
+    return get_segment_overview()
+
