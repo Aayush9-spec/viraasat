@@ -56,6 +56,9 @@ const nextConfig: NextConfig = {
 
   // Optimize runtime
   experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
     optimizePackageImports: ['@react-three/fiber', '@react-three/drei', 'three', 'lucide-react', '@radix-ui/react-avatar', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
   },
   serverExternalPackages: ['genkit', 'dotprompt', 'handlebars'],

@@ -64,20 +64,43 @@ describe('Viraasat AI Tools Production Suite', () => {
   });
 
   describe('Tool 3: Cultural Story & Image Analyzer', () => {
-    it('rejects invalid data URI schemes', async () => {
-      await expect(
-        generateImageCulturalStory({
-          imageDataUri: 'http://example.com/not-a-data-uri.jpg',
-        })
-      ).rejects.toThrow(/Invalid image format/);
+    it('gracefully handles invalid data URI schemes without crashing', async () => {
+      const result = await generateImageCulturalStory({
+        imageDataUri: 'http://example.com/not-a-data-uri.jpg',
+      });
+      expect(result.success).toBe(false);
+      expect(result.error).toMatch(/Invalid image format/);
     });
 
-    it('rejects unsupported image mime types', async () => {
-      await expect(
-        generateImageCulturalStory({
-          imageDataUri: 'data:application/pdf;base64,JVBERi0xLjQK...',
-        })
-      ).rejects.toThrow(/Invalid image format/);
+    it('rejects unsupported image mime types without throwing', async () => {
+      const result = await generateImageCulturalStory({
+        imageDataUri: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+      });
+      expect(result.success).toBe(false);
+      expect(result.error).toMatch(/Unsupported image format/);
+    });
+
+    it('generates authentic historical past story for Banarasi Saree in English', async () => {
+      const result = await generateImageCulturalStory({
+        imageDataUri: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBD...',
+        craftContext: 'Banarasi Saree',
+        outputLanguage: 'English',
+      });
+      expect(result.success).toBe(true);
+      expect(result.story).toContain('Banarasi');
+      expect(result.story).toContain('Varanasi');
+      expect(result.isHandicraft).toBe(true);
+    });
+
+    it('rejects irrelevant non-handicraft items such as smartphones or vehicles', async () => {
+      const result = await generateImageCulturalStory({
+        imageDataUri: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBD...',
+        craftContext: 'Modern iPhone 15 smartphone',
+        outputLanguage: 'English',
+      });
+      expect(result.success).toBe(false);
+      expect(result.isHandicraft).toBe(false);
+      expect(result.error).toMatch(/Non-Handicraft Item Detected/);
     });
   });
 });

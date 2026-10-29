@@ -835,7 +835,7 @@ function TranslatorTab() {
    Tab 3: Image → Cultural Story Generator
    ========================================== */
 
-const IMAGE_STORY_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const IMAGE_STORY_MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 function ImageStoryTab() {
   const { toast } = useToast();
@@ -864,16 +864,49 @@ function ImageStoryTab() {
         toast({
           variant: 'destructive',
           title: 'File too large',
-          description: 'Please upload an image smaller than 5MB.',
+          description: 'Please upload an image smaller than 10MB.',
         });
         return;
       }
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        const dataUri = e.target?.result as string;
-        setImagePreview(dataUri);
-        setImageDataUri(dataUri);
+        const rawDataUri = e.target?.result as string;
+        setImagePreview(rawDataUri);
+
+        // Automatically optimize image resolution to prevent Next.js server payload limit errors
+        if (typeof window !== 'undefined') {
+          const img = new window.Image();
+          img.onload = () => {
+            const maxDim = 1200;
+            let { width, height } = img;
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              const compressedUri = canvas.toDataURL('image/jpeg', 0.85);
+              setImageDataUri(compressedUri);
+            } else {
+              setImageDataUri(rawDataUri);
+            }
+          };
+          img.onerror = () => setImageDataUri(rawDataUri);
+          img.src = rawDataUri;
+        } else {
+          setImageDataUri(rawDataUri);
+        }
+
         setStory('');
         setIsAiGenerated(null);
       };
@@ -931,18 +964,31 @@ function ImageStoryTab() {
         craftContext: craftContext.trim() || undefined,
         outputLanguage: storyLanguage,
       });
-      setStory(result.story);
-      setIsAiGenerated(result.isAiGenerated ?? true);
-      toast({
-        title: '📷 Cultural Story Generated!',
-        description: 'Discover the heritage behind this craft.',
-      });
+
+      if (result.success && result.story) {
+        setStory(result.story);
+        setIsAiGenerated(result.isAiGenerated ?? true);
+        toast({
+          title: '📷 ' + (result.isAiGenerated ? 'Gemini AI Cultural Story Generated!' : 'Living Heritage Story'),
+          description: result.craftTitle ? `Discovered history of ${result.craftTitle}` : 'Heritage analysis complete.',
+        });
+      } else {
+        const isIrrelevant = result.isHandicraft === false;
+        toast({
+          variant: 'destructive',
+          title: isIrrelevant ? 'Non-Handicraft Image' : 'Analysis Notice',
+          description: result.error || 'Please upload a photo of an authentic traditional handmade Indian craft.',
+        });
+        if (result.error) {
+          setStory(result.error);
+        }
+      }
     } catch (error: any) {
-      console.error(error);
+      console.error('Image analysis request failed:', error);
       toast({
         variant: 'destructive',
-        title: 'Analysis Failed',
-        description: error?.message || 'Could not analyze the image. Please try again.',
+        title: 'Analysis Notice',
+        description: 'Could not process the image. Please upload a clear photo of an authentic handcrafted item.',
       });
     } finally {
       setIsLoading(false);
