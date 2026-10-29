@@ -1039,7 +1039,7 @@ function ShopPageContent() {
                   </div>
 
                   <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#221C18] leading-snug">
-                    {inspectedProduct.name}
+                    {t(inspectedProduct.name)}
                   </h2>
 
                   {/* Master Artisan Chip */}
@@ -1113,7 +1113,7 @@ function ShopPageContent() {
                         closeInspectModal();
                         toast({
                           title: "Acquired to Collection 🛍️",
-                          description: `${inspectedProduct.name} is now in your heirloom cart.`,
+                          description: `${t(inspectedProduct.name)} is now in your heirloom cart.`,
                         });
                       }}
                       className="flex-1 py-3.5 bg-[#701D24] hover:bg-[#8C2B2B] text-white rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
@@ -1127,7 +1127,7 @@ function ShopPageContent() {
                         toggleWishlist(inspectedProduct);
                         toast({
                           title: isWishlisted(inspectedProduct.id) ? "Removed from Wishlist" : "Saved to Wishlist ❤️",
-                          description: `${inspectedProduct.name} updated in your sacred wishlist.`,
+                          description: `${t(inspectedProduct.name)} updated in your sacred wishlist.`,
                         });
                       }}
                       className="px-4 py-3.5 bg-white border border-[#E8DCCB] hover:border-[#C59B4B] rounded-xl text-[#221C18] transition-colors cursor-pointer"

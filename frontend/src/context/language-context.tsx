@@ -1,3 +1,4 @@
+import { PRODUCT_NAME_TRANSLATIONS, getTranslatedProductName } from '@/core/utils/product-translations';
 'use client';
 
 import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo, useCallback } from 'react';
@@ -276,6 +277,7 @@ interface LanguageContextType {
   language: string;
   setLanguage: (language: string) => void;
   t: (key: string, params?: Record<string, string | number>) => string;
+  translateProduct: (nameOrProduct: any) => string;
   dir: 'ltr' | 'rtl';
   isRTL: boolean;
 }
@@ -319,8 +321,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
     let text = '';
 
-    // 1. Direct dictionary phrase match for active language
-    if (language !== 'en' && PHRASE_DICTIONARY[language]?.[key]) {
+    // 1. Direct product name translation match for active language
+    if (language !== 'en' && PRODUCT_NAME_TRANSLATIONS[key]?.[language]) {
+      text = PRODUCT_NAME_TRANSLATIONS[key][language];
+    } else if (language !== 'en' && PHRASE_DICTIONARY[language]?.[key]) {
       text = PHRASE_DICTIONARY[language][key];
     } else {
       // 2. Dot-notation key resolution
@@ -360,10 +364,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return text;
   }, [language]);
 
+  const translateProduct = useCallback((nameOrProduct: any) => {
+    return getTranslatedProductName(nameOrProduct, language);
+  }, [language]);
+
   const contextValue = useMemo(() => ({
     language,
     setLanguage,
     t,
+    translateProduct,
     dir,
     isRTL,
   }), [language, setLanguage, t, dir, isRTL]);
@@ -378,6 +387,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 const defaultContextValue: LanguageContextType = {
   language: 'en',
   setLanguage: () => {},
+  translateProduct: (p: any) => typeof p === 'string' ? p : p?.name || '',
   t: (key: string, params?: Record<string, string | number>) => {
     if (!key) return '';
     const keys = key.split('.');

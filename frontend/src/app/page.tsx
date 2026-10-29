@@ -310,7 +310,7 @@ export default function Marketplace() {
 
     toast({
       title: "Added to Artisanal Bag 🛍️",
-      description: `${product.name} (${formatPrice(priceNum)}) is now preserved in your collection.`,
+      description: `${t(product.name)} (${formatPrice(priceNum)}) is now preserved in your collection.`,
     });
     setCartOpen(true);
   };
@@ -494,7 +494,7 @@ export default function Marketplace() {
                         {heroMasterpiece?.region ? `${heroMasterpiece.region} • ${heroMasterpiece.category || "Heirloom"}` : "Bastar Bell Metal Craft"}
                       </span>
                       <h3 className="font-serif text-2xl font-bold mt-0.5 leading-snug">
-                        {heroMasterpiece?.name || "The Lost-Wax Dancing Bull"}
+                        {t(heroMasterpiece?.name || "The Lost-Wax Dancing Bull")}
                       </h3>
                       <p className="text-xs text-[#F3EDE2]/85 mt-1 line-clamp-2">
                         {heroMasterpiece?.description || "Handmade by Shilp Guru Bannuram Baid using 4,000-year-old Bastar Dhokra lost-wax metallurgy."}

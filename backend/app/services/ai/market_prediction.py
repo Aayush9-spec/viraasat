@@ -311,7 +311,17 @@ def get_top_products(category: Optional[str] = None,
     if _model is None:
         return {"products": [], "is_simulated": True, "model_accuracy": None}
 
-    products = _model.get("products", [])
+    try:
+        from ai.catalog import get_catalog_products, get_ml_config
+    except ImportError:
+        try:
+            from app.services.ai.catalog import get_catalog_products, get_ml_config
+        except ImportError:
+            get_catalog_products = None
+            get_ml_config = None
+
+    live_prods = get_catalog_products() if get_catalog_products is not None else None
+    products = live_prods if live_prods else _model.get("products", [])
     metrics  = _model.get("evaluation_metrics", {})
     start_mi = _current_month_idx()
 
@@ -325,10 +335,15 @@ def get_top_products(category: Optional[str] = None,
         try:
             rm  = _REGION_MULT.get(prod["region"], 1.0)
             sm  = _SEASONAL.get(prod["category"], [1.0] * 12)
-            gi  = 1.12 if prod["gi"] else 1.0
+            gi_boost_factor = 1.12
+            elasticity = 1.08
+            if 'get_ml_config' in locals() and get_ml_config is not None:
+                gi_boost_factor = float(get_ml_config("market.gi_boost", 1.12))
+                elasticity = float(get_ml_config("market.discount_elasticity", 1.08))
+            gi  = gi_boost_factor if prod["gi"] else 1.0
             # 3-month projected units
             proj = sum(
-                12 * rm * sm[(start_mi + k) % 12] * gi * 1.08
+                12 * rm * sm[(start_mi + k) % 12] * gi * elasticity
                 for k in range(3)
             )
             results.append({

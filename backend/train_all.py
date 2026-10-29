@@ -24,6 +24,7 @@ if os.path.join(BACKEND_DIR, "app/services") not in sys.path:
     sys.path.insert(0, os.path.join(BACKEND_DIR, "app/services"))
 
 DATABASE_DIR = os.path.abspath(os.path.join(BACKEND_DIR, "../database"))
+BACKEND_DB_DIR = os.path.abspath(os.path.join(BACKEND_DIR, "app/database"))
 ARCHIVE_DIR = os.path.join(DATABASE_DIR, "archive")
 
 MODELS = [
@@ -44,6 +45,7 @@ def run_all():
     print("=" * 68)
 
     os.makedirs(DATABASE_DIR, exist_ok=True)
+    os.makedirs(BACKEND_DB_DIR, exist_ok=True)
     os.makedirs(ARCHIVE_DIR, exist_ok=True)
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
 
@@ -68,9 +70,13 @@ def run_all():
                 else:
                     raise AttributeError(f"Module {mod_path} has no train_model()")
 
-            # Archive snapshot copy
+            # Copy to backend/app/database and archive snapshot copy
             src_path = os.path.join(DATABASE_DIR, pkl_name)
             if os.path.exists(src_path):
+                backend_dest = os.path.join(BACKEND_DB_DIR, pkl_name)
+                shutil.copy2(src_path, backend_dest)
+                print(f"  -> Synchronized to backend/app/database: {pkl_name}")
+
                 base, ext = os.path.splitext(pkl_name)
                 archive_name = f"{base}_{timestamp}{ext}"
                 archive_path = os.path.join(ARCHIVE_DIR, archive_name)

@@ -1,3 +1,4 @@
+import { useTranslation } from '@/core/hooks/use-translation';
 'use client';
 
 import Link from 'next/link';
@@ -11,6 +12,7 @@ import { useWishlist } from '@/context/wishlist-context';
 import { getProductImage } from '@/core/utils/utils';
 
 export default function WishlistPage() {
+  const { t } = useTranslation();
   const { addItem } = useCart();
   const { wishlist, removeFromWishlist } = useWishlist();
 
@@ -50,7 +52,7 @@ export default function WishlistPage() {
                     />
                   </div>
                   <CardHeader>
-                    <CardTitle className="line-clamp-1 font-heading">{product.name}</CardTitle>
+                    <CardTitle className="line-clamp-1 font-heading">{t(product.name)}</CardTitle>
                     <CardDescription className="font-semibold text-primary">
                       ₹{product.price.toLocaleString('en-IN')}
                     </CardDescription>

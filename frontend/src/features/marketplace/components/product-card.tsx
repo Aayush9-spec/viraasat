@@ -47,7 +47,7 @@ export default function ProductCard({
     addItem(product);
     toast({
       title: "Acquired to Collection 🛍️",
-      description: `${product.name} (₹${safePrice.toFixed(0)}) added to your cart.`,
+      description: `${t(product.name)} (₹${safePrice.toFixed(0)}) added to your cart.`,
     });
   };
 
@@ -58,8 +58,8 @@ export default function ProductCard({
     toast({
       title: !wishlisted ? "Saved to Heirloom Wishlist ❤️" : "Removed from Wishlist",
       description: !wishlisted
-        ? `${product.name} saved to your sacred collection.`
-        : `${product.name} removed from your wishlist.`,
+        ? `${t(product.name)} saved to your sacred collection.`
+        : `${t(product.name)} removed from your wishlist.`,
     });
   };
 
@@ -158,7 +158,7 @@ export default function ProductCard({
 
               {/* Product Title in Editorial Serif */}
               <h3 className="font-serif text-lg font-bold text-[#221C18] group-hover:text-[#701D24] transition-colors line-clamp-1 leading-snug">
-                {product.name}
+                {t(product.name)}
               </h3>
 
               {/* Master Artisan Attribution Chip */}

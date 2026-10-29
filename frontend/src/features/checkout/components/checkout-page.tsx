@@ -472,7 +472,7 @@ export default function CheckoutPage() {
                                             />
                                         </div>
                                         <div className="flex-grow">
-                                            <p className="font-medium text-sm line-clamp-2">{item.name}</p>
+                                            <p className="font-medium text-sm line-clamp-2">{t(item.name)}</p>
                                             <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                                         </div>
                                         <p className="font-semibold text-sm">₹{(item.price * item.quantity).toFixed(2)}</p>

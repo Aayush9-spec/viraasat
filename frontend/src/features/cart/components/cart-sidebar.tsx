@@ -60,7 +60,7 @@ export default function CartSidebar() {
                       </div>
                       <div className="flex flex-grow flex-col justify-between self-stretch">
                         <div>
-                          <h3 className="font-semibold text-sm line-clamp-1">{item.name}</h3>
+                          <h3 className="font-semibold text-sm line-clamp-1">{t(item.name)}</h3>
                           <p className="text-xs text-muted-foreground mb-1">
                             {artisan?.shopName || 'Handcrafted'}
                           </p>

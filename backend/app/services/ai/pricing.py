@@ -90,13 +90,25 @@ def calculate_predicted_price(payload: PricePredictionInput) -> dict:
         payload.labor_hours
     )
 
-    # Indian artisan wage and baseline configurations per tier:
+    try:
+        from ai.catalog import get_ml_config
+    except ImportError:
+        try:
+            from app.services.ai.catalog import get_ml_config
+        except ImportError:
+            get_ml_config = None
+
+    db_hourly_wage = float(get_ml_config("pricing.hourly_wage", 55.0)) if get_ml_config else 55.0
+    db_base_overhead = float(get_ml_config("pricing.base_overhead", 35.0)) if get_ml_config else 35.0
+    db_size_rate = float(get_ml_config("pricing.size_rate", 20.0)) if get_ml_config else 20.0
+
+    # Indian artisan wage and baseline configurations per tier (grounded in database ML configs):
     tier_configs = {
         "micro": {
             "label": "Micro Craft / Devotional",
-            "base_overhead": 35,       # Kiln firing, preparation, packaging
-            "hourly_wage": 55,         # Rural craft wage ₹50-60/hr
-            "size_rate": 20,           # Minimal size surcharge
+            "base_overhead": db_base_overhead,
+            "hourly_wage": db_hourly_wage,
+            "size_rate": db_size_rate,
             "mat_costs": {
                 "Multani Mitti & Quartz": 25,
                 "Terracotta & Natural Clay": 20,

@@ -52,14 +52,19 @@ function AdminLoginContent() {
     e.preventDefault();
     setError(null);
 
-    const expectedPin = process.env.NEXT_PUBLIC_ADMIN_PIN || 'Viraasat@Admin2026';
-    if (!pin.trim() || pin.trim() !== expectedPin) {
-      setError('Invalid Administrator Security Passcode. Access denied.');
-      return;
-    }
-
     setBusy(true);
     try {
+      const verifyRes = await fetch('/api/admin/verify-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: pin.trim() }),
+      });
+      const verifyData = await verifyRes.json().catch(() => ({}));
+      if (!verifyRes.ok || !verifyData.valid) {
+        setError(verifyData.error || 'Invalid Administrator Security Passcode. Access denied.');
+        setBusy(false);
+        return;
+      }
       if (user && typeof user.update === 'function') {
         await user.update({
           unsafeMetadata: {

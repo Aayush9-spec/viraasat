@@ -85,3 +85,6 @@ auth_collection/
 test-results/
 frontend/test-results/
 
+
+dist_apk/
+*.idsig

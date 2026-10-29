@@ -240,7 +240,7 @@ export function ProductDetailPageClient({
     } as any);
     toast({
       title: t('product.addedToCart'),
-      description: `${product.name} ${t('product.addedToCartDesc')}`,
+      description: `${t(product.name)} ${t('product.addedToCartDesc')}`,
     });
   };
 

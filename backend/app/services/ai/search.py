@@ -44,6 +44,20 @@ except Exception as e:
 
 def _load_catalog() -> List[dict]:
     global _CATALOG
+    try:
+        from ai.catalog import get_catalog_products
+    except ImportError:
+        try:
+            from app.services.ai.catalog import get_catalog_products
+        except ImportError:
+            get_catalog_products = None
+
+    if get_catalog_products is not None:
+        live_prods = get_catalog_products()
+        if live_prods:
+            _CATALOG = live_prods
+            return _CATALOG
+
     if _CATALOG is not None:
         return _CATALOG
     if not os.path.exists(_CATALOG_PATH):

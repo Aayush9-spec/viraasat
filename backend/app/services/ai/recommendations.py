@@ -116,10 +116,23 @@ def _ranking_features(prod: dict, region: str, fav_cat: str,
 
 def _fallback_recommendations(payload: RecommendationInput) -> dict:
     """Rule-based fallback when the trained model is unavailable."""
-    from train_recommendations import PRODUCTS  # reuse product list
+    try:
+        from ai.catalog import get_catalog_products
+    except ImportError:
+        try:
+            from app.services.ai.catalog import get_catalog_products
+        except ImportError:
+            get_catalog_products = None
+
+    products_list = None
+    if get_catalog_products is not None:
+        products_list = get_catalog_products()
+    if not products_list:
+        from train_recommendations import PRODUCTS  # reuse product list
+        products_list = PRODUCTS
 
     scored = []
-    for prod in PRODUCTS:
+    for prod in products_list:
         score = 0.0
         if prod["category"] == payload.preferred_category: score += 3.0
         if prod["region"]   == payload.user_region:        score += 2.0
@@ -161,6 +174,21 @@ def get_recommendations(payload: RecommendationInput) -> dict:
         metrics          = _model["evaluation_metrics"]
         prod_map         = {p["id"]: p for p in products}
 
+        try:
+            from ai.catalog import get_catalog_products, get_ml_config
+        except ImportError:
+            try:
+                from app.services.ai.catalog import get_catalog_products, get_ml_config
+            except ImportError:
+                get_catalog_products = None
+                get_ml_config = None
+
+        if get_catalog_products is not None:
+            db_prods = get_catalog_products()
+            if db_prods:
+                for dp in db_prods:
+                    prod_map[dp["id"]] = dp
+
         # -- Stage 1: Two-Tower retrieval -------------------------------------
         u_vec = _user_vec(payload.user_region, payload.preferred_category,
                           payload.price_tier, payload.gi_preference)
@@ -185,11 +213,17 @@ def get_recommendations(payload: RecommendationInput) -> dict:
 
         click_probs = ranker.predict_proba(feat_rows)[:, 1]
 
-        # Blend retrieval cosine score (30%) + ranker click-prob (70%)
+        # Blend retrieval cosine score + ranker click-prob from database configs
+        retrieval_w = 0.30
+        ranker_w = 0.70
+        if 'get_ml_config' in locals() and get_ml_config is not None:
+            retrieval_w = float(get_ml_config("recommendations.retrieval_weight", 0.30))
+            ranker_w = float(get_ml_config("recommendations.ranker_weight", 0.70))
+
         final_scores = {}
         for i, pid in enumerate(candidates):
             final_scores[pid] = round(
-                0.30 * retrieval_scores[pid] + 0.70 * float(click_probs[i]), 4
+                retrieval_w * retrieval_scores[pid] + ranker_w * float(click_probs[i]), 4
             )
 
         ranked = sorted(final_scores, key=final_scores.get, reverse=True)

@@ -41,7 +41,7 @@ async def create_order(payload: CreateOrderInput):
     if not key_id or not key_secret:
         if os.getenv("ENVIRONMENT") != "production":
             key_id = key_id or "rzp_test_placeholder"
-            key_secret = key_secret or "AGxzrZj2IpfG0qxWNrX7KEfu"
+            key_secret = key_secret or "rzp_test_mock_secret"
         else:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -96,19 +96,25 @@ async def verify_payment(payload: VerifyPaymentInput):
             detail="Missing required fields: order_id, payment_id, and signature are required",
         )
 
-    # In non-production or for mock orders, allow simulated verification
+    # In non-production ONLY, allow simulated verification for test/mock orders
     if order_id.startswith("order_mock_"):
+        if os.getenv("ENVIRONMENT") == "production":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Simulated mock payments are rejected in production environment",
+            )
         return {
             "verified": True,
             "message": "Payment signature verified successfully (mock mode)",
             "order_id": order_id,
             "payment_id": payment_id,
+            "simulated": True,
         }
 
     key_secret = os.getenv("RAZORPAY_KEY_SECRET")
     if not key_secret:
         if os.getenv("ENVIRONMENT") != "production":
-            key_secret = "AGxzrZj2IpfG0qxWNrX7KEfu"
+            key_secret = "rzp_test_mock_secret"
         else:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -272,6 +272,30 @@ async def transfer_ownership(
     if not existing:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="No provenance chain for this product")
+
+    # Authorize transfer if REQUIRE_AUTH is enabled
+    if os.getenv("REQUIRE_AUTH", "false").lower() == "true":
+        if not user:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=401, detail="Authentication required to transfer title")
+        if user.get("role") != "admin":
+            last_block = existing[-1] if existing else None
+            current_owner = (last_block.get("actor") or "").lower() if last_block else ""
+            caller_ids = [
+                str(user.get("sub") or "").lower(),
+                str(user.get("id") or "").lower(),
+                str(user.get("email") or "").lower(),
+            ]
+            if current_owner and not any(cid and cid == current_owner for cid in caller_ids):
+                trusted_system_actors = [
+                    "viraasat registrar",
+                    "handicrafts development board",
+                    "viraasat blockchain node",
+                ]
+                if current_owner not in trusted_system_actors:
+                    from fastapi import HTTPException
+                    raise HTTPException(status_code=403, detail="Forbidden: Only current owner or admin can transfer title")
+
     return perform_transfer_ownership(payload.product_id, payload.new_owner, payload.tx_value)
 
 
@@ -359,7 +383,17 @@ async def models_health(request: Request):
     from datetime import datetime
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_dir = os.path.abspath(os.path.join(base_dir, "../../../database"))
+    candidates = [
+        os.path.abspath(os.path.join(base_dir, "../../../../database")),
+        os.path.abspath(os.path.join(base_dir, "../../database")),
+        os.path.abspath(os.path.join(os.getcwd(), "../database")),
+        os.path.abspath(os.path.join(os.getcwd(), "database")),
+        os.path.abspath(os.path.join(base_dir, "../../../database")),
+    ]
+    db_dir = next(
+        (p for p in candidates if os.path.exists(p) and os.path.exists(os.path.join(p, "search_model.pkl"))),
+        candidates[0]
+    )
 
     models_meta = [
         ("search_model", "search_model.pkl"),
@@ -407,9 +441,20 @@ async def models_health(request: Request):
             "evaluation_metrics": eval_metrics,
         }
 
+    try:
+        from ai.catalog import get_database_status
+    except ImportError:
+        try:
+            from app.services.ai.catalog import get_database_status
+        except ImportError:
+            get_database_status = lambda: {"database_connected": False}
+
+    db_status = get_database_status()
+
     return {
         "status": "operational" if all_healthy else "degraded",
         "database_dir": db_dir,
+        "database": db_status,
         "models": report,
         "checked_at": datetime.utcnow().isoformat() + "Z",
     }
@@ -463,4 +508,39 @@ async def user_segments(request: Request):
     Return platform-wide user segmentation overview, distribution, and cluster metrics.
     """
     return get_segment_overview()
+
+# ---- ML Configurations & Hyperparameters ----
+class MLConfigsUpdateInput(BaseModel):
+    configs: dict
+
+@api_router.get("/ml/configs")
+@_limiter.limit("60/minute")
+async def get_ml_configurations(request: Request):
+    """
+    Return all active ML configuration hyperparameters loaded directly from the database.
+    """
+    try:
+        from ai.catalog import get_all_ml_configs
+    except ImportError:
+        from app.services.ai.catalog import get_all_ml_configs
+    return {"status": "ok", "configs": get_all_ml_configs()}
+
+
+@api_router.put("/ml/configs")
+@_limiter.limit("20/minute")
+async def update_ml_configurations(
+    request: Request,
+    payload: MLConfigsUpdateInput,
+    user: Optional[dict] = Depends(get_optional_user),
+):
+    """
+    Update ML configuration hyperparameters in the active database.
+    """
+    try:
+        from ai.catalog import set_ml_config, get_all_ml_configs
+    except ImportError:
+        from app.services.ai.catalog import set_ml_config, get_all_ml_configs
+    for k, v in payload.configs.items():
+        set_ml_config(k, v)
+    return {"status": "updated", "configs": get_all_ml_configs()}
 

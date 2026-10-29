@@ -10,6 +10,12 @@ Every storage backend exposes the same surface:
   - get_ledger(product_id) -> list[dict]
   - append_ledger_block(product_id, block) -> None
   - get_knowledge_graph() -> (nodes: list, edges: list)
+  - get_ml_config(key, default) -> Any
+  - set_ml_config(key, value) -> None
+  - get_all_ml_configs() -> dict
+  - get_products(category, region) -> list[dict]
+  - upsert_product(product) -> None
+  - product_count() -> int
 """
 from __future__ import annotations
 
@@ -18,7 +24,28 @@ import os
 import sqlite3
 import threading
 from contextlib import contextmanager
-from typing import Iterable, List, Tuple
+from datetime import datetime
+from typing import Any, Iterable, List, Optional, Tuple
+
+DEFAULT_ML_CONFIGS: dict[str, Any] = {
+    "pricing.hourly_wage": 55.0,
+    "pricing.base_overhead": 35.0,
+    "pricing.size_rate": 20.0,
+    "pricing.labor_multiplier": 1.15,
+    "forecasting.tourist_baseline": 10.0,
+    "forecasting.peak_season_boost": 1.25,
+    "market.discount_elasticity": 1.08,
+    "market.gi_boost": 1.12,
+    "market.confidence_threshold": 0.70,
+    "recommendations.retrieval_weight": 0.30,
+    "recommendations.ranker_weight": 0.70,
+    "recommendations.default_top_k": 10,
+    "fraud.anomaly_threshold": -0.05,
+    "fraud.min_text_length": 15,
+    "user_segmentation.champion_spend": 25000.0,
+    "user_segmentation.loyal_spend": 10000.0,
+    "user_segmentation.promising_spend": 3000.0,
+}
 
 
 # ---------------------------------------------------------------------------
@@ -43,6 +70,7 @@ class SQLiteStore:
         self.path = path
         self._conn = _sqlite_connect(path)
         self._init_schema()
+        self._seed_initial_data()
 
     @contextmanager
     def _cur(self):
@@ -85,6 +113,173 @@ class SQLiteStore:
                 )
                 """
             )
+            cur.execute(
+                """
+                CREATE TABLE IF NOT EXISTS ml_configs (
+                    key TEXT PRIMARY KEY,
+                    value TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                )
+                """
+            )
+            cur.execute(
+                """
+                CREATE TABLE IF NOT EXISTS products (
+                    id TEXT PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    category TEXT,
+                    region TEXT,
+                    price REAL,
+                    description TEXT,
+                    artisan_id TEXT,
+                    images TEXT,
+                    stock INTEGER DEFAULT 1,
+                    gi_tag INTEGER DEFAULT 0,
+                    material TEXT,
+                    raw_json TEXT,
+                    updated_at TEXT NOT NULL
+                )
+                """
+            )
+
+    def _load_seed_products(self) -> list[dict]:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        candidates = [
+            os.path.abspath(os.path.join(base_dir, "../../../database/products.json")),
+            os.path.abspath(os.path.join(base_dir, "../database/products.json")),
+            os.path.abspath(os.path.join(base_dir, "../../database/products.json")),
+            os.path.abspath(os.path.join(base_dir, "../../../../database/products.json")),
+            os.path.abspath(os.path.join(os.getcwd(), "database/products.json")),
+            os.path.abspath(os.path.join(os.getcwd(), "../database/products.json")),
+        ]
+        for c in candidates:
+            if os.path.exists(c):
+                try:
+                    with open(c, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        if isinstance(data, list):
+                            return data
+                        if isinstance(data, dict) and "products" in data:
+                            return data["products"]
+                except Exception:
+                    pass
+        return []
+
+    def _seed_initial_data(self) -> None:
+        now_str = datetime.utcnow().isoformat() + "Z"
+        with self._cur() as cur:
+            # 1. Seed ML configs if missing
+            row = cur.execute("SELECT COUNT(*) FROM ml_configs").fetchone()
+            if not row or row[0] == 0:
+                cur.executemany(
+                    "INSERT OR REPLACE INTO ml_configs (key, value, updated_at) VALUES (?, ?, ?)",
+                    [(k, json.dumps(v), now_str) for k, v in DEFAULT_ML_CONFIGS.items()],
+                )
+
+            # 2. Seed products if missing
+            prod_row = cur.execute("SELECT COUNT(*) FROM products").fetchone()
+            if not prod_row or prod_row[0] == 0:
+                prods = self._load_seed_products()
+                for p in prods:
+                    pid = str(p.get("id") or "")
+                    name = str(p.get("name") or "")
+                    if not pid or not name:
+                        continue
+                    cat = p.get("category", "")
+                    reg = p.get("region", "")
+                    price = float(p.get("price", 0.0))
+                    desc = p.get("description", "")
+                    artisan = p.get("artisanId") or p.get("artisan_id", "")
+                    imgs = json.dumps(p.get("images", []))
+                    stock = int(p.get("stock", 1))
+                    gi = 1 if p.get("gi") or p.get("gi_tag") or p.get("gi_tag_certified") else 0
+                    mat = p.get("material", "")
+                    cur.execute(
+                        """
+                        INSERT OR REPLACE INTO products
+                        (id, name, category, region, price, description, artisan_id, images, stock, gi_tag, material, raw_json, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (pid, name, cat, reg, price, desc, artisan, imgs, stock, gi, mat, json.dumps(p), now_str),
+                    )
+
+    # --- ML configs ---
+
+    def get_ml_config(self, key: str, default: Any = None) -> Any:
+        with self._cur() as cur:
+            row = cur.execute("SELECT value FROM ml_configs WHERE key = ?", (key,)).fetchone()
+            if row:
+                try:
+                    return json.loads(row[0])
+                except Exception:
+                    return row[0]
+        return DEFAULT_ML_CONFIGS.get(key, default)
+
+    def set_ml_config(self, key: str, value: Any) -> None:
+        now_str = datetime.utcnow().isoformat() + "Z"
+        with self._cur() as cur:
+            cur.execute(
+                "INSERT OR REPLACE INTO ml_configs (key, value, updated_at) VALUES (?, ?, ?)",
+                (key, json.dumps(value), now_str),
+            )
+
+    def get_all_ml_configs(self) -> dict[str, Any]:
+        configs = dict(DEFAULT_ML_CONFIGS)
+        with self._cur() as cur:
+            rows = cur.execute("SELECT key, value FROM ml_configs").fetchall()
+            for k, v in rows:
+                try:
+                    configs[k] = json.loads(v)
+                except Exception:
+                    configs[k] = v
+        return configs
+
+    # --- products catalog ---
+
+    def get_products(self, category: Optional[str] = None, region: Optional[str] = None) -> List[dict]:
+        with self._cur() as cur:
+            query = "SELECT raw_json FROM products WHERE 1=1"
+            params = []
+            if category:
+                query += " AND LOWER(category) = LOWER(?)"
+                params.append(category)
+            if region:
+                query += " AND LOWER(region) = LOWER(?)"
+                params.append(region)
+            rows = cur.execute(query, params).fetchall()
+            if rows:
+                return [json.loads(r[0]) for r in rows]
+        return self._load_seed_products()
+
+    def upsert_product(self, product: dict) -> None:
+        now_str = datetime.utcnow().isoformat() + "Z"
+        pid = str(product.get("id") or "")
+        name = str(product.get("name") or "")
+        if not pid or not name:
+            return
+        cat = product.get("category", "")
+        reg = product.get("region", "")
+        price = float(product.get("price", 0.0))
+        desc = product.get("description", "")
+        artisan = product.get("artisanId") or product.get("artisan_id", "")
+        imgs = json.dumps(product.get("images", []))
+        stock = int(product.get("stock", 1))
+        gi = 1 if product.get("gi") or product.get("gi_tag") or product.get("gi_tag_certified") else 0
+        mat = product.get("material", "")
+        with self._cur() as cur:
+            cur.execute(
+                """
+                INSERT OR REPLACE INTO products
+                (id, name, category, region, price, description, artisan_id, images, stock, gi_tag, material, raw_json, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (pid, name, cat, reg, price, desc, artisan, imgs, stock, gi, mat, json.dumps(product), now_str),
+            )
+
+    def product_count(self) -> int:
+        with self._cur() as cur:
+            row = cur.execute("SELECT COUNT(*) FROM products").fetchone()
+        return int(row[0]) if row else 0
 
     # --- ledger ---
 
@@ -165,6 +360,59 @@ class MemoryStore:
         self._ledgers: dict[str, list[dict]] = {}
         self._kg_nodes: list[dict] = []
         self._kg_edges: list[dict] = []
+        self._ml_configs: dict[str, Any] = dict(DEFAULT_ML_CONFIGS)
+        self._products: dict[str, dict] = {}
+        self._seed_initial_data()
+
+    def _seed_initial_data(self) -> None:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        candidates = [
+            os.path.abspath(os.path.join(base_dir, "../../../database/products.json")),
+            os.path.abspath(os.path.join(base_dir, "../database/products.json")),
+            os.path.abspath(os.path.join(base_dir, "../../database/products.json")),
+            os.path.abspath(os.path.join(base_dir, "../../../../database/products.json")),
+            os.path.abspath(os.path.join(os.getcwd(), "database/products.json")),
+            os.path.abspath(os.path.join(os.getcwd(), "../database/products.json")),
+        ]
+        for c_path in candidates:
+            if os.path.exists(c_path):
+                try:
+                    with open(c_path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        prods = data if isinstance(data, list) else data.get("products", [])
+                        for p in prods:
+                            pid = str(p.get("id") or "")
+                            if pid:
+                                self._products[pid] = dict(p)
+                    if self._products:
+                        break
+                except Exception:
+                    pass
+
+    def get_ml_config(self, key: str, default: Any = None) -> Any:
+        return self._ml_configs.get(key, default)
+
+    def set_ml_config(self, key: str, value: Any) -> None:
+        self._ml_configs[key] = value
+
+    def get_all_ml_configs(self) -> dict[str, Any]:
+        return dict(self._ml_configs)
+
+    def get_products(self, category: Optional[str] = None, region: Optional[str] = None) -> List[dict]:
+        prods = list(self._products.values())
+        if category:
+            prods = [p for p in prods if (p.get("category") or "").lower() == category.lower()]
+        if region:
+            prods = [p for p in prods if (p.get("region") or "").lower() == region.lower()]
+        return prods
+
+    def upsert_product(self, product: dict) -> None:
+        pid = str(product.get("id") or "")
+        if pid:
+            self._products[pid] = dict(product)
+
+    def product_count(self) -> int:
+        return len(self._products)
 
     def get_ledger(self, product_id: str) -> List[dict]:
         return list(self._ledgers.get(product_id, []))
@@ -207,6 +455,49 @@ class FirestoreStore:  # pragma: no cover - exercised in production only
                 firebase_admin.initialize_app()
         self._db = firestore.client()
 
+    def get_ml_config(self, key: str, default: Any = None) -> Any:
+        try:
+            doc = self._db.collection("ml_configs").document(key).get()
+            if doc.exists:
+                return doc.to_dict().get("value", default)
+        except Exception:
+            pass
+        return DEFAULT_ML_CONFIGS.get(key, default)
+
+    def set_ml_config(self, key: str, value: Any) -> None:
+        self._db.collection("ml_configs").document(key).set({"value": value, "updated_at": datetime.utcnow().isoformat() + "Z"})
+
+    def get_all_ml_configs(self) -> dict[str, Any]:
+        configs = dict(DEFAULT_ML_CONFIGS)
+        try:
+            for d in self._db.collection("ml_configs").stream():
+                configs[d.id] = d.to_dict().get("value")
+        except Exception:
+            pass
+        return configs
+
+    def get_products(self, category: Optional[str] = None, region: Optional[str] = None) -> List[dict]:
+        try:
+            query = self._db.collection("products")
+            if category:
+                query = query.where("category", "==", category)
+            if region:
+                query = query.where("region", "==", region)
+            return [d.to_dict() for d in query.stream()]
+        except Exception:
+            return []
+
+    def upsert_product(self, product: dict) -> None:
+        pid = str(product.get("id") or "")
+        if pid:
+            self._db.collection("products").document(pid).set(product)
+
+    def product_count(self) -> int:
+        try:
+            return len(list(self._db.collection("products").stream()))
+        except Exception:
+            return 0
+
     def _ledger_col(self, product_id: str):
         return self._db.collection("provenance").document(product_id).collection("blocks")
 
@@ -230,7 +521,6 @@ class FirestoreStore:  # pragma: no cover - exercised in production only
         return nodes, edges
 
     def replace_knowledge_graph(self, nodes, edges) -> None:
-        # Use a batched write for atomicity.
         batch = self._db.batch()
         for n in nodes:
             batch.set(self._db.collection("knowledge_nodes").document(n["id"]), n)

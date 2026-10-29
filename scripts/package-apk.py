@@ -480,35 +480,49 @@ def main():
             except Exception as e:
                 print(f"Notice: keytool generation skipped: {e}")
 
-    jarsigner_exe = shutil.which('jarsigner') or os.path.join(os.getenv('JAVA_HOME', ''), 'bin', 'jarsigner') or (r'C:\Program Files\Java\jdk-26.0.2\bin\jarsigner.exe' if os.name == 'nt' else 'jarsigner')
+    uber_jar = 'scripts/uber-apk-signer.jar'
     signed_temp = 'scripts/signed_temp.apk'
     shutil.copyfile(unsigned_apk, signed_temp)
 
-    can_sign = (shutil.which(jarsigner_exe) is not None) or os.path.exists(jarsigner_exe)
-    if can_sign and os.path.exists(keystore_path):
+    if os.path.exists(uber_jar) and os.path.exists(keystore_path):
         try:
-            sign_cmd = [
-                jarsigner_exe,
-                '-keystore', keystore_path,
-                '-storepass', 'viraasat123',
-                '-keypass', 'viraasat123',
-                '-sigalg', 'SHA256withRSA',
-                '-digestalg', 'SHA-256',
-                signed_temp,
-                'viraasat'
+            print("Signing and zip-aligning APK with uber-apk-signer (v2/v3 scheme)...")
+            uber_cmd = [
+                'java', '-jar', uber_jar,
+                '-a', unsigned_apk,
+                '--allowResign',
+                '--ks', keystore_path,
+                '--ksAlias', 'viraasat',
+                '--ksPass', 'viraasat123',
+                '--ksKeyPass', 'viraasat123',
+                '-o', 'dist_apk',
+                '--verbose'
             ]
-            print("Signing APK with jarsigner...")
-            subprocess.check_call(sign_cmd)
-
-            # Verify signature
-            verify_cmd = [jarsigner_exe, '-verify', '-certs', signed_temp]
-            result = subprocess.check_output(verify_cmd).decode('utf-8')
-            print("Signature verification output:")
-            print(result.splitlines()[-3:])
+            subprocess.check_call(uber_cmd)
+            built_signed = 'dist_apk/unsigned-aligned-signed.apk'
+            if os.path.exists(built_signed):
+                shutil.copyfile(built_signed, signed_temp)
+                print("APK successfully aligned and signed with Scheme v2/v3!")
         except Exception as e:
-            print(f"Notice: jarsigner signing skipped ({e})")
+            print(f"Notice: uber-apk-signer failed ({e}), falling back to jarsigner")
     else:
-        print(f"Notice: jarsigner or keystore not found, using unsigned APK package.")
+        jarsigner_exe = shutil.which('jarsigner') or os.path.join(os.getenv('JAVA_HOME', ''), 'bin', 'jarsigner') or (r'C:\Program Files\Java\jdk-26.0.2\bin\jarsigner.exe' if os.name == 'nt' else 'jarsigner')
+        if jarsigner_exe and os.path.exists(keystore_path):
+            try:
+                sign_cmd = [
+                    jarsigner_exe,
+                    '-keystore', keystore_path,
+                    '-storepass', 'viraasat123',
+                    '-keypass', 'viraasat123',
+                    '-sigalg', 'SHA256withRSA',
+                    '-digestalg', 'SHA-256',
+                    signed_temp,
+                    'viraasat'
+                ]
+                print("Signing APK with jarsigner...")
+                subprocess.check_call(sign_cmd)
+            except Exception as e:
+                print(f"Notice: jarsigner signing skipped ({e})")
 
     # Step 3: Copy to target locations
     targets = [

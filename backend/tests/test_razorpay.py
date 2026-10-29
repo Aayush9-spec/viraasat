@@ -30,7 +30,7 @@ def test_verify_payment_invalid_signature():
     assert "Signature mismatch" in response.json()["detail"]
 
 def test_verify_payment_valid_signature():
-    key_secret = os.getenv("RAZORPAY_KEY_SECRET", "AGxzrZj2IpfG0qxWNrX7KEfu")
+    key_secret = os.getenv("RAZORPAY_KEY_SECRET", "rzp_test_mock_secret")
     order_id = "order_test_999"
     payment_id = "pay_test_999"
     

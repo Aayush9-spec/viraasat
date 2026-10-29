@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
+import { auth } from '@clerk/nextjs/server';
 import { apiError, handleApiError } from '@/core/api/api-response';
 
 const usersFilePath = path.join(process.cwd(), '..', 'database', 'users.json');
@@ -41,13 +42,24 @@ function writeUsers(users: UserRecord[]): boolean {
   }
 }
 
-// GET - fetch a single user by id
+// GET - fetch a single user by id (owner or admin only)
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { userId, sessionClaims } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+
     const { id } = await params;
+    const role = (sessionClaims?.metadata as any)?.role || (sessionClaims as any)?.role;
+
+    if (userId !== id && role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Cannot access another user profile' }, { status: 403 });
+    }
+
     const users = readUsers();
     const user = users.find((u) => u.id === id);
     if (!user) {
@@ -59,19 +71,36 @@ export async function GET(
   }
 }
 
-// PATCH - update a user
+// PATCH - update a user (owner or admin only)
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { userId, sessionClaims } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+
     const { id } = await params;
+    const role = (sessionClaims?.metadata as any)?.role || (sessionClaims as any)?.role;
+
+    if (userId !== id && role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Cannot modify another user profile' }, { status: 403 });
+    }
+
     const body = await request.json().catch(() => ({}));
     const users = readUsers();
     const index = users.findIndex((u) => u.id === id);
     if (index === -1) {
       return apiError('User not found', 404, 'NOT_FOUND');
     }
+
+    // Role elevation prevention: cannot self-assign admin role
+    if (body.role === 'admin' && role !== 'admin') {
+      delete body.role;
+    }
+
     users[index] = { ...users[index], ...body, updatedAt: new Date().toISOString() };
     writeUsers(users);
     return NextResponse.json(users[index]);
@@ -80,12 +109,22 @@ export async function PATCH(
   }
 }
 
-// DELETE - remove a user
+// DELETE - remove a user (admin only)
 export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { userId, sessionClaims } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+
+    const role = (sessionClaims?.metadata as any)?.role || (sessionClaims as any)?.role;
+    if (role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Admin privilege required to delete accounts' }, { status: 403 });
+    }
+
     const { id } = await params;
     const users = readUsers();
     const index = users.findIndex((u) => u.id === id);
