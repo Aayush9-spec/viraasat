@@ -116,44 +116,26 @@ export default function CheckoutPage() {
                 return;
             }
 
-            const idempotencyKey = globalThis.crypto.randomUUID();
+            const attemptBody = JSON.stringify({buyer: user?.id, items: cartItems.map(i => [i.id,i.quantity]), shippingOption, firstName,lastName,address1,address2,city,stateName,zip,phone});
+            const saved = sessionStorage.getItem('checkout-attempt');
+            let attempt: {body: string; key: string} | null = null;
+            try { attempt = saved ? JSON.parse(saved) : null; } catch { /* replace invalid local data */ }
+            if (!attempt || attempt.body !== attemptBody) {
+                attempt = {body: attemptBody, key: globalThis.crypto.randomUUID()};
+                sessionStorage.setItem('checkout-attempt', JSON.stringify(attempt));
+            }
+            const idempotencyKey = attempt.key;
 
-            const amountInPaise = Math.max(100, Math.round(total * 100));
-
-            // Call create-order endpoint
-            let response = await fetch('/api/create-order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+            const response = await fetch('/api/create-order', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    amount: amountInPaise,
-                    currency: 'INR',
-                    receipt: `rcpt_${Date.now()}`,
+                    items: cartItems.map(item => ({ productId: item.id, quantity: item.quantity })),
+                    shippingOption, idempotencyKey,
+                    shipping: { fullName: `${firstName} ${lastName}`.trim(), addressLine1: address1,
+                        addressLine2: address2 || '', city, state: stateName, zipCode: zip,
+                        country: 'India', phoneNumber: phone },
                 }),
             });
-
-            if (!response.ok) {
-                // Fallback to /api/razorpay if /api/create-order is unavailable
-                response = await fetch('/api/razorpay', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        items: cartItems.map((item) => ({ productId: item.id, quantity: item.quantity })),
-                        shippingOption,
-                        idempotencyKey,
-                        shipping: {
-                            fullName: `${firstName} ${lastName}`.trim(),
-                            email: user?.primaryEmailAddress?.emailAddress || '',
-                            addressLine1: address1,
-                            addressLine2: address2 || '',
-                            city: city,
-                            state: stateName,
-                            zipCode: zip,
-                            country: 'India',
-                            phoneNumber: phone,
-                        },
-                    }),
-                });
-            }
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
@@ -172,57 +154,26 @@ export default function CheckoutPage() {
                 handler: async function (razorpayResp: any) {
                     try {
                         // Verify payment signature server-side
-                        let verifyResp = await fetch('/api/verify-payment', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                razorpay_order_id: razorpayResp.razorpay_order_id,
-                                razorpay_payment_id: razorpayResp.razorpay_payment_id,
-                                razorpay_signature: razorpayResp.razorpay_signature,
-                            }),
+                        const verifyResp = await fetch('/api/verify-payment', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(razorpayResp),
                         });
-                        
-                        let verifyResult: any = {};
-                        if (verifyResp.ok) {
-                            verifyResult = await verifyResp.json();
-                        } else {
-                            const fallbackVerify = await fetch('/api/razorpay', {
-                                method: 'PUT',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    razorpay_order_id: razorpayResp.razorpay_order_id,
-                                    razorpay_payment_id: razorpayResp.razorpay_payment_id,
-                                    razorpay_signature: razorpayResp.razorpay_signature,
-                                }),
-                            });
-                            verifyResult = await fallbackVerify.json();
-                        }
-
+                        const verifyResult = await verifyResp.json();
+                        if (!verifyResp.ok) throw new Error(verifyResult.error || 'Payment confirmation unavailable');
                         if (!verifyResult.verified) {
                             toast({ title: "Payment Verification Failed", description: verifyResult.error || "Invalid signature returned.", variant: "destructive" });
                             setIsProcessing(false);
                             return;
                         }
 
-                        sessionStorage.setItem('viraasat-last-order', JSON.stringify({
-                            orderId: orderId,
-                            paymentId: razorpayResp.razorpay_payment_id,
-                            items: cartItems.map(item => ({
-                                productId: item.id,
-                                productName: item.name,
-                                quantity: item.quantity,
-                                unitPrice: item.price,
-                            })),
-                            subtotal,
-                            shippingFee: shipping,
-                            tax: gst,
-                            total,
-                            customerName: `${firstName} ${lastName}`.trim(),
-                        }));
                     } catch (e) {
                         console.error("Failed to save/verify order:", e);
+                        toast({ title: 'Payment confirmation unavailable', description: 'Your cart is preserved. Check My Orders before attempting another payment.', variant: 'destructive' });
+                        setIsProcessing(false);
+                        return;
                     }
 
+                    sessionStorage.removeItem('checkout-attempt');
                     clearCart();
                     toast({
                         title: "Acquisition Confirmed!",

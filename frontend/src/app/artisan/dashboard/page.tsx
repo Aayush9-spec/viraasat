@@ -80,30 +80,12 @@ export default function ArtisanDashboardPage() {
     firstOfMonth.setDate(1);
     firstOfMonth.setHours(0, 0, 0, 0);
 
-    Promise.all([
-      supabase
-        .from('orders')
-        .select('id', { count: 'exact', head: true })
-        .in('status', ['Processing', 'Pending', 'Shipped']),
-      supabase
-        .from('orders')
-        .select('total_amount')
-        .gte('created_at', firstOfMonth.toISOString()),
-    ])
-      .then(([ordersRes, revenueRes]) => {
-        if (ordersRes && !ordersRes.error && ordersRes.count !== null) {
-          setOrdersCount(ordersRes.count);
-        }
-        if (revenueRes && !revenueRes.error && revenueRes.data) {
-          const total = revenueRes.data.reduce(
-            (sum: number, r: { total_amount: number }) => sum + (r.total_amount || 0),
-            0
-          );
-          setMonthlyRevenue(total);
-        }
-        setMetricsLoading(false);
-      })
-      .catch(() => setMetricsLoading(false));
+    fetch('/api/orders?scope=artisan').then(async response => {
+      if (!response.ok) throw new Error('Order metrics unavailable');
+      const records = await response.json();
+      setOrdersCount(records.filter((r: {status: string}) => ['Processing', 'Pending', 'Shipped'].includes(r.status)).length);
+      setMonthlyRevenue(records.filter((r: {orderDate: string; paymentStatus: string}) => r.paymentStatus === 'Paid' && new Date(r.orderDate) >= firstOfMonth).reduce((n: number, r: {totalAmount: number}) => n + r.totalAmount, 0));
+    }).catch(() => {}).finally(() => setMetricsLoading(false));
 
     return () => {
       window.removeEventListener('focus', refreshLocal);

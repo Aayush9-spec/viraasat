@@ -13,6 +13,7 @@ export class ProductService {
       const { data, error } = await supabase
         .from('products')
         .select('*')
+        .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (!error && data) {
@@ -40,7 +41,7 @@ export class ProductService {
     const map = new Map<string, Product>();
     // Deduplicate by normalized product name so static seeds and database items merge cleanly.
     // Priority order: local artisan creations first, then live database products, then static fallback.
-    [...dbProducts, ...localProds, ...products].forEach((p) => {
+    dbProducts.forEach((p) => {
       if (!p) return;
       const key = (p.name || '').trim().toLowerCase() || p.id;
       if (!map.has(key)) {
@@ -56,7 +57,7 @@ export class ProductService {
   static async getProductById(id: string): Promise<Product | undefined> {
     const localProds = getLocalProducts();
     const localMatch = localProds.find((p) => p.id === id);
-    if (localMatch) return localMatch;
+
 
     // Only query Supabase with valid UUIDs to avoid 22P02 Postgres errors
     if (UUID_REGEX.test(id)) {
@@ -64,6 +65,7 @@ export class ProductService {
         const { data, error } = await supabase
           .from('products')
           .select('*')
+        .eq('is_active', true)
           .eq('id', id)
           .single();
 
@@ -90,7 +92,7 @@ export class ProductService {
       }
     }
 
-    return products.find((p) => p.id === id);
+    return undefined;
   }
 
   static async getProductsByCategory(category: string): Promise<Product[]> {

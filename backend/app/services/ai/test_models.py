@@ -86,17 +86,17 @@ def test_blockchain():
     # 2. Get/create chain
     ledger = get_or_create_ledger(product_id)
     print(f"Genesis blockchain created. Length: {len(ledger)}")
-    assert len(ledger) == 3
+    assert len(ledger) == 1
     assert is_chain_valid(ledger) is True
     
     # 3. Mine ownership transfer block
-    transfer_res = perform_transfer_ownership(product_id, "Buyer Alice", 12500.00)
+    transfer_res = perform_transfer_ownership(product_id, "Buyer Alice", 12500.00, caller_id="unassigned")
     print("Mined Block Result:", transfer_res)
     assert transfer_res["status"] == "success"
     
     # 4. Validate updated ledger
     updated_ledger = get_or_create_ledger(product_id)
-    assert len(updated_ledger) == 4
+    assert len(updated_ledger) == 2
     assert is_chain_valid(updated_ledger) is True
     
     print("Blockchain cryptographic hashing & block link checks passed.")

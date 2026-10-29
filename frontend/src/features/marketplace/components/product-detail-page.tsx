@@ -113,12 +113,8 @@ export function ProductDetailPageClient({
         const data = await backendGet<{ ledger_chain?: any[] }>(`/api/blockchain/provenance/${p.id}`);
         setProvenance(data.ledger_chain || []);
       } catch (err) {
-        console.warn('Blockchain backend offline, using simulated provenance ledger.');
-        setProvenance([
-          { index: 1, timestamp: "2026-07-20 10:00:00", action: "Artisan Identity Verified (" + (p.artisanName || 'Riya Sharma') + ")", actor: "Viraasat Protocol Node", hash: "8f3b2a9e", prev_hash: "00000000" },
-          { index: 2, timestamp: "2026-07-22 11:30:00", action: "GI Origin Certification Issued (" + (p.region || 'Rajasthan') + ")", actor: "Handicrafts Board Node", hash: "4c7e2d9b", prev_hash: "8f3b2a9e" },
-          { index: 3, timestamp: "2026-07-25 14:00:00", action: "Digital Passport Mined (Genesis Block)", actor: "Viraasat Ledger Mainnet", hash: "d9e8a7f6", prev_hash: "4c7e2d9b" }
-        ]);
+        console.warn('Provenance unavailable');
+        setProvenance([]);
       } finally {
         setLoadingProvenance(false);
       }
@@ -152,41 +148,28 @@ export function ProductDetailPageClient({
       toast({
         variant: 'destructive',
         title: 'Recipient Required',
-        description: 'Please specify the new collector name or public address.',
+        description: 'Please specify the recipient account ID (user_...).',
       });
       return;
     }
     setIsTransferring(true);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/blockchain/transfer`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_id: product.id,
-          new_owner: transferOwner.trim(),
-          tx_value: Number(transferAmount) || product.price,
-        }),
+      const data = await backend.post<{ block_added: { index: number; hash: string } }>('/api/blockchain/transfer', {
+        product_id: product.id, new_owner: transferOwner.trim(), tx_value: Number(transferAmount) || 0,
       });
-
-      if (res.ok) {
-        const data = await res.json();
-        toast({
-          title: 'Ownership Transferred On-Chain',
-          description: `Mined Block #${data.block?.index || ''} on Viraasat PoW Ledger. Hash: ${data.block?.hash?.slice(0, 16)}...`,
-        });
+      {
+        toast({ title: 'Ledger custody transferred', description: `Recorded block #${data.block_added.index}. Physical authenticity is not verified.` });
         const updated = await backendGet<{ ledger_chain?: any[] }>(`/api/blockchain/provenance/${product.id}`);
         setProvenance(updated.ledger_chain || []);
         setTransferModalOpen(false);
         setTransferOwner('');
         setTransferAmount('');
-      } else {
-        throw new Error('Transfer call failed');
       }
     } catch {
       toast({
         variant: 'destructive',
         title: 'Transfer Failed',
-        description: 'Could not execute on-chain transfer. Please try again.',
+        description: 'Transfer requires a signed-in current custodian and a valid recipient account ID.',
       });
     } finally {
       setIsTransferring(false);
@@ -518,7 +501,7 @@ export function ProductDetailPageClient({
                         Proof-of-Work Provenance Ledger
                       </CardTitle>
                       <Badge variant="outline" className="text-[9px] border-emerald-600 text-emerald-800">
-                        SHA-256 Verified
+                        Ledger record
                       </Badge>
                     </div>
                   </CardHeader>
@@ -552,7 +535,7 @@ export function ProductDetailPageClient({
                     {/* Ownership Transfer Trigger */}
                     <div className="pt-4 border-t border-amber-900/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div>
-                        <h4 className="text-xs font-bold text-primary">On-Chain Ownership Certificate</h4>
+                        <h4 className="text-xs font-bold text-primary">Custody record</h4>
                         <p className="text-[10px] text-muted-foreground">Transfer Proof-of-Work blockchain provenance to the new collector or gallery.</p>
                       </div>
                       <Button
@@ -584,10 +567,10 @@ export function ProductDetailPageClient({
           <DialogContent className="sm:max-w-md bg-[#fcfaf7] border-amber-900/20">
             <DialogHeader>
               <DialogTitle className="font-heading text-lg text-[#5e2c18] flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-[#9c4221]" /> Transfer On-Chain Provenance
+                <ShieldCheck className="h-5 w-5 text-[#9c4221]" /> Transfer ledger custody
               </DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground">
-                Mints a new Proof-of-Work block transferring legal cultural authenticity to the collector.
+                Records a change of ledger custodian. This does not certify authenticity or transfer legal title.
               </DialogDescription>
             </DialogHeader>
 
@@ -595,7 +578,7 @@ export function ProductDetailPageClient({
               <div className="space-y-1.5">
                 <Label className="text-xs font-bold">New Owner / Collector Name</Label>
                 <Input
-                  placeholder="e.g. Meera Patel or National Craft Museum"
+                  placeholder="Recipient account ID (user_...)"
                   value={transferOwner}
                   onChange={(e) => setTransferOwner(e.target.value)}
                   className="bg-white border-amber-900/20 text-xs"

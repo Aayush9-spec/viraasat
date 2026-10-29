@@ -41,8 +41,8 @@ const analyzeImagePrompt = ai.definePrompt({
 Analyze this image and classify it into craft taxonomy:
 1. Suggest a premium product title.
 2. Detect the category: Match it to one of [Home Decor, Jewelry, Textiles, Kitchenware, Accessories].
-3. Identify the origin region (e.g. Rajasthan, Gujarat, Kashmir, Bihar, Varanasi).
-4. Predict the dominant raw material used (e.g. Multani Mitti & Quartz, Pure Chandi / Silver Alloy, Changthangi Cashmere Wool, Khadi Cotton, Natural Vegetable Dyes).
+3. Do not infer geographic origin from appearance; return Unknown unless supported by readable evidence.
+4. Suggest the apparent material only, using Unknown when uncertain; do not certify composition. Examples (e.g. Multani Mitti & Quartz, Pure Chandi / Silver Alloy, Changthangi Cashmere Wool, Khadi Cotton, Natural Vegetable Dyes).
 5. Extract 4-6 features/tags representing its aesthetic and style.
 
 Return the classification in the requested JSON structure.`,
@@ -69,29 +69,14 @@ const analyzeImageFlow = ai.defineFlow(
     }
 
     if (!process.env.GEMINI_API_KEY && !process.env.GOOGLE_API_KEY) {
-      console.warn("API Key missing. Falling back to mock Vision classifier.");
-      return {
-        predictedTitle: "Handcrafted Blue Pottery Vase",
-        detectedCategory: "Home Decor",
-        detectedRegion: "Rajasthan",
-        detectedMaterial: "Multani Mitti & Quartz",
-        suggestedTags: ["Blue Pottery", "Jaipur Art", "Ceramic Glaze", "Traditional Decor"]
-      };
+      throw new Error('Image analysis is unavailable. Enter product details manually.');
     }
     try {
-      const { output } = await analyzeImagePrompt({
-        imageDataUri: input.imageDataUri,
-      });
-      return output!;
-    } catch (e) {
-      console.warn("Genkit Vision call failed. Using mock vision metadata fallback.", e);
-      return {
-        predictedTitle: "Handcrafted Blue Pottery Vase",
-        detectedCategory: "Home Decor",
-        detectedRegion: "Rajasthan",
-        detectedMaterial: "Multani Mitti & Quartz",
-        suggestedTags: ["Blue Pottery", "Jaipur Art", "Ceramic Glaze", "Traditional Decor"]
-      };
+      const { output } = await analyzeImagePrompt({ imageDataUri: input.imageDataUri });
+      if (!output) throw new Error('No image analysis returned');
+      return output;
+    } catch {
+      throw new Error('Image analysis failed. No classification was produced.');
     }
   }
 );

@@ -261,8 +261,7 @@ export default function AdminDashboardPage() {
   }
 
   const isVerifiedAdmin =
-    role === 'admin' &&
-    (typeof window === 'undefined' || localStorage.getItem('viraasat_admin_verified') === 'true');
+    role === 'admin';
 
   if (!isVerifiedAdmin) {
     return (

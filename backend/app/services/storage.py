@@ -102,7 +102,7 @@ class SQLiteStore:
         payload = {k: v for k, v in block.items() if k != "index"}
         with self._cur() as cur:
             cur.execute(
-                "INSERT OR REPLACE INTO ledger_blocks (product_id, idx, payload) "
+                "INSERT INTO ledger_blocks (product_id, idx, payload) "
                 "VALUES (?, ?, ?)",
                 (product_id, block["index"], json.dumps(payload)),
             )
@@ -170,7 +170,11 @@ class MemoryStore:
         return list(self._ledgers.get(product_id, []))
 
     def append_ledger_block(self, product_id: str, block: dict) -> None:
-        self._ledgers.setdefault(product_id, []).append(block)
+        with _sqlite_lock:
+            chain = self._ledgers.setdefault(product_id, [])
+            if block["index"] != len(chain) + 1:
+                raise ValueError("Concurrent ledger update; reload and retry")
+            chain.append(block)
 
     def ledger_count(self, product_id: str) -> int:
         return len(self._ledgers.get(product_id, []))
@@ -215,7 +219,7 @@ class FirestoreStore:  # pragma: no cover - exercised in production only
         return [d.to_dict() for d in docs]
 
     def append_ledger_block(self, product_id: str, block: dict) -> None:
-        self._ledger_col(product_id).document(str(block["index"])).set(block)
+        self._ledger_col(product_id).document(str(block["index"])).create(block)
 
     def ledger_count(self, product_id: str) -> int:
         return len(list(self._ledger_col(product_id).stream()))

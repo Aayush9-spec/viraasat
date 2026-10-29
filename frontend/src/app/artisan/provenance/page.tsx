@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import Image from 'next/image';
-import { useUser } from '@clerk/nextjs';
+import { useUser, useAuth } from '@clerk/nextjs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -77,9 +77,10 @@ async function fetchChainFromBackend(productId: string) {
   }>;
 }
 
-async function generateChainFromBackend(productId: string) {
+async function generateChainFromBackend(productId: string, token: string) {
   const res = await fetch(`${BACKEND_URL}/api/blockchain/generate/${productId}`, {
     method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
     cache: 'no-store',
   });
   if (!res.ok) throw new Error(`Backend ${res.status}`);
@@ -96,6 +97,7 @@ async function generateChainFromBackend(productId: string) {
 
 export default function ArtisanProvenancePage() {
   const { user } = useUser();
+  const { getToken } = useAuth();
   const { toast } = useToast();
   const { products: liveProducts, loading: productsLoading } = useProducts();
 
@@ -212,7 +214,9 @@ export default function ArtisanProvenancePage() {
     async (productId: string, productName: string) => {
       setMinting(productId);
       try {
-        const data = await generateChainFromBackend(productId);
+        const token = await getToken();
+        if (!token) throw new Error('Sign in required');
+        const data = await generateChainFromBackend(productId, token);
         const prod = allArtisanProducts.find((p) => p.id === productId);
         const newRecord: ProvenanceRecord = {
           product_id: productId,
@@ -232,7 +236,7 @@ export default function ArtisanProvenancePage() {
         });
 
         toast({
-          title: data.already_existed ? '📜 Passport Already Exists' : '⛏️ On-Chain Passport Minted!',
+          title: data.already_existed ? '📜 Passport Already Exists' : '⛏️ Ledger registered',
           description: data.already_existed
             ? `${productName}'s blockchain passport was retrieved from the ledger.`
             : `${productName}'s SHA-256 Proof-of-Work chain mined (${data.ledger_chain.length} blocks).`,
@@ -248,13 +252,10 @@ export default function ArtisanProvenancePage() {
         setMinting(null);
       }
     },
-    [allArtisanProducts, toast],
+    [allArtisanProducts, toast, getToken],
   );
 
   // ── Computed stats ───────────────────────────────────────────────────────────
-  const avgScore = records.length
-    ? Math.round(records.reduce((s, r) => s + r.authenticity_score, 0) / records.length)
-    : 95;
   const totalBlocks = records.reduce((s, r) => s + r.ledger_chain.length, 0);
 
   // Products not yet passported
@@ -268,10 +269,10 @@ export default function ArtisanProvenancePage() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl sm:text-3xl font-heading font-bold text-[#5e2c18]">
-            GI Provenance & Trust Layer
+            Provenance Records
           </h1>
           <p className="text-muted-foreground text-xs sm:text-sm mt-1">
-            Geographical Indication (GI) authenticity certificates, SHA-256 blockchain verification, and craft lineage tracking.
+            Application ledger records. Ledger integrity does not verify physical authenticity, GI certification or legal ownership.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -282,7 +283,7 @@ export default function ArtisanProvenancePage() {
           )}
           {backendOnline === true && (
             <Badge variant="outline" className="text-emerald-800 border-emerald-300 bg-emerald-50 gap-1 text-[11px] font-semibold">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Mainnet Node Connected (PoW Active)
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Application ledger
             </Badge>
           )}
           <Button
@@ -300,27 +301,27 @@ export default function ArtisanProvenancePage() {
 
       {/* Royal Heritage Coordinated Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Authenticity Index */}
+        {/* Physical Authenticity */}
         <Card className="rounded-none border-amber-900/15 bg-[#fbf7f0] shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-amber-200/20 rounded-full blur-xl pointer-events-none" />
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-[#5e2c18] flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-[#c59b4b]" />
-              Authenticity Index
+              Physical Authenticity
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-heading font-bold text-[#5e2c18]">
-              {loading ? <Skeleton className="h-8 w-24" /> : `${avgScore}% Score`}
+              {loading ? <Skeleton className="h-8 w-24" /> : 'Not assessed'}
             </div>
             <div className="w-full bg-[#e8dccb] h-1.5 mt-2 rounded-full overflow-hidden">
               <div
                 className="bg-gradient-to-r from-[#5e2c18] via-[#8c2b2b] to-[#c59b4b] h-full transition-all duration-500"
-                style={{ width: `${avgScore}%` }}
+                style={{ width: 0 }}
               />
             </div>
             <p className="text-[11px] text-muted-foreground mt-1.5">
-              Average GI & craft provenance score across your catalog
+              No physical authenticity assessment has been performed.
             </p>
           </CardContent>
         </Card>
@@ -331,7 +332,7 @@ export default function ArtisanProvenancePage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-[#5e2c18] flex items-center gap-2">
               <Award className="h-4 w-4 text-[#c59b4b]" />
-              Verified Heirloom Passports
+              Registered ledger records
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -339,7 +340,7 @@ export default function ArtisanProvenancePage() {
               {loading ? <Skeleton className="h-8 w-16" /> : records.length}
             </div>
             <p className="text-[11px] text-muted-foreground mt-1.5">
-              Cryptographically sealed on-chain records
+              Recorded custody events
             </p>
           </CardContent>
         </Card>
@@ -416,7 +417,7 @@ export default function ArtisanProvenancePage() {
                         {item.category}
                       </Badge>
                       <Badge variant="outline" className="border-amber-900/20 text-[#5e2c18] bg-amber-50 text-[10px] rounded-none">
-                        On-Chain SHA-256
+                        Application ledger
                       </Badge>
                     </CardTitle>
                     <CardDescription className="text-xs text-muted-foreground mt-0.5">
@@ -425,7 +426,7 @@ export default function ArtisanProvenancePage() {
                   </div>
                   <Badge className="bg-emerald-800 text-white rounded-none text-xs flex items-center gap-1">
                     <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
-                    Verified On-Chain
+                    Authenticity unverified
                   </Badge>
                 </CardHeader>
 
@@ -434,12 +435,12 @@ export default function ArtisanProvenancePage() {
                   <div>
                     <div className="flex justify-between items-center text-xs mb-1">
                       <span className="font-semibold text-[#5e2c18]">GI Lineage Confidence</span>
-                      <span className="font-mono font-bold text-emerald-800">{item.authenticity_score}%</span>
+                      <span className="font-mono font-bold text-emerald-800">Unverified</span>
                     </div>
                     <div className="w-full bg-[#e8dccb] h-2 rounded-none overflow-hidden">
                       <div
                         className="bg-gradient-to-r from-[#5e2c18] via-[#8c2b2b] to-[#c59b4b] h-full"
-                        style={{ width: `${item.authenticity_score}%` }}
+                        style={{ width: 0 }}
                       />
                     </div>
                   </div>
@@ -507,7 +508,7 @@ export default function ArtisanProvenancePage() {
               Mint Blockchain Passports
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-              Mine permanent Proof-of-Work authenticity certificates for your remaining studio creations.
+              An authenticated administrator must register a ledger before its custodian can transfer it.
             </p>
           </div>
 
@@ -525,7 +526,7 @@ export default function ArtisanProvenancePage() {
                   <Button
                     size="sm"
                     onClick={() => handleGenerate(p.id, p.name)}
-                    disabled={minting === p.id}
+                    disabled={minting === p.id || user?.publicMetadata?.role !== 'admin'}
                     className="bg-[#5e2c18] hover:bg-[#4a2315] text-white rounded-none text-xs font-bold uppercase tracking-wider gap-1.5 shrink-0"
                   >
                     {minting === p.id ? (
@@ -587,7 +588,7 @@ export default function ArtisanProvenancePage() {
                 </div>
                 <div>
                   <span className="text-[10px] text-muted-foreground uppercase font-bold">Trust Score</span>
-                  <p className="font-bold text-emerald-800 mt-0.5">{selectedItem.authenticity_score}% Verified</p>
+                  <p className="font-bold text-emerald-800 mt-0.5">Physical authenticity unverified</p>
                 </div>
               </div>
 
@@ -675,7 +676,7 @@ export default function ArtisanProvenancePage() {
               <div className="p-4 bg-white border border-amber-900/20 shadow-md">
                 <Image
                   src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(
-                    `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:9002'}/product/${qrItem.product_id}?provenance=verified`,
+                    `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:9002'}/product/${qrItem.product_id}?provenance=record`,
                   )}&size=200x200&margin=8`}
                   alt="Provenance QR Code"
                   width={180}
@@ -687,10 +688,10 @@ export default function ArtisanProvenancePage() {
               <div className="space-y-1 text-center">
                 <h4 className="font-heading font-bold text-[#5e2c18] text-sm">{qrItem.productName}</h4>
                 <p className="text-xs text-muted-foreground">
-                  {qrItem.ledger_chain.length} Cryptographic Blocks Verified
+                  {qrItem.ledger_chain.length} Recorded Blocks
                 </p>
                 <Badge className="bg-emerald-800 text-white rounded-none text-[10px] mt-1">
-                  SHA-256 On-Chain
+                  Application ledger
                 </Badge>
               </div>
 
@@ -699,7 +700,7 @@ export default function ArtisanProvenancePage() {
                 size="sm"
                 className="w-full border-amber-900/20 text-[#5e2c18] hover:bg-amber-100/50 rounded-none text-xs font-bold gap-1.5"
                 onClick={() => {
-                  const url = `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:9002'}/product/${qrItem.product_id}?provenance=verified`;
+                  const url = `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:9002'}/product/${qrItem.product_id}?provenance=record`;
                   navigator.clipboard.writeText(url);
                   toast({
                     title: 'Verification Link Copied',

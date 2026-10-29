@@ -1,9 +1,9 @@
 'use client';
 
-import { orders, products } from '@/lib/data';
+import { products } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { supabase } from '@/services/supabase';
+import { OrderService } from '@/features/orders/order-service';
 import { Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,39 +22,17 @@ const STATUS_ICONS = {
 export default function OrdersPage() {
   const { user } = useUser();
   const [dbOrders, setDbOrders] = useState<any[]>([]);
+  const [loadError, setLoadError] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
 
-    supabase
-      .from('orders')
-      .select('id, buyer_id, total_amount, status, created_at, order_items(product_id, product_name, quantity, unit_price)')
-      .eq('buyer_id', user.id)
-      .order('created_at', { ascending: false })
-      .then(({ data, error }) => {
-        if (error) { console.error('Orders fetch failed:', error); }
-        setDbOrders((data ?? []).map((r) => ({
-          id: r.id,
-          buyerId: r.buyer_id,
-          artisanId: '',
-          totalAmount: r.total_amount,
-          status: r.status,
-          paymentStatus: 'Paid',
-          orderDate: r.created_at,
-          updatedAt: r.created_at,
-          shippingAddress: { fullName: '', addressLine1: '', city: '', state: '', zipCode: '', country: '' },
-          items: (r.order_items ?? []).map((i: { product_id: string; product_name: string; quantity: number; unit_price: number }) => ({
-            productId: i.product_id, productName: i.product_name, quantity: i.quantity, unitPrice: i.unit_price, itemImageUrl: '',
-          })),
-        })));
-        setLoading(false);
-      });
+    OrderService.getOrdersByBuyer(user.id).then(setDbOrders)
+      .catch(() => setLoadError('Orders could not be loaded. Please retry.'))
+      .finally(() => setLoading(false));
   }, [user]);
-
-  // Combine static and db orders
-  const userStaticOrders = orders.filter(o => o.userId === (user?.id || 'customer-1'));
-  const allOrders = [...dbOrders, ...userStaticOrders];
+  const allOrders = dbOrders;
 
   if (loading) {
     return (
@@ -79,6 +57,7 @@ export default function OrdersPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20">
+        {loadError && <p role="alert">{loadError}</p>}
         {allOrders.length > 0 ? (
           <div className="space-y-8">
             {allOrders.map((order) => (
@@ -159,12 +138,13 @@ export default function OrdersPage() {
                     <div className="bg-background/50 p-6 space-y-3 min-w-[240px]">
                       <div className="flex justify-between text-xs">
                         <span className="text-foreground/40 uppercase tracking-widest font-bold">Subtotal</span>
-                        <span className="text-foreground/70 font-bold">₹{order.totalAmount.toLocaleString('en-IN')}</span>
+                        <span className="text-foreground/70 font-bold">₹{Number(order.subtotal ?? order.totalAmount).toLocaleString('en-IN')}</span>
                       </div>
                       <div className="flex justify-between text-xs text-green-600">
                         <span className="uppercase tracking-widest font-bold">Shipping</span>
-                        <span className="font-bold uppercase tracking-wider">Free Heritage Delivery</span>
+                        <span className="font-bold uppercase tracking-wider">{Number(order.shippingFee || 0) === 0 ? 'Free delivery' : `₹${order.shippingFee}`} </span>
                       </div>
+                      <div className="flex justify-between text-xs"><span>Tax</span><span>₹{Number(order.tax || 0).toLocaleString('en-IN')}</span></div>
                       <div className="h-px bg-amber-900/10 my-2" />
                       <div className="flex justify-between items-baseline">
                         <span className="text-xs text-foreground/40 uppercase tracking-widest font-bold">Total Investment</span>

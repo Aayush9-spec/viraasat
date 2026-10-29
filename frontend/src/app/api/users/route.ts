@@ -1,64 +1,18 @@
 import { NextResponse } from 'next/server';
-import { apiError, apiSuccess, handleApiError } from '@/core/api/api-response';
-import { supabase } from '@/services/supabase';
-
-interface UserRecord {
-  id: string;
-  name: string;
-  email: string;
-  role?: string;
-  profile?: Record<string, unknown>;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-// GET - list all users from Supabase
+import { check, database, failure, HttpError, identity, profile } from '@/lib/server/security';
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('id, email, name:display_name, role');
-
-    if (error) throw error;
-
-    return NextResponse.json(data || []);
-  } catch (error) {
-    return handleApiError(error, 'Failed to fetch users from Supabase');
-  }
+    const user = await identity();
+    if (user.role !== 'admin') throw new HttpError(403, 'Administrator access required');
+    const { data, error } = await database().from('users').select('id,email,name:display_name,role').limit(100);
+    check(error);
+    return NextResponse.json(data);
+  } catch (e) { return failure(e); }
 }
-
-// POST - create or update a user in Supabase
-export async function POST(request: Request) {
+export async function POST() {
   try {
-    const body = await request.json().catch(() => ({}));
-    
-    if (!body.name || !body.email) {
-      return apiError('Name and email are required', 400, 'MISSING_REQUIRED_FIELDS');
-    }
-
-    // Upsert user: update if email exists, otherwise insert
-    const { data, error } = await supabase
-      .from('users')
-      .upsert(
-        { 
-          email: body.email.toLowerCase(), 
-          display_name: body.name, 
-          role: body.role || 'user' 
-        }, 
-        { onConflict: 'email' }
-      )
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    return NextResponse.json({
-      id: data.id,
-      name: data.display_name,
-      email: data.email,
-      role: data.role,
-    }, { status: 200 });
-  } catch (error) {
-    return handleApiError(error, 'Failed to save user to Supabase');
-  }
+    // Identity, email and role come only from the authenticated provider.
+    const data = await profile(await identity());
+    return NextResponse.json({ id: data.id, name: data.display_name, email: data.email, role: data.role });
+  } catch (e) { return failure(e); }
 }

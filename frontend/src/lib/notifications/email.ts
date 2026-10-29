@@ -6,6 +6,7 @@ interface EmailPayload {
   to: string;
   subject: string;
   html: string;
+  idempotencyKey?: string;
 }
 
 async function sendEmail(payload: EmailPayload): Promise<boolean> {
@@ -24,12 +25,16 @@ async function sendEmail(payload: EmailPayload): Promise<boolean> {
       subject: payload.subject,
       html: payload.html,
       replyTo: REPLY_TO,
-    });
+    }, payload.idempotencyKey ? { idempotencyKey: payload.idempotencyKey } : undefined);
     return true;
   } catch (error) {
     console.error('Failed to send email:', error);
     return false;
   }
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]!));
 }
 
 export async function sendOrderConfirmation(params: {
@@ -42,20 +47,20 @@ export async function sendOrderConfirmation(params: {
   const itemRows = params.items
     .map(
       (item) =>
-        `<tr><td style="padding:8px;border-bottom:1px solid #eee">${item.productName}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center">${item.quantity}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right">₹${item.unitPrice.toLocaleString('en-IN')}</td></tr>`,
+        `<tr><td style="padding:8px;border-bottom:1px solid #eee">${escapeHtml(item.productName)}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center">${item.quantity}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right">₹${item.unitPrice.toLocaleString('en-IN')}</td></tr>`,
     )
     .join('');
 
   const html = `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
       <h2 style="color:#5e2c18">Order Confirmed</h2>
-      <p>Thank you for your purchase! Your order <strong>#${params.orderId}</strong> has been confirmed.</p>
+      <p>Thank you for your purchase! Your order <strong>#${escapeHtml(params.orderId)}</strong> has been confirmed.</p>
       <table style="width:100%;border-collapse:collapse;margin:16px 0">
         <thead><tr style="background:#fbf7f0"><th style="padding:8px;text-align:left">Item</th><th style="padding:8px;text-align:center">Qty</th><th style="padding:8px;text-align:right">Price</th></tr></thead>
         <tbody>${itemRows}</tbody>
       </table>
       <p style="font-size:18px;font-weight:bold;text-align:right">Total: ₹${params.total.toLocaleString('en-IN')}</p>
-      <p style="color:#666">Shipping to: ${params.shippingAddress}</p>
+      <p style="color:#666">Shipping to: ${escapeHtml(params.shippingAddress)}</p>
       <hr style="border:none;border-top:1px solid #eee;margin:24px 0" />
       <p style="font-size:12px;color:#999">Viraasat — Artisan Marketplace</p>
     </div>`;
@@ -63,6 +68,7 @@ export async function sendOrderConfirmation(params: {
   return sendEmail({
     to: params.to,
     subject: `Order #${params.orderId} Confirmed — Viraasat`,
+    idempotencyKey: `order-confirmation-${params.orderId}`,
     html,
   });
 }

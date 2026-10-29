@@ -1,4 +1,5 @@
 import os
+import sqlite3
 import sys
 
 # Ensure ai service directory is discoverable
@@ -7,7 +8,7 @@ _ai_dir = os.path.abspath(os.path.join(_curr_dir, "../../services"))
 if _ai_dir not in sys.path:
     sys.path.insert(0, _ai_dir)
 
-from fastapi import APIRouter, Depends, Request, BackgroundTasks
+from fastapi import APIRouter, Depends, Request, BackgroundTasks, HTTPException
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -190,89 +191,59 @@ async def get_evaluation_metrics(request: Request):
 
 
 
-# ---- Blockchain Provenance & Trust Layer (Public Reads & Minting) ----
+# ---- Provenance: local ledger integrity is not physical authenticity ----
+def ledger_response(product_id, chain):
+    valid = bool(chain) and is_chain_valid(chain)
+    return {"product_id": product_id, "ledger_chain": chain or [],
+            "authenticity_score": 0,  # legacy field; no authenticity assessment exists
+            "provenance_status": "Physical authenticity unverified",
+            "integrity_status": "valid" if valid else "invalid" if chain else "unregistered",
+            "blockchain_network": "Viraasat application ledger",
+            "current_owner_id": chain[-1]["actor"] if valid else None}
+
+
 @api_router.get("/blockchain/provenance/{product_id}")
 @_limiter.limit("60/minute")
-async def get_provenance(
-    request: Request,
-    product_id: str,
-    user: Optional[dict] = Depends(get_optional_user),
-):
-    ledger = get_existing_ledger(product_id)
-    user_id = user.get("userId") if user else "public-viewer"
-    if not ledger:
-        return {
-            "product_id": product_id,
-            "ledger_chain": [],
-            "authenticity_score": 0,
-            "provenance_status": "Unverified",
-            "blockchain_network": "Viraasat Ledger Mainnet (Proof of Work)",
-            "requested_by": user_id,
-        }
-
-    chain_valid = is_chain_valid(ledger)
-    chain_length = len(ledger)
-    score = min(95, 60 + (chain_length * 10)) if chain_valid else 0
-
-    return {
-        "product_id": product_id,
-        "ledger_chain": ledger,
-        "authenticity_score": score,
-        "provenance_status": "Verified (PoW)" if chain_valid else "Unverified",
-        "blockchain_network": "Viraasat Ledger Mainnet (Proof of Work)",
-        "requested_by": user_id,
-    }
+async def get_provenance(request: Request, product_id: str):
+    return ledger_response(product_id, get_existing_ledger(product_id))
 
 
 @api_router.post("/blockchain/generate/{product_id}")
 @_limiter.limit("30/minute")
-async def generate_provenance(
-    request: Request,
-    product_id: str,
-    user: Optional[dict] = Depends(get_optional_user),
-):
-    """Mint (or return existing) a provenance passport for a product with SHA-256 Proof of Work."""
+async def generate_provenance(request: Request, product_id: str,
+                              user: dict = Depends(require_role("admin"))):
+    # Registration assigns initial ledger custody to the signed-in registrar.
+    # It does not attest to the product, seller, workshop or GI certification.
+    if user.get("devBypass"):
+        raise HTTPException(401, "A verified administrator session is required")
     existing = get_existing_ledger(product_id)
-    if existing:
-        chain_valid = is_chain_valid(existing)
-        score = min(95, 60 + (len(existing) * 10)) if chain_valid else 0
-        return {
-            "product_id": product_id,
-            "ledger_chain": existing,
-            "authenticity_score": score,
-            "provenance_status": "Verified (PoW)" if chain_valid else "Unverified",
-            "already_existed": True,
-        }
-    chain = get_or_create_ledger(product_id)
-    score = min(95, 60 + (len(chain) * 10))
-    return {
-        "product_id": product_id,
-        "ledger_chain": chain,
-        "authenticity_score": score,
-        "provenance_status": "Verified (PoW)",
-        "already_existed": False,
-    }
+    chain = existing or get_or_create_ledger(product_id, user["userId"])
+    return {**ledger_response(product_id, chain), "already_existed": bool(existing)}
 
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class TransferOwnershipInput(BaseModel):
-    product_id: str
-    new_owner: str
-    tx_value: float = 0.0
+    product_id: str = Field(min_length=1, max_length=200)
+    new_owner: str = Field(pattern=r"^user_[A-Za-z0-9]+$", max_length=200)
+    tx_value: float = Field(default=0, ge=0, allow_inf_nan=False)
+
 
 @api_router.post("/blockchain/transfer")
 @_limiter.limit("10/minute")
-async def transfer_ownership(
-    request: Request,
-    payload: TransferOwnershipInput,
-    user: Optional[dict] = Depends(get_optional_user),
-):
-    existing = get_existing_ledger(payload.product_id)
-    if not existing:
-        from fastapi import HTTPException
-        raise HTTPException(status_code=404, detail="No provenance chain for this product")
-    return perform_transfer_ownership(payload.product_id, payload.new_owner, payload.tx_value)
+async def transfer_ownership(request: Request, payload: TransferOwnershipInput,
+                             user: dict = Depends(get_current_user)):
+    if user.get("devBypass"):
+        raise HTTPException(401, "A verified session is required")
+    if not get_existing_ledger(payload.product_id):
+        raise HTTPException(404, "No provenance chain for this product")
+    try:
+        return perform_transfer_ownership(payload.product_id, payload.new_owner,
+                                          payload.tx_value, caller_id=user["userId"])
+    except PermissionError as exc:
+        raise HTTPException(403, str(exc)) from exc
+    except (ValueError, sqlite3.IntegrityError) as exc:
+        raise HTTPException(409, "Ledger changed or is invalid; reload before retrying") from exc
 
 
 # ---- Fraud Detection ----

@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
+      ...(process.env.NEXT_PUBLIC_SUPABASE_URL ? [{
+        protocol: 'https' as const,
+        hostname: new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname,
+        pathname: '/storage/v1/object/public/product-images/**',
+      }] : []),
       {
         protocol: 'https',
         hostname: 'upload.wikimedia.org',

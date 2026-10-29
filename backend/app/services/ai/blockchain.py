@@ -40,100 +40,45 @@ def _store():
     return get_store()
 
 
-_candidates = [
-    Path(__file__).resolve().parent.parent.parent.parent / "database" / "blockchain_ledger.json",
-    Path(__file__).resolve().parent.parent.parent / "database" / "blockchain_ledger.json",
-    Path.cwd() / "database" / "blockchain_ledger.json",
-    Path.cwd().parent / "database" / "blockchain_ledger.json"
-]
-_SEED_LEDGER_PATH = next((x for x in _candidates if x.exists()), _candidates[0])
-_seed_cache: Dict[str, List[Dict]] = {}
-
-
-def _load_seed_ledger() -> Dict[str, List[Dict]]:
-    global _seed_cache
-    if _seed_cache:
-        return _seed_cache
-    try:
-        with open(_SEED_LEDGER_PATH, "r") as f:
-            _seed_cache = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        _seed_cache = {}
-    return _seed_cache
-
-
 def get_existing_ledger(product_id: str) -> List[Dict] | None:
     """Return the existing ledger for *product_id*, or None if not found."""
     store = _store()
     chain = store.get_ledger(product_id)
     if chain:
         return chain
-    # Fallback: check the seed JSON file (pre-populated genesis chains).
-    seed = _load_seed_ledger()
-    return seed.get(product_id)
+    return None
 
 
-def get_or_create_ledger(product_id: str) -> List[Dict]:
+def get_or_create_ledger(product_id: str, owner_id: str = "unassigned") -> List[Dict]:
     store = _store()
     chain = store.get_ledger(product_id)
     if chain:
         return chain
-
-    now = datetime.now()
-    t1 = (now - timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
-    t2 = (now - timedelta(days=28)).strftime("%Y-%m-%d %H:%M:%S")
-    t3 = (now - timedelta(days=25)).strftime("%Y-%m-%d %H:%M:%S")
-
-    n1, h1 = proof_of_work(1, t1, "Artisan Identity & Workshop Verified", "Viraasat Registrar", "0" * 16)
-    genesis = {
-        "index": 1,
-        "timestamp": t1,
-        "action": "Artisan Identity & Workshop Verified",
-        "actor": "Viraasat Registrar",
-        "hash": h1,
-        "prev_hash": "0" * 16,
-        "nonce": n1,
-    }
-    store.append_ledger_block(product_id, genesis)
-
-    n2, h2 = proof_of_work(2, t2, "GI Tag Authentication & Quality Test Passed", "Handicrafts Development Board", h1)
-    block2 = {
-        "index": 2,
-        "timestamp": t2,
-        "action": "GI Tag Authentication & Quality Test Passed",
-        "actor": "Handicrafts Development Board",
-        "hash": h2,
-        "prev_hash": h1,
-        "nonce": n2,
-    }
-    store.append_ledger_block(product_id, block2)
-
-    n3, h3 = proof_of_work(3, t3, "Digital Passport Issued & Genesis Block Mined", "Viraasat Blockchain Node", h2)
-    block3 = {
-        "index": 3,
-        "timestamp": t3,
-        "action": "Digital Passport Issued & Genesis Block Mined",
-        "actor": "Viraasat Blockchain Node",
-        "hash": h3,
-        "prev_hash": h2,
-        "nonce": n3,
-    }
-    store.append_ledger_block(product_id, block3)
-
-    return [genesis, block2, block3]
+    now = datetime.now().isoformat()
+    action = "Ledger registered; physical authenticity and GI origin not verified"
+    nonce, block_hash = proof_of_work(1, now, action, owner_id, "0" * 16)
+    block = {"index": 1, "timestamp": now, "action": action, "actor": owner_id,
+             "hash": block_hash, "prev_hash": "0" * 16, "nonce": nonce}
+    store.append_ledger_block(product_id, block)
+    return [block]
 
 
-def perform_transfer_ownership(product_id: str, new_owner: str, tx_value: float) -> dict:
+def perform_transfer_ownership(product_id: str, new_owner: str, tx_value: float, caller_id: str | None = None) -> dict:
     store = _store()
     chain = store.get_ledger(product_id)
     if not chain:
-        get_or_create_ledger(product_id)
-        chain = store.get_ledger(product_id)
+        raise ValueError("No ledger exists")
+    if not is_chain_valid(chain):
+        raise ValueError("Ledger integrity check failed")
+    if not caller_id or chain[-1]["actor"] != caller_id:
+        raise PermissionError("Only the recorded custodian can transfer this ledger")
+    if not new_owner or tx_value < 0:
+        raise ValueError("Invalid transfer")
 
     prev = chain[-1]
     new_index = len(chain) + 1
     t = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    action = f"Ownership Transferred (Tx Value: ₹{tx_value})"
+    action = f"Ledger custody transferred (declared value: ₹{tx_value})"
     n, h = proof_of_work(new_index, t, action, new_owner, prev["hash"])
 
     block = {
@@ -150,16 +95,18 @@ def perform_transfer_ownership(product_id: str, new_owner: str, tx_value: float)
 
 
 def is_chain_valid(ledger: List[Dict]) -> bool:
-    for i in range(1, len(ledger)):
-        curr = ledger[i]
-        prev = ledger[i - 1]
-        recalculated = calculate_block_hash(
-            curr["index"], curr["timestamp"], curr["action"], curr["actor"], curr["prev_hash"], curr["nonce"]
-        )
-        if curr["hash"] != recalculated:
-            return False
-        if curr["prev_hash"] != prev["hash"]:
-            return False
-        if not curr["hash"].startswith("0" * DIFFICULTY):
-            return False
-    return True
+    if not ledger:
+        return False
+    try:
+        for i, curr in enumerate(ledger):
+            if curr["index"] != i + 1:
+                return False
+            prev_hash = ledger[i - 1]["hash"] if i else "0" * 16
+            if curr["prev_hash"] != prev_hash:
+                return False
+            recalculated = calculate_block_hash(curr["index"], curr["timestamp"], curr["action"], curr["actor"], curr["prev_hash"], curr["nonce"])
+            if curr["hash"] != recalculated or not curr["hash"].startswith("0" * DIFFICULTY):
+                return False
+        return True
+    except (KeyError, TypeError, ValueError):
+        return False

@@ -34,11 +34,9 @@ async function resolveSupabaseUserId(user: { id: string; primaryEmailAddress?: {
   if (!email) return null;
 
   try {
-    const { data } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', email.toLowerCase())
-      .maybeSingle();
+    const response = await fetch(`/api/users/${encodeURIComponent(user.id)}`);
+    if(!response.ok)return null;
+    const data = await response.json();
 
     if (data?.id && UUID_REGEX.test(data.id)) {
       return data.id;
@@ -134,15 +132,17 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         if (!dbUserId) return;
 
         if (data) {
-          await supabase
+          const {error} = await supabase
             .from('wishlists')
             .upsert({ user_id: dbUserId, product_id: productId });
+          if(error) throw error;
         } else {
-          await supabase
+          const {error} = await supabase
             .from('wishlists')
             .delete()
             .eq('user_id', dbUserId)
             .eq('product_id', productId);
+          if(error) throw error;
         }
       } catch (error) {
         console.error('Failed to sync wishlist to Supabase:', error);

@@ -1,96 +1,25 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import { NextRequest, NextResponse } from 'next/server';
-
-// Detect and sanitize broken legacy key that points to non-existent clerk.viraasat-eta.vercel.app
-const isBrokenClerkKey = (val?: string) =>
-  Boolean(val && (val.includes("dmlyYWFzYXQtZXRh") || val.includes("Y2xlcmsudmlyYWFzYXQtZXRh")));
-
-if (typeof process !== "undefined" && process.env) {
-  if (isBrokenClerkKey(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)) {
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA";
+import { clerkMiddleware, createRouteMatcher, clerkClient } from '@clerk/nextjs/server';
+import { NextRequest, NextResponse, NextFetchEvent } from 'next/server';
+const protectedPage = createRouteMatcher(['/admin(.*)', '/artisan(.*)', '/dashboard(.*)', '/orders(.*)', '/checkout(.*)', '/order-confirmation(.*)', '/select-role(.*)']);
+const protectedApi = createRouteMatcher(['/api/users(.*)', '/api/orders(.*)', '/api/create-order', '/api/verify-payment', '/api/razorpay']);
+const handler = clerkMiddleware(async (auth, req) => {
+  if (protectedPage(req) || protectedApi(req) || (req.nextUrl.pathname === '/api/products' && req.method !== 'GET')) {
+    const { userId } = await auth.protect();
+    if (req.nextUrl.pathname.startsWith('/admin') || req.nextUrl.pathname.startsWith('/artisan/')) {
+      const user = await (await clerkClient()).users.getUser(userId);
+      const role = user.publicMetadata?.role;
+      const permitted = req.nextUrl.pathname.startsWith('/admin') ? role === 'admin' : role === 'admin' || role === 'artisan';
+      if (!permitted) return NextResponse.json({ error: 'Insufficient permission' }, { status: 403 });
+    }
   }
-  if (isBrokenClerkKey(process.env.CLERK_PUBLISHABLE_KEY)) {
-    process.env.CLERK_PUBLISHABLE_KEY = "pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA";
-  }
-  if (!process.env.CLERK_SECRET_KEY || isBrokenClerkKey(process.env.CLERK_SECRET_KEY)) {
-    process.env.CLERK_SECRET_KEY = "sk_test_aJ5w4a5QHqS3UiaxXzFR64HA2fIZViqiQEM5MwZtE0";
-  }
-}
-
-
-const isPublicRoute = createRouteMatcher([
-  '/api(.*)',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/login(.*)',
-  '/signup(.*)',
-  '/select-role(.*)',
-  '/sso-callback(.*)',
-  '/',
-  '/shop(.*)',
-  '/product(.*)',
-  '/products(.*)',
-  '/category(.*)',
-  '/artisans(.*)',
-  '/artisan(.*)',
-  '/dashboard(.*)',
-  '/orders(.*)',
-  '/about(.*)',
-  '/contact(.*)',
-  '/journal(.*)',
-  '/faq(.*)',
-  '/shipping(.*)',
-  '/terms(.*)',
-  '/privacy(.*)',
-  '/refund(.*)',
-  '/offline(.*)',
-  '/manifest(.*)',
-  '/favicon(.*)',
-  '/icons(.*)',
-]);
-
-// Determine if valid Clerk keys exist in the environment
-const hasClerkKeys = Boolean(
-  (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || process.env.CLERK_PUBLISHABLE_KEY) &&
-  (process.env.CLERK_SECRET_KEY)
-);
-
-// Only initialize clerkMiddleware if keys exist, avoiding unhandled promise rejections on unconfigured environments
-let clerkHandler: any = null;
-if (hasClerkKeys) {
-  try {
-    clerkHandler = clerkMiddleware(async (auth, req) => {
-      if (!isPublicRoute(req)) {
-        try {
-          await auth.protect();
-        } catch (err) {
-          console.warn('[Viraasat Middleware] Route protection skipped:', err);
-        }
-      }
-    });
-  } catch (e) {
-    console.warn('[Viraasat Middleware] Failed to initialize clerkMiddleware:', e);
-  }
-}
-
-export default async function middleware(req: NextRequest, event: any) {
-  if (!clerkHandler) {
-    // If Clerk keys are missing (preview builds, bot branches, or unconfigured environments),
-    // allow the request to proceed gracefully without throwing 500 Internal Server Error
+});
+export default function proxy(req: NextRequest, event: NextFetchEvent) {
+  if (!process.env.CLERK_SECRET_KEY || !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    if (protectedPage(req) || protectedApi(req) || (req.nextUrl.pathname === '/api/products' && req.method !== 'GET')) {
+      return NextResponse.json({ error: 'Authentication is temporarily unavailable' }, { status: 503 });
+    }
     return NextResponse.next();
   }
-
-  try {
-    return await clerkHandler(req, event);
-  } catch (err) {
-    console.warn('[Viraasat Middleware] Auth middleware bypassed due to runtime error:', err);
-    return NextResponse.next();
-  }
+  return handler(req, event);
 }
-
-export const config = {
-  matcher: [
-    '/((?!_next|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    '/(api|trpc)(.*)',
-  ],
-};
+export const config = { matcher: ['/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)', '/(api|trpc)(.*)'] };

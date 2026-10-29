@@ -181,17 +181,8 @@ export default function CustomerProfilePage() {
         );
       }
 
-      // 3. Upsert to Supabase
-      try {
-        await supabase.from('users').upsert({
-          id: user.id,
-          email: user.primaryEmailAddress?.emailAddress || '',
-          display_name: `${firstName} ${lastName}`.trim() || user.fullName || 'Customer',
-          role: 'buyer',
-        });
-      } catch (err) {
-        console.warn('[Customer Profile] Supabase sync skipped:', err);
-      }
+      const profileResponse = await fetch(`/api/users/${encodeURIComponent(user.id)}`, {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:`${firstName} ${lastName}`.trim() || user.fullName || 'Customer'})});
+      if(!profileResponse.ok)throw new Error('Profile could not be saved');
 
       toast({
         title: 'Profile Updated',

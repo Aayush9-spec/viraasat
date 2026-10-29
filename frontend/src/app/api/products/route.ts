@@ -1,26 +1,9 @@
+import crypto from 'node:crypto';
+import { z } from 'zod';
+import { check, database, failure, HttpError, identity, profile } from '@/lib/server/security';
 import { type NextRequest, NextResponse } from 'next/server';
 import { ProductService } from '@/features/marketplace/product-service';
 import { apiSuccess, handleApiError } from '@/core/api/api-response';
-import fs from 'fs';
-import path from 'path';
-
-function getStoredFileProducts(): any[] {
-  const possiblePaths = [
-    path.resolve(process.cwd(), '../database/products.json'),
-    path.resolve(process.cwd(), 'database/products.json'),
-    path.resolve('/Users/aayushkumarsingh/Desktop/viraasat/viraasat/database/products.json'),
-  ];
-  for (const p of possiblePaths) {
-    if (fs.existsSync(/*turbopackIgnore: true*/ p)) {
-      try {
-        const raw = fs.readFileSync(/*turbopackIgnore: true*/ p, 'utf-8');
-        const list = JSON.parse(raw);
-        if (Array.isArray(list)) return list;
-      } catch (e) {}
-    }
-  }
-  return [];
-}
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,19 +12,7 @@ export async function GET(req: NextRequest) {
     const query = searchParams.get('query');
 
     const dbProducts = await ProductService.getAllProducts();
-    const fileProducts = getStoredFileProducts();
-
-    const map = new Map<string, any>();
-    // Merge file products (latest additions) with dbProducts
-    [...fileProducts, ...dbProducts].forEach((p) => {
-      if (!p) return;
-      const key = (p.name || '').trim().toLowerCase() || p.id;
-      if (!map.has(key)) {
-        map.set(key, { ...p, price: Number(p.price) || 0 });
-      }
-    });
-
-    let all = Array.from(map.values());
+    let all = dbProducts;
 
     if (category) {
       all = all.filter((p) => p.category?.toLowerCase() === category.toLowerCase());
@@ -65,81 +36,63 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    if (!body || !body.name) {
-      return NextResponse.json({ error: 'Product name is required' }, { status: 400 });
+    const user = await identity();
+    if (!['artisan', 'admin'].includes(user.role)) throw new HttpError(403, 'Approved artisan access required');
+    const owner = await profile(user);
+    const parsed = z.object({
+      id: z.string().optional(), name: z.string().trim().min(1).max(200),
+      description: z.string().max(20000), price: z.number().positive().finite(),
+      category: z.string().min(1), region: z.string().min(1), stock: z.number().int().min(0),
+      images: z.array(z.string().max(14 * 1024 * 1024).refine(v => v.startsWith('/images/') || /^https:\/\//.test(v) || /^data:image\/(png|jpeg|webp);base64,/.test(v))).min(1).max(10),
+      originalLanguage: z.string().optional(), englishDescription: z.string().optional(),
+      descriptions: z.record(z.string()).optional(),
+    }).safeParse(await req.json());
+    if (!parsed.success) throw new HttpError(400, 'Invalid product details or image URLs');
+    const input = parsed.data;
+    const db = database();
+    const images: string[] = [];
+    for (const image of input.images) {
+      if (!image.startsWith('data:')) { images.push(image); continue; }
+      const [header, encoded] = image.split(',');
+      const bytes = Buffer.from(encoded, 'base64');
+      if (bytes.length > 10 * 1024 * 1024) throw new HttpError(400, 'Image exceeds 10 MB');
+      const mime = header.slice(5, header.indexOf(';'));
+      const key = `${owner.id}/${crypto.randomUUID()}.${mime.split('/')[1]}`;
+      const { error } = await db.storage.from('product-images').upload(key, bytes, { contentType: mime, upsert: false });
+      check(error);
+      images.push(db.storage.from('product-images').getPublicUrl(key).data.publicUrl);
     }
-
-    const newProduct = {
-      id: body.id || `creation-${Date.now()}`,
-      artisanId: body.artisanId || body.artisan_id || 'artisan-1',
-      name: String(body.name).trim(),
-      description: String(body.description || '').trim(),
-      originalLanguage: body.originalLanguage || body.original_language || 'Hindi',
-      englishDescription: body.englishDescription || body.english_description || '',
-      descriptions: body.descriptions || (body.description ? { hi: String(body.description).trim() } : {}),
-      price: Number(body.price) || 0,
-      currency: body.currency || 'INR',
-      category: body.category || 'Home Decor',
-      images: (() => {
-        if (Array.isArray(body.images) && body.images.length > 0 && !body.images[0].includes('1610701596007')) {
-          return body.images;
-        }
-        const n = String(body.name || '').toLowerCase();
-        if (n.includes('diya') || n.includes('deepam') || n.includes('lamp')) {
-          return ['/images/products/clean/handcrafted-terracotta-diya.jpg'];
-        }
-        if (n.includes('pottery') || n.includes('vase') || n.includes('urn')) {
-          return ['/images/products/clean/jaipur-blue-pottery-urn.jpg'];
-        }
-        if (n.includes('channapatna') || n.includes('toy') || n.includes('train')) {
-          return ['/images/products/clean/channapatna-wooden-toy-train.jpg'];
-        }
-        if (n.includes('shawl') || n.includes('pashmina')) {
-          return ['/images/products/clean/kashmiri-sozni-pashmina-shawl.jpg'];
-        }
-        if (n.includes('brass') || n.includes('dhokra')) {
-          return ['/images/products/clean/moradabad-brass-ganesh-idol.jpg'];
-        }
-        return ['/images/products/clean/handcrafted-terracotta-diya.jpg'];
-      })(),
-      aiInsights: body.aiInsights || body.ai_insights || null,
-      isActive: true,
-      status: 'active',
-      createdAt: body.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    // Persist to database/products.json for backend search and models
-    const possiblePaths = [
-      path.resolve(process.cwd(), '../database/products.json'),
-      path.resolve(process.cwd(), 'database/products.json'),
-      path.resolve('/Users/aayushkumarsingh/Desktop/viraasat/viraasat/database/products.json'),
-    ];
-
-    for (const p of possiblePaths) {
-      if (fs.existsSync(/*turbopackIgnore: true*/ p)) {
-        try {
-          const raw = fs.readFileSync(/*turbopackIgnore: true*/ p, 'utf-8');
-          const list = JSON.parse(raw);
-          if (Array.isArray(list)) {
-            const idx = list.findIndex((x) => x.id === newProduct.id || (x.name && x.name.toLowerCase() === newProduct.name.toLowerCase()));
-            if (idx >= 0) {
-              list[idx] = { ...list[idx], ...newProduct };
-            } else {
-              list.unshift(newProduct);
-            }
-            fs.writeFileSync(/*turbopackIgnore: true*/ p, JSON.stringify(list, null, 2), 'utf-8');
-          }
-        } catch (fileErr) {
-          console.warn('Notice: Could not write to database/products.json at', p, fileErr);
-        }
-        break;
-      }
+    const row = { name: input.name, description: input.description, price: input.price,
+      category: input.category, region: input.region, stock: input.stock, images,
+      original_language: input.originalLanguage, english_description: input.englishDescription,
+      descriptions: input.descriptions, is_active: true, artisan_id: owner.id };
+    let query;
+    if (input.id && z.string().uuid().safeParse(input.id).success) {
+      const { data: existing, error } = await db.from('products').select('artisan_id,is_active').eq('id', input.id).maybeSingle();
+      check(error);
+      if (!existing) throw new HttpError(404, 'Product not found');
+      if (existing.artisan_id !== owner.id && user.role !== 'admin') throw new HttpError(403, 'Not your product');
+      query = db.from('products').update({ ...row, artisan_id: existing.artisan_id, is_active: existing.is_active }).eq('id', input.id).eq('artisan_id', existing.artisan_id);
+    } else {
+      query = db.from('products').insert(row);
     }
+    const { data, error } = await query.select().single();
+    check(error);
+    return apiSuccess({ success: true, product: { ...data, artisanId: data.artisan_id } });
+  } catch (e) { return failure(e); }
+}
 
-    return apiSuccess({ success: true, product: newProduct });
-  } catch (error) {
-    return handleApiError(error, 'Failed to save product');
-  }
+export async function PATCH(req: NextRequest) {
+  try {
+    const user = await identity();
+    if (!['artisan','admin'].includes(user.role)) throw new HttpError(403,'Approved artisan access required');
+    const parsed = z.object({id:z.string().uuid(),stock:z.number().int().min(0)}).strict().safeParse(await req.json());
+    if(!parsed.success)throw new HttpError(400,'Invalid stock update');
+    const owner=await profile(user);
+    let query=database().from('products').update({stock:parsed.data.stock}).eq('id',parsed.data.id);
+    if(user.role!=='admin')query=query.eq('artisan_id',owner.id);
+    const {data,error}=await query.select('id').maybeSingle();check(error);
+    if(!data)throw new HttpError(404,'Product not found');
+    return NextResponse.json({success:true});
+  }catch(e){return failure(e);}
 }

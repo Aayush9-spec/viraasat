@@ -1,101 +1,41 @@
 import { NextResponse } from 'next/server';
-import fs from 'node:fs';
-import path from 'node:path';
-import { apiError, handleApiError } from '@/core/api/api-response';
-
-const usersFilePath = path.join(process.cwd(), '..', 'database', 'users.json');
-
-interface UserRecord {
-  id: string;
-  name: string;
-  email: string;
-  role?: string;
-  profile?: Record<string, unknown>;
-  createdAt?: string;
-  updatedAt?: string;
+import { z } from 'zod';
+import { check, database, failure, HttpError, identity, profile } from '@/lib/server/security';
+type Context = { params: Promise<{ id: string }> };
+async function authorized(context: Context) {
+  const user = await identity();
+  const own = await profile(user);
+  const { id } = await context.params;
+  const target = id === user.id ? own.id : id;
+  if (target !== own.id && user.role !== 'admin') throw new HttpError(403, 'Not your profile');
+  if (!z.string().uuid().safeParse(target).success) throw new HttpError(400, 'Invalid profile ID');
+  return target;
 }
-
-function readUsers(): UserRecord[] {
+export async function GET(_req: Request, context: Context) {
   try {
-    if (fs.existsSync(usersFilePath)) {
-      const data = fs.readFileSync(usersFilePath, 'utf-8');
-      return JSON.parse(data) as UserRecord[];
-    }
-  } catch (err) {
-    console.warn('[Users API] Could not read database/users.json:', err);
-  }
-  return [];
+    const id = await authorized(context);
+    const { data, error } = await database().from('users').select('id,email,name:display_name,role,bio,avatar_url,region').eq('id', id).maybeSingle();
+    check(error);
+    if (!data) throw new HttpError(404, 'User not found');
+    return NextResponse.json(data);
+  } catch (e) { return failure(e); }
 }
-
-function writeUsers(users: UserRecord[]): boolean {
+export async function PATCH(req: Request, context: Context) {
   try {
-    const dir = path.dirname(usersFilePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-    return true;
-  } catch (err) {
-    console.warn('[Users API] Could not write database/users.json:', err);
-    return false;
-  }
+    const id = await authorized(context);
+    const parsed = z.object({ name: z.string().trim().min(1).max(200).optional(), bio: z.string().max(5000).optional(), avatarUrl: z.string().url().startsWith('https://').optional(), region: z.string().max(200).optional() }).strict().refine(v => Object.keys(v).length > 0).safeParse(await req.json());
+    if (!parsed.success) throw new HttpError(400, 'Only public profile fields can be updated here');
+    const { data, error } = await database().from('users').update(Object.fromEntries(Object.entries({ display_name: parsed.data.name, bio: parsed.data.bio, avatar_url: parsed.data.avatarUrl, region: parsed.data.region }).filter(([,value]) => value !== undefined))).eq('id', id).select('id,email,name:display_name,role,bio,avatar_url,region').single();
+    check(error);
+    return NextResponse.json(data);
+  } catch (e) { return failure(e); }
 }
-
-// GET - fetch a single user by id
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(_req: Request, context: Context) {
   try {
-    const { id } = await params;
-    const users = readUsers();
-    const user = users.find((u) => u.id === id);
-    if (!user) {
-      return apiError('User not found', 404, 'NOT_FOUND');
-    }
-    return NextResponse.json(user);
-  } catch (error) {
-    return handleApiError(error, 'Failed to fetch user');
-  }
-}
-
-// PATCH - update a user
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    const body = await request.json().catch(() => ({}));
-    const users = readUsers();
-    const index = users.findIndex((u) => u.id === id);
-    if (index === -1) {
-      return apiError('User not found', 404, 'NOT_FOUND');
-    }
-    users[index] = { ...users[index], ...body, updatedAt: new Date().toISOString() };
-    writeUsers(users);
-    return NextResponse.json(users[index]);
-  } catch (error) {
-    return handleApiError(error, 'Failed to update user');
-  }
-}
-
-// DELETE - remove a user
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    const users = readUsers();
-    const index = users.findIndex((u) => u.id === id);
-    if (index === -1) {
-      return apiError('User not found', 404, 'NOT_FOUND');
-    }
-    const [deleted] = users.splice(index, 1);
-    writeUsers(users);
-    return NextResponse.json({ success: true, user: deleted });
-  } catch (error) {
-    return handleApiError(error, 'Failed to delete user');
-  }
+    const id = await authorized(context);
+    const { data, error } = await database().from('users').delete().eq('id', id).select('id').maybeSingle();
+    check(error);
+    if (!data) throw new HttpError(404, 'User not found');
+    return NextResponse.json({ success: true });
+  } catch (e) { return failure(e); }
 }

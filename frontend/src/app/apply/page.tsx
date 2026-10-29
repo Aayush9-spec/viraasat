@@ -36,7 +36,7 @@ import { useUser } from '@clerk/nextjs';
 import { supabase } from '@/services/supabase';
 import { sendApplyReceipt } from '@/lib/notifications/email';
 
-export const INDIAN_STATES = [
+const INDIAN_STATES = [
   'Andhra Pradesh',
   'Arunachal Pradesh',
   'Assam',
@@ -227,19 +227,8 @@ export default function ArtisanApplicationPage() {
   async function onSubmit(values: z.infer<typeof applicationSchema>) {
     setIsSubmitting(true);
     try {
-      await supabase.from('artisan_applications').insert({
-        applicant_id: user?.id || `anon_${Date.now()}`,
-        full_name: values.fullName,
-        workshop_name: values.workshopName,
-        email: values.email,
-        phone: values.phone,
-        pincode: values.pincode,
-        state: values.state,
-        craft: values.craft,
-        portfolio_images: portfolioFiles.map((f) => f.url),
-        status: 'pending',
-      });
-
+      const response = await fetch('/api/apply', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(values)});
+      if (!response.ok) throw new Error('Application could not be saved');
       await sendApplyReceipt({
         to: values.email,
         name: values.fullName,

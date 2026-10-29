@@ -1,6 +1,5 @@
 import { artisans } from '@/lib/data';
 import type { Artisan } from '@/lib/types';
-import { supabase } from '@/services/supabase';
 
 export class ArtisanService {
   static getLocalArtisanById(id: string): Artisan | undefined {
@@ -9,23 +8,20 @@ export class ArtisanService {
 
   static async getCloudArtisan(id: string): Promise<Artisan | null> {
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
+      const response = await fetch(`/api/artisans?id=${encodeURIComponent(id)}`);
+      if(!response.ok)throw new Error('Artisan unavailable');
+      const data = (await response.json()).data?.artisans?.[0];
+      if(!data)throw new Error('Artisan not found');
 
       return {
         id: data.id,
-        name: data.display_name ?? '',
-        shopName: data.display_name ?? '',
+        name: data.name ?? '',
+        shopName: data.name ?? '',
         bio: data.bio ?? '',
-        profilePicture: data.avatar_url ?? '',
+        profilePicture: data.avatarUrl ?? '',
         location: data.region ?? '',
         story: '',
-        contactEmail: data.email,
+        contactEmail: '',
         socialLinks: {},
         createdAt: data.created_at ?? new Date().toISOString(),
         updatedAt: data.created_at ?? new Date().toISOString(),
@@ -37,20 +33,7 @@ export class ArtisanService {
   }
 
   static async saveCloudArtisan(artisan: Artisan): Promise<void> {
-    try {
-      const { error } = await supabase
-        .from('users')
-        .upsert({
-          id: artisan.id,
-          display_name: artisan.name,
-          avatar_url: artisan.profilePicture,
-          bio: artisan.bio,
-          region: artisan.location,
-        });
-
-      if (error) throw error;
-    } catch (e) {
-      console.error('Failed to save artisan to Supabase:', e);
-    }
+    const response = await fetch(`/api/users/${encodeURIComponent(artisan.id)}`, {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:artisan.name,bio:artisan.bio,region:artisan.location,...(artisan.profilePicture?.startsWith('https://') ? {avatarUrl:artisan.profilePicture} : {})})});
+    if(!response.ok)throw new Error('Artisan profile was not saved');
   }
 }

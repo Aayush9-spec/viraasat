@@ -1,21 +1,7 @@
-import { BACKEND_URL } from '@/services/backend/client';
-
 export class RazorpayService {
-  static async createOrderOnServer(amount: number): Promise<any> {
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/razorpay/order`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, currency: 'INR' }),
-      });
-      return await response.json();
-    } catch (e) {
-      console.warn("FastAPI offline: generating simulated order parameters.");
-      return {
-        id: "order_mock_" + Math.random().toString(36).substring(4),
-        amount: amount * 100,
-        currency: 'INR'
-      };
-    }
+  static async createOrderOnServer(checkout: { items: { productId: string; quantity: number }[]; shipping: Record<string, string>; shippingOption: string; idempotencyKey: string }) {
+    const response = await fetch('/api/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(checkout) });
+    if (!response.ok) throw new Error('Checkout could not be created');
+    return response.json();
   }
 }

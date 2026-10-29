@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, Package } from 'lucide-react';
 
 interface LastOrder {
+  paymentStatus?: string;
   orderId?: string;
   paymentId?: string;
   items?: Array<{ productId: string; productName: string; quantity: number; unitPrice: number }>;
@@ -38,6 +39,7 @@ function OrderConfirmationContent() {
         const data = await res.json();
         if (cancelled) return true;
         setOrder({
+          paymentStatus: data.paymentStatus,
           orderId: data.razorpayOrderId ?? orderId,
           paymentId: data.paymentId ?? paymentId ?? undefined,
           items: data.items ?? [],
@@ -56,12 +58,7 @@ function OrderConfirmationContent() {
     async function load() {
       const fromServer = await loadFromServer();
       if (fromServer || cancelled) return;
-      try {
-        const raw = sessionStorage.getItem('viraasat-last-order');
-        if (raw && !cancelled) setOrder(JSON.parse(raw));
-      } catch (e) {
-        console.error('Failed to read last order summary', e);
-      }
+
     }
 
     load();
@@ -81,21 +78,22 @@ function OrderConfirmationContent() {
       <div className="h-4" />
       <main className="container mx-auto max-w-3xl px-4 py-12">
         <div className="text-center mb-10">
-          <CheckCircle2 className="h-16 w-16 text-green-600 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold font-heading text-foreground">Order Confirmed</h1>
+          <CheckCircle2 className={`h-16 w-16 mx-auto mb-4 ${order?.paymentStatus === 'Paid' ? 'text-green-600' : 'text-muted-foreground'}`} />
+          <h1 className="text-3xl font-bold font-heading text-foreground">{order?.paymentStatus === 'Paid' ? 'Payment Confirmed' : 'Order Status'}</h1>
           <p className="text-muted-foreground mt-2">
-            {order?.customerName ? `${order.customerName}, thank you for supporting a Viraasat artisan. Your order has been placed.` : 'Thank you for your purchase.'}
+            {order?.customerName ? `${order.customerName}, thank you for supporting a Viraasat artisan. Your order has been placed.` : 'Check the payment status below before placing another order.'}
           </p>
           <div className="flex items-center justify-center gap-3 mt-4 flex-wrap">
             {orderId && (
               <Badge variant="secondary" className="font-mono">Order {orderId}</Badge>
             )}
-            {paymentId && (
-              <Badge variant="outline" className="font-mono">Payment {paymentId}</Badge>
+            {order?.paymentId && (
+              <Badge variant="outline" className="font-mono">Payment {order?.paymentId}</Badge>
             )}
           </div>
         </div>
 
+        <p role="status" className="text-center mb-6">{order?.paymentStatus || 'Payment status unavailable'}</p>
         {items.length > 0 ? (
           <Card>
             <CardHeader>
@@ -141,7 +139,7 @@ function OrderConfirmationContent() {
             <CardContent className="space-y-4">
               <p className="text-muted-foreground">We could not load your order summary.</p>
               <p className="text-xs text-muted-foreground">
-                Your payment is confirmed — items will be shipped to the address provided at checkout.
+                Payment confirmation could not be verified. Check My Orders or contact support before paying again.
               </p>
             </CardContent>
           </Card>

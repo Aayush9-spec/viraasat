@@ -47,7 +47,6 @@ import { useToast } from '@/core/hooks/use-toast';
 import { useTranslation } from '@/core/hooks/use-translation';
 import { useBackend } from '@/hooks/use-backend';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/services/supabase';
 import { useRouter } from 'next/navigation';
 import {
   Sparkles,
@@ -295,13 +294,6 @@ export function ProductForm({ product }: ProductFormProps) {
       const newId = product?.id || `creation-${Date.now()}`;
       const artisanId = user?.id || 'artisan-1';
 
-      const isValidUuid = (val?: string) =>
-        typeof val === 'string' &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
-
-      // Postgres requires a valid UUID for artisan_id column in Supabase
-      const dbArtisanId = isValidUuid(artisanId) ? artisanId : '1e5f1a27-4c4e-5b84-b4dd-5227b40c755d';
-
       const numPrice = Number(values.price) || 0;
       const getContextualCraftImage = (name: string, category: string) => {
         const n = (name || '').toLowerCase();
@@ -364,28 +356,6 @@ export function ProductForm({ product }: ProductFormProps) {
         descriptionsDict['en'] = values.englishDescription.trim();
       }
 
-      const supabasePayload = {
-        artisan_id: dbArtisanId,
-        name: values.name.trim(),
-        description: values.description.trim(),
-        original_language: values.inputLanguage || 'Hindi',
-        category: values.category,
-        region: values.region,
-        price: numPrice,
-        stock: 10,
-        images: finalImages,
-        ai_insights: {
-          keyFeatures: features,
-          styleTags: styleTags,
-          useCases: useCases,
-          craftDetails: craftDetails,
-          descriptions: descriptionsDict,
-          englishDescription: values.englishDescription || '',
-          originalLanguage: values.inputLanguage || 'Hindi',
-        },
-        updated_at: now,
-      };
-
       const localItem = {
         id: newId,
         artisan_id: artisanId,
@@ -431,30 +401,14 @@ export function ProductForm({ product }: ProductFormProps) {
         isActive: true,
       };
 
-      // 1. Save to local storage & dispatch events for instantaneous reactive rendering across all pages
-      saveLocalProduct(localItem);
-
-      // 2. Persist to server / database/products.json via /api/products
-      try {
-        await fetch('/api/products', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(localItem),
-        });
-      } catch (apiErr) {
-        console.warn('API sync notice:', apiErr);
-      }
-
-      // 3. Sync to Supabase cloud database
-      try {
-        if (product && isValidUuid(product.id)) {
-          await supabase.from('products').update(supabasePayload).eq('id', product.id);
-        } else {
-          await supabase.from('products').insert({ ...supabasePayload, created_at: now });
-        }
-      } catch (dbErr) {
-        console.warn('Supabase DB sync notice:', dbErr);
-      }
+      const response = await fetch('/api/products', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(localItem),
+      });
+      const saved = await response.json();
+      if (!response.ok || !saved.data?.product) throw new Error(saved.error || 'Product was not saved');
+      // Cache only the confirmed server record and its authoritative UUID.
+      saveLocalProduct(saved.data.product);
 
       toast({
         title: 'Product Published to Shop!',

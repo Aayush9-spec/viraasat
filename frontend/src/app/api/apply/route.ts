@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/services/supabase";
+import { database, identity, failure, HttpError } from '@/lib/server/security';
 import { apiSuccess, apiError, handleApiError } from "@/core/api/api-response";
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await identity();
+    const supabase = database();
     const body = await req.json().catch(() => ({}));
     const { fullName, workshopName, email, phone, pincode, state, craft, notes } = body;
 
@@ -12,10 +14,10 @@ export async function POST(req: NextRequest) {
     }
 
     const applicationRecord = {
-      applicant_id: body.applicantId || ("anon_" + Date.now()),
+      applicant_id: user.id,
       full_name: String(fullName).trim(),
       workshop_name: String(workshopName || fullName + " Atelier").trim(),
-      email: String(email).trim().toLowerCase(),
+      email: user.email,
       phone: String(phone || "").trim(),
       pincode: String(pincode || "000000").trim(),
       state: String(state || "India").trim(),
@@ -46,6 +48,9 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
+    const user = await identity();
+    if(user.role !== "admin") throw new HttpError(403,"Administrator access required");
+    const supabase = database();
     const { data, error } = await supabase
       .from("artisan_applications")
       .select("*")
@@ -54,6 +59,6 @@ export async function GET() {
     if (error) throw error;
     return apiSuccess({ applications: data || [], total: data ? data.length : 0 });
   } catch (err) {
-    return handleApiError(err, "Failed to fetch applications");
+    return failure(err);
   }
 }

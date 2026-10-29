@@ -74,14 +74,14 @@ def test_fraud_detects_spam():
 
 def test_blockchain_chain_validation():
     ledger = get_or_create_ledger("pytest-prod-1")
-    assert len(ledger) == 3
+    assert len(ledger) == 1
     assert is_chain_valid(ledger) is True
 
-    transfer = perform_transfer_ownership("pytest-prod-1", "Test Buyer", 500.0)
+    transfer = perform_transfer_ownership("pytest-prod-1", "Test Buyer", 500.0, caller_id="unassigned")
     assert transfer["status"] == "success"
 
     updated = get_or_create_ledger("pytest-prod-1")
-    assert len(updated) == 4
+    assert len(updated) == 2
     assert is_chain_valid(updated) is True
 
 

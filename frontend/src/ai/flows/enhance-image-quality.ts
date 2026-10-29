@@ -37,23 +37,6 @@ export async function enhanceImageQuality(
   return enhanceImageQualityFlow(input);
 }
 
-const enhanceImageQualityPrompt = ai.definePrompt({
-  name: 'enhanceImageQualityPrompt',
-  input: {schema: EnhanceImageQualityInputSchema},
-  output: {schema: EnhanceImageQualityOutputSchema},
-  prompt: [
-    {
-      media: {url: '{{imageUri}}'},
-    },
-    {
-      text: 'Enhance the quality of this image. Improve clarity, reduce noise, and sharpen details. Return the enhanced image as a data URI.',
-    },
-  ],
-  config: {
-    responseModalities: ['TEXT', 'IMAGE'],
-  },
-});
-
 const enhanceImageQualityFlow = ai.defineFlow(
   {
     name: 'enhanceImageQualityFlow',
@@ -65,9 +48,10 @@ const enhanceImageQualityFlow = ai.defineFlow(
     if (approxBytes < MIN_IMAGE_BYTES || approxBytes > MAX_IMAGE_BYTES) {
       throw new Error(`Image size out of range (${approxBytes} bytes).`);
     }
+    if (!process.env.GEMINI_IMAGE_MODEL) throw new Error('Image enhancement is unavailable. Your original image is unchanged.');
     try {
       const response = await ai.generate({
-        model: 'googleai/gemini-1.5-flash',
+        model: process.env.GEMINI_IMAGE_MODEL!,
         prompt: [
           {media: {url: input.imageUri}},
           {text: 'Enhance the quality of this image. Improve clarity, reduce noise, and sharpen details. Return the enhanced image as a data URI.'},
@@ -77,10 +61,12 @@ const enhanceImageQualityFlow = ai.defineFlow(
         },
       });
 
-      return {enhancedImageUri: response.media?.url || input.imageUri};
+      const url = response.media?.url;
+      if (!url || url === input.imageUri || !/^(data:image\/|https:\/\/)/.test(url)) throw new Error('No enhanced image returned');
+      return { enhancedImageUri: url };
     } catch (e) {
       console.warn("Enhance image flow failed, falling back to input image.", e);
-      return {enhancedImageUri: input.imageUri};
+      throw new Error('Image enhancement failed. Your original image is unchanged.');
     }
   }
 );

@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { supabase } from '@/services/supabase';
 import { useUserRole } from '@/features/auth/hooks/use-user-role';
 import { useToast } from '@/core/hooks/use-toast';
 import type { Product } from '@/lib/types';
@@ -39,66 +38,21 @@ export function useAdminDashboard() {
   useEffect(() => {
     if (!user) return;
 
-    // Fetch Products
-    supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .then(({ data }) => {
-        if (data) {
-          setProducts(
-            data.map((r) => ({
-              ...r,
-              artisanId: r.artisan_id,
-              createdAt: r.created_at,
-              aiInsights: r.ai_insights,
-            })) as DbProduct[]
-          );
-        }
-      });
-
-    // Fetch Artisan Applications
-    supabase
-      .from('artisan_applications')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .then(({ data, error }) => {
-        if (data) setApplications(data as ArtisanApplication[]);
-        if (error) console.warn('[Admin] Applications load warning:', error.message);
-      });
-
-    const channelProducts = supabase
-      .channel(`admin-products-${Math.random().toString(36).slice(2, 8)}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
-        const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-        if (data) {
-          setProducts(
-            data.map((r) => ({
-              ...r,
-              artisanId: r.artisan_id,
-              createdAt: r.created_at,
-              aiInsights: r.ai_insights,
-            })) as DbProduct[]
-          );
-        }
-      })
-      .subscribe();
-
-    const channelApps = supabase
-      .channel(`admin-applications-${Math.random().toString(36).slice(2, 8)}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'artisan_applications' }, async () => {
-        const { data } = await supabase
-          .from('artisan_applications')
-          .select('*')
-          .order('created_at', { ascending: false });
-        if (data) setApplications(data as ArtisanApplication[]);
-      })
-      .subscribe();
-
-    return () => {
-      void supabase.removeChannel(channelProducts);
-      void supabase.removeChannel(channelApps);
+    let cancelled = false;
+    const refresh = async () => {
+      try {
+        const response = await fetch('/api/admin', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Admin data unavailable');
+        const data = await response.json();
+        if (cancelled) return;
+        setProducts(data.products.map((r: any) => ({ ...r, artisanId: r.artisan_id, createdAt: r.created_at, aiInsights: r.ai_insights })));
+        setApplications(data.applications);
+      } catch (error) { console.warn('Admin data unavailable', error); }
     };
+    void refresh();
+    window.addEventListener('focus', refresh);
+    return () => { cancelled = true; window.removeEventListener('focus', refresh); };
+
   }, [user]);
 
   const productStats = useMemo(
@@ -125,13 +79,9 @@ export function useAdminDashboard() {
     if (!user) return;
     setBusy(product.id);
     try {
-      await supabase
-        .from('products')
-        .update({
-          moderation: verdict,
-          status: verdict === 'approved' ? 'active' : 'archived',
-        })
-        .eq('id', product.id);
+      const response = await fetch('/api/admin', {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'product',id:product.id,verdict})});
+      if (!response.ok) throw new Error('Moderation failed');
+      setProducts(prev => prev.map(p => p.id === product.id ? { ...p, moderation: verdict, status: verdict === 'approved' ? 'active' : 'archived' } : p));
 
       toast({
         title: verdict === 'approved' ? 'Listing approved' : 'Listing flagged',
@@ -155,19 +105,8 @@ export function useAdminDashboard() {
   const reviewApplication = async (app: ArtisanApplication, status: 'approved' | 'rejected') => {
     setBusy(app.id);
     try {
-      await supabase
-        .from('artisan_applications')
-        .update({ status })
-        .eq('id', app.id);
-
-      if (status === 'approved' && app.applicant_id) {
-        await supabase.from('users').upsert({
-          id: app.applicant_id,
-          email: app.email,
-          display_name: app.full_name,
-          role: 'artisan',
-        });
-      }
+      const response = await fetch('/api/admin', {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'application',id:app.id,verdict:status})});
+      if (!response.ok) throw new Error('Application review failed');
 
       setApplications((prev) =>
         prev.map((item) => (item.id === app.id ? { ...item, status } : item))

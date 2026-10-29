@@ -8,7 +8,7 @@ class MockIntersectionObserver {
   disconnect() {}
 }
 
-Object.defineProperty(window, 'IntersectionObserver', {
+if (typeof window !== 'undefined') Object.defineProperty(window, 'IntersectionObserver', {
   writable: true,
   configurable: true,
   value: MockIntersectionObserver,
@@ -57,5 +57,5 @@ jest.mock('@/ai/genkit', () => ({
 
 // Fluid cache clear between tests (firestore hooks cache product lookups).
 afterEach(() => {
-  window.localStorage.clear();
+  if (typeof window !== 'undefined') window.localStorage.clear();
 });

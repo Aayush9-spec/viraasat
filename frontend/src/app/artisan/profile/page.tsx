@@ -252,24 +252,14 @@ export default function ArtisanProfilePage() {
         }).catch((e) => console.warn('[Artisan Profile] Clerk sync notice:', e));
       }
 
-      // 3. Upsert to Supabase users table
-      if (user?.id) {
-        try {
-          await supabase.from('users').upsert({
-            id: user.id,
-            email: user.primaryEmailAddress?.emailAddress || '',
-            display_name: payload.artisanName,
-            role: 'artisan',
-          });
-        } catch (dbErr) {
-          console.warn('[Artisan Profile] Supabase sync skipped:', dbErr);
-        }
-      }
+      if (!user?.id) throw new Error('Sign in required');
+      const profileResponse = await fetch(`/api/users/${encodeURIComponent(user.id)}`, {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:payload.artisanName})});
+      if(!profileResponse.ok)throw new Error('Profile could not be saved');
 
       setLastSavedTime(now);
       toast({
         title: 'Master Artisan Profile Saved!',
-        description: `All studio credentials, workshop details, and UPI payout settings are active (saved at ${now}).`,
+        description: `Profile saved at ${now}. Payment and identity verification are managed separately.`,
       });
     } catch (err: unknown) {
       console.error('Error saving artisan profile:', err);

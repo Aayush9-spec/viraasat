@@ -17,19 +17,7 @@ export class BackendClient {
     const headers = new Headers(init.headers);
     headers.set('Content-Type', 'application/json');
 
-    // Attach Clerk token if executing on Next.js server
-    if (typeof window === 'undefined') {
-      try {
-        const { auth } = await import('@clerk/nextjs/server');
-        const authObj = await auth();
-        if (authObj && authObj.getToken) {
-          const token = await authObj.getToken();
-          if (token) headers.set('Authorization', `Bearer ${token}`);
-        }
-      } catch {
-        // Not in server context or token unavailable
-      }
-    }
+    // Authentication is supplied explicitly by the caller through init.headers.
 
     const response = await fetch(`${BACKEND_URL}${endpoint}`, {
       ...init,
