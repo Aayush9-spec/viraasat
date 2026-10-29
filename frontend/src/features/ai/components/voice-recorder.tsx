@@ -38,6 +38,7 @@ import {
   Languages,
   Copy,
   Info,
+  Square,
 } from 'lucide-react';
 
 export interface VoiceRecorderProps {
@@ -305,9 +306,9 @@ export default function VoiceRecorder({
             )}
 
             {error && (
-              <div className="p-2.5 bg-destructive/10 border border-destructive/20 rounded-md flex items-center gap-2 text-xs text-destructive">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>{error}</span>
+              <div className="p-2.5 bg-destructive/10 border border-destructive/20 rounded-md flex items-start gap-2 text-xs text-destructive">
+                <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span className="leading-relaxed">{error}</span>
               </div>
             )}
 
@@ -320,11 +321,12 @@ export default function VoiceRecorder({
                   className={`relative p-5 rounded-full transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-primary/20 ${
                     isListening
                       ? 'bg-destructive text-destructive-foreground shadow-lg shadow-destructive/30 scale-105 animate-pulse'
-                      : 'bg-primary text-primary-foreground shadow-md hover:bg-primary/90'
+                      : 'bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:scale-105 active:scale-95'
                   }`}
                   aria-label={isListening ? 'Stop listening' : 'Start listening'}
+                  title={isListening ? 'Click to stop listening' : 'Click to start speaking'}
                 >
-                  {isListening ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
+                  {isListening ? <Square className="h-6 w-6 fill-current" /> : <Mic className="h-6 w-6" />}
                   {isListening && (
                     <span className="absolute -inset-1 rounded-full border-2 border-destructive/50 animate-ping pointer-events-none" />
                   )}
@@ -338,16 +340,18 @@ export default function VoiceRecorder({
                     {isListening ? (
                       <>
                         <span className="h-2 w-2 rounded-full bg-destructive animate-ping" />
-                        <span className="text-destructive font-medium">Listening to {selectedLang}...</span>
+                        <span className="text-destructive font-medium">Listening to {selectedLang}... Tap button to stop</span>
                       </>
                     ) : (
-                      <span className="text-muted-foreground">{statusMessage || 'Click the microphone to speak'}</span>
+                      <span className="text-foreground font-medium">
+                        {statusMessage && statusMessage !== 'Ready' ? statusMessage : 'Click microphone to speak (बोलने के लिए क्लिक करें)'}
+                      </span>
                     )}
                   </div>
                   <p className="text-[11px] text-muted-foreground max-w-sm">
                     {isListening
                       ? 'Speak clearly: "हाथ से बना टेराकोटा दीया, मिट्टी का काम, 6 इंच व्यास, राजस्थान की कारीगरी"'
-                      : 'You can speak in Hindi, English, Tamil, Bengali, or your preferred language.'}
+                      : 'Speak craft details in your preferred language, or type directly in the box below.'}
                   </p>
                 </div>
               </div>

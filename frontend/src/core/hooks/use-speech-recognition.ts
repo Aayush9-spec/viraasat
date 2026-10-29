@@ -168,7 +168,7 @@ export function useSpeechRecognition({
 
       if (!RecognitionClass) {
         setIsSupported(false);
-        setError('Your browser does not support the Web Speech API. Please type your text or use Chrome/Edge/Safari.');
+        setError('Your browser does not support the Web Speech API. Please type your text directly or use Chrome, Edge, or Safari.');
         setStatusMessage('Speech recognition unsupported');
         isStartingRef.current = false;
         return;
@@ -207,36 +207,17 @@ export function useSpeechRecognition({
       const effectiveLang = langOverride ? getSpeechLanguageCode(langOverride) : speechLang;
       setSpeechLang(effectiveLang);
 
-      // Pre-flight microphone permission if getUserMedia is supported
-      if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
+      // Check permission status advisably if navigator.permissions is available
+      // Note: We do NOT convert unknown/prompt/unsupported states to denied.
+      // We also do not incorrectly require getUserMedia(), as SpeechRecognition manages its own capture.
+      if (typeof navigator !== 'undefined' && navigator.permissions?.query) {
         try {
-          // Prompt for permission if not yet granted
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          // Immediately stop and release all tracks so the speech recognition engine gets exclusive access
-          stream.getTracks().forEach((track) => track.stop());
-        } catch (mediaErr: unknown) {
-          const errObj = mediaErr as { name?: string; message?: string };
-          isStartingRef.current = false;
-          setIsListening(false);
-
-          if (errObj?.name === 'NotAllowedError' || errObj?.name === 'PermissionDeniedError') {
-            setError('Microphone permission was denied. Please allow microphone access in your browser settings (look for the tune or camera/mic icon in your address bar).');
-            setStatusMessage('Microphone access denied');
-            return;
+          const perm = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+          if (perm.state === 'denied') {
+            console.warn('Microphone permission state is advisory: denied');
           }
-
-          if (errObj?.name === 'NotFoundError' || errObj?.name === 'DevicesNotFoundError') {
-            setError('No microphone hardware detected on your device.');
-            setStatusMessage('No microphone detected');
-            return;
-          }
-
-          // In case of other hardware or audio lock issues
-          if (errObj?.name === 'NotReadableError' || errObj?.name === 'TrackStartError') {
-            setError('Your microphone is currently in use by another application or system process.');
-            setStatusMessage('Microphone busy');
-            return;
-          }
+        } catch {
+          // Advisory check: ignore if browser does not support querying 'microphone' (e.g. Safari)
         }
       }
 
@@ -287,9 +268,9 @@ export function useSpeechRecognition({
         };
 
         recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
-          // Handle aborted silently without treating as error
+          // Handle aborted silently without treating as fatal error
           if (event.error === 'aborted' || isIntentionalStopRef.current) {
-            setStatusMessage('Recording stopped');
+            setStatusMessage('Ready');
             setIsListening(false);
             isStartingRef.current = false;
             return;
@@ -298,16 +279,16 @@ export function useSpeechRecognition({
           console.warn('SpeechRecognition error:', event.error, event.message);
 
           if (event.error === 'not-allowed') {
-            setError('Microphone permission was denied. Please allow microphone access in your browser settings (look for the tune/lock icon in your address bar).');
+            setError('Microphone permission was denied or blocked by browser policy. Please allow microphone access in your browser settings (look for the tune or camera/mic icon in your address bar).');
             setStatusMessage('Microphone access denied');
           } else if (event.error === 'service-not-allowed') {
-            setError('The speech-recognition service is currently unavailable from your browser. You can type or paste your text directly.');
+            setError('The speech-recognition service is currently unavailable or blocked by network/browser policy. You can type or edit your craft details directly.');
             setStatusMessage('Speech service unavailable');
           } else if (event.error === 'no-speech') {
-            // Non-fatal: do not block UI with red error; simply guide user to retry
+            // Non-fatal: do not block UI with red error; simply guide user to speak again
             setStatusMessage('No speech detected. Please speak clearly or tap the microphone to retry.');
           } else if (event.error === 'network') {
-            setError('Speech network connection failed. Check your internet connection or enter text manually.');
+            setError('Speech network connection failed. Check your internet connection or enter details manually.');
             setStatusMessage('Speech network error');
           } else if (event.error === 'audio-capture') {
             setError('No microphone hardware was detected or your microphone is in use by another application.');
@@ -316,7 +297,7 @@ export function useSpeechRecognition({
             setError(`Speech recognition is not supported for ${effectiveLang} on this browser. Try Hindi or English, or enter text manually.`);
             setStatusMessage('Language not supported');
           } else {
-            setError(`Speech recognition encountered an issue (${event.error}). You can enter text manually.`);
+            setError(`Speech recognition encountered an issue (${event.error}). You can enter details manually.`);
             setStatusMessage('Speech recognition error');
           }
 
@@ -343,8 +324,14 @@ export function useSpeechRecognition({
         console.error('Failed to start SpeechRecognition:', err);
         const errObj = err as { name?: string; message?: string };
         if (errObj?.name === 'InvalidStateError') {
-          // Another recognition is active; gracefully ignore or retry
+          // Another recognition is active or transitioning
           setStatusMessage('Microphone already active');
+        } else if (errObj?.name === 'SecurityError') {
+          setError('Microphone access is blocked by security policy (Permissions-Policy) or insecure context (HTTPS required).');
+          setStatusMessage('Security policy blocked');
+        } else if (errObj?.name === 'NotAllowedError') {
+          setError('Microphone permission was denied or blocked by browser policy. Please allow microphone access in your browser settings.');
+          setStatusMessage('Microphone access denied');
         } else {
           setError('Could not initialize microphone recognition. You can type your text manually.');
           setStatusMessage('Initialization failed');

@@ -230,7 +230,32 @@ describe('Voice Features: Voice Search & Voice Product Description', () => {
       });
 
       expect(result.current.error).toBeNull();
-      expect(result.current.statusMessage).toBe('Recording stopped');
+      expect(result.current.statusMessage).toBe('Ready');
+
+      delete (window as any).SpeechRecognition;
+    });
+
+    it('handles synchronous SecurityError when security policy blocks recognition', async () => {
+      class SecurityErrorSpeechRecognition {
+        start() {
+          const err = new Error('The operation is insecure.');
+          err.name = 'SecurityError';
+          throw err;
+        }
+      }
+
+      (window as any).SpeechRecognition = SecurityErrorSpeechRecognition;
+
+      const { result } = renderHook(() =>
+        useSpeechRecognition({ defaultLanguage: 'Hindi' })
+      );
+
+      await act(async () => {
+        await result.current.startListening('hi-IN');
+      });
+
+      expect(result.current.error).toContain('security policy');
+      expect(result.current.statusMessage).toBe('Security policy blocked');
 
       delete (window as any).SpeechRecognition;
     });
