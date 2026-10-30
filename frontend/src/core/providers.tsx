@@ -13,7 +13,6 @@ import { AuthSync } from '@/features/auth/components/auth-sync';
 import PWALifecycle from '@/components/shared/common/pwa-lifecycle';
 import InstallPrompt from '@/components/shared/common/install-prompt';
 import OnlineStatus from '@/components/shared/common/online-status';
-import { Toaster } from '@/components/ui/toaster';
 import { ErrorBoundary } from '@/components/shared/common/error-boundary';
 
 export interface AppProvidersProps {

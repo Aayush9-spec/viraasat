@@ -1,101 +1,29 @@
-// PWA Service Worker for Viraasat
-//
-// The CACHE_NAME is rewritten at build time by `scripts/build-sw.js` to
-// include a short hash of the build, so each deploy creates a new cache and
-// `activate` evicts the old one. Combined with a `?v=<hash>` query string
-// on the registration URL, this guarantees users on a stale tab pick up
-// the new SW within a minute (the periodic update() check) and stop
-// serving HTML/JS bundles from a previous build.
+// Offline support is deliberately limited to a connection-help screen and its
+// branding. Account pages, orders, API responses and Next.js payloads stay online.
+const CACHE_NAME = "viraasat-37ecc9b0aca7";
+const PRECACHE_ASSETS = ['/offline.html', '/offline-retry.js', '/icons/viraasat-192.png'];
 
-const CACHE_NAME = "viraasat-24ebf012";
-
-const PRECACHE_ASSETS = [
-  '/',
-  '/offline',
-  '/viraasat-logo-full.png',
-  '/viraasat-hero-cream.png',
-];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS)),
-  );
-  // Take over open clients immediately. The registration URL carries a
-  // ?v= hash that changes per deploy, so this only runs when there is
-  // actually a new build to install.
-  self.skipWaiting();
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE_ASSETS)).then(() => self.skipWaiting()));
 });
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    (async () => {
-      const keys = await caches.keys();
-      await Promise.all(
-        keys
-          .filter((k) => (k.startsWith('viraasat-') && k !== CACHE_NAME) || k === 'undefined')
-          .map((k) => caches.delete(k)),
-      );
-      await self.clients.claim();
-    })(),
-  );
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key => (key.startsWith('viraasat-') && key !== CACHE_NAME) || key === 'undefined').map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
-
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
+self.addEventListener('fetch', event => {
+  const request = event.request;
   const url = new URL(request.url);
-
-  if (url.origin !== location.origin) return;
-  if (request.url.startsWith('chrome-extension://')) return;
-
-  // Cache API only supports GET requests. Non-GET requests (POST, PUT, DELETE, etc.) are left to the browser.
-  if (request.method !== 'GET') return;
-
-  // API calls: network only, never cache.
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(fetch(request));
-    return;
-  }
-
-  // Next.js chunks/static: always network-only — never cache these.
-  // Stale chunks after a rebuild cause ChunkLoadError and Resource constructor errors.
-  if (url.pathname.startsWith('/_next/')) {
-    event.respondWith(fetch(request));
-    return;
-  }
-
-  // HTML navigations: network-first, fall back to cache, then /offline.
+  if (url.origin !== self.location.origin || request.method !== 'GET') return;
+  // Never cache private HTML, React Server Component responses, APIs, or bundles.
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/_next/')) return;
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((c) => c.put(request, clone));
-          return response;
-        })
-        .catch(() =>
-          caches.match(request).then((cached) => cached || caches.match('/offline')),
-        ),
-    );
+    event.respondWith(fetch(request).catch(async () => (await caches.match('/offline.html')) || new Response('You are offline. Reconnect and reload Viraasat.', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } })));
     return;
   }
-
-  // Static assets: stale-while-revalidate against the build's cache.
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      const network = fetch(request)
-        .then((response) => {
-          if (response && response.status === 200 && response.type !== 'error') {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((c) => c.put(request, clone));
-          }
-          return response;
-        })
-        .catch(() => cached);
-      return cached || network;
-    }),
-  );
-});
-
-self.addEventListener('message', (event) => {
-  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+  if (PRECACHE_ASSETS.includes(url.pathname) && !url.search) {
+    event.respondWith(caches.match(request).then(cached => cached || fetch(request)));
+  }
 });

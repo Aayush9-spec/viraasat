@@ -1,131 +1,29 @@
-import { env } from '@/core/config/env';
-// PWA registration helpers.
-
-const SW_PATH = '/sw.js';
-
-// Cached at module load so we don't hit the network just to compute the URL.
-// `build-sw.js` writes this file at every build; in dev it falls back to a
-// timestamp so we still get a fresh SW on every reload.
-declare global {
-  interface Window {
-    __SW_BUILD_ID__?: string;
+// Service workers are enabled only in production. The browser's update check
+// compares the script bytes; no timestamp or cache-busting fetch is necessary.
+export function registerServiceWorker(): () => void {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return () => {};
+  let disposed = false;
+  let interval: ReturnType<typeof setInterval> | undefined;
+  async function register() {
+    try {
+      if (process.env.NODE_ENV === 'development') return;
+      const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' });
+      if (disposed) return;
+      interval = setInterval(() => {
+        if (document.visibilityState === 'visible') void registration.update().catch(() => {});
+      }, 60_000);
+    } catch { console.warn('Home-screen offline support could not be registered.'); }
   }
+  if (document.readyState === 'complete') void register();
+  else window.addEventListener('load', register, { once: true });
+  return () => { disposed = true; window.removeEventListener('load', register); if (interval) clearInterval(interval); };
 }
 
-function getBuildId(): string {
-  if (typeof window !== 'undefined' && window.__SW_BUILD_ID__) {
-    return window.__SW_BUILD_ID__;
-  }
-  return env.app.commitSha || 'dev';
-}
-
-export function registerServiceWorker() {
+export async function unregisterServiceWorker() {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
-
-  // In development mode, unregister existing service workers to prevent Turbopack chunk load conflicts.
-  if (process.env.NODE_ENV === 'development') {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      for (const reg of registrations) {
-        reg.unregister();
-      }
-    });
-    return;
-  }
-
-  window.addEventListener('load', async () => {
-    // Evict any old SW that might be caching /_next/ chunks (causes ChunkLoadError).
-    // The new SW explicitly passes /_next/ through to the network, so cached
-    // stale chunks from a previous build can never be served again.
-    const regs = await navigator.serviceWorker.getRegistrations();
-    for (const reg of regs) {
-      const sw = reg.active || reg.installing || reg.waiting;
-      if (sw) {
-        // Fetch the current SW script and check if it contains the /_next/ bypass.
-        // If not, it's the old version — unregister it so the new one installs fresh.
-        try {
-          const res = await fetch(SW_PATH, { cache: 'no-store' });
-          const text = await res.text();
-          if (!text.includes('/_next/')) {
-            await reg.unregister();
-          }
-        } catch {
-          // network error — leave existing SW in place
-        }
-      }
-    }
-
-    const url = `${SW_PATH}?v=${getBuildId()}`;
-    navigator.serviceWorker
-      .register(url)
-      .then((registration) => {
-        // Periodically check for an updated SW (every 60s).
-        setInterval(() => registration.update(), 60_000);
-
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          if (!newWorker) return;
-          newWorker.addEventListener('statechange', () => {
-            if (
-              newWorker.state === 'installed' &&
-              navigator.serviceWorker.controller
-            ) {
-              // A new build is waiting. The new SW will call skipWaiting()
-              // on its own; we just tell the user.
-              if (confirm('A new version of Viraasat is available. Reload now?')) {
-                newWorker.postMessage({ type: 'SKIP_WAITING' });
-              }
-            }
-          });
-        });
-      })
-      .catch((error) => {
-        console.error('Service Worker registration failed:', error);
-      });
-
-    // When the new SW takes over, reload so the page picks up new bundles.
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload();
-    });
-  });
+  const registration = await navigator.serviceWorker.getRegistration('/');
+  await registration?.unregister();
 }
-
-export function unregisterServiceWorker() {
-  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.ready
-    .then((reg) => reg.unregister())
-    .catch((err) => console.error(err));
-}
-
 export function isAppInstalled() {
-  if (typeof window === 'undefined') return false;
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    (window.navigator as unknown as { standalone?: boolean }).standalone === true
-  );
-}
-
-// Inline install prompt helpers (unchanged).
-let deferredPrompt: BeforeInstallPromptEvent | null = null;
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
-
-export function promptInstall() {
-  if (typeof window === 'undefined') return null;
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e as BeforeInstallPromptEvent;
-  });
-  return {
-    show: async () => {
-      if (!deferredPrompt) return { outcome: 'dismissed' as const, platform: '' };
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      return { outcome, platform: '' };
-    },
-    isAvailable: () => deferredPrompt !== null,
-  };
+  return typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true);
 }

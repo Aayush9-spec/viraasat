@@ -65,6 +65,13 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ['genkit', 'dotprompt', 'handlebars'],
 
+  async redirects() {
+    return [
+      { source: '/viraasat.apk', destination: '/download', permanent: false },
+      { source: '/download/viraasat.apk', destination: '/download', permanent: false },
+    ];
+  },
+
   // Security & PWA headers
   async headers() {
     return [

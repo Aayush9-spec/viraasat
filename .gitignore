@@ -85,3 +85,9 @@ auth_collection/
 test-results/
 frontend/test-results/
 
+
+# Android build outputs and private signing material
+android/build/
+*.keystore
+*.jks
+*.p12

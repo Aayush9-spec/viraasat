@@ -1,235 +1,62 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  Download,
-  Smartphone,
-  ShieldCheck,
-  Zap,
-  CheckCircle2,
-  Sparkles,
-  QrCode,
-  ArrowRight,
-  ExternalLink,
-  Layers,
-  Camera,
-  Share2,
-} from 'lucide-react';
+import { ArrowRight, Download, ShoppingBag, Smartphone, UserRound, Hammer, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/core/hooks/use-toast';
+import { useAppInstall } from '@/features/pwa/install-store';
+import releaseData from '@/config/android-release.json';
 
+type AndroidRelease = { available: false } | { available: true; version: string; bytes: number; sha256: string; url: string; minAndroid: string };
+const release = releaseData as AndroidRelease;
+const features = [
+  { title: 'Explore the marketplace', description: 'Browse the craft catalog, read product details, and save items to your wishlist.', icon: ShoppingBag, href: '/shop', action: 'Browse crafts' },
+  { title: 'Keep your account handy', description: 'Sign in to view your saved items and track orders placed through Viraasat.', icon: UserRound, href: '/orders', action: 'View my orders' },
+  { title: 'Open your artisan studio', description: 'Approved artisans can manage their products, paid orders, and studio tools.', icon: Hammer, href: '/artisan/dashboard', action: 'Go to studio' },
+];
 export default function DownloadPage() {
-  const { toast } = useToast();
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
-
-  useEffect(() => {
-    // Check if app is already running in standalone mode (installed PWA / APK)
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsInstalled(true);
-    }
-
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setIsInstallable(true);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    window.addEventListener('appinstalled', () => {
-      setIsInstalled(true);
-      setIsInstallable(false);
-      setDeferredPrompt(null);
-      toast({
-        title: 'Viraasat Installed!',
-        description: 'Viraasat is now installed on your device home screen.',
-      });
-    });
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
-  }, [toast]);
-
-  const handleInstallPWA = async () => {
-    if (!deferredPrompt) {
-      toast({
-        title: 'Direct Browser Installation',
-        description: 'Tap your browser menu (⋮ or Share) and select "Add to Home Screen" or "Install App" to install Viraasat as a native WebAPK.',
-      });
-      return;
-    }
-
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      toast({
-        title: 'Installation Initiated',
-        description: 'Viraasat is installing to your device.',
-      });
-    }
-    setDeferredPrompt(null);
-  };
-
-  const handleDownloadApk = () => {
-    toast({
-      title: 'Downloading Viraasat APK',
-      description: 'The native Android APK bundle is downloading. Open the downloaded file to install on your Android device.',
-    });
-  };
-
-  return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#221C18] py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto space-y-12">
-        {/* Header Hero */}
-        <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <Badge className="bg-[#FAF7F2] text-[#8C2B2B] border border-[#C59B4B]/40 text-xs font-bold gap-1 px-3 py-1">
-            <Smartphone className="h-3.5 w-3.5 text-[#C59B4B]" /> Android Mobile App • Viraasat v2.4.0
-          </Badge>
-          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#221C18] leading-tight">
-            Carry India&apos;s Living Heritage in Your Pocket
-          </h1>
-          <p className="text-sm sm:text-base text-[#655B53] leading-relaxed">
-            Download the official Viraasat Android application. Explore GI-certified artisan crafts, verify cryptographic provenance, and purchase directly from rural master craftsmen with zero middleman commissions.
-          </p>
-
-          {/* Quick Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <a
-              href="/download/viraasat.apk"
-              download="Viraasat-v2.4.0.apk"
-              onClick={handleDownloadApk}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-[#8C2B2B] hover:bg-[#702222] text-white rounded-xl text-xs uppercase tracking-widest font-semibold transition-all shadow-md hover:shadow-lg cursor-pointer"
-            >
-              <Download className="w-4 h-4 text-[#E8CA82]" />
-              Download Android APK (2.9 MB)
-            </a>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleInstallPWA}
-              className="w-full sm:w-auto px-6 py-3.5 border-[#C59B4B]/60 text-[#221C18] hover:bg-[#F3EDE2] rounded-xl text-xs uppercase tracking-widest font-semibold h-auto"
-            >
-              <Zap className="w-4 h-4 mr-2 text-[#C59B4B]" />
-              {isInstalled ? 'App Already Installed' : isInstallable ? 'Install Instant WebAPK' : 'Add to Home Screen'}
-            </Button>
-          </div>
+  const { status, install } = useAppInstall();
+  const guide = useRef<HTMLElement>(null);
+  const [showHelp, setShowHelp] = useState(false);
+  async function handleInstall() {
+    if (status === 'available') await install();
+    else { setShowHelp(true); guide.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); guide.current?.focus({ preventScroll: true }); }
+  }
+  const installed = status === 'installed';
+  return <div className="bg-background px-4 py-12 text-foreground sm:px-6 sm:py-16">
+    <div className="mx-auto max-w-5xl space-y-10 sm:space-y-14">
+      <section className="mx-auto max-w-3xl space-y-5 text-center">
+        <Image src="/icons/viraasat-512.png" alt="Viraasat logo" width={112} height={112} priority className="mx-auto rounded-3xl border border-border/60" />
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Viraasat for your phone</p>
+        <h1 className="font-serif text-4xl leading-tight sm:text-5xl">Your craft marketplace,<br className="hidden sm:block" /> one tap away.</h1>
+        <p className="mx-auto max-w-xl text-base leading-relaxed text-muted-foreground">Add Viraasat to your home screen to open the marketplace, your account, and your artisan studio from the same place.</p>
+        <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row">
+          <Button onClick={handleInstall} disabled={installed || status === 'prompting' || status === 'accepted'} className="min-h-12 gap-2 rounded-xl px-6">
+            {installed ? <Check className="h-4 w-4" /> : <Smartphone className="h-4 w-4" />}
+            {installed ? 'Viraasat is installed' : status === 'prompting' ? 'Continue in your browser…' : status === 'accepted' ? 'Installation requested' : 'Add to home screen'}
+          </Button>
+          <Button asChild variant="outline" className="min-h-12 gap-2 rounded-xl px-6"><Link href="/shop">Open marketplace<ArrowRight className="h-4 w-4" /></Link></Button>
         </div>
-
-        {/* Feature Highlights Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="rounded-2xl border border-[#E8DCCB] bg-white shadow-sm p-6 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-[#8C2B2B] flex items-center justify-center">
-              <Camera className="w-5 h-5 text-[#C59B4B]" />
-            </div>
-            <h3 className="font-serif font-bold text-lg text-[#221C18]">AI Camera GI Scanner</h3>
-            <p className="text-xs text-[#655B53] leading-relaxed">
-              Scan physical GI certificates and artisan craft hallmarks using your smartphone camera to instantly verify cryptographic lineage and proof of origin.
-            </p>
-          </Card>
-
-          <Card className="rounded-2xl border border-[#E8DCCB] bg-white shadow-sm p-6 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-800 flex items-center justify-center">
-              <Zap className="w-5 h-5 text-emerald-700" />
-            </div>
-            <h3 className="font-serif font-bold text-lg text-[#221C18]">Instant UPI Direct Settlements</h3>
-            <p className="text-xs text-[#655B53] leading-relaxed">
-              Integrated with PhonePe, Google Pay, and BHIM UPI for zero-friction direct payment payouts directly into rural cooperative artisan bank accounts.
-            </p>
-          </Card>
-
-          <Card className="rounded-2xl border border-[#E8DCCB] bg-white shadow-sm p-6 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-[#8C2B2B]/10 text-[#8C2B2B] flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5 text-[#8C2B2B]" />
-            </div>
-            <h3 className="font-serif font-bold text-lg text-[#221C18]">Offline Guild Caching</h3>
-            <p className="text-xs text-[#655B53] leading-relaxed">
-              Full offline access for remote artisan clusters. Queue orders, log craftsmanship steps, and browse products without cellular reception.
-            </p>
-          </Card>
+        <p className="text-sm text-muted-foreground">Internet access is required for browsing, sign-in, orders, payments, and AI tools.</p>
+        {status === 'accepted' && <p role="status" className="text-sm">Your browser is handling installation. Open Viraasat from your home screen when it finishes.</p>}
+        {status === 'error' && <p role="alert" className="text-sm text-destructive">The install prompt could not open. Use the browser instructions below.</p>}
+      </section>
+      <div className="grid gap-5 md:grid-cols-3">{features.map(({ title, description, icon: Icon, href, action }) => <section key={title} className="flex flex-col rounded-2xl border bg-card p-6 shadow-sm"><span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary"><Icon className="h-5 w-5" aria-hidden="true" /></span><h2 className="font-serif text-xl font-semibold">{title}</h2><p className="mb-4 mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{description}</p><Link href={href} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary underline-offset-4 hover:underline">{action}<ArrowRight className="h-4 w-4" /></Link></section>)}</div>
+      <section ref={guide} tabIndex={-1} aria-labelledby="install-guide" className="scroll-mt-24 rounded-2xl border bg-card p-6 outline-none focus:ring-2 focus:ring-ring sm:p-8">
+        <h2 id="install-guide" className="font-serif text-2xl font-semibold">Add Viraasat to your home screen</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Installation options depend on your browser and device. Use the steps that match yours.</p>
+        {showHelp && <p role="status" className="mt-3 text-sm text-primary">Your browser has not offered an automatic install prompt. Follow the steps below.</p>}
+        <div className="mt-7 grid gap-8 md:grid-cols-3">
+          <div><h3 className="mb-3 font-semibold">Android · Chrome or Edge</h3><ol className="list-decimal space-y-3 pl-5 text-sm leading-relaxed text-muted-foreground"><li>Open Viraasat in your browser.</li><li>Open the browser menu and choose <strong className="text-foreground">Install app</strong> or <strong className="text-foreground">Add to Home screen</strong>, if available.</li><li>Confirm, then open the Viraasat icon from your home screen.</li></ol></div>
+          <div><h3 className="mb-3 font-semibold">iPhone or iPad · Safari</h3><ol className="list-decimal space-y-3 pl-5 text-sm leading-relaxed text-muted-foreground"><li>Open Viraasat in Safari.</li><li>Tap <strong className="text-foreground">Share</strong>, then <strong className="text-foreground">Add to Home Screen</strong>.</li><li>Keep <strong className="text-foreground">Open as Web App</strong> enabled if shown, then tap <strong className="text-foreground">Add</strong>.</li></ol></div>
+          <div><h3 className="mb-3 font-semibold">Computer</h3><ol className="list-decimal space-y-3 pl-5 text-sm leading-relaxed text-muted-foreground"><li>Open Viraasat in Chrome or Edge.</li><li>Look for the install icon in the address bar or the browser menu.</li><li>If installation is unavailable, continue using the website in your browser.</li></ol></div>
         </div>
-
-        {/* Android Installation Guide */}
-        <Card className="rounded-2xl border border-[#E8DCCB] bg-white shadow-sm overflow-hidden">
-          <CardHeader className="bg-[#FAF7F2] border-b border-[#E8DCCB] pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="font-serif text-xl text-[#221C18]">
-                  How to Install the APK on Your Android Device
-                </CardTitle>
-                <CardDescription className="text-xs text-[#655B53] mt-1">
-                  Follow these 3 quick steps to install and run Viraasat on any phone running Android 8.0+.
-                </CardDescription>
-              </div>
-              <Badge variant="outline" className="border-emerald-600/30 text-emerald-800 bg-emerald-50 text-xs">
-                Safe & Verified Package
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <div className="w-8 h-8 rounded-full bg-[#8C2B2B] text-white flex items-center justify-center font-bold text-sm">
-                  1
-                </div>
-                <h4 className="font-semibold text-sm text-[#221C18]">Download the APK</h4>
-                <p className="text-xs text-[#655B53] leading-relaxed">
-                  Click the &quot;Download Android APK&quot; button above. When your mobile browser prompts &quot;This type of file can harm your device&quot;, tap <span className="font-bold text-foreground">Download anyway</span>.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="w-8 h-8 rounded-full bg-[#8C2B2B] text-white flex items-center justify-center font-bold text-sm">
-                  2
-                </div>
-                <h4 className="font-semibold text-sm text-[#221C18]">Allow Unknown Sources</h4>
-                <p className="text-xs text-[#655B53] leading-relaxed">
-                  Tap the downloaded file in your notification drawer. If prompted, go to Settings and enable <span className="font-bold text-foreground">Allow from this source</span> for your browser.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="w-8 h-8 rounded-full bg-[#8C2B2B] text-white flex items-center justify-center font-bold text-sm">
-                  3
-                </div>
-                <h4 className="font-semibold text-sm text-[#221C18]">Install & Launch</h4>
-                <p className="text-xs text-[#655B53] leading-relaxed">
-                  Tap <span className="font-bold text-foreground">Install</span>. Once finished, open Viraasat from your app drawer and sign in to explore authentic Indian artisanal heritage.
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-xl p-4 bg-[#FAF7F2] border border-[#E8DCCB] flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="space-y-1 text-center sm:text-left">
-                <span className="text-xs font-bold text-[#8C2B2B] uppercase tracking-wider block">
-                  Package Specifications
-                </span>
-                <p className="text-xs text-[#655B53]">
-                  Package ID: <code className="font-mono text-foreground font-semibold">org.viraasat.heritage.app</code> • Architecture: Universal (arm64-v8a, armeabi-v7a, x86_64) • Min Android: 8.0 (Oreo)
-                </p>
-              </div>
-              <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className="text-xs border-[#C59B4B] text-[#8C2B2B] hover:bg-[#FAF7F2]"
-              >
-                <Link href="/">
-                  Return to Marketplace <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      </section>
+      <section className="rounded-2xl border bg-card p-6 sm:p-8" aria-labelledby="android-download">
+        <h2 id="android-download" className="font-serif text-2xl font-semibold">Android APK</h2>
+        {release.available ? <div className="mt-3 space-y-4"><p className="text-sm text-muted-foreground">This Android launcher opens virrasat.in in your browser. An internet connection and a compatible browser are required.</p><Button asChild className="gap-2"><a href={release.url} download><Download className="h-4 w-4" />Download Android APK · {(release.bytes / 1024 / 1024).toFixed(1)} MB</a></Button><p className="text-sm text-muted-foreground">Version {release.version} · Android {release.minAndroid} or later</p><details className="text-xs text-muted-foreground"><summary className="inline-flex min-h-11 cursor-pointer items-center">Download checksum (SHA-256)</summary><code className="block break-all">{release.sha256}</code></details></div> : <p className="mt-3 text-sm leading-relaxed text-muted-foreground">An Android APK release is not available yet. You can install the web app using the instructions above.</p>}
+      </section>
     </div>
-  );
+  </div>;
 }
-
