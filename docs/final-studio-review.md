@@ -49,3 +49,7 @@ Reproduce source tests with `cd frontend && npm run test:unit -- --coverage=fals
 4. `virrasat.in` could not be inspected through this environment's network policy. Local tests cannot establish whether the deployed domain has received these changes. Publish from the repair branch after review and migration readiness; main has newer independent commits and was not overwritten.
 5. The requested `npx shadcn@latest add @reactbits-starter/skill` failed while fetching the registry. The registry host was blocked, and that namespace was not found in the accessible upstream registry directory. No ReactBits skill was installed or claimed as used. The implemented UI uses the project's existing shadcn/Radix and Recharts components.
 6. Live AI inference, dataset provenance/sufficiency, model quality and load testing remain separate verification. This review does not certify the entire website as bug-free or every AI feature as production-ready.
+
+## GitHub dependency alert notice after publication
+
+The push of repair commit `1f0f8ec` reported **128 dependency alerts on the default branch**: 16 critical, 51 high, 52 moderate and 9 low. These are GitHub's reported counts, not a package-level analysis of this repair branch. Reading the Dependabot API was blocked (`Forbidden`), so affected manifests, exploitability and fixes could not be verified here. Review https://github.com/Aayush9-spec/viraasat/security/dependabot before a production security sign-off. The frontend/commerce test results above do not close these dependency alerts.
