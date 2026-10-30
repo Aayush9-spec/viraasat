@@ -392,14 +392,29 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return getTranslatedProductName(nameOrProduct, language);
   }, [language]);
 
+  const translateDescription = useCallback((descOrProduct: any) => {
+    return getTranslatedProductDescription(descOrProduct, language);
+  }, [language]);
+
+  const translateCategory = useCallback((category: string | null | undefined) => {
+    return getTranslatedProductCategory(category, language);
+  }, [language]);
+
+  const translateRegion = useCallback((region: string | null | undefined) => {
+    return getTranslatedRegion(region, language);
+  }, [language]);
+
   const contextValue = useMemo(() => ({
     language,
     setLanguage,
     t,
     translateProduct,
+    translateDescription,
+    translateCategory,
+    translateRegion,
     dir,
     isRTL,
-  }), [language, setLanguage, t, translateProduct, dir, isRTL]);
+  }), [language, setLanguage, t, translateProduct, translateDescription, translateCategory, translateRegion, dir, isRTL]);
 
   return (
     <LanguageContext.Provider value={contextValue}>
@@ -412,6 +427,9 @@ const defaultContextValue: LanguageContextType = {
   language: 'en',
   setLanguage: () => {},
   translateProduct: (p: any) => typeof p === 'string' ? p : p?.name || '',
+  translateDescription: (d: any) => typeof d === 'string' ? d : d?.description || '',
+  translateCategory: (c: any) => c || '',
+  translateRegion: (r: any) => r || '',
   t: (key: string, params?: Record<string, string | number>) => {
     if (!key) return '';
     const keys = key.split('.');

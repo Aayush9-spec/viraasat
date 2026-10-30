@@ -62,7 +62,7 @@ export default function Marketplace() {
   const { addItem, setCartOpen } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, translateProduct, translateDescription, translateCategory, translateRegion } = useTranslation();
 
   const [currency, setCurrency] = useState("INR");
   const [currentFilter, setCurrentFilter] = useState("all");
@@ -491,13 +491,13 @@ export default function Marketplace() {
                     {/* Craft details inside card */}
                     <div className="absolute bottom-5 left-5 right-5 text-white">
                       <span className="text-xs uppercase tracking-widest text-[#E8CA82] font-medium">
-                        {heroMasterpiece?.region ? `${heroMasterpiece.region} • ${heroMasterpiece.category || "Heirloom"}` : "Bastar Bell Metal Craft"}
+                        {heroMasterpiece?.region ? `${translateRegion(heroMasterpiece.region)} • ${translateCategory(heroMasterpiece.category) || "Heirloom"}` : `${translateRegion("Bastar")} Bell Metal Craft`}
                       </span>
                       <h3 className="font-serif text-2xl font-bold mt-0.5 leading-snug">
-                        {t(heroMasterpiece?.name || "The Lost-Wax Dancing Bull")}
+                        {translateProduct(heroMasterpiece?.name || "The Lost-Wax Dancing Bull")}
                       </h3>
                       <p className="text-xs text-[#F3EDE2]/85 mt-1 line-clamp-2">
-                        {heroMasterpiece?.description || "Handmade by Shilp Guru Bannuram Baid using 4,000-year-old Bastar Dhokra lost-wax metallurgy."}
+                        {translateDescription(heroMasterpiece) || "Handmade by Shilp Guru Bannuram Baid using 4,000-year-old Bastar Dhokra lost-wax metallurgy."}
                       </p>
                       <div className="mt-3 flex items-center justify-between pt-2 border-t border-white/20">
                         <div>
@@ -822,7 +822,7 @@ export default function Marketplace() {
 
                         {/* GI Tag / Region Badge */}
                         <div className="absolute top-3 left-3 bg-[#FAF7F2]/90 backdrop-blur-md px-2.5 py-1 rounded text-[10px] font-bold tracking-wider uppercase text-[#701D24] border border-[#C59B4B]/30 shadow-sm">
-                          {p.region ? `GI • ${p.region}` : (t('home.giTagCertified') || "Certified GI")}
+                          {p.region ? `GI • ${translateRegion(p.region)}` : (t('home.giTagCertified') || "Certified GI")}
                         </div>
 
                         {/* Wishlist Button */}
@@ -864,7 +864,7 @@ export default function Marketplace() {
                       {/* Card Content */}
                       <div className="p-5">
                         <div className="flex items-center justify-between text-[11px] text-[#6B480F] font-semibold mb-1">
-                          <span className="uppercase tracking-wider">{p.category || "Heritage"}</span>
+                          <span className="uppercase tracking-wider">{translateCategory(p.category) || "Heritage"}</span>
                           <span className="flex items-center gap-1 text-amber-800 font-bold">
                             <Star className="w-3 h-3 fill-amber-700 text-amber-700" />
                             {p.rating || "4.9"}
@@ -873,12 +873,12 @@ export default function Marketplace() {
 
                         <Link href={`/product/${p.id}`} className="block">
                           <h3 className="font-serif text-lg font-bold text-[#221C18] group-hover:text-[#701D24] transition-colors line-clamp-1">
-                            {p.name}
+                            {translateProduct(p)}
                           </h3>
                         </Link>
 
                         <p className="text-xs text-[#655B53] line-clamp-2 mt-1.5 leading-relaxed">
-                          {p.description || "Handcrafted by national guild master artisans."}
+                          {translateDescription(p) || "Handcrafted by national guild master artisans."}
                         </p>
                       </div>
                     </div>
@@ -1045,20 +1045,20 @@ export default function Marketplace() {
                       {/* Content */}
                       <div className="p-4">
                         <div className="flex items-center justify-between text-[11px] text-[#6B480F] font-semibold mb-1">
-                          <span className="uppercase tracking-wider">{p.category || 'Heritage Craft'}</span>
+                          <span className="uppercase tracking-wider">{translateCategory(p.category) || 'Heritage Craft'}</span>
                           <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                            <MapPin className="w-3 h-3 text-[#701D24]" /> {p.region || recRegion}
+                            <MapPin className="w-3 h-3 text-[#701D24]" /> {translateRegion(p.region || recRegion)}
                           </span>
                         </div>
 
                         <Link href={`/product/${p.id}`} className="block">
                           <h3 className="font-serif text-base font-bold text-[#221C18] group-hover:text-[#701D24] transition-colors line-clamp-1">
-                            {p.name}
+                            {translateProduct(p)}
                           </h3>
                         </Link>
 
                         <p className="text-xs text-[#655B53] line-clamp-2 mt-1 leading-relaxed">
-                          {p.description || 'Authentic artisan masterpiece selected via Two-Tower embedding retrieval.'}
+                          {translateDescription(p) || 'Authentic artisan masterpiece selected via Two-Tower embedding retrieval.'}
                         </p>
                       </div>
                     </div>
@@ -1486,19 +1486,19 @@ export default function Marketplace() {
               <div className="p-6 sm:p-8 flex flex-col justify-between">
                 <div>
                   <div className="inline-block px-2.5 py-0.5 bg-[#F3EDE2] text-[#5E2C18] text-[10px] font-bold uppercase tracking-wider rounded mb-2">
-                    {quickViewProduct.region ? `GI Tag: ${quickViewProduct.region}` : "Certified GI Origin"}
+                    {quickViewProduct.region ? `GI Tag: ${translateRegion(quickViewProduct.region)}` : "Certified GI Origin"}
                   </div>
                   <h3 className="font-serif text-2xl font-bold text-[#221C18]">
-                    {quickViewProduct.name}
+                    {translateProduct(quickViewProduct)}
                   </h3>
                   <p className="text-xs text-[#8C2B2B] font-semibold mt-0.5">
-                    {quickViewProduct.category}
+                    {translateCategory(quickViewProduct.category)}
                   </p>
                   <p className="font-serif text-xl font-bold text-[#221C18] mt-3">
                     {formatPrice(quickViewProduct.price)}
                   </p>
                   <p className="text-xs text-[#655B53] mt-3 leading-relaxed">
-                    {quickViewProduct.description || "Every piece is crafted entirely by hand using ancestral techniques without industrial stamping."}
+                    {translateDescription(quickViewProduct) || "Every piece is crafted entirely by hand using ancestral techniques without industrial stamping."}
                   </p>
                 </div>
 

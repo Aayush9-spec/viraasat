@@ -34,7 +34,7 @@ export default function ProductCard({
 
   const { addItem } = useCart();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, translateProduct, translateCategory, translateRegion } = useTranslation();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { rating, loading: ratingLoading } = useProductReviews(product.id);
   const wishlisted = isWishlisted(product.id);
@@ -92,7 +92,7 @@ export default function ProductCard({
             <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5 z-10 pointer-events-none">
               <span className="bg-[#FAF7F2]/95 backdrop-blur-md text-[#221C18] text-[9.5px] font-bold px-2.5 py-1 rounded-md border border-[#C59B4B]/50 shadow-xs flex items-center gap-1 uppercase tracking-wider">
                 <ShieldCheck className="w-3 h-3 text-[#C59B4B]" />
-                <span>{product.region ? `GI • ${product.region}` : 'GI Certified'}</span>
+                <span>{product.region ? `GI • ${translateRegion(product.region)}` : 'GI Certified'}</span>
               </span>
 
               {safePrice >= 7000 && (
@@ -145,7 +145,7 @@ export default function ProductCard({
               <div className="flex items-center justify-between text-[11px] mb-1.5">
                 <span className="text-[#8F6826] font-bold uppercase tracking-wider flex items-center gap-1">
                   <MapPin className="w-3 h-3 text-[#C59B4B]" />
-                  {product.region || 'India'}
+                  {translateRegion(product.region) || 'India'}
                 </span>
                 <span className="text-[#655B53] font-semibold flex items-center gap-1 text-[11px]">
                   <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
@@ -158,7 +158,7 @@ export default function ProductCard({
 
               {/* Product Title in Editorial Serif */}
               <h3 className="font-serif text-lg font-bold text-[#221C18] group-hover:text-[#701D24] transition-colors line-clamp-1 leading-snug">
-                {t(product.name)}
+                {translateProduct(product)}
               </h3>
 
               {/* Master Artisan Attribution Chip */}
@@ -185,7 +185,7 @@ export default function ProductCard({
               {/* Craft Attributes: Materials and Time */}
               <div className="mt-2.5 flex items-center gap-1.5 flex-wrap text-[10px] text-[#655B53]">
                 <span className="px-2 py-0.5 rounded-full bg-[#FAF7F2] border border-[#E8DCCB] font-medium truncate max-w-[150px]">
-                  {product.category || 'Handcrafted'}
+                  {translateCategory(product.category) || 'Handcrafted'}
                 </span>
                 <span className="px-2 py-0.5 rounded-full bg-[#FAF7F2] border border-[#E8DCCB] font-medium">
                   {craftDuration}

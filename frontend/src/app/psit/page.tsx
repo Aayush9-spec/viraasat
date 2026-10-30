@@ -59,6 +59,7 @@ export default function PsitPage() {
               <div className="border-x border-b border-[#e8dccb] bg-card px-5 py-5">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8f6826]">PSIT · {item.year}</p>
                 <h3 className="mt-2 font-heading text-2xl leading-none text-[#5e2c18]">{item.studentName}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-foreground/65">{item.product.description}</p>
                 <div className="mt-5 flex items-baseline justify-between border-t border-[#e8dccb] pt-4">
                   <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/50">Price</span>
                   <span className="font-heading text-2xl font-semibold text-[#701d24]">₹{item.product.price.toLocaleString('en-IN')}</span>
