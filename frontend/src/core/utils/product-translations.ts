@@ -1096,7 +1096,7 @@ export function getTranslatedRegion(
   if (map && map[lang]) return map[lang];
 
   const lower = region.toLowerCase().trim();
-  for (const [k, v] of Object.entries(REGION_TRANSLATIONS)) {
+  for (const [k, v] of Object.entries(PRODUCT_REGION_TRANSLATIONS)) {
     if (k.toLowerCase().trim() === lower && v[lang]) {
       return v[lang];
     }
