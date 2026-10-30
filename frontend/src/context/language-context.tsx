@@ -287,6 +287,9 @@ interface LanguageContextType {
   setLanguage: (language: string) => void;
   t: (key: string, params?: Record<string, string | number>) => string;
   translateProduct: (nameOrProduct: any) => string;
+  translateDescription: (descOrProduct: any) => string;
+  translateCategory: (category: string | null | undefined) => string;
+  translateRegion: (region: string | null | undefined) => string;
   dir: 'ltr' | 'rtl';
   isRTL: boolean;
 }
@@ -330,12 +333,24 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
     let text = '';
 
-    // 1. Direct product name translation match for active language
-    if (language !== 'en' && PRODUCT_NAME_TRANSLATIONS[key]?.[language]) {
-      text = PRODUCT_NAME_TRANSLATIONS[key][language];
-    } else if (language !== 'en' && PHRASE_DICTIONARY[language]?.[key]) {
-      text = PHRASE_DICTIONARY[language][key];
+    // 1. Direct translation matches for active language
+    if (language !== 'en') {
+      if (PRODUCT_NAME_TRANSLATIONS[key]?.[language]) {
+        text = PRODUCT_NAME_TRANSLATIONS[key][language];
+      } else if (PRODUCT_DESCRIPTION_TRANSLATIONS[key]?.[language]) {
+        text = PRODUCT_DESCRIPTION_TRANSLATIONS[key][language];
+      } else if (PRODUCT_CATEGORY_TRANSLATIONS[key]?.[language]) {
+        text = PRODUCT_CATEGORY_TRANSLATIONS[key][language];
+      } else if (PRODUCT_REGION_TRANSLATIONS[key]?.[language]) {
+        text = PRODUCT_REGION_TRANSLATIONS[key][language];
+      } else if (PHRASE_DICTIONARY[language]?.[key]) {
+        text = PHRASE_DICTIONARY[language][key];
+      }
     } else {
+      text = '';
+    }
+
+    if (!text) {
       // 2. Dot-notation key resolution
       const keys = key.split('.');
       let result = translations[language];
