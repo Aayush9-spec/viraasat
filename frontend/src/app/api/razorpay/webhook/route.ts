@@ -21,14 +21,17 @@ export async function POST(req: Request) {
     if (!row) throw new HttpError(503, 'Order has not been persisted yet');
     if (Number(payment.amount) !== row.amount || payment.currency !== 'INR') throw new HttpError(400, 'Payment amount mismatch');
     if (row.payment_id && row.payment_id !== id) throw new HttpError(409, 'Payment conflict');
-    const refunded = Number(payment.amount_refunded || 0) >= row.amount;
+    const refundAmount = Math.max(Number(row.refunded_amount || 0), Number(payment.amount_refunded || 0));
+    const refunded = refundAmount > 0;
     if (refunded) {
-      const { error: e } = await db.from('commerce_orders').update({ payment_status: 'Refunded', payment_id: id, updated_at: new Date().toISOString() }).eq('id', row.id);
+      const { error: e } = await db.from('commerce_orders').update({ payment_status: refundAmount >= row.amount ? 'Refunded' : 'Partially Refunded', refunded_amount: refundAmount, payment_id: id, updated_at: new Date().toISOString() }).eq('id', row.id);
       check(e);
     } else if (payment.status === 'captured') {
       const { error: e } = await db.from('commerce_orders').update({ payment_status: 'Paid', payment_id: id, updated_at: new Date().toISOString() }).eq('id', row.id).eq('payment_status', 'Pending Payment');
       check(e);
-      if (row.payment_status !== 'Refunded' && !row.confirmation_sent_at && row.payload.buyerEmail) {
+      const {data: current, error: stateError} = await db.from('commerce_orders').select('*').eq('id',row.id).maybeSingle();
+      check(stateError);
+      if (current?.payment_status === 'Paid' && !current.confirmation_sent_at && row.payload.buyerEmail) {
         const sent = await sendOrderConfirmation({to:row.payload.buyerEmail,orderId:row.razorpay_order_id,
           items:row.payload.items,total:row.payload.totalAmount,
           shippingAddress:[row.payload.shippingAddress.addressLine1,row.payload.shippingAddress.city,row.payload.shippingAddress.state,row.payload.shippingAddress.zipCode].join(', ')});

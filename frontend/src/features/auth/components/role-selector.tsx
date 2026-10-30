@@ -28,35 +28,11 @@ export function RoleSelector({ onRoleSelected, redirectOnSelect = true }: RoleSe
     setError(null);
 
     try {
-      // Write the role into Clerk's unsafeMetadata. This is the authoritative
-      // source of truth on the client. The backend webhook (`/api/webhooks/clerk`)
-      // will eventually materialise this into Firestore and SQLite asynchronously —
-      // we don't need to wait for it here. The destination page reads role from
-      // unsafeMetadata as a fallback, so it will always see the correct value.
-      await user.update({
-        unsafeMetadata: {
-          ...user.unsafeMetadata,
-          role,
-        },
-      });
-
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('viraasat_session_role', role);
-        localStorage.setItem('viraasat_session_uid', user.id);
-        window.dispatchEvent(new Event('storage'));
-        window.dispatchEvent(new Event('viraasat_auth_change'));
-      }
-
-      if (onRoleSelected) {
-        onRoleSelected(role);
-      }
-
+      onRoleSelected?.(role);
       if (redirectOnSelect) {
-        // Redirect immediately — no need to poll Firestore.
-        // ProtectedRoute and useUserRole both fall back to unsafeMetadata.role
-        // when Firestore is unavailable, so the page will render correctly.
-        router.push(role === 'admin' ? '/admin' : role === 'artisan' ? '/artisan/dashboard' : '/dashboard');
-        router.refresh();
+        const trusted = user.publicMetadata?.role;
+        const destination = role === 'artisan' ? ['artisan','admin'].includes(String(trusted)) ? '/artisan/dashboard' : '/apply' : role === 'admin' && trusted === 'admin' ? '/admin' : '/shop';
+        router.push(destination);
       }
     } catch (err: unknown) {
       console.error('Error saving user role:', err);

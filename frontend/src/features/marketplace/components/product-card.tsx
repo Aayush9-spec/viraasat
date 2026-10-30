@@ -10,7 +10,7 @@ import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
 import { useToast } from '@/core/hooks/use-toast';
 import { useTranslation } from '@/core/hooks/use-translation';
-import { useProductReviews } from '@/features/marketplace/hooks/use-product-reviews';
+
 
 interface ProductCardProps {
   product: Product;
@@ -25,18 +25,11 @@ export default function ProductCard({
   priority = false,
   onQuickInspect,
 }: ProductCardProps) {
-  const artisan =
-    artisans.find((a) => a.id === product.artisanId) ||
-    artisans.find((a) =>
-      a.location?.toLowerCase().includes((product.region || '').toLowerCase())
-    ) ||
-    artisans[0];
-
   const { addItem } = useCart();
   const { toast } = useToast();
   const { t } = useTranslation();
   const { isWishlisted, toggleWishlist } = useWishlist();
-  const { rating, loading: ratingLoading } = useProductReviews(product.id);
+
   const wishlisted = isWishlisted(product.id);
   const safePrice = Number(product?.price) || 0;
   const imageUrl = getProductImage(product?.images);
@@ -55,26 +48,14 @@ export default function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     toggleWishlist(product);
-    toast({
-      title: !wishlisted ? "Saved to Heirloom Wishlist ❤️" : "Removed from Wishlist",
-      description: !wishlisted
-        ? `${product.name} saved to your sacred collection.`
-        : `${product.name} removed from your wishlist.`,
-    });
+
   };
 
-  const craftDuration =
-    safePrice >= 20000
-      ? '120 Days Handloom'
-      : safePrice >= 8000
-      ? '24 Days Lost-Wax'
-      : safePrice >= 3000
-      ? '14 Days Crafting'
-      : '5 Days Handcrafted';
+  const craftDuration = product.category || 'Handcrafted item';
 
   return (
     <article className="group relative bg-white rounded-2xl overflow-hidden border border-[#E8DCCB] hover:border-[#C59B4B] shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between h-full">
-      <Link href={`/product/${product.id}`} className="flex flex-col h-full justify-between">
+      <div className="flex flex-col h-full justify-between">
         <div>
           {/* IMAGE & CRAFT BADGES CONTAINER */}
           <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#FAF7F2]">
@@ -92,22 +73,16 @@ export default function ProductCard({
             <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5 z-10 pointer-events-none">
               <span className="bg-[#FAF7F2]/95 backdrop-blur-md text-[#221C18] text-[9.5px] font-bold px-2.5 py-1 rounded-md border border-[#C59B4B]/50 shadow-xs flex items-center gap-1 uppercase tracking-wider">
                 <ShieldCheck className="w-3 h-3 text-[#C59B4B]" />
-                <span>{product.region ? `GI • ${product.region}` : 'GI Certified'}</span>
+                <span>{product.region || 'Indian craft'}</span>
               </span>
 
-              {safePrice >= 7000 && (
-                <span className="bg-[#701D24] text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-xs flex items-center gap-1">
-                  <Award className="w-2.5 h-2.5 text-[#E8CA82]" />
-                  Shilp Guru Lineage
-                </span>
-              )}
             </div>
 
             {/* Top Right Wishlist Toggle */}
             <button
               type="button"
               onClick={handleToggleWishlist}
-              className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/90 backdrop-blur-md text-[#221C18] hover:text-[#701D24] flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
+              className="absolute top-3 right-3 z-20 w-11 h-11 rounded-full bg-white/90 backdrop-blur-md text-[#221C18] hover:text-[#701D24] flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
               title={wishlisted ? "Remove from Wishlist" : "Save to Heirloom Wishlist"}
               aria-label="Wishlist"
             >
@@ -121,7 +96,7 @@ export default function ProductCard({
 
             {/* Bottom Floating Quick Action: Quick Inspect */}
             {onQuickInspect && (
-              <div className="absolute bottom-3 inset-x-3 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
+              <div className="absolute bottom-3 inset-x-3 z-20 flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 group-focus-within:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
                 <button
                   type="button"
                   onClick={(e) => {
@@ -147,37 +122,22 @@ export default function ProductCard({
                   <MapPin className="w-3 h-3 text-[#C59B4B]" />
                   {product.region || 'India'}
                 </span>
-                <span className="text-[#655B53] font-semibold flex items-center gap-1 text-[11px]">
-                  <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                  {!ratingLoading && rating.count > 0 ? rating.avg.toFixed(1) : '4.9'}
-                  <span className="text-[#655B53] font-normal">
-                    ({!ratingLoading && rating.count > 0 ? rating.count : 24})
-                  </span>
-                </span>
+
               </div>
 
               {/* Product Title in Editorial Serif */}
               <h3 className="font-serif text-lg font-bold text-[#221C18] group-hover:text-[#701D24] transition-colors line-clamp-1 leading-snug">
-                {product.name}
+                <Link href={`/product/${product.id}`}>{product.name}</Link>
               </h3>
 
               {/* Master Artisan Attribution Chip */}
               <div className="mt-2.5 flex items-center gap-2 py-1.5 px-2 rounded-lg bg-[#FAF7F2] border border-[#E8DCCB]/60">
-                <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#C59B4B] shrink-0">
-                  <Image
-                    src={artisan?.profilePicture || '/images/artisans/bannuram-baid.jpg'}
-                    alt={artisan?.name || 'Master Artisan'}
-                    fill
-                    sizes="24px"
-                    className="object-cover object-top"
-                  />
-                </div>
                 <div className="truncate">
                   <span className="text-[10px] text-[#221C18] font-bold block leading-tight truncate">
-                    {artisan?.name || product.artisanName || 'Master Artisan'}
+                    {product.artisanName || 'Independent artisan'}
                   </span>
                   <span className="text-[9px] text-[#655B53] block leading-tight truncate">
-                    {artisan?.shopName || 'Authentic Lineage Guild'}
+                    {product.region || 'India'}
                   </span>
                 </div>
               </div>
@@ -237,7 +197,7 @@ export default function ProductCard({
             </div>
           </div>
         </div>
-      </Link>
+      </div>
     </article>
   );
 }

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
+import { usePathname } from 'next/navigation';
 import { Header } from './header';
 import { Footer } from './footer';
 import CartSidebar from '@/features/cart/components/cart-sidebar';
@@ -18,6 +19,13 @@ export interface AppShellProps {
 }
 
 export function AppShell({ children }: AppShellProps) {
+  const pathname = usePathname();
+  const isStudio = pathname === '/artisan' || pathname.startsWith('/artisan/');
+
+  if (isStudio) {
+    return <><div className="relative min-h-screen">{children}</div><AIAssistant /><Toaster /></>;
+  }
+
   return (
     <>
       <div suppressHydrationWarning className="relative min-h-screen">

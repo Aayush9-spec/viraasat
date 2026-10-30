@@ -43,50 +43,11 @@ export function ReviewsSection({ product }: { product: Product }) {
     }
     setSubmitting(true);
 
-    // AI Fraud & Spam Anomaly Validation
     try {
-      const fraudRes = await fetch(`${BACKEND_URL}/api/fraud/detect`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          seller_id: product.artisanId || 'artisan-default',
-          reviewer_id: user.id,
-          rating: Math.round(selectedRating),
-          review_text: comment.trim() || 'Authentic handcrafted piece',
-        }),
-      });
-
-      if (fraudRes.ok) {
-        const fraudVerdict = await fraudRes.json();
-        if (fraudVerdict.is_fraudulent) {
-          toast({
-            variant: 'destructive',
-            title: 'Review Flagged by AI Safety',
-            description:
-              'Your review pattern was flagged for suspicious or promotional content. Please submit genuine artisan feedback.',
-          });
-          setSubmitting(false);
-          return;
-        }
-      }
-    } catch {
-      // Soft-pass if offline
-    }
-
-    try {
-      const { error } = await supabase.from('reviews').insert({
-        product_id: product.id,
-        reviewer_id: user.id,
-        reviewer_name:
-          user.fullName ||
-          user.username ||
-          user.primaryEmailAddress?.emailAddress ||
-          'Anonymous',
-        reviewer_avatar: user.imageUrl || '',
-        rating: Math.round(selectedRating),
-        comment: comment.trim(),
-      });
-      if (error) throw error;
+      const response=await fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId:product.id,rating:selectedRating,comment:comment.trim()})});
+      const result=await response.json();
+      if(!response.ok)throw new Error(typeof result.error === 'string' ? result.error : 'Review could not be saved');
+      window.dispatchEvent(new Event('viraasat-reviews-updated'));
       setSelectedRating(0);
       setComment('');
       toast({
@@ -98,12 +59,12 @@ export function ReviewsSection({ product }: { product: Product }) {
       toast({
         variant: 'destructive',
         title: 'Review failed',
-        description: 'We could not save your review. Please try again.',
+        description: e instanceof Error ? e.message : 'Please try again.',
       });
     } finally {
       setSubmitting(false);
     }
-  }, [isSignedIn, user, selectedRating, comment, product.id, product.artisanId, toast]);
+  }, [isSignedIn, user, selectedRating, comment, product.id, toast]);
 
   const ratingStars = (value: number) =>
     [1, 2, 3, 4, 5].map((star) => (
@@ -129,7 +90,7 @@ export function ReviewsSection({ product }: { product: Product }) {
             <span className="text-3xl font-bold text-primary">{rating.avg.toFixed(1)}</span>
             <div>
               <div className="flex gap-0.5">{ratingStars(rating.avg)}</div>
-              <p className="text-xs text-muted-foreground mt-1">{rating.count} verified reviews</p>
+              <p className="text-xs text-muted-foreground mt-1">{rating.count} reviews</p>
             </div>
           </div>
         )}
@@ -143,7 +104,9 @@ export function ReviewsSection({ product }: { product: Product }) {
               <button
                 key={star}
                 type="button"
-                className="p-1 -m-1 focus:outline-none"
+                aria-label={`Rate ${star} out of 5 stars`}
+                aria-pressed={selectedRating === star}
+                className="min-w-11 min-h-11 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-primary"
                 onClick={() => setSelectedRating(star)}
                 onMouseEnter={() => setHoverRating(star)}
                 onMouseLeave={() => setHoverRating(0)}
@@ -162,6 +125,7 @@ export function ReviewsSection({ product }: { product: Product }) {
             </span>
           </div>
           <Textarea
+            aria-label="Your review"
             placeholder="Tell others about the craftsmanship, quality, and heritage story behind this piece..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
@@ -205,9 +169,9 @@ export function ReviewsSection({ product }: { product: Product }) {
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-primary">{review.reviewerName}</p>
-                      <Badge variant="outline" className="border-emerald-600/30 text-emerald-800 bg-emerald-50/60 text-[9px] px-1.5 py-0 font-medium">
-                        <ShieldCheck className="h-2.5 w-2.5 mr-1 inline" /> ML Verified Clean
-                      </Badge>
+                      {review.verifiedPurchase && <Badge variant="outline" className="border-emerald-600/30 text-emerald-800 bg-emerald-50/60 text-[9px] px-1.5 py-0 font-medium">
+                        <ShieldCheck className="h-2.5 w-2.5 mr-1 inline" /> Verified purchase
+                      </Badge>}
                     </div>
                     {review.createdAt !== undefined && (
                       <p className="text-[10px] text-muted-foreground">

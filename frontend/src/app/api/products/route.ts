@@ -2,12 +2,26 @@ import crypto from 'node:crypto';
 import { z } from 'zod';
 import { check, database, failure, HttpError, identity, profile } from '@/lib/server/security';
 import { type NextRequest, NextResponse } from 'next/server';
-import { ProductService } from '@/features/marketplace/product-service';
+import { ProductService, mapProduct } from '@/features/marketplace/product-service';
 import { apiSuccess, handleApiError } from '@/core/api/api-response';
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
+    if (searchParams.get('scope') === 'artisan') {
+      const user = await identity();
+      if (!['artisan', 'admin'].includes(user.role)) throw new HttpError(403, 'Approved artisan access required');
+      const owner = await profile(user);
+      const products = [];
+      for (let offset = 0; ; offset += 100) {
+        const { data, error } = await database().from('products').select('*').eq('artisan_id', owner.id)
+          .order('created_at', { ascending: false }).order('id').range(offset, offset + 99);
+        check(error);
+        products.push(...(data || []).map(mapProduct));
+        if (!data || data.length < 100) break;
+      }
+      return apiSuccess({ products, total: products.length });
+    }
     const category = searchParams.get('category');
     const query = searchParams.get('query');
 
@@ -30,6 +44,7 @@ export async function GET(req: NextRequest) {
 
     return apiSuccess({ products: all, total: all.length });
   } catch (error) {
+    if (error instanceof HttpError) return failure(error);
     return handleApiError(error, 'Failed to fetch products');
   }
 }

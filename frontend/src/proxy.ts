@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher, clerkClient } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse, NextFetchEvent } from 'next/server';
-const protectedPage = createRouteMatcher(['/admin(.*)', '/artisan(.*)', '/dashboard(.*)', '/orders(.*)', '/checkout(.*)', '/order-confirmation(.*)', '/select-role(.*)']);
+const protectedPage = createRouteMatcher(['/admin(.*)', '/artisan', '/artisan/(.*)', '/dashboard(.*)', '/orders(.*)', '/checkout(.*)', '/order-confirmation(.*)', '/select-role(.*)']);
 const protectedApi = createRouteMatcher(['/api/users(.*)', '/api/orders(.*)', '/api/create-order', '/api/verify-payment', '/api/razorpay']);
 const handler = clerkMiddleware(async (auth, req) => {
   if (protectedPage(req) || protectedApi(req) || (req.nextUrl.pathname === '/api/products' && req.method !== 'GET')) {

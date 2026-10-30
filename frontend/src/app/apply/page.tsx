@@ -34,7 +34,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { supabase } from '@/services/supabase';
-import { sendApplyReceipt } from '@/lib/notifications/email';
+
 
 const INDIAN_STATES = [
   'Andhra Pradesh',
@@ -174,12 +174,13 @@ export default function ArtisanApplicationPage() {
   const handleFileSelect = (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
-    Array.from(files).forEach((file) => {
-      if (file.size > 10 * 1024 * 1024) {
+    Array.from(files).slice(0, Math.max(0,3-portfolioFiles.length)).forEach((file) => {
+      if (!['image/png','image/jpeg','image/webp'].includes(file.type)) {toast({title:'Unsupported image',description:'Use PNG, JPEG or WebP.',variant:'destructive'});return;}
+      if (file.size > 1024 * 1024) {
         toast({
           variant: 'destructive',
           title: 'File too large',
-          description: `${file.name} exceeds the 10MB limit.`,
+          description: `${file.name} exceeds the 1MB limit.`,
         });
         return;
       }
@@ -193,7 +194,7 @@ export default function ArtisanApplicationPage() {
             { name: file.name, url: reader.result as string, size: sizeFormatted },
           ]);
           toast({
-            title: 'File Uploaded!',
+            title: 'Image selected',
             description: `${file.name} added to portfolio.`,
           });
         }
@@ -227,14 +228,8 @@ export default function ArtisanApplicationPage() {
   async function onSubmit(values: z.infer<typeof applicationSchema>) {
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/apply', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(values)});
+      const response = await fetch('/api/apply', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({...values,portfolioImages:portfolioFiles.map(f=>f.url)})});
       if (!response.ok) throw new Error('Application could not be saved');
-      await sendApplyReceipt({
-        to: values.email,
-        name: values.fullName,
-        craft: values.craft,
-      });
-
       toast({
         title: 'Application Submitted!',
         description: 'Our team will review your application and get back to you in 3-5 business days.',
@@ -402,20 +397,20 @@ export default function ArtisanApplicationPage() {
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md font-semibold text-primary hover:text-primary/80 focus-within:outline-none"
                       >
-                        <span>Upload files</span>
+                        <span>Select up to 3 images</span>
                         <input
                           id="file-upload"
                           name="file-upload"
                           type="file"
                           className="sr-only"
                           multiple
-                          accept="image/*"
+                          accept="image/png,image/jpeg,image/webp"
                           onChange={(e) => handleFileSelect(e.target.files)}
                         />
                       </label>
                       <span className="text-muted-foreground">or drag and drop</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF, WEBP up to 10MB</p>
+                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF, WEBP up to 1MB</p>
                   </div>
 
                   {portfolioFiles.length > 0 && (

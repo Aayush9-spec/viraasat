@@ -1,65 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
-import { apiSuccess, apiError, handleApiError } from "@/core/api/api-response";
-import fs from "fs";
-import path from "path";
-
-function getFilePath(): string {
-  return path.join(process.cwd(), 'database', 'newsletter.json');
-}
-
-export async function POST(req: NextRequest) {
+import { z } from 'zod';
+import { apiSuccess } from '@/core/api/api-response';
+import { database, identity, check, failure, HttpError } from '@/lib/server/security';
+export async function POST(req: Request) {
   try {
-    const body = await req.json().catch(() => ({}));
-    const email = String(body.email || "").trim().toLowerCase();
-
-    if (!email || !email.includes("@")) {
-      return apiError("Valid email address is required", 400, "INVALID_EMAIL");
-    }
-
-    const filePath = getFilePath();
-    let subscribers: any[] = [];
-    try {
-      if (fs.existsSync(filePath)) {
-        subscribers = JSON.parse(fs.readFileSync(filePath, "utf8"));
-      }
-    } catch (e) {
-      subscribers = [];
-    }
-
-    const alreadySubscribed = subscribers.some((s) => s.email === email);
-    if (!alreadySubscribed) {
-      subscribers.unshift({
-        id: "sub_" + Date.now(),
-        email,
-        subscribedAt: new Date().toISOString(),
-        discountCodeSent: "VIRAASAT1500",
-      });
-      try {
-        fs.writeFileSync(filePath, JSON.stringify(subscribers, null, 2), "utf8");
-      } catch (err) {
-        console.warn("Could not write newsletter.json:", err);
-      }
-    }
-
-    return apiSuccess({
-      success: true,
-      message: "Welcome to The Viraasat Circle. Your ₹1,500 inaugural credit has been issued.",
-      email,
-    });
-  } catch (err) {
-    return handleApiError(err, "Failed to subscribe to newsletter");
-  }
+    const parsed=z.object({email:z.string().trim().email().max(254)}).safeParse(await req.json());
+    if(!parsed.success)throw new HttpError(400,'A valid email address is required');
+    const {error}=await database().from('newsletter_subscribers').upsert({email:parsed.data.email.toLowerCase()},{onConflict:'email',ignoreDuplicates:true});check(error);
+    return apiSuccess({success:true,message:'You are subscribed to Viraasat updates.'});
+  }catch(e){return failure(e);}
 }
-
 export async function GET() {
   try {
-    const filePath = getFilePath();
-    let subscribers = [];
-    if (fs.existsSync(filePath)) {
-      subscribers = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    }
-    return apiSuccess({ subscribers, count: subscribers.length });
-  } catch (err) {
-    return handleApiError(err, "Failed to fetch subscribers");
-  }
+    if((await identity()).role!=='admin')throw new HttpError(403,'Administrator access required');
+    const {data,error}=await database().from('newsletter_subscribers').select('email,created_at').order('created_at',{ascending:false}).limit(100);check(error);
+    return apiSuccess({subscribers:data});
+  }catch(e){return failure(e);}
 }

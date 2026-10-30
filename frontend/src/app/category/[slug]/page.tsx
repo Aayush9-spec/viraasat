@@ -3,14 +3,15 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import ProductCard from '@/features/marketplace/components/product-card';
 import { toCategorySlug, slugToCategory } from '@/lib/categories';
-import { products } from '@/lib/data';
+import { categories } from '@/lib/data';
+import { ProductService } from '@/features/marketplace/product-service';
 import { notFound } from 'next/navigation';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-const categories = Array.from(new Set(products.map((p) => p.category))).sort();
+
 
 export const generateStaticParams = async () =>
   categories.map((category) => ({ slug: toCategorySlug(category) }));
@@ -30,9 +31,10 @@ export default async function CategoryPage({ params }: PageProps) {
   const category = slugToCategory(slug, categories);
   if (!category) notFound();
 
-  const items = products.filter(
-    (p) => p.isActive && p.status === 'active' && p.category === category,
-  );
+  let items: Awaited<ReturnType<typeof ProductService.getAllProducts>> = [];
+  let unavailable = false;
+  try {items=await ProductService.getProductsByCategory(category);}catch{unavailable=true;}
+
 
   return (
     <div className="bg-background min-h-screen">
@@ -75,7 +77,7 @@ export default async function CategoryPage({ params }: PageProps) {
           </div>
         ) : (
           <div className="text-center py-24">
-            <p className="font-serif italic text-foreground/50">This collection is being lovingly replenished.</p>
+            <p className="font-serif italic text-foreground/50">{unavailable ? 'This collection is temporarily unavailable. Please try again later.' : 'No items are currently listed in this collection.'}</p>
             <Link href="/shop" className="inline-block mt-6 text-sm font-bold text-primary border-b border-primary/20 pb-1 hover:border-primary">
               Browse all treasures →
             </Link>

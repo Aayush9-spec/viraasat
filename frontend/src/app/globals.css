@@ -49,6 +49,10 @@
   /* Default :root is the signature Viraasat Clay Theme */
   :root,
   .clay {
+    --chart-revenue: #8C2B2B;
+    --chart-catalog: #8F6826;
+    --chart-orders: #3F6B52;
+    --chart-average: #5E2C18;
     --background: 32 30% 95%;
     --foreground: 20 42% 13%;
     --card: 35 32% 98%;
@@ -95,6 +99,10 @@
   }
 
   .dark {
+    --chart-revenue: #E2A292;
+    --chart-catalog: #D9B66F;
+    --chart-orders: #93B6A0;
+    --chart-average: #CDA68C;
     --background: 24 22% 8%;
     --foreground: 35 25% 95%;
     --card: 24 18% 12%;

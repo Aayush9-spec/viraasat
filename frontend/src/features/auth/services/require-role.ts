@@ -21,7 +21,7 @@ export async function requireRole(allowedRoles: UserRole | UserRole[]) {
     redirect("/login");
   }
 
-  const role = await getUserRole(userId);
+  const role = await getUserRole();
 
   if (!role) {
     redirect("/select-role");

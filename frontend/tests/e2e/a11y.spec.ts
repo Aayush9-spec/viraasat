@@ -15,7 +15,9 @@ const PAGES = [
 
 for (const { name, path } of PAGES) {
   test(`a11y: ${name} (${path}) has no serious/critical violations`, async ({ page }) => {
-    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    test.skip(path === '/checkout' && !process.env.E2E_AUTHENTICATED, 'Checkout requires a configured authenticated test session');
+    const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
+    expect(response?.status()).toBe(200);
     // Wait for client-side hydration to finish so the scan reflects the
     // rendered DOM, not the SSR shell.
     await page.waitForLoadState('networkidle').catch(() => {});

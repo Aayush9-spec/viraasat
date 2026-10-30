@@ -1,5 +1,7 @@
 # Commerce, authorization and truthful AI remediation
 
+> Follow-up: see [the final studio and repair review](final-studio-review.md) for completed inventory, fulfillment, partial-refund, persistence, navigation and analytics work and current validation. Apply both commerce migrations in order; the earlier limitations and counts below describe the first repair commit.
+
 ## Code changes
 
 - All frontend create-order and verification aliases share authenticated handlers. Amounts come from Supabase product prices, quantities are integer-validated and stock is checked. Demo-only catalog IDs cannot be purchased until seeded as real products.

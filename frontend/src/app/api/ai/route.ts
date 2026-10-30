@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server';
-
 export async function GET() {
-  return NextResponse.json({
-    status: 'active',
-    provider: 'Google Genkit + Gemini',
-    flows: ['chat', 'translate', 'vision']
-  });
+  const configured=Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_API_KEY);
+  return NextResponse.json({status:configured?'configured':'unavailable',provider:'Google Genkit + Gemini',inferenceVerified:false,flows:['chat','translate','vision'],imageEnhancementConfigured:configured && Boolean(process.env.GEMINI_IMAGE_MODEL)});
 }

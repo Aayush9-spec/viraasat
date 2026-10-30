@@ -29,7 +29,7 @@ export async function getCurrentUser(): Promise<User | null> {
         "User",
       email: clerkUser.primaryEmailAddress?.emailAddress || "",
       imageUrl: clerkUser.imageUrl || "",
-      role: (clerkUser.unsafeMetadata?.role as any) || undefined,
+      role: (clerkUser.publicMetadata?.role as any) || undefined,
       createdAt: new Date(clerkUser.createdAt).toISOString(),
     } as any;
   } catch (error) {

@@ -33,39 +33,16 @@ export function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const [menuOpen,setMenuOpen]=useState(false);
   const [mounted, setMounted] = useState(false);
   const [localUser, setLocalUser] = useState<{ id?: string; name?: string; email?: string; role?: string } | null>(null);
   const [isClientAuth, setIsClientAuth] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const syncAuth = () => {
-      if (typeof window !== 'undefined') {
-        const hasRole = localStorage.getItem('viraasat_session_role');
-        const hasUid = localStorage.getItem('viraasat_session_uid');
-        const demoStr = localStorage.getItem('viraasat_demo_user');
-        let parsed = null;
-        if (demoStr) {
-          try {
-            parsed = JSON.parse(demoStr);
-          } catch {
-            // ignore
-          }
-        } else if (hasRole || hasUid) {
-          parsed = { id: hasUid || undefined, role: hasRole || undefined };
-        }
-        setLocalUser(parsed);
-        setIsClientAuth(Boolean(isSignedIn || hasRole || hasUid || parsed));
-      }
-    };
-
-    syncAuth();
-    window.addEventListener('storage', syncAuth);
-    window.addEventListener('viraasat_auth_change', syncAuth);
-    return () => {
-      window.removeEventListener('storage', syncAuth);
-      window.removeEventListener('viraasat_auth_change', syncAuth);
-    };
+    setMenuOpen(false);
+    setIsClientAuth(Boolean(isSignedIn));
+    setLocalUser(null);
   }, [isSignedIn, pathname]);
 
   const handleLogout = async () => {
@@ -90,7 +67,7 @@ export function Header() {
   };
 
   const isArtisanRole = mounted ? Boolean(isArtisan) : false;
-  const isAdminRole = mounted ? Boolean(isAdmin || localUser?.role === 'admin') : false;
+  const isAdminRole = mounted ? Boolean(isAdmin) : false;
   const displayName = localUser?.name || user?.fullName || (isAdminRole ? 'Administrator' : isArtisanRole ? 'Artisan Partner' : 'Valued Customer');
   const displayEmail = localUser?.email || user?.primaryEmailAddress?.emailAddress || 'Active Session';
   const initialLetter = displayName ? displayName.charAt(0).toUpperCase() : (isAdminRole ? 'A' : isArtisanRole ? 'A' : 'C');
@@ -102,7 +79,7 @@ export function Header() {
           {/* Logo and Primary Nav */}
           <div className="flex min-w-0 items-center gap-8">
             <ViraasatLogo className="shrink-0" />
-            <div className="hidden lg:flex items-center space-x-5 xl:space-x-8 text-sm font-medium tracking-wide">
+            <div className="hidden min-[1800px]:flex items-center whitespace-nowrap space-x-5 xl:space-x-8 text-sm font-medium tracking-wide">
               <Link href="/" className="text-foreground/80 hover:text-primary transition-colors">
                 {t('nav.home')}
               </Link>
@@ -340,19 +317,19 @@ export function Header() {
             )}
 
             {/* Mobile Drawer Trigger */}
-            <div className="xl:hidden">
-              <Sheet>
+            <div className="min-[1800px]:hidden">
+              <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="-mr-2">
                     <Menu className="h-6 w-6" />
                     <span className="sr-only">Toggle menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[80vw] sm:w-[350px]">
+                <SheetContent aria-describedby={undefined} side="right" className="w-[80vw] sm:w-[350px]">
                   <SheetHeader>
                     <SheetTitle className="text-left font-heading text-2xl">Menu</SheetTitle>
                   </SheetHeader>
-                  <div className="flex flex-col gap-6 mt-6">
+                  <div className="flex flex-col gap-6 mt-6" onClick={event=>{if((event.target as HTMLElement).closest('a'))setMenuOpen(false);}}>
                     <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border">
                       <span className="text-xs font-medium text-muted-foreground">{t('common.language') || 'Language'}:</span>
                       <LanguageSwitcher showLabel />
@@ -372,7 +349,7 @@ export function Header() {
                       <Link href="/#artisan-lineage" className="text-lg font-medium hover:text-primary transition-colors">
                         {t('nav.masterArtisans') || 'Master Artisans'}
                       </Link>
-                      <Link href="/#mission" className="text-lg font-medium hover:text-primary transition-colors">
+                      <Link href="/#why-viraasat" className="text-lg font-medium hover:text-primary transition-colors">
                         {t('nav.mission')}
                       </Link>
                       <Link href="/orders" className="text-lg font-medium hover:text-primary transition-colors">

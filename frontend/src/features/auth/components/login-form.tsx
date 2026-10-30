@@ -236,28 +236,6 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
 
             <CardContent className="p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6">
               <form onSubmit={handleSubmit} className="space-y-4">
-                {isAdmin && (
-                  <div className="space-y-1.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="adminPin" className="text-xs font-bold uppercase text-amber-900 dark:text-amber-200 tracking-wide flex items-center gap-1.5">
-                        <Lock className="w-3.5 h-3.5 text-amber-600" />
-                        Admin Security Passcode
-                      </Label>
-                      <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-300">Required</span>
-                    </div>
-                    <Input
-                      id="adminPin"
-                      name="adminPin"
-                      type="password"
-                      placeholder="Enter secret administrator PIN"
-                      className="h-11 sm:h-12 text-base sm:text-sm border-amber-500/40 focus-visible:ring-2 focus-visible:ring-amber-600 rounded-xl bg-background"
-                      required
-                    />
-                    <p className="text-[11px] text-muted-foreground leading-tight">
-                      Access restricted to system administrators with a valid security key.
-                    </p>
-                  </div>
-                )}
                 {isSignUp && (
                   <div className="space-y-1.5">
                     <Label htmlFor="fullname" className="text-xs font-semibold uppercase text-muted-foreground tracking-wide">
@@ -335,6 +313,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                   <div className="flex items-center space-x-2.5 pt-1">
                     <Checkbox
                       id="remember"
+                      aria-label="Remember me"
                       checked={rememberMe}
                       onCheckedChange={(c) => setRememberMe(!!c)}
                       className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"

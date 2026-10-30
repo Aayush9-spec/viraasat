@@ -2,13 +2,13 @@
 import os
 import pickle
 import pandas as pd
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class ReviewAnomalyInput(BaseModel):
-    seller_id: str
-    reviewer_id: str
-    rating: int
-    review_text: str
+    seller_id: str = Field(min_length=1, max_length=200)
+    reviewer_id: str = Field(min_length=1, max_length=200)
+    rating: int = Field(ge=1, le=5)
+    review_text: str = Field(min_length=1, max_length=5000)
 
 # Load the trained IsolationForest anomaly detection pipeline
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +55,7 @@ def detect_review_fraud(payload: ReviewAnomalyInput) -> dict:
             return {
                 "spam_indicator_score": round(spam_indicator, 2),
                 "is_fraudulent": bool(is_anomaly),
-                "verdict": "Suspicious Review Pattern" if is_anomaly else "Verified Clean Review",
+                "verdict": "Suspicious Review Pattern" if is_anomaly else "No spam pattern detected",
                 "model_type": "Random Forest Classifier (Spam Threshold: 0.60)",
                 "features_analyzed": {
                     "spam_probability": round(spam_indicator, 4),
@@ -85,7 +85,7 @@ def detect_review_fraud(payload: ReviewAnomalyInput) -> dict:
     return {
         "spam_indicator_score": round(anomaly_factor, 2),
         "is_fraudulent": is_anomaly,
-        "verdict": "Suspicious Review Pattern" if is_anomaly else "Verified Clean Review",
+        "verdict": "Suspicious Review Pattern" if is_anomaly else "No spam pattern detected",
         "model_type": "Keyword & Heuristics Rule Engine (Fallback)",
         "features_analyzed": {
             "spam_keywords_detected": spam_score,

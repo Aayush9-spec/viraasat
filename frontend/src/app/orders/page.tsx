@@ -11,6 +11,8 @@ import { Separator } from '@/components/ui/separator';
 import { Package, Truck, CheckCircle2, Clock, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/core/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
 
 const STATUS_ICONS = {
   'Processing': <Clock className="h-4 w-4 text-amber-500" />,
@@ -18,6 +20,27 @@ const STATUS_ICONS = {
   'Delivered': <CheckCircle2 className="h-4 w-4 text-green-500" />,
   'Pending': <Package className="h-4 w-4 text-gray-500" />,
 };
+
+function RefundRequest({order,onSaved}:{order:any;onSaved:()=>void}) {
+  const [reason,setReason]=useState('');
+  const [saving,setSaving]=useState(false);
+  const {toast}=useToast();
+  async function submit() {
+    setSaving(true);
+    try {
+      const r=await fetch('/api/orders',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'request-refund',id:order.internalId,reason})});
+      const result=await r.json();if(!r.ok)throw new Error(result.error || 'Request failed');
+      onSaved();toast({title:'Refund request received',description:'Support will review your request. This does not confirm a refund.'});
+    }catch(e){toast({title:'Request failed',description:e instanceof Error?e.message:'Please retry',variant:'destructive'});}
+    finally{setSaving(false);}
+  }
+  if(order.refundRequest)return <p role="status">Refund request: {order.refundRequest.status}</p>;
+  if(!['Paid','Partially Refunded'].includes(order.paymentStatus))return null;
+  return <div className="space-y-2"><label htmlFor={`refund-${order.internalId}`}>Reason for refund</label>
+    <Textarea id={`refund-${order.internalId}`} value={reason} maxLength={2000} onChange={e=>setReason(e.target.value)}/>
+    <Button disabled={saving || reason.trim().length<10} onClick={submit}>{saving?'Sending…':'Request Refund'}</Button>
+  </div>;
+}
 
 export default function OrdersPage() {
   const { user } = useUser();
@@ -151,6 +174,11 @@ export default function OrdersPage() {
                         <span className="text-xl font-heading font-bold text-primary">₹{order.totalAmount.toLocaleString('en-IN')}</span>
                       </div>
                     </div>
+                  </div>
+                  <div className="p-6 space-y-3">
+                    {order.refundedAmount>0 && <p>Refunded: ₹{order.refundedAmount.toLocaleString('en-IN')}</p>}
+                    {Object.entries(order.fulfillment || {}).map(([seller,value]) => {const shipment=value as {status:string;trackingId?:string};return <p key={seller}>{shipment.status}{shipment.trackingId?` · Tracking: ${shipment.trackingId}`:''}</p>;})}
+                    <RefundRequest order={order} onSaved={()=>{if(user)OrderService.getOrdersByBuyer(user.id).then(setDbOrders).catch(()=>setLoadError('Please reload to see the request status'));}}/>
                   </div>
                 </CardContent>
               </Card>

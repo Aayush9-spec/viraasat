@@ -1,1012 +1,184 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { IndianRupee, Package, Layers, TrendingUp, Download, RotateCcw, Leaf, Heart, Users, ShieldCheck, type LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  LineChart,
-  Line,
-} from 'recharts';
-import {
-  TrendingUp,
-  Package,
-  IndianRupee,
-  Users,
-  Heart,
-  Leaf,
-  Sparkles,
-  Download,
-  RotateCcw,
-  ShieldCheck,
-  CheckCircle2,
-  Calendar,
-  Layers,
-  ArrowUpRight,
-  Zap,
-  Info,
-} from 'lucide-react';
-import { useToast } from '@/core/hooks/use-toast';
 import { useBackend } from '@/hooks/use-backend';
-import { getLocalProducts } from '@/lib/data';
-import { SalesAnalytics } from '../sales-analytics';
-import {
-  MarketService,
-  MarketTrendsResult,
-  TopProjectedProduct,
-} from '@/features/analytics/market-service';
+import type { MarketTrendsResult, TopProjectedProduct } from '../market-service';
+import { buildStudioAnalytics, ordersCsv, type ChartPoint, type StudioOrder, type StudioProduct, type TimeRange } from '../studio-analytics';
+import { StudioChart, formatINR, formatNumber } from './studio-chart';
 
-type TimeRange = '7d' | '30d' | '90d' | '1y' | 'all';
+const RED = 'var(--chart-revenue)';
+const GOLD = 'var(--chart-catalog)';
+const GREEN = 'var(--chart-orders)';
+const BROWN = 'var(--chart-average)';
+const categories = ['Home Decor', 'Pottery & Clay', 'Textiles', 'Kitchenware', 'Accessories'];
+const regions = ['Rajasthan', 'Kashmir', 'Gujarat', 'Uttar Pradesh', 'Chhattisgarh', 'Bihar', 'Kutch'];
+const timeRanges: { value: TimeRange; label: string }[] = [{ value: '7d', label: '7D' }, { value: '30d', label: '30D' }, { value: '90d', label: '90D' }, { value: '1y', label: '1Y' }, { value: 'all', label: 'All' }];
+interface Forecast {
+  time_series: { month: string; demand_index: number; tourist_inflow_k: number }[];
+  warnings?: string[]; is_simulated?: boolean;
+}
+interface StudioData { orders: StudioOrder[]; products: StudioProduct[]; updated: Date }
 
-interface OrderItem {
-  id: string;
-  customer: string;
-  item: string;
-  date: string;
-  amount: number;
-  status: string;
-  city: string;
+async function fetchJson<T>(url: string): Promise<T> {
+  const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(20000) });
+  if (!response.ok) throw new Error('Could not load your studio data. Please try again.');
+  return response.json();
+}
+async function loadStudio(): Promise<StudioData> {
+  const [orders, catalog] = await Promise.all([
+    fetchJson<StudioOrder[]>('/api/orders?scope=artisan'),
+    fetchJson<{ data: { products: StudioProduct[] } }>('/api/products?scope=artisan'),
+  ]);
+  if (!Array.isArray(orders) || !Array.isArray(catalog.data?.products)) throw new Error('The studio returned incomplete data. Please refresh.');
+  return { orders, products: catalog.data.products, updated: new Date() };
+}
+function useResource<T>(load: () => Promise<T>, enabled = true) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(enabled);
+  const [error, setError] = useState('');
+  const [revision, setRevision] = useState(0);
+  useEffect(() => {
+    if (!enabled) return;
+    let active = true;
+    setLoading(true); setError(''); setData(null);
+    void load().then(value => { if (active) setData(value); }).catch(error => {
+      if (active) setError(error instanceof Error ? error.message : 'Data is unavailable. Please retry.');
+    }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [load, enabled, revision]);
+  return { data, loading, error, refresh: () => setRevision(value => value + 1) };
+}
+function Panel({ title, description, children, className = '' }: { title: string; description: string; children: ReactNode; className?: string }) {
+  return <Card className={`min-w-0 rounded-2xl border-border/80 shadow-sm ${className}`}><CardHeader className="pb-4"><CardTitle className="font-serif text-xl">{title}</CardTitle><CardDescription className="leading-relaxed">{description}</CardDescription></CardHeader><CardContent>{children}</CardContent></Card>;
+}
+function Metric({ title, value, note, icon: Icon, data, color, money, kind = 'area', empty }: {
+  title: string; value: string; note: string; icon: LucideIcon; data: ChartPoint[]; color: string;
+  money?: boolean; kind?: 'area' | 'bar'; empty: string;
+}) {
+  return <Card className="min-w-0 rounded-2xl border-border/80 shadow-sm"><CardContent className="p-5">
+    <div className="mb-4 flex items-center justify-between gap-2"><h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</h2><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-muted/60"><Icon className="h-4 w-4" style={{ color }} aria-hidden="true" /></span></div>
+    <p className="mb-2 break-words font-mono text-3xl font-semibold tracking-tight text-foreground">{value}</p>
+    <StudioChart data={data} label={title} caption={note} color={color} money={money} kind={kind} compact empty={empty} />
+  </CardContent></Card>;
+}
+function Filter({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (value: string) => void }) {
+  return <label className="flex min-w-0 flex-1 flex-col gap-1.5 text-xs font-medium text-muted-foreground">{label}<select value={value} onChange={event => onChange(event.target.value)} className="min-h-11 rounded-lg border bg-card px-3 text-sm text-foreground">{options.map(option => <option key={option} value={option}>{option === 'all' ? `All ${label === 'Category' ? 'categories' : 'regions'}` : option}</option>)}</select></label>;
+}
+function ErrorMessage({ message, retry }: { message: string; retry: () => void }) {
+  return <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm"><p>{message}</p><Button size="sm" variant="outline" onClick={retry}>Try again</Button></div>;
 }
 
-const BASE_ORDERS: OrderItem[] = [
-  { id: 'ORD-8821', customer: 'Aarav Sharma', item: 'Handcrafted Terracotta Diya Set', date: '2026-10-22', amount: 1450, status: 'Settled via UPI', city: 'New Delhi' },
-  { id: 'ORD-8819', customer: 'Meera Patel', item: 'Jaipur Blue Pottery Heritage Urn', date: '2026-10-20', amount: 3800, status: 'Settled via UPI', city: 'Ahmedabad' },
-  { id: 'ORD-8790', customer: 'Kabir Verma', item: 'Kashmiri Sozni Pashmina Shawl', date: '2026-10-18', amount: 18500, status: 'Settled via UPI', city: 'Jaipur' },
-  { id: 'ORD-8765', customer: 'Ananya Deshmukh', item: 'Bastar Dhokra Dancing Bull', date: '2026-10-14', amount: 4200, status: 'Settled via UPI', city: 'Mumbai' },
-  { id: 'ORD-8742', customer: 'Rohit Sengupta', item: 'Moradabad Engraved Brass Lamp', date: '2026-10-09', amount: 2900, status: 'Settled via UPI', city: 'Kolkata' },
-  { id: 'ORD-8711', customer: 'Pooja Sundaram', item: 'Hand-Moulded Lotus Diya', date: '2026-10-04', amount: 1250, status: 'Settled via UPI', city: 'Bengaluru' },
-  { id: 'ORD-8690', customer: 'Vikram Singhal', item: 'Azure Glazed Ceramic Vase', date: '2026-09-28', amount: 3400, status: 'Settled via UPI', city: 'Pune' },
-  { id: 'ORD-8650', customer: 'Sneha Mukherjee', item: 'Hand-Woven Dhurrie Rug', date: '2026-09-20', amount: 4800, status: 'Settled via UPI', city: 'Hyderabad' },
-];
-
-const CRAFT_CATEGORIES_DATA = [
-  { category: 'Devotional & Diyas', revenue: 14200, orders: 38, growth: '+28%' },
-  { category: 'Ceramics & Pottery', revenue: 19800, orders: 19, growth: '+15%' },
-  { category: 'Heritage Textiles', revenue: 32500, orders: 8, growth: '+34%' },
-  { category: 'Brass & Metalcraft', revenue: 11200, orders: 12, growth: '+9%' },
-  { category: 'Woodcraft & Toys', revenue: 8400, orders: 14, growth: '+12%' },
-];
-
-const REGIONAL_DENSITY_DATA = [
-  { state: 'Rajasthan', artisans: 850, density: 92, activeGuilds: 4 },
-  { state: 'Gujarat', artisans: 720, density: 85, activeGuilds: 3 },
-  { state: 'Bihar', artisans: 640, density: 78, activeGuilds: 3 },
-  { state: 'Kashmir', artisans: 410, density: 60, activeGuilds: 2 },
-  { state: 'Andhra Pradesh', artisans: 320, density: 45, activeGuilds: 2 },
-];
-
 export function ArtisanAnalyticsDashboard() {
-  const { toast } = useToast();
   const backend = useBackend();
-  const [timeRange, setTimeRange] = useState<TimeRange>('30d');
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState('sales');
-
-  // AI Demand Forecast States
+  const [range, setRange] = useState<TimeRange>('30d');
+  const [tab, setTab] = useState('sales');
+  const studio = useResource(loadStudio);
   const [forecastRegion, setForecastRegion] = useState('Rajasthan');
   const [forecastCategory, setForecastCategory] = useState('Home Decor');
-  const [forecastData, setForecastData] = useState<any>(null);
-  const [isLoadingForecast, setIsLoadingForecast] = useState(false);
-
-  // Platform Market Prediction States (LSTM + GBT)
-  const [marketTrends, setMarketTrends] = useState<MarketTrendsResult | null>(null);
-  const [topProjected, setTopProjected] = useState<TopProjectedProduct[]>([]);
-  const [marketCategory, setMarketCategory] = useState<string>('all');
-  const [marketRegion, setMarketRegion] = useState<string>('all');
-  const [isLoadingMarket, setIsLoadingMarket] = useState<boolean>(false);
-
-  // Load real created products from localStorage/DB
-  const [liveProductsCount, setLiveProductsCount] = useState<number>(29);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const localProds = getLocalProducts();
-        if (localProds && localProds.length > 0) {
-          setLiveProductsCount(28 + localProds.length);
-        }
-      } catch {}
-    }
-  }, []);
-
-  // Fetch AI Demand Forecast from backend
-  const fetchDemandForecast = useCallback(async (region: string, category: string) => {
-    setIsLoadingForecast(true);
-    try {
-      const data = await backend.get<any>(
-        `/api/forecast-demand?region=${encodeURIComponent(region)}&category=${encodeURIComponent(category)}`
-      );
-      if (data && data.time_series) {
-        setForecastData(data);
-      } else {
-        throw new Error('Invalid format');
-      }
-    } catch {
-      // Graceful realistic fallback if backend worker is loading
-      setForecastData({
-        region,
-        category,
-        model_accuracy: 0.8112,
-        warnings: [
-          'Diwali & Festive surge ahead: Increase production batches by 45% for handmade diyas and ceremonial vessels.',
-          'Winter tourism in Rajasthan peaks in Nov-Feb with high demand for glazed pottery & miniature arts.',
-        ],
-        time_series: [
-          { month: 'Jan', demand_index: 64.2, tourist_inflow_k: 257 },
-          { month: 'Feb', demand_index: 68.4, tourist_inflow_k: 113 },
-          { month: 'Mar', demand_index: 66.8, tourist_inflow_k: 114 },
-          { month: 'Apr', demand_index: 59.2, tourist_inflow_k: 113 },
-          { month: 'May', demand_index: 52.2, tourist_inflow_k: 113 },
-          { month: 'Jun', demand_index: 42.8, tourist_inflow_k: 113 },
-          { month: 'Jul', demand_index: 54.1, tourist_inflow_k: 114 },
-          { month: 'Aug', demand_index: 79.8, tourist_inflow_k: 113 },
-          { month: 'Sep', demand_index: 90.1, tourist_inflow_k: 113 },
-          { month: 'Oct', demand_index: 134.7, tourist_inflow_k: 257 },
-          { month: 'Nov', demand_index: 147.8, tourist_inflow_k: 258 },
-          { month: 'Dec', demand_index: 116.2, tourist_inflow_k: 257 },
-        ],
-      });
-    } finally {
-      setIsLoadingForecast(false);
-    }
-  }, [backend]);
-
-  useEffect(() => {
-    fetchDemandForecast(forecastRegion, forecastCategory);
-  }, [forecastRegion, forecastCategory, fetchDemandForecast]);
-
-  // Fetch Platform-wide Market Trends & Projected Demand
-  const fetchMarketData = useCallback(async () => {
-    setIsLoadingMarket(true);
-    try {
-      const [trends, topProds] = await Promise.all([
-        MarketService.getMarketTrends(),
-        MarketService.getTopProducts(marketCategory, marketRegion, 8),
-      ]);
-      setMarketTrends(trends);
-      setTopProjected(topProds);
-    } catch (e) {
-      console.warn('Failed to fetch market trends:', e);
-    } finally {
-      setIsLoadingMarket(false);
-    }
-  }, [marketCategory, marketRegion]);
-
-  useEffect(() => {
-    fetchMarketData();
-  }, [fetchMarketData]);
-
-  // Dynamic Sales Trend Data based on Time Range
-  const salesTrendData = useMemo(() => {
-    switch (timeRange) {
-      case '7d':
-        return [
-          { period: 'Mon', revenue: 3200, orders: 3, directPayout: 3200 },
-          { period: 'Tue', revenue: 4800, orders: 4, directPayout: 4800 },
-          { period: 'Wed', revenue: 2100, orders: 2, directPayout: 2100 },
-          { period: 'Thu', revenue: 6400, orders: 5, directPayout: 6400 },
-          { period: 'Fri', revenue: 8900, orders: 7, directPayout: 8900 },
-          { period: 'Sat', revenue: 11200, orders: 9, directPayout: 11200 },
-          { period: 'Sun', revenue: 9500, orders: 8, directPayout: 9500 },
-        ];
-      case '90d':
-        return [
-          { period: 'Aug W1', revenue: 14500, orders: 12, directPayout: 14500 },
-          { period: 'Aug W3', revenue: 18200, orders: 16, directPayout: 18200 },
-          { period: 'Sep W1', revenue: 22400, orders: 21, directPayout: 22400 },
-          { period: 'Sep W3', revenue: 28900, orders: 27, directPayout: 28900 },
-          { period: 'Oct W1', revenue: 36500, orders: 34, directPayout: 36500 },
-          { period: 'Oct W3', revenue: 46100, orders: 42, directPayout: 46100 },
-        ];
-      case '1y':
-      case 'all':
-        return [
-          { period: 'Q1 2025', revenue: 48000, orders: 45, directPayout: 48000 },
-          { period: 'Q2 2025', revenue: 56000, orders: 52, directPayout: 56000 },
-          { period: 'Q3 2025', revenue: 78000, orders: 74, directPayout: 78000 },
-          { period: 'Q4 2025', revenue: 112000, orders: 104, directPayout: 112000 },
-          { period: 'Q1 2026', revenue: 94000, orders: 88, directPayout: 94000 },
-          { period: 'Q2 2026', revenue: 126000, orders: 118, directPayout: 126000 },
-          { period: 'Q3 2026 (YTD)', revenue: 154000, orders: 142, directPayout: 154000 },
-        ];
-      case '30d':
-      default:
-        return [
-          { period: 'Sep 24', revenue: 3800, orders: 3, directPayout: 3800 },
-          { period: 'Sep 28', revenue: 5400, orders: 4, directPayout: 5400 },
-          { period: 'Oct 02', revenue: 7200, orders: 6, directPayout: 7200 },
-          { period: 'Oct 06', revenue: 6100, orders: 5, directPayout: 6100 },
-          { period: 'Oct 10', revenue: 9400, orders: 8, directPayout: 9400 },
-          { period: 'Oct 14', revenue: 11800, orders: 10, directPayout: 11800 },
-          { period: 'Oct 18', revenue: 14500, orders: 12, directPayout: 14500 },
-          { period: 'Oct 22', revenue: 18200, orders: 15, directPayout: 18200 },
-        ];
-    }
-  }, [timeRange]);
-
-  const totalPeriodRevenue = useMemo(() => {
-    return salesTrendData.reduce((acc, curr) => acc + curr.revenue, 0);
-  }, [salesTrendData]);
-
-  const totalPeriodOrders = useMemo(() => {
-    return salesTrendData.reduce((acc, curr) => acc + curr.orders, 0);
-  }, [salesTrendData]);
-
-  const averageOrderValue = useMemo(() => {
-    return totalPeriodOrders > 0 ? Math.round(totalPeriodRevenue / totalPeriodOrders) : 0;
-  }, [totalPeriodRevenue, totalPeriodOrders]);
-
-  // Ecological impact calculations
-  const carbonOffsetKg = useMemo(() => {
-    return SalesAnalytics.getCarbonOffset(totalPeriodOrders).toFixed(1);
-  }, [totalPeriodOrders]);
-
-  const communityFundContribution = useMemo(() => {
-    return Math.round(SalesAnalytics.getCommunityInvestment(totalPeriodRevenue));
-  }, [totalPeriodRevenue]);
-
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    setTimeout(() => {
-      setIsRefreshing(false);
-      toast({
-        title: 'Studio Metrics Updated',
-        description: 'Synchronized with latest on-chain orders, UPI settlements, and AI forecasts.',
-      });
-    }, 600);
-  };
-
-  const handleDownloadReport = () => {
-    const headers = ['Order ID', 'Date', 'Customer', 'Creation', 'Amount (INR)', 'Direct Payout Status', 'Destination City'];
-    const rows = BASE_ORDERS.map((o) => [
-      o.id,
-      o.date,
-      `"${o.customer}"`,
-      `"${o.item}"`,
-      o.amount,
-      `"100% Settled (₹0 Commission)"`,
-      `"${o.city}"`,
+  const [marketCategory, setMarketCategory] = useState('all');
+  const [marketRegion, setMarketRegion] = useState('all');
+  const forecastLoader = useCallback(async () => {
+    const value = await backend.get<Forecast>(`/api/forecast-demand?${new URLSearchParams({ region: forecastRegion, category: forecastCategory })}`);
+    if (!Array.isArray(value.time_series)) throw new Error('Demand forecast is unavailable. Please retry.');
+    return value;
+  }, [backend, forecastRegion, forecastCategory]);
+  const forecast = useResource(forecastLoader, tab === 'forecasting');
+  const marketLoader = useCallback(async () => {
+    const params = new URLSearchParams({ limit: '8' });
+    if (marketCategory !== 'all') params.set('category', marketCategory);
+    if (marketRegion !== 'all') params.set('region', marketRegion);
+    const [trends, top] = await Promise.all([
+      backend.get<MarketTrendsResult>('/api/market/trends'),
+      backend.get<{ products: TopProjectedProduct[]; is_simulated?: boolean }>(`/api/market/top-products?${params}`),
     ]);
-
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Viraasat-Artisan-Financial-Statement-${timeRange}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    toast({
-      title: 'Financial Statement Downloaded',
-      description: 'Exported official CSV statement for your studio tax & bank accounting.',
-    });
-  };
-
-  return (
-    <div className="space-y-6">
-      {/* Top Header Bar & Control Panel */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[#E8DCCB] dark:border-border">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-heading font-bold text-foreground">
-              Artisan Analytics & Studio Intelligence
-            </h1>
-            <Badge className="bg-[#FAF7F2] text-[#8C2B2B] border border-[#C59B4B]/40 text-xs font-bold gap-1">
-              <Zap className="h-3 w-3 text-[#C59B4B]" /> Live Studio Hub
-            </Badge>
-          </div>
-          <p className="text-muted-foreground text-sm mt-1">
-            Track real-time direct sales, UPI payouts, festival demand predictions, and cultural impact metrics.
-          </p>
-        </div>
-
-        {/* Time Selector & Action Buttons */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Time Filter Pills */}
-          <div className="flex items-center bg-muted/60 p-1 rounded-xl border border-border text-xs font-semibold">
-            {(['7d', '30d', '90d', '1y', 'all'] as TimeRange[]).map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setTimeRange(r)}
-                className={`px-3 py-1.5 rounded-lg transition-all uppercase tracking-wider font-bold ${
-                  timeRange === r
-                    ? 'bg-[#5E2C18] text-[#FAF7F2] shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="h-9 px-3 gap-1.5 border-[#E8DCCB] hover:bg-[#FAF7F2] text-xs font-semibold"
-          >
-            <RotateCcw className={`h-3.5 w-3.5 text-[#C59B4B] ${isRefreshing ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-
-          <Button
-            size="sm"
-            onClick={handleDownloadReport}
-            className="h-9 px-3.5 gap-1.5 bg-[#8C2B2B] hover:bg-[#702222] text-white font-bold text-xs shadow-sm"
-          >
-            <Download className="h-3.5 w-3.5 text-[#E8CA82]" />
-            Export Statement
-          </Button>
-        </div>
+    if (!Array.isArray(trends.monthly_trend) || !Array.isArray(trends.category_perf) || !Array.isArray(top.products)) throw new Error('Market data is unavailable. Please retry.');
+    return { trends, top };
+  }, [backend, marketCategory, marketRegion]);
+  const market = useResource(marketLoader, tab === 'market');
+  const analytics = useMemo(() => buildStudioAnalytics(studio.data?.orders || [], studio.data?.products || [], range, studio.data?.updated), [studio.data, range]);
+  const studioEmpty = studio.loading ? 'Loading your studio data…' : studio.error ? 'Data unavailable — try again' : 'No saved data yet';
+  const points = (key: 'revenue' | 'orders' | 'average'): ChartPoint[] => studio.data ? analytics.buckets.map(bucket => ({ label: bucket.label, value: bucket[key] })) : [];
+  const showValue = (value: string) => studio.data ? value : '—';
+  const forecastEmpty = forecast.loading ? 'Loading forecast…' : 'Forecast unavailable';
+  const marketEmpty = market.loading ? 'Loading market data…' : 'No model data available';
+  const refreshing = studio.loading || (tab === 'market' && market.loading) || (tab === 'forecasting' && forecast.loading);
+  function refresh() { studio.refresh(); if (tab === 'forecasting') forecast.refresh(); if (tab === 'market') market.refresh(); }
+  function exportOrders() {
+    const url = URL.createObjectURL(new Blob(['\uFEFF', ordersCsv(analytics.orders)], { type: 'text/csv;charset=utf-8;' }));
+    const anchor = document.createElement('a'); anchor.href = url; anchor.download = `viraasat-studio-${range}.csv`; anchor.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  return <div className="space-y-6">
+    <div className="flex flex-wrap items-start justify-between gap-5 border-b pb-5">
+      <div className="max-w-2xl"><p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">Your studio, in perspective</p><h1 className="font-serif text-3xl font-semibold tracking-tight lg:text-4xl">Artisan Analytics & Studio Intelligence</h1><p className="mt-2 text-sm leading-relaxed text-muted-foreground">Understand your sales, explore seasonal demand, and keep track of your catalog.</p></div>
+      <div className="flex flex-wrap items-center gap-2">
+        <div role="group" aria-label="Sales date range" className="flex rounded-xl border bg-muted/40 p-1">{timeRanges.map(item => <Button key={item.value} size="sm" variant={range === item.value ? 'default' : 'ghost'} aria-pressed={range === item.value} onClick={() => setRange(item.value)} className="min-w-11 px-3">{item.label}</Button>)}</div>
+        <Button variant="outline" onClick={refresh} disabled={refreshing} className="gap-2"><RotateCcw className={`h-4 w-4 ${refreshing ? 'animate-spin motion-reduce:animate-none' : ''}`} />Refresh</Button>
+        <Button onClick={exportOrders} disabled={!studio.data || !analytics.orders.length} className="gap-2"><Download className="h-4 w-4" />Export orders</Button>
       </div>
-
-      {/* Top Studio Key Performance Indicators */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Metric 1: Total Revenue */}
-        <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground">
-              Total Studio Revenue
-            </span>
-            <div className="p-2 rounded-xl bg-amber-500/10 text-[#8C2B2B]">
-              <IndianRupee className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="pt-1">
-            <div className="text-2xl sm:text-3xl font-bold font-mono text-[#5E2C18] dark:text-[#E8CA82]">
-              ₹{totalPeriodRevenue.toLocaleString('en-IN')}
-            </div>
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50 text-[11px]">
-              <span className="text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-0.5">
-                <ArrowUpRight className="h-3 w-3" /> +24.8% vs Prev Period
-              </span>
-              <span className="font-semibold text-muted-foreground">100% Direct Payout</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Metric 2: Orders Fulfilled */}
-        <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground">
-              Orders Dispatched
-            </span>
-            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-700">
-              <Package className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="pt-1">
-            <div className="text-2xl sm:text-3xl font-bold font-mono text-foreground">
-              {totalPeriodOrders}{' '}
-              <span className="text-sm font-normal text-muted-foreground">Handmade Units</span>
-            </div>
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50 text-[11px]">
-              <span className="text-muted-foreground">Avg Order: ₹{averageOrderValue.toLocaleString('en-IN')}</span>
-              <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">
-                0% Chargebacks
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Metric 3: Active Catalog Creations */}
-        <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground">
-              Live Catalog Listings
-            </span>
-            <div className="p-2 rounded-xl bg-[#C59B4B]/15 text-[#8C2B2B]">
-              <Layers className="h-4 w-4 text-[#C59B4B]" />
-            </div>
-          </CardHeader>
-          <CardContent className="pt-1">
-            <div className="text-2xl sm:text-3xl font-bold font-mono text-foreground">
-              {liveProductsCount}{' '}
-              <span className="text-sm font-normal text-muted-foreground">Master Pieces</span>
-            </div>
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50 text-[11px]">
-              <span className="text-[#8C2B2B] dark:text-[#E8CA82] font-semibold">100% Cryptographic GI Tagged</span>
-              <span className="text-emerald-700 font-bold">In Stock</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Metric 4: Direct Income Multiplier */}
-        <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground">
-              Artisan Income Multiplier
-            </span>
-            <div className="p-2 rounded-xl bg-amber-500/10 text-[#C59B4B]">
-              <TrendingUp className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="pt-1">
-            <div className="text-2xl sm:text-3xl font-bold font-mono text-[#8C2B2B] dark:text-[#E8CA82]">
-              2.15x
-            </div>
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50 text-[11px]">
-              <span className="text-muted-foreground">vs Local Middleman Baseline</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-bold">+18.2% YoY</span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Tabbed Analytics Views */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="bg-[#FAF7F2] dark:bg-card border border-[#E8DCCB] p-1 rounded-2xl h-auto gap-1">
-          <TabsTrigger
-            value="sales"
-            className="rounded-xl px-4 py-2 font-heading font-semibold text-xs data-[state=active]:bg-[#5E2C18] data-[state=active]:text-[#FAF7F2] data-[state=active]:shadow-sm transition-all"
-          >
-            📊 Studio Sales & Revenue Dynamics
-          </TabsTrigger>
-          <TabsTrigger
-            value="forecasting"
-            className="rounded-xl px-4 py-2 font-heading font-semibold text-xs data-[state=active]:bg-[#5E2C18] data-[state=active]:text-[#FAF7F2] data-[state=active]:shadow-sm transition-all"
-          >
-            🔮 AI Seasonal Demand Predictor
-          </TabsTrigger>
-          <TabsTrigger
-            value="market"
-            className="rounded-xl px-4 py-2 font-heading font-semibold text-xs data-[state=active]:bg-[#5E2C18] data-[state=active]:text-[#FAF7F2] data-[state=active]:shadow-sm transition-all"
-          >
-            📈 Platform Market Trends & Rankings
-          </TabsTrigger>
-          <TabsTrigger
-            value="impact"
-            className="rounded-xl px-4 py-2 font-heading font-semibold text-xs data-[state=active]:bg-[#5E2C18] data-[state=active]:text-[#FAF7F2] data-[state=active]:shadow-sm transition-all"
-          >
-            🌿 Ethical & Community Impact
-          </TabsTrigger>
-        </TabsList>
-
-        {/* ----------------- TAB 1: STUDIO SALES DYNAMICS ----------------- */}
-        <TabsContent value="sales" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left 8 Cols: Revenue Area Chart */}
-            <Card className="lg:col-span-8 rounded-2xl border border-[#E8DCCB] shadow-sm bg-card">
-              <CardHeader className="pb-2">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div>
-                    <CardTitle className="text-lg font-heading text-foreground">
-                      Revenue & Direct Payout Trajectory (INR)
-                    </CardTitle>
-                    <CardDescription className="text-xs">
-                      100% of customer purchases settled directly via instant UPI with zero commission cuts.
-                    </CardDescription>
-                  </div>
-                  <Badge variant="outline" className="border-emerald-500/40 bg-emerald-50/50 text-emerald-800 text-[11px] font-bold">
-                    ● Daily Settlement Active
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-4 h-[330px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={salesTrendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="artisanRevenueGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#8C2B2B" stopOpacity={0.4} />
-                        <stop offset="95%" stopColor="#C59B4B" stopOpacity={0.02} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                    <XAxis dataKey="period" stroke="#8C2B2B" fontSize={11} tickLine={false} />
-                    <YAxis
-                      stroke="#8C2B2B"
-                      fontSize={11}
-                      tickLine={false}
-                      tickFormatter={(val) => `₹${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}`}
-                    />
-                    <Tooltip
-                      formatter={(val: number) => [`₹${val.toLocaleString('en-IN')}`, 'Gross Direct Payout']}
-                      labelFormatter={(label) => `Timeframe: ${label}`}
-                      contentStyle={{
-                        borderRadius: '12px',
-                        borderColor: '#E8DCCB',
-                        backgroundColor: '#FAF7F2',
-                        fontSize: '12px',
-                        color: '#221C18',
-                      }}
-                    />
-                    <Legend />
-                    <Area
-                      type="monotone"
-                      dataKey="revenue"
-                      name="Direct Revenue (₹)"
-                      stroke="#8C2B2B"
-                      strokeWidth={3}
-                      fillOpacity={1}
-                      fill="url(#artisanRevenueGrad)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Right 4 Cols: Category Share Breakdown */}
-            <Card className="lg:col-span-4 rounded-2xl border border-[#E8DCCB] shadow-sm bg-card">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-heading text-foreground">
-                  Craft Category Performance
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Sales breakdown across your traditional specialties.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {CRAFT_CATEGORIES_DATA.map((c) => (
-                  <div key={c.category} className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-foreground">{c.category}</span>
-                      <span className="font-mono font-bold text-[#8C2B2B]">₹{c.revenue.toLocaleString('en-IN')}</span>
-                    </div>
-                    <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
-                      <div
-                        className="bg-gradient-to-r from-[#8C2B2B] to-[#C59B4B] h-full rounded-full"
-                        style={{ width: `${Math.min(100, (c.revenue / 32500) * 100)}%` }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                      <span>{c.orders} units sold</span>
-                      <span className="text-emerald-700 font-bold">{c.growth} YoY</span>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Recent Orders Settlement Feed */}
-          <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-base font-heading">Recent Payout Settlements</CardTitle>
-                  <CardDescription className="text-xs">
-                    Live audit log of orders dispatched and credited to your verified bank account.
-                  </CardDescription>
-                </div>
-                <Badge variant="outline" className="border-[#C59B4B]/30 text-[#8C2B2B] font-mono text-xs">
-                  0% Intermediary Fee
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs text-left">
-                  <thead>
-                    <tr className="border-b border-[#E8DCCB] text-muted-foreground uppercase text-[10px] tracking-wider font-bold">
-                      <th className="py-2.5">Order ID</th>
-                      <th className="py-2.5">Date</th>
-                      <th className="py-2.5">Creation Item</th>
-                      <th className="py-2.5">Patron / City</th>
-                      <th className="py-2.5">Settlement (100%)</th>
-                      <th className="py-2.5 text-right">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/60 font-medium">
-                    {BASE_ORDERS.map((o) => (
-                      <tr key={o.id} className="hover:bg-muted/30 transition-colors">
-                        <td className="py-3 font-mono font-bold text-primary">{o.id}</td>
-                        <td className="py-3 text-muted-foreground">{o.date}</td>
-                        <td className="py-3 font-semibold text-foreground">{o.item}</td>
-                        <td className="py-3 text-muted-foreground">
-                          {o.customer} • <span className="text-foreground">{o.city}</span>
-                        </td>
-                        <td className="py-3 font-mono font-bold text-[#8C2B2B]">₹{o.amount.toLocaleString('en-IN')}</td>
-                        <td className="py-3 text-right">
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200">
-                            <CheckCircle2 className="h-3 w-3" /> {o.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* ----------------- TAB 2: AI DEMAND PREDICTION ----------------- */}
-        <TabsContent value="forecasting" className="space-y-6">
-          <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card">
-            <CardHeader>
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-lg font-heading text-foreground">
-                      AI Seasonal Demand & Production Forecasting
-                    </CardTitle>
-                    <Badge className="bg-[#FAF7F2] text-[#8C2B2B] border border-[#C59B4B]/30 text-[10px] font-bold">
-                      Ridge Regression Engine (81.1% Accuracy)
-                    </Badge>
-                  </div>
-                  <CardDescription className="text-xs mt-1">
-                    Trained on multi-year Indian tourism inflows, festive calendars (Diwali, Navratri), and historical handicraft buyer demand.
-                  </CardDescription>
-                </div>
-
-                {/* Region & Category Selectors */}
-                <div className="flex items-center gap-3">
-                  <div className="space-y-1">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground block">Craft Region</span>
-                    <Select value={forecastRegion} onValueChange={setForecastRegion}>
-                      <SelectTrigger className="w-[140px] h-9 text-xs font-semibold">
-                        <SelectValue placeholder="Region" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {['Rajasthan', 'Kashmir', 'Uttar Pradesh', 'Gujarat', 'Karnataka', 'Bihar'].map((r) => (
-                          <SelectItem key={r} value={r}>
-                            {r}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground block">Category</span>
-                    <Select value={forecastCategory} onValueChange={setForecastCategory}>
-                      <SelectTrigger className="w-[140px] h-9 text-xs font-semibold">
-                        <SelectValue placeholder="Category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {['Home Decor', 'Ceramics & Pottery', 'Textiles', 'Devotional', 'Brass & Metal'].map((c) => (
-                          <SelectItem key={c} value={c}>
-                            {c}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* 12-Month Trajectory Chart */}
-              <div className="h-[320px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={forecastData?.time_series || []}
-                    margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                    <XAxis dataKey="month" stroke="#8C2B2B" fontSize={11} tickLine={false} />
-                    <YAxis stroke="#8C2B2B" fontSize={11} tickLine={false} />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: '12px',
-                        borderColor: '#E8DCCB',
-                        backgroundColor: '#FAF7F2',
-                        fontSize: '12px',
-                      }}
-                    />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="demand_index"
-                      name="Predicted Demand Index"
-                      stroke="#8C2B2B"
-                      strokeWidth={3}
-                      dot={{ r: 4, fill: '#8C2B2B' }}
-                      activeDot={{ r: 6 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="tourist_inflow_k"
-                      name="Tourist Inflow Index (in '000s)"
-                      stroke="#C59B4B"
-                      strokeWidth={2}
-                      strokeDasharray="4 4"
-                      dot={{ r: 3, fill: '#C59B4B' }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* AI Strategic Advisories Box */}
-              <div className="rounded-xl p-4 bg-[#FAF7F2] dark:bg-card border border-[#E8DCCB] space-y-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#8C2B2B] uppercase tracking-wider">
-                  <Sparkles className="h-4 w-4 text-[#C59B4B]" /> AI Production Advisory for {forecastRegion} • {forecastCategory}
-                </div>
-                <div className="space-y-1.5 text-xs text-foreground leading-relaxed">
-                  {(forecastData?.warnings || [
-                    'Festive surge begins in October: Double batch kilns for devotional diyas and glazed decorative urns.',
-                    'Direct international buyer interest peaks in late Q4 coinciding with winter export expos.',
-                  ]).map((w: string, idx: number) => (
-                    <div key={idx} className="flex items-start gap-2">
-                      <span className="text-[#C59B4B] font-bold">✦</span>
-                      <span>{w}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* ----------------- TAB 3: PLATFORM MARKET TRENDS & TOP SELLERS ----------------- */}
-        <TabsContent value="market" className="space-y-6">
-          {/* Market Intelligence MLOps Header */}
-          <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card overflow-hidden">
-            <CardHeader className="pb-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-lg font-heading text-foreground">
-                      Platform Market Trends & Multi-Month Sales Projections
-                    </CardTitle>
-                    <Badge className="bg-[#FAF7F2] text-[#8C2B2B] border border-[#C59B4B]/30 text-[10px] font-bold">
-                      LSTM + GBT Ensemble (85.1% Accuracy)
-                    </Badge>
-                  </div>
-                  <CardDescription className="text-xs">
-                    Platform-wide aggregate analytics trained on 3 years of Indian craft seasonal transactions, tourism correlations, and export demand.
-                  </CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="border-emerald-600/30 text-emerald-800 bg-emerald-50 text-xs font-semibold">
-                    ● Real-time Platform Telemetry
-                  </Badge>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Top Trend Charts Row */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Monthly Demand Trajectory */}
-                <div className="lg:col-span-7 space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-heading font-bold text-foreground">Platform Monthly Demand Curve (Handicrafts Volume)</span>
-                    <span className="text-muted-foreground text-[11px]">Units Sold Trajectory</span>
-                  </div>
-                  <div className="h-[280px] w-full pt-2">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={marketTrends?.monthly_trend || []} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="marketDemandGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#8C2B2B" stopOpacity={0.4} />
-                            <stop offset="95%" stopColor="#C59B4B" stopOpacity={0.02} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                        <XAxis dataKey="month" stroke="#8C2B2B" fontSize={11} tickLine={false} />
-                        <YAxis stroke="#8C2B2B" fontSize={11} tickLine={false} />
-                        <Tooltip
-                          contentStyle={{
-                            borderRadius: '12px',
-                            borderColor: '#E8DCCB',
-                            backgroundColor: '#FAF7F2',
-                            fontSize: '12px',
-                          }}
-                          formatter={(val: number, name: string) => [
-                            name === 'total_units' ? `${val.toLocaleString('en-IN')} units` : `₹${val.toLocaleString('en-IN')}`,
-                            name === 'total_units' ? 'Total Demand' : 'Platform Revenue',
-                          ]}
-                        />
-                        <Area
-                          type="monotone"
-                          dataKey="total_units"
-                          name="total_units"
-                          stroke="#8C2B2B"
-                          strokeWidth={2.5}
-                          fill="url(#marketDemandGrad)"
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-
-                {/* Category Performance Breakdown */}
-                <div className="lg:col-span-5 space-y-3">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-heading font-bold text-foreground">Category Performance & Average Price</span>
-                    <span className="text-muted-foreground text-[11px]">Platform Aggregate</span>
-                  </div>
-                  <div className="space-y-2.5 pt-1">
-                    {(marketTrends?.category_perf || []).map((cat) => (
-                      <div key={cat.category} className="p-2.5 rounded-xl border border-[#E8DCCB] bg-[#FAF7F2]/60 space-y-1">
-                        <div className="flex items-center justify-between text-xs font-semibold">
-                          <span className="text-foreground">{cat.category}</span>
-                          <span className="font-mono text-[#8C2B2B]">₹{cat.total_revenue.toLocaleString('en-IN')}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                          <span>{cat.total_units.toLocaleString('en-IN')} orders</span>
-                          <span>Avg: ₹{cat.avg_price.toLocaleString('en-IN')} / piece</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* 3-Month Projected Sales Rankings */}
-              <div className="space-y-4 pt-4 border-t border-[#E8DCCB]">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-base font-heading font-bold text-foreground">
-                      3-Month Projected Sales Demand Rankings
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      Filtered by region & craft category to identify high-velocity handicraft opportunities.
-                    </p>
-                  </div>
-
-                  {/* Filter Controls */}
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Select value={marketCategory} onValueChange={setMarketCategory}>
-                      <SelectTrigger className="w-[130px] h-8 text-xs font-semibold">
-                        <SelectValue placeholder="Category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Categories</SelectItem>
-                        <SelectItem value="Home Decor">Home Decor</SelectItem>
-                        <SelectItem value="Pottery & Clay">Pottery & Clay</SelectItem>
-                        <SelectItem value="Textiles">Textiles</SelectItem>
-                        <SelectItem value="Kitchenware">Kitchenware</SelectItem>
-                        <SelectItem value="Accessories">Accessories</SelectItem>
-                      </SelectContent>
-                    </Select>
-
-                    <Select value={marketRegion} onValueChange={setMarketRegion}>
-                      <SelectTrigger className="w-[130px] h-8 text-xs font-semibold">
-                        <SelectValue placeholder="Region" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Regions</SelectItem>
-                        <SelectItem value="Rajasthan">Rajasthan</SelectItem>
-                        <SelectItem value="Kashmir">Kashmir</SelectItem>
-                        <SelectItem value="Gujarat">Gujarat</SelectItem>
-                        <SelectItem value="Uttar Pradesh">Uttar Pradesh</SelectItem>
-                        <SelectItem value="Chhattisgarh">Chhattisgarh</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Table */}
-                <div className="overflow-x-auto rounded-xl border border-[#E8DCCB]">
-                  <table className="w-full text-xs text-left">
-                    <thead className="bg-[#FAF7F2] text-muted-foreground uppercase text-[10px] tracking-wider font-bold border-b border-[#E8DCCB]">
-                      <tr>
-                        <th className="py-2.5 px-3">Rank</th>
-                        <th className="py-2.5 px-3">Craft Creation</th>
-                        <th className="py-2.5 px-3">Category</th>
-                        <th className="py-2.5 px-3">Origin Region</th>
-                        <th className="py-2.5 px-3">Base Price</th>
-                        <th className="py-2.5 px-3">GI Tag</th>
-                        <th className="py-2.5 px-3 text-right">Projected 3M Units</th>
-                        <th className="py-2.5 px-3 text-right">Projected 3M Revenue</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/60 font-medium">
-                      {topProjected.map((prod, idx) => (
-                        <tr key={prod.product} className="hover:bg-muted/30 transition-colors">
-                          <td className="py-2.5 px-3 font-mono font-bold text-[#8C2B2B]">#{idx + 1}</td>
-                          <td className="py-2.5 px-3 font-semibold text-foreground">{prod.product}</td>
-                          <td className="py-2.5 px-3 text-muted-foreground">{prod.category}</td>
-                          <td className="py-2.5 px-3 text-muted-foreground">{prod.region}</td>
-                          <td className="py-2.5 px-3 font-mono">₹{prod.base_price_inr.toLocaleString('en-IN')}</td>
-                          <td className="py-2.5 px-3">
-                            {prod.gi_tag ? (
-                              <Badge className="bg-[#FAF7F2] text-[#8C2B2B] border border-[#C59B4B]/40 text-[9px] font-bold">
-                                GI Certified
-                              </Badge>
-                            ) : (
-                              <span className="text-[10px] text-muted-foreground">Standard</span>
-                            )}
-                          </td>
-                          <td className="py-2.5 px-3 text-right font-mono font-bold text-foreground">
-                            {prod.projected_units_3m} units
-                          </td>
-                          <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-700">
-                            ₹{prod.projected_revenue_3m_inr.toLocaleString('en-IN')}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* ----------------- TAB 4: ETHICAL & COMMUNITY IMPACT ----------------- */}
-        <TabsContent value="impact" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card p-4 space-y-2">
-              <div className="flex items-center justify-between text-muted-foreground text-xs uppercase font-bold">
-                <span>Carbon Offset</span>
-                <Leaf className="h-4 w-4 text-emerald-600" />
-              </div>
-              <div className="text-2xl font-bold font-mono text-emerald-700">{carbonOffsetKg} kg</div>
-              <p className="text-[11px] text-muted-foreground">
-                CO₂ emissions prevented by choosing manual earthen firing vs industrial machinery.
-              </p>
-            </Card>
-
-            <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card p-4 space-y-2">
-              <div className="flex items-center justify-between text-muted-foreground text-xs uppercase font-bold">
-                <span>Heritage Fund</span>
-                <Heart className="h-4 w-4 text-red-600" />
-              </div>
-              <div className="text-2xl font-bold font-mono text-[#8C2B2B]">₹{communityFundContribution.toLocaleString('en-IN')}</div>
-              <p className="text-[11px] text-muted-foreground">
-                15% community reinvestment preserving authentic apprenticeships in local clusters.
-              </p>
-            </Card>
-
-            <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card p-4 space-y-2">
-              <div className="flex items-center justify-between text-muted-foreground text-xs uppercase font-bold">
-                <span>Women Employment</span>
-                <Users className="h-4 w-4 text-primary" />
-              </div>
-              <div className="text-2xl font-bold font-mono text-foreground">68.4%</div>
-              <p className="text-[11px] text-emerald-700 font-semibold">+12.4% YoY rural female artisan participation.</p>
-            </Card>
-
-            <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card p-4 space-y-2">
-              <div className="flex items-center justify-between text-muted-foreground text-xs uppercase font-bold">
-                <span>GI Tag Preservation</span>
-                <ShieldCheck className="h-4 w-4 text-[#C59B4B]" />
-              </div>
-              <div className="text-2xl font-bold font-mono text-foreground">14 Active</div>
-              <p className="text-[11px] text-muted-foreground">Protected Geographical Indication clusters across India.</p>
-            </Card>
-          </div>
-
-          {/* Regional Guild Density Chart */}
-          <Card className="rounded-2xl border border-[#E8DCCB] shadow-sm bg-card">
-            <CardHeader>
-              <CardTitle className="text-lg font-heading text-foreground">
-                State-wise Artisan Density & Platform Participation Index
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Distribution of verified master craft families active across key regional hubs.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={REGIONAL_DENSITY_DATA}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                  <XAxis dataKey="state" stroke="#8C2B2B" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#8C2B2B" fontSize={11} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      borderRadius: '12px',
-                      borderColor: '#E8DCCB',
-                      backgroundColor: '#FAF7F2',
-                      fontSize: '12px',
-                    }}
-                  />
-                  <Legend />
-                  <Bar dataKey="artisans" name="Registered Artisan Families" fill="#8C2B2B" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="density" name="Platform Engagement Index" fill="#C59B4B" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
     </div>
-  );
+    {studio.error && <ErrorMessage message={studio.error} retry={studio.refresh} />}
+    <div className="flex flex-wrap justify-between gap-2 text-xs text-muted-foreground"><p>Sales period: {range === 'all' ? 'All time' : range === '1y' ? 'Last 365 days' : `Last ${range.slice(0, -1)} days`} · India Standard Time</p><p role="status">{studio.data ? `Updated ${studio.data.updated.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })} IST` : studio.loading ? 'Loading studio…' : 'Unable to load studio'}</p></div>
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <Metric title="Gross product sales" value={showValue(formatINR(analytics.revenue))} note="Paid product sales over the selected period" icon={IndianRupee} data={points('revenue')} color={RED} money empty={studioEmpty} />
+      <Metric title="Paid orders" value={showValue(formatNumber(analytics.orders.length))} note={`${formatNumber(analytics.units)} craft units · orders by date`} icon={Package} data={points('orders')} color={GREEN} kind="bar" empty={studioEmpty} />
+      <Metric title="Active catalog" value={showValue(formatNumber(analytics.liveProducts))} note="Current listings by category · independent of date range" icon={Layers} data={studio.data ? analytics.catalogByCategory : []} color={GOLD} kind="bar" empty={studioEmpty} />
+      <Metric title="Average order value" value={showValue(formatINR(analytics.average))} note="Average product sales per paid order, by date" icon={TrendingUp} data={points('average')} color={BROWN} money empty={studioEmpty} />
+    </div>
+    <Tabs value={tab} onValueChange={setTab} className="space-y-6">
+      <div className="overflow-x-auto pb-1"><TabsList aria-label="Analytics sections" className="h-auto w-max gap-1 rounded-xl border bg-card p-1">
+        <TabsTrigger className="min-h-11 px-4" value="sales">Sales & revenue</TabsTrigger><TabsTrigger className="min-h-11 px-4" value="forecasting">Seasonal demand</TabsTrigger><TabsTrigger className="min-h-11 px-4" value="market">Market trends</TabsTrigger><TabsTrigger className="min-h-11 px-4" value="impact">Community impact</TabsTrigger>
+      </TabsList></div>
+      <TabsContent value="sales" className="space-y-6">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
+          <Panel title="Your sales over time" description="Each point shows product sales for that interval. Hover or view the data for exact amounts."><StudioChart data={points('revenue')} label="Product sales (INR)" caption="Gross sales before partial refunds, fees, tax and shipping. Fully refunded orders are excluded. This is not a payout statement." money empty={studioEmpty} /></Panel>
+          <Panel title="Craft category performance" description="See which craft categories contribute to your sales."><StudioChart data={studio.data ? analytics.revenueByCategory : []} label="Sales by category (INR)" caption="Categories use your current catalog; deleted products appear as Uncategorized." kind="horizontal" color={GOLD} money empty={studioEmpty} /></Panel>
+        </div>
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
+          <Panel title="Recent paid orders" description="Your ten most recent paid orders within the selected period.">
+            <StudioChart data={analytics.orders.slice(0, 10).reverse().map(order => ({ label: order.id, value: order.totalAmount }))} label="Order value (INR)" caption="Only items belonging to your studio are included." kind="bar" money compact empty={studioEmpty} />
+            {analytics.orders.length > 0 && <div tabIndex={0} role="region" aria-label="Recent paid orders table" className="mt-4 overflow-x-auto"><table className="w-full text-left text-sm"><thead className="text-xs text-muted-foreground"><tr><th scope="col" className="py-3 pr-4">Order</th><th scope="col" className="py-3 pr-4">Date</th><th scope="col" className="py-3 pr-4">Status</th><th scope="col" className="py-3 text-right">Value</th></tr></thead><tbody>{analytics.orders.slice(0, 10).map(order => <tr key={order.internalId} className="border-t"><th scope="row" className="max-w-44 truncate py-3 pr-4 font-mono text-xs font-normal" title={order.id}>{order.id}</th><td className="whitespace-nowrap py-3 pr-4 text-xs">{new Date(order.orderDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</td><td className="py-3 pr-4 text-xs">{order.status}</td><td className="whitespace-nowrap py-3 text-right font-mono">{formatINR(order.totalAmount)}</td></tr>)}</tbody></table></div>}
+          </Panel>
+          <Panel title="Catalog availability" description="A snapshot of stock across your active listings."><StudioChart data={studio.data ? analytics.stock : []} label="Active listings" caption="Stock is current and does not change with the sales date range." kind="bar" color={GREEN} empty={studioEmpty} /></Panel>
+        </div>
+      </TabsContent>
+      <TabsContent value="forecasting" className="space-y-6">
+        <div className="flex max-w-xl flex-wrap gap-3"><Filter label="Region" value={forecastRegion} options={regions} onChange={setForecastRegion} /><Filter label="Category" value={forecastCategory} options={categories} onChange={setForecastCategory} /></div>
+        {forecast.error && <ErrorMessage message="Seasonal predictions could not be loaded. Please retry." retry={forecast.refresh} />}
+        <p className="rounded-xl border bg-muted/30 p-4 text-sm text-muted-foreground">{forecast.data?.is_simulated ? 'Illustrative seasonal estimates — the trained model is unavailable.' : 'Model estimates describe seasonal patterns, not confirmed orders. Validation on your studio’s real sales is still needed.'}</p>
+        <div className="grid gap-6 xl:grid-cols-2">
+          <Panel title="Seasonal demand outlook" description={`${forecastCategory} · ${forecastRegion}`}><StudioChart data={forecast.data?.time_series.map(point => ({ label: point.month, value: point.demand_index })) || []} label="Demand index" caption="Higher values indicate stronger estimated seasonal demand. This index is not a unit-sales forecast." empty={forecastEmpty} /></Panel>
+          <Panel title="Tourism & seasonal opportunity" description="Estimated tourist inflow across the same seasonal cycle."><StudioChart data={forecast.data?.time_series.map(point => ({ label: point.month, value: point.tourist_inflow_k })) || []} label="Estimated visitors (thousands)" caption="Model estimates, not measured local footfall." kind="bar" color={GOLD} empty={forecastEmpty} /></Panel>
+        </div>
+        {Boolean(forecast.data?.warnings?.length) && <aside className="rounded-xl border-l-4 border-l-primary bg-card p-5"><h2 className="mb-2 font-serif text-lg font-semibold">Seasonal planning notes</h2><ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">{forecast.data?.warnings?.map(warning => <li key={warning}>{warning}</li>)}</ul></aside>}
+      </TabsContent>
+      <TabsContent value="market" className="space-y-6">
+        {market.error && <ErrorMessage message="Market trends could not be loaded. Please retry." retry={market.refresh} />}
+        <p className="rounded-xl border bg-muted/30 p-4 text-sm text-muted-foreground">These charts summarize the model’s training data and seasonal projections. They are not live marketplace transactions or guaranteed sales.</p>
+        <div className="grid gap-6 xl:grid-cols-2">
+          <Panel title="Market sales pattern" description="Monthly revenue totals from the model dataset."><StudioChart data={market.data?.trends.monthly_trend.map(point => ({ label: point.month, value: point.total_revenue })) || []} label="Dataset revenue (INR)" caption="Dataset totals; independent of your studio date range." money empty={marketEmpty} /></Panel>
+          <Panel title="Market volume pattern" description="Compare unit volume through the seasonal cycle."><StudioChart data={market.data?.trends.monthly_trend.map(point => ({ label: point.month, value: point.total_units })) || []} label="Dataset units" caption="Dataset volume; not current marketplace orders." kind="bar" color={GREEN} empty={marketEmpty} /></Panel>
+          <Panel title="Categories in the market dataset" description="Compare revenue across the categories represented in the model."><StudioChart data={market.data?.trends.category_perf.map(point => ({ label: point.category, value: point.total_revenue })) || []} label="Category revenue (INR)" caption="Coverage depends on the model dataset." kind="horizontal" color={GOLD} money empty={marketEmpty} /></Panel>
+          <Panel title="Three-month product outlook" description="Seasonal estimates help compare products; they are not sales commitments.">
+            <div className="mb-4 flex flex-wrap gap-3"><Filter label="Category" value={marketCategory} options={['all', ...categories]} onChange={setMarketCategory} /><Filter label="Region" value={marketRegion} options={['all', ...regions]} onChange={setMarketRegion} /></div>
+            <StudioChart data={market.data?.top.products.map(point => ({ label: point.product, value: point.projected_units_3m })) || []} label="Projected units" caption="Rule-based seasonal projections over the next three months." kind="horizontal" color={BROWN} empty={marketEmpty} />
+          </Panel>
+        </div>
+      </TabsContent>
+      <TabsContent value="impact" className="space-y-6">
+        <p className="text-sm leading-relaxed text-muted-foreground">Impact reporting needs recorded evidence. Unmeasured indicators stay empty until verified data is available.</p>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Metric title="Carbon avoided" value="Not measured" note="Requires a documented footprint baseline and shipment measurements." icon={Leaf} data={[]} color={GREEN} empty="No verified carbon measurements" />
+          <Metric title="Community contributions" value="Not measured" note="Requires recorded and verified community fund transfers." icon={Heart} data={[]} color={RED} empty="No contribution records" />
+          <Metric title="Women-led participation" value="Not measured" note="Requires consented participation and ownership records." icon={Users} data={[]} color={GOLD} empty="No verified participation data" />
+          <Metric title="GI certifications" value="Not measured" note="Requires verified GI certificates linked to your products." icon={ShieldCheck} data={[]} color={BROWN} empty="No verified certification records" />
+        </div>
+        <Panel title="Your catalog’s regional footprint" description="Active listings grouped by the region recorded on each product."><StudioChart data={studio.data ? analytics.catalogByRegion : []} label="Listings by region" caption="Listing counts show catalog coverage, not artisan population or verified cultural impact." kind="horizontal" color={GOLD} empty={studioEmpty} /></Panel>
+      </TabsContent>
+    </Tabs>
+  </div>;
 }

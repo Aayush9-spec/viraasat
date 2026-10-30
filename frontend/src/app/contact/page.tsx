@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/core/hooks/use-toast';
 import { supabase } from '@/services/supabase';
-import { sendContactReceipt } from '@/lib/notifications/email';
+
 import { Mail, MapPin, Send } from 'lucide-react';
 
 const channel = {
@@ -41,24 +41,14 @@ export default function ContactPage() {
 
     setSending(true);
     try {
-      await supabase.from('contact_submissions').insert({
-        user_id: user.id,
-        name: name.trim(),
-        email: email.trim(),
-        topic,
-        message: message.trim(),
-      });
-      await sendContactReceipt({
-        to: email.trim(),
-        name: name.trim(),
-        topic,
-      });
+      const response = await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,topic,message})});
+      if(!response.ok)throw new Error('Message could not be saved');
       setName('');
       setEmail('');
       setMessage('');
       toast({
         title: 'Message sent',
-        description: `Thanks, ${name || 'friend'}! We'll reply to ${email || 'your email'} within 24 hours.`,
+        description: `Thanks, ${name || 'friend'}! We'll reply to ${user.primaryEmailAddress?.emailAddress || 'your account email'} within 24 hours.`,
       });
     } catch (error) {
       console.error('Failed to submit contact form:', error);

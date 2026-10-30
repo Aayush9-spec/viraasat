@@ -18,6 +18,7 @@ let rows: Record<string, any>[];
 let storageFails: boolean;
 const create = jest.fn();
 const fetchPayment = jest.fn();
+const listOrders = jest.fn();
 function query(table: string) {
   let filters: [string, unknown][] = [];
   let write: string | undefined;
@@ -49,7 +50,8 @@ beforeEach(() => {
   (currentUser as jest.Mock).mockResolvedValue({id:'user_buyer',fullName:'Buyer',publicMetadata:{role:'buyer'},primaryEmailAddress:{emailAddress:'buyer@example.test',verification:{status:'verified'}}});
   (createClient as jest.Mock).mockReturnValue({from:query});
   create.mockResolvedValue({id:'order_test'});
-  (Razorpay as unknown as jest.Mock).mockImplementation(()=>({orders:{create},payments:{fetch:fetchPayment}}));
+  listOrders.mockResolvedValue({items:[]});
+  (Razorpay as unknown as jest.Mock).mockImplementation(()=>({orders:{create,all:listOrders},payments:{fetch:fetchPayment}}));
 });
 test('legacy amount-only endpoint cannot create a payment',async()=>{
   const response=await POST(new Request('http://test/api/create-order',{method:'POST',body:JSON.stringify({amount:100})}));
@@ -131,4 +133,20 @@ test('webhook updates canonical order and delayed capture cannot undo refund',as
   fetchPayment.mockResolvedValue({order_id:'order_test',amount:23600,currency:'INR',status:'captured',amount_refunded:0});
   expect((await webhook(webhookRequest('payment.captured'))).status).toBe(200);
   expect(rows[0].payment_status).toBe('Refunded');
+});
+
+
+test('an ambiguous provider timeout recovers the receipt without creating another order',async()=>{
+  create.mockRejectedValueOnce(new Error('timeout'));
+  await expect(createOrder(input)).rejects.toThrow('timeout');
+  listOrders.mockResolvedValue({items:[{id:'order_recovered',receipt:rows[0].id,amount:23600,currency:'INR'}]});
+  await expect(createOrder(input)).resolves.toMatchObject({id:'order_recovered'});
+  expect(create).toHaveBeenCalledTimes(1);
+  expect(rows[0].razorpay_order_id).toBe('order_recovered');
+});
+test('partial refunds are persisted with their exact amount',async()=>{
+  await createOrder(input);
+  fetchPayment.mockResolvedValue({order_id:'order_test',amount:23600,currency:'INR',status:'captured',amount_refunded:5000});
+  expect((await webhook(webhookRequest('refund.processed'))).status).toBe(200);
+  expect(rows[0]).toMatchObject({payment_status:'Partially Refunded',refunded_amount:5000});
 });

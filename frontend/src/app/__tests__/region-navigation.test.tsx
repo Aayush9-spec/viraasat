@@ -1,3 +1,4 @@
+beforeEach(() => { global.fetch = jest.fn().mockResolvedValue({ok:true,json:async()=>({data:{products:[],artisans:[],reviews:[]}})}); });
 import { render, screen } from '@testing-library/react';
 import { LanguageProvider } from '@/context/language-context';
 import { CartProvider } from '@/context/cart-context';

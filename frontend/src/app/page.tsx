@@ -72,6 +72,7 @@ export default function Marketplace() {
   const [products, setProducts] = useState<any[]>([]);
   const [artisans, setArtisans] = useState<ArtisanRecord[]>([]);
   const [reviews, setReviews] = useState<ReviewRecord[]>([]);
+  const [catalogError,setCatalogError]=useState('');
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
   // Modals state
@@ -103,40 +104,18 @@ export default function Marketplace() {
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [recRegion, setRecRegion] = useState("Rajasthan");
   const [recCategory, setRecCategory] = useState("Home Decor");
-  const [recAccuracy, setRecAccuracy] = useState<number | null>(0.884);
+  const [recAccuracy, setRecAccuracy] = useState<number | null>(null);
   const [isLoadingRecs, setIsLoadingRecs] = useState(false);
 
-  // 1. Fetch live products from backend & database
   useEffect(() => {
-    async function loadLiveData() {
-      try {
-        setIsLoadingProducts(true);
-        const liveItems = await ProductService.getAllProducts();
-        if (liveItems && liveItems.length > 0) {
-          setProducts(liveItems);
-        } else {
-          // Fallback to API route
-          const res = await fetch("/api/products");
-          const data = await res.json();
-          if (data?.data?.products) {
-            setProducts(data.data.products);
-          }
-        }
-      } catch (err) {
-        console.warn("[Viraasat] Product fetch warning, retrying via API:", err);
-        try {
-          const res = await fetch("/api/products");
-          const data = await res.json();
-          if (data?.data?.products) setProducts(data.data.products);
-        } catch (apiErr) {
-          console.error("[Viraasat] Failed to fetch products:", apiErr);
-        }
-      } finally {
-        setIsLoadingProducts(false);
-      }
-    }
-    loadLiveData();
-  }, []);
+    const controller=new AbortController();
+    fetch('/api/products',{signal:controller.signal}).then(async response=>{
+      if(!response.ok)throw new Error('Catalog unavailable');
+      setProducts((await response.json()).data?.products || []);
+    }).catch(()=>{if(!controller.signal.aborted)setCatalogError('The catalog is temporarily unavailable. Please try again later.');})
+      .finally(()=>{if(!controller.signal.aborted)setIsLoadingProducts(false);});
+    return ()=>controller.abort();
+  },[]);
 
   // 2. Fetch live master artisans from database
   useEffect(() => {
@@ -297,7 +276,7 @@ export default function Marketplace() {
       images: Array.isArray(product.images) ? product.images : [imgUrl],
       category: product.category || "Heirloom Craft",
       artisanId: product.artisanId || "artisan-guild",
-      stock: Number(product.stock) || 10,
+      stock: Number(product.stock) || 0,
       region: product.region || "India",
       description: product.description || "Authentic handcrafted Indian heritage craft.",
       tagline: product.tagline || (product.region ? product.region + " Craft Lineage" : "GI Authentic"),
@@ -385,7 +364,7 @@ export default function Marketplace() {
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EDE2] border border-[#C59B4B]/40 text-xs text-[#5E2C18] font-medium tracking-wide">
                 <span className="w-2 h-2 rounded-full bg-[#701D24] animate-pulse" />
                 <span className="uppercase text-[11px] font-bold text-[#5E2C18]">
-                  {t('home.badge') || "Direct GI-Origin Craft Marketplace • Live Database Connected"}
+                  Indian Craft Marketplace
                 </span>
               </div>
 
@@ -433,8 +412,8 @@ export default function Marketplace() {
                     <Award className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">{t('home.badgeCertified') || "100% Certified"}</h4>
-                    <p className="text-[11px] text-[#655B53]">{t('home.badgeCertifiedDesc') || "Geographical Indication (GI) tags"}</p>
+                    <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">Regional craft</h4>
+                    <p className="text-[11px] text-[#655B53]">Explore traditions across India</p>
                   </div>
                 </div>
 
@@ -444,7 +423,7 @@ export default function Marketplace() {
                   </div>
                   <div>
                     <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">{t('home.badgeFairWage') || "Fair Wage"}</h4>
-                    <p className="text-[11px] text-[#655B53]">{t('home.badgeFairWageDesc') || "85%+ direct to artisan guilds"}</p>
+                    <p className="text-[11px] text-[#655B53]">Connect with artisan makers</p>
                   </div>
                 </div>
 
@@ -519,6 +498,7 @@ export default function Marketplace() {
                           )}
                           <button
                             type="button"
+                            disabled={!heroMasterpiece || heroMasterpiece.stock < 1}
                             onClick={handleAcquireHeroMasterpiece}
                             className="px-4 py-2 bg-white text-[#221C18] hover:bg-[#C59B4B] hover:text-white rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-md cursor-pointer"
                           >
@@ -546,7 +526,7 @@ export default function Marketplace() {
                       />
                     </div>
                     <div>
-                      <div className="flex text-amber-500 text-xs mb-0.5">★★★★★</div>
+                      <div className="text-[#8F6826] text-xs mb-0.5">Artisan story</div>
                       <p className="text-xs font-bold text-[#221C18] leading-tight">{heroArtisan.name}</p>
                       <p className="text-[10px] text-[#655B53] line-clamp-1">{heroArtisan.bio}</p>
                     </div>
@@ -720,7 +700,7 @@ export default function Marketplace() {
                 {t('home.curatedAcquisitions') || "Curated Guild Acquisitions"}
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-1">
-                {t('home.certifiedHeirlooms') || "Authentic Certified Heirlooms"}
+                Explore Handcrafted Heirlooms
               </h2>
               <p className="text-xs text-[#655B53] mt-1">
                 {products.length} {t('home.liveArtifactsSync') || "live artifacts currently synchronized from the guild registry database."}
@@ -768,6 +748,7 @@ export default function Marketplace() {
           </div>
 
           {/* Loading Skeleton */}
+          {catalogError && <p role="alert" className="mb-4 text-destructive">{catalogError}</p>}
           {isLoadingProducts ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-8">
               {[1, 2, 3, 4].map((n) => (
@@ -822,7 +803,7 @@ export default function Marketplace() {
 
                         {/* GI Tag / Region Badge */}
                         <div className="absolute top-3 left-3 bg-[#FAF7F2]/90 backdrop-blur-md px-2.5 py-1 rounded text-[10px] font-bold tracking-wider uppercase text-[#701D24] border border-[#C59B4B]/30 shadow-sm">
-                          {p.region ? `GI • ${p.region}` : (t('home.giTagCertified') || "Certified GI")}
+                          {p.region || "India"}
                         </div>
 
                         {/* Wishlist Button */}
@@ -912,7 +893,7 @@ export default function Marketplace() {
               href="/shop"
               className="inline-flex items-center gap-2 px-8 py-3.5 bg-white border border-[#C59B4B]/60 text-[#221C18] hover:bg-[#F3EDE2] rounded-full text-xs uppercase tracking-widest font-semibold transition-all shadow-sm hover:shadow"
             >
-              <span>Explore All {products.length}+ Certified Artifacts in Catalog</span>
+              <span>Explore {products.length} Items in the Catalog</span>
               <Compass className="w-4 h-4 text-[#8F6826]" />
             </Link>
           </div>
@@ -1002,7 +983,7 @@ export default function Marketplace() {
                             <Sparkles className="w-2.5 h-2.5 text-[#C59B4B]" /> {matchScore}% {t('home.neuralMatch') || "Neural Match"}
                           </span>
                           <span className="text-[10px] font-bold px-2 py-0.5 bg-[#701D24]/90 text-white backdrop-blur-md rounded-full">
-                            {t('home.giTagCertified') || "GI Certified"}
+                            {p.region || "Indian craft"}
                           </span>
                         </div>
 
@@ -1112,7 +1093,7 @@ export default function Marketplace() {
               {t('home.meetHands') || "Meet the Hands Behind the Legacy"}
             </h2>
             <p className="text-[#655B53] text-sm mt-3">
-              Master craftsmen from our verified Supabase artisan database, preserving ancestral guilds without middlemen.
+              Discover the lives and traditions of craftspeople preserving Indian heritage.
             </p>
           </div>
 
@@ -1194,7 +1175,7 @@ export default function Marketplace() {
                     </div>
                   </div>
                   <span className="text-[11px] font-bold text-[#8C2B2B] uppercase tracking-widest">
-                    {t('home.verifiedMasterArtisan') || "Verified Master Artisan"}
+                    Master Artisan
                   </span>
                   <h3 className="font-serif text-2xl font-bold text-[#221C18] mt-1">{art.name}</h3>
                   <p className="text-xs text-[#655B53] mt-2 line-clamp-3 leading-relaxed">
@@ -1204,7 +1185,7 @@ export default function Marketplace() {
 
                 <div className="mt-6 pt-4 border-t border-[#E8DCCB]/70 flex items-center justify-between">
                   <span className="text-xs font-semibold text-[#8F6826]">
-                    {t('home.giLineageAuth') || "GI Lineage Authenticated"}
+                    Craft & heritage
                   </span>
                   <button
                     type="button"
@@ -1251,7 +1232,7 @@ export default function Marketplace() {
                   </div>
                   <div>
                     <h4 className="text-sm font-semibold text-[#221C18]">{t('home.fullProvenance') || "Full Provenance Transparency"}</h4>
-                    <p className="text-xs text-[#655B53]">{t('home.fullProvenanceDesc') || "Every acquisition arrives with a signed and sealed Certificate of Lineage with GI authentication."}</p>
+                    <p className="text-xs text-[#655B53]">Explore the origin and craft details available on each product listing.</p>
                   </div>
                 </div>
 
@@ -1267,31 +1248,17 @@ export default function Marketplace() {
               </div>
             </div>
 
-            {/* Live Stats Grid */}
             <div className="lg:col-span-7 grid grid-cols-2 gap-6">
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
-                <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">100%</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.provenanceGuaranteed') || "Provenance Guaranteed"}</h4>
-                <p className="text-xs text-[#655B53] mt-1">Verified with Geographical Indication tags</p>
-              </div>
-
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
-                <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">85%+</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.directArtisanShare') || "Direct Artisan Share"}</h4>
-                <p className="text-xs text-[#655B53] mt-1">Zero commission deduction for rural guilds</p>
-              </div>
-
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
-                <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">{products.length}+</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.liveCertifiedArtifacts') || "Live Certified Artifacts"}</h4>
-                <p className="text-xs text-[#655B53] mt-1">Synchronized directly with database inventory</p>
-              </div>
-
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
-                <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">{Object.keys(regionalCounts).length || 6}+</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.heritageGiClusters') || "Heritage GI Clusters"}</h4>
-                <p className="text-xs text-[#655B53] mt-1">Active rural cooperatives and artisan families</p>
-              </div>
+              {[
+                { value: products.length, title: 'Catalog listings', detail: 'Active items available in the catalog' },
+                { value: new Set(products.map(product => product.category).filter(Boolean)).size, title: 'Craft categories', detail: 'Categories represented in the current catalog' },
+                { value: new Set(products.map(product => product.region).filter(Boolean)).size, title: 'Regions represented', detail: 'Regions recorded on current product listings' },
+                { value: artisans.length, title: 'Artisan stories', detail: 'Discover the people behind the craft' },
+              ].map(stat => <div key={stat.title} className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
+                <span className="font-mono text-3xl sm:text-4xl font-bold text-[#701D24]">{catalogError && stat.title !== 'Artisan stories' ? '—' : stat.value}</span>
+                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{stat.title}</h4>
+                <p className="text-xs text-[#655B53] mt-1">{stat.detail}</p>
+              </div>)}
             </div>
           </div>
         </div>
@@ -1332,42 +1299,20 @@ export default function Marketplace() {
         </div>
       </section>
 
-      {/* ================= 7. CONNOISSEURS TESTIMONIALS (LIVE DB) ================= */}
-      <section className="py-20 bg-[#F3EDE2]/40 border-b border-[#E8DCCB]">
+      {/* Customer feedback is displayed only when saved reviews exist. */}
+      {reviews.length > 0 && <section className="py-20 bg-[#F3EDE2]/40 border-b border-[#E8DCCB]">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
               {t('home.patronsOfViraasat') || "Patrons of Viraasat"}
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-2">
-              {t('home.wordsRoyalFoundations') || "Words from Royal Foundations & Curators"}
+              Customer Reviews
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(reviews.length > 0 ? reviews : [
-              {
-                id: "rev-1",
-                reviewer_name: "Maharaja Gaj Singh Heritage Trust",
-                rating: 5,
-                comment: "The provenance certification accompanying each artifact is exceptional. Viraasat ensures the dignity of Indian craft remains uncompromised.",
-                created_at: new Date().toISOString()
-              },
-              {
-                id: "rev-2",
-                reviewer_name: "Claire Dubois, Louvre Decorative Arts Curator",
-                rating: 5,
-                comment: "Acquiring a certified heirloom directly from its 7th-generation master weaver brought museum-grade authenticity directly into our private collection.",
-                created_at: new Date().toISOString()
-              },
-              {
-                id: "rev-3",
-                reviewer_name: "Dr. Vikramaditya Rathore, Delhi Art Heritage Guild",
-                rating: 5,
-                comment: "A monumental leap for rural Indian guilds. Knowing that 85% of acquisition capital lands directly in the master creator’s family is unparalleled.",
-                created_at: new Date().toISOString()
-              }
-            ]).map((rev) => (
+            {reviews.map((rev) => (
               <div key={rev.id} className="bg-white p-8 rounded-2xl border border-[#E8DCCB] shadow-sm flex flex-col justify-between">
                 <div>
                   <div className="flex text-amber-500 text-sm mb-4">
@@ -1381,13 +1326,13 @@ export default function Marketplace() {
                 </div>
                 <div className="mt-6 pt-4 border-t border-[#E8DCCB]/60 flex items-center justify-between">
                   <span className="text-xs font-bold text-[#701D24]">{rev.reviewer_name}</span>
-                  <span className="text-[10px] text-stone-600 font-medium">{t('home.verifiedPatron') || "Verified Patron"}</span>
+
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ================= 8. HERITAGE JOURNAL ================= */}
       <section className="py-20 bg-motif border-b border-[#E8DCCB]">
@@ -1486,7 +1431,7 @@ export default function Marketplace() {
               <div className="p-6 sm:p-8 flex flex-col justify-between">
                 <div>
                   <div className="inline-block px-2.5 py-0.5 bg-[#F3EDE2] text-[#5E2C18] text-[10px] font-bold uppercase tracking-wider rounded mb-2">
-                    {quickViewProduct.region ? `GI Tag: ${quickViewProduct.region}` : "Certified GI Origin"}
+                    {quickViewProduct.region || "Indian craft"}
                   </div>
                   <h3 className="font-serif text-2xl font-bold text-[#221C18]">
                     {quickViewProduct.name}

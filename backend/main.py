@@ -3,6 +3,8 @@ import sys
 from datetime import datetime
 from dotenv import load_dotenv
 
+load_dotenv()
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SERVICES_DIR = os.path.join(BASE_DIR, "app", "services")
 if SERVICES_DIR not in sys.path:
@@ -21,8 +23,6 @@ from app.api.v1.webhooks import router as webhooks_router
 from app.api.v1.moderation import router as moderation_router
 from app.api.v1.razorpay import router as razorpay_router
 
-
-load_dotenv()
 
 # Optional Sentry init. No-op if SENTRY_DSN is unset (e.g. local dev).
 SENTRY_DSN = os.getenv("SENTRY_DSN")

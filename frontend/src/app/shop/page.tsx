@@ -103,7 +103,7 @@ function ShopPageContent() {
   const [isSearching, setIsSearching] = useState(false);
   const hasMounted = useRef(false);
 
-  const { products: liveProducts, loading: productsLoading } = useProducts();
+  const { products: liveProducts, loading: productsLoading, error: catalogError } = useProducts();
 
   // Dynamically derive categories and regions from database + newly added artisan creations
   const effectiveCategories = useMemo(() => {
@@ -162,54 +162,12 @@ function ShopPageContent() {
     };
   }, []);
 
-  // Load products
+  // One catalog request through useProducts; never merge local/demo listings.
   useEffect(() => {
-    async function loadProducts() {
-      try {
-        const local = getLocalProducts();
-        let serverProducts: Product[] = [];
-        try {
-          const res = await fetch('/api/products');
-          if (res.ok) {
-            const json = await res.json();
-            serverProducts = json?.data?.products || [];
-          }
-        } catch (e) { }
-
-        const map = new Map<string, Product>();
-        [...local, ...serverProducts, ...liveProducts].forEach((p) => {
-          if (!p) return;
-          const key = (p.name || '').trim().toLowerCase() || p.id;
-          if (!map.has(key)) {
-            map.set(key, {
-              ...p,
-              price: Number(p.price) || 0,
-            });
-          }
-        });
-
-        const finalItems = Array.from(map.values());
-        setAllProducts(finalItems);
-        setFilteredProducts(finalItems);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (!productsLoading) {
-      loadProducts();
-    }
-
-    window.addEventListener('storage', loadProducts);
-    window.addEventListener('viraasat_products_updated', loadProducts);
-    window.addEventListener('focus', loadProducts);
-
-    return () => {
-      window.removeEventListener('storage', loadProducts);
-      window.removeEventListener('viraasat_products_updated', loadProducts);
-      window.removeEventListener('focus', loadProducts);
-    };
-  }, [liveProducts, productsLoading]);
+    setAllProducts(liveProducts);
+    setFilteredProducts(liveProducts);
+    setLoading(productsLoading);
+  }, [liveProducts,productsLoading]);
 
   // Semantic search debounce
   useEffect(() => {
@@ -629,6 +587,7 @@ function ShopPageContent() {
 
       {/* ================= MAIN CATALOG BODY ================= */}
       <main className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 py-10">
+        {catalogError && <p role="alert" className="p-4 text-destructive">{catalogError.message}</p>}
         {/* TOP TOOLBAR: SEARCH, CONTROLS, SORT */}
         <div className="bg-white p-4 rounded-2xl border border-[#E8DCCB] shadow-sm mb-8 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
           {/* Search Input Bar */}
@@ -1125,10 +1084,6 @@ function ShopPageContent() {
                       type="button"
                       onClick={() => {
                         toggleWishlist(inspectedProduct);
-                        toast({
-                          title: isWishlisted(inspectedProduct.id) ? "Removed from Wishlist" : "Saved to Wishlist ❤️",
-                          description: `${inspectedProduct.name} updated in your sacred wishlist.`,
-                        });
                       }}
                       className="px-4 py-3.5 bg-white border border-[#E8DCCB] hover:border-[#C59B4B] rounded-xl text-[#221C18] transition-colors cursor-pointer"
                       title="Toggle Wishlist"

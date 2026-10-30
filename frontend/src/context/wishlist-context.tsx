@@ -10,7 +10,8 @@ import React, {
 } from 'react';
 import type { Product } from '@/lib/types';
 import { useUser } from '@clerk/nextjs';
-import { supabase } from '@/services/supabase';
+import { useToast } from '@/core/hooks/use-toast';
+import { useRef } from 'react';
 import { STORAGE_KEYS } from '@/core/config/constants';
 
 interface WishlistContextType {
@@ -25,32 +26,13 @@ const WISHLIST_KEY = STORAGE_KEYS.WISHLIST;
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-async function resolveSupabaseUserId(user: { id: string; primaryEmailAddress?: { emailAddress?: string } | null }): Promise<string | null> {
-  if (UUID_REGEX.test(user.id)) return user.id;
-
-  const email = user.primaryEmailAddress?.emailAddress;
-  if (!email) return null;
-
-  try {
-    const response = await fetch(`/api/users/${encodeURIComponent(user.id)}`);
-    if(!response.ok)return null;
-    const data = await response.json();
-
-    if (data?.id && UUID_REGEX.test(data.id)) {
-      return data.id;
-    }
-  } catch (err) {
-    console.warn('[Wishlist] Could not resolve Supabase UUID:', err);
-  }
-  return null;
-}
-
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const { isSignedIn, user } = useUser();
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const {toast} = useToast();
+  const pending = useRef(new Set<string>());
+  const account = useRef<string | null>(null);
 
   // Load from localStorage once.
   useEffect(() => {
@@ -66,118 +48,61 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   // Persist to localStorage whenever it changes.
   useEffect(() => {
     if (hasLoaded) {
-      localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+      try {localStorage.setItem(WISHLIST_KEY, JSON.stringify(isSignedIn ? [] : wishlist));} catch { /* browser storage unavailable */ }
     }
-  }, [wishlist, hasLoaded]);
+  }, [wishlist, hasLoaded, isSignedIn]);
 
-  // When signed in, load wishlist from Supabase and subscribe to realtime changes.
+  // Clear prior account data on account changes. Guests keep a device-only list.
   useEffect(() => {
-    if (!isSignedIn || !user) return;
-
-    let isMounted = true;
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-
-    async function initWishlist() {
-      if (!user) return;
-      const dbUserId = await resolveSupabaseUserId(user);
-      if (!isMounted || !dbUserId) {
-        // Fall back to local storage without throwing UUID query error
-        return;
-      }
-
-      async function loadWishlist() {
-        const { data, error } = await supabase
-          .from('wishlists')
-          .select('product_id, products(*)')
-          .eq('user_id', dbUserId);
-        if (error) {
-          console.warn('[Wishlist] Load failed (RLS or network):', error.message ?? error);
-          return;
-        }
-        if (!isMounted) return;
-        const items = (data ?? [])
-          .map((row) => row.products as unknown as Product)
-          .filter(Boolean);
-        setWishlist(items);
-      }
-
-      await loadWishlist();
-      if (!isMounted) return;
-
-      // Realtime subscription with unique channel ID to prevent reuse of already-subscribed channels
-      const channelName = `wishlist-${dbUserId}-${Math.random().toString(36).slice(2, 8)}`;
-      channel = supabase
-        .channel(channelName)
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'wishlists', filter: `user_id=eq.${dbUserId}` },
-          () => { void loadWishlist(); },
-        )
-        .subscribe();
+    let active = true;
+    const id = isSignedIn && user ? user.id : null;
+    if (account.current !== id) setWishlist([]);
+    account.current = id;
+    if (id) {
+      fetch('/api/wishlist', {cache:'no-store'}).then(async response => {
+        if (!response.ok) throw new Error('Wishlist unavailable');
+        const items = await response.json();
+        if(active)setWishlist(items);
+      }).catch(() => {if(active)toast({title:'Wishlist unavailable',description:'Your saved items could not be loaded. Please retry.',variant:'destructive'});});
     }
+    return () => {active=false;};
+  }, [isSignedIn,user,toast]);
 
-    void initWishlist();
-
-    return () => {
-      isMounted = false;
-      if (channel) void supabase.removeChannel(channel);
-    };
-  }, [isSignedIn, user]);
-
-  const persistRemote = useCallback(
-    async (productId: string, data: Product | null) => {
-      if (!isSignedIn || !user) return;
-      try {
-        const dbUserId = await resolveSupabaseUserId(user);
-        if (!dbUserId) return;
-
-        if (data) {
-          const {error} = await supabase
-            .from('wishlists')
-            .upsert({ user_id: dbUserId, product_id: productId });
-          if(error) throw error;
-        } else {
-          const {error} = await supabase
-            .from('wishlists')
-            .delete()
-            .eq('user_id', dbUserId)
-            .eq('product_id', productId);
-          if(error) throw error;
-        }
-      } catch (error) {
-        console.error('Failed to sync wishlist to Supabase:', error);
-      }
-    },
-    [isSignedIn, user],
-  );
+  const persistRemote = useCallback(async (productId: string, saved: boolean): Promise<boolean> => {
+    if (!isSignedIn || !user) return true;
+    try {
+      const response = await fetch('/api/wishlist', {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId,saved})});
+      if (!response.ok) throw new Error('Save failed');
+      return true;
+    } catch {
+      toast({title:'Wishlist was not updated',description:'Please retry when the connection is available.',variant:'destructive'});
+      return false;
+    }
+  }, [isSignedIn,user,toast]);
 
   const isWishlisted = useCallback(
     (productId: string) => wishlist.some((item) => item.id === productId),
     [wishlist],
   );
 
-  const toggleWishlist = useCallback(
-    (item: Product) => {
-      setWishlist((prev) => {
-        const exists = prev.some((p) => p.id === item.id);
-        if (exists) {
-          void persistRemote(item.id, null);
-          return prev.filter((p) => p.id !== item.id);
-        }
-        void persistRemote(item.id, item);
-        return [...prev, item];
-      });
-    },
-    [persistRemote],
-  );
-
-  const removeFromWishlist = useCallback(
-    (productId: string) => {
-      setWishlist((prev) => prev.filter((p) => p.id !== productId));
-      void persistRemote(productId, null);
-    },
-    [persistRemote],
-  );
+  const toggleWishlist = useCallback(async (item: Product) => {
+    if(pending.current.has(item.id))return;
+    pending.current.add(item.id);
+    const saved = !wishlist.some(p => p.id === item.id);
+    const owner = account.current;
+    try {
+      if(await persistRemote(item.id,saved) && owner === account.current) {
+        setWishlist(prev => saved ? [...prev.filter(p => p.id !== item.id),item] : prev.filter(p => p.id !== item.id));
+      }
+    } finally {pending.current.delete(item.id);}
+  }, [wishlist,persistRemote]);
+  const removeFromWishlist = useCallback(async (productId: string) => {
+    if(pending.current.has(productId))return;
+    pending.current.add(productId);
+    const owner=account.current;
+    try {if(await persistRemote(productId,false) && owner === account.current)setWishlist(prev=>prev.filter(p=>p.id!==productId));}
+    finally{pending.current.delete(productId);}
+  },[persistRemote]);
 
   return (
     <WishlistContext.Provider

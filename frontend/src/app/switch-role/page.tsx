@@ -31,52 +31,15 @@ function SwitchRoleContent() {
   const { user, isLoaded } = useUser();
 
   const toParam = searchParams.get('to');
-  const isVerifiedAdmin = typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEYS.ADMIN_VERIFIED) === 'true';
   const targetRole = toParam === 'admin' ? 'admin' : toParam === 'artisan' ? 'artisan' : 'buyer';
   const isTargetArtisan = targetRole === 'artisan';
   const isTargetAdmin = targetRole === 'admin';
-
   useEffect(() => {
-    if (isTargetAdmin && !isVerifiedAdmin) {
-      // Must verify via administrator passcode first
-      router.replace('/login/admin');
-      return;
-    }
-
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.SESSION_ROLE, targetRole);
-
-      const demoStr = localStorage.getItem('viraasat_demo_user');
-      if (demoStr) {
-        try {
-          const parsed = JSON.parse(demoStr);
-          parsed.role = targetRole;
-          localStorage.setItem('viraasat_demo_user', JSON.stringify(parsed));
-        } catch {
-          // ignore
-        }
-      }
-
-      window.dispatchEvent(new Event('storage'));
-      window.dispatchEvent(new Event('viraasat_auth_change'));
-    }
-
-    if (isLoaded && user && typeof user.update === 'function') {
-      user.update({
-        unsafeMetadata: {
-          ...user.unsafeMetadata,
-          role: targetRole,
-        },
-      }).catch(() => {});
-    }
-
-    const destination = isTargetAdmin
-      ? '/admin'
-      : isTargetArtisan
-        ? '/artisan/dashboard'
-        : '/shop';
-    router.replace(destination);
-  }, [toParam, isVerifiedAdmin, isLoaded, user, router, isTargetAdmin, isTargetArtisan, targetRole]);
+    if(!isLoaded)return;
+    if(!user){router.replace('/login');return;}
+    const role=user.publicMetadata?.role;
+    router.replace(isTargetAdmin ? role==='admin'?'/admin':'/shop' : isTargetArtisan ? ['artisan','admin'].includes(String(role))?'/artisan/dashboard':'/apply' : '/shop');
+  },[isLoaded,user,router,isTargetAdmin,isTargetArtisan]);
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-background">

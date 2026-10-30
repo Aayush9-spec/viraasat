@@ -30,7 +30,7 @@ function LoginContent() {
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
-      const role = user?.unsafeMetadata?.role;
+      const role = user?.publicMetadata?.role;
       if (role === 'admin') {
         router.push('/admin');
       } else if (role === 'artisan') {

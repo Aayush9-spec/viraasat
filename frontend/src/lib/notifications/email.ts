@@ -1,3 +1,4 @@
+import 'server-only';
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
 const FROM_EMAIL = process.env.EMAIL_FROM || 'Viraasat <noreply@viraasat.in>';
 const REPLY_TO = process.env.EMAIL_REPLY_TO || 'care@viraasat.in';
@@ -16,16 +17,12 @@ async function sendEmail(payload: EmailPayload): Promise<boolean> {
   }
 
   try {
-    const { Resend } = await import('resend');
-    const resend = new Resend(RESEND_API_KEY);
-
-    await resend.emails.send({
-      from: FROM_EMAIL,
-      to: payload.to,
-      subject: payload.subject,
-      html: payload.html,
-      replyTo: REPLY_TO,
-    }, payload.idempotencyKey ? { idempotencyKey: payload.idempotencyKey } : undefined);
+    const response = await fetch('https://api.resend.com/emails', {
+      method:'POST', headers:{Authorization:`Bearer ${RESEND_API_KEY}`,'Content-Type':'application/json',...(payload.idempotencyKey?{'Idempotency-Key':payload.idempotencyKey}:{})},
+      body:JSON.stringify({from:FROM_EMAIL,to:payload.to,subject:payload.subject,html:payload.html,reply_to:REPLY_TO}),
+      signal:AbortSignal.timeout(10000),
+    });
+    if(!response.ok)throw new Error(`Email provider status ${response.status}`);
     return true;
   } catch (error) {
     console.error('Failed to send email:', error);
@@ -81,8 +78,8 @@ export async function sendContactReceipt(params: {
   const html = `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
       <h2 style="color:#5e2c18">We&#8217;ve received your message</h2>
-      <p>Hi ${params.name},</p>
-      <p>We've received your message about <strong>${params.topic}</strong> and will reply within 24 hours.</p>
+      <p>Hi ${escapeHtml(params.name)},</p>
+      <p>We've received your message about <strong>${escapeHtml(params.topic)}</strong> and will reply within 24 hours.</p>
       <p style="color:#666">If your matter is urgent, please email us directly at <a href="mailto:care@viraasat.in">care@viraasat.in</a>.</p>
       <hr style="border:none;border-top:1px solid #eee;margin:24px 0" />
       <p style="font-size:12px;color:#999">Viraasat — Artisan Marketplace</p>
@@ -103,8 +100,8 @@ export async function sendApplyReceipt(params: {
   const html = `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
       <h2 style="color:#5e2c18">Application Received</h2>
-      <p>Hi ${params.name},</p>
-      <p>Thank you for applying to become a Viraasat artisan! We've received your application for <strong>${params.craft}</strong>.</p>
+      <p>Hi ${escapeHtml(params.name)},</p>
+      <p>Thank you for applying to become a Viraasat artisan! We've received your application for <strong>${escapeHtml(params.craft)}</strong>.</p>
       <p>Our team will review it and get back to you within 5-7 business days.</p>
       <hr style="border:none;border-top:1px solid #eee;margin:24px 0" />
       <p style="font-size:12px;color:#999">Viraasat — Artisan Marketplace</p>

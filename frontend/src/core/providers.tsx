@@ -54,7 +54,7 @@ export function AppProviders({ children }: AppProvidersProps) {
                 {children}
                 <InstallPrompt />
                 <OnlineStatus />
-                <Toaster />
+
               </WishlistProvider>
             </CartProvider>
           </ThemeProvider>

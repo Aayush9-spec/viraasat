@@ -41,7 +41,17 @@ export async function createOrder(body: unknown) {
   check(lookupError);
   if (previous) {
     if (previous.request_hash !== requestHash) throw new HttpError(409, 'Checkout details changed; start a new checkout');
-    if (!previous.razorpay_order_id) throw new HttpError(409, 'Checkout is still pending; check your orders before retrying');
+    if (!previous.razorpay_order_id) {
+      // Recover an order created before a provider timeout or database write failure.
+      const candidates = await gateway().orders.all({receipt:previous.id, count:100});
+      const matches = candidates.items.filter(o => o.receipt === previous.id && Number(o.amount) === previous.amount && o.currency === 'INR');
+      if (matches.length !== 1) throw new HttpError(409, 'Checkout needs reconciliation; contact support with your order reference before retrying');
+      const recovered = matches[0];
+      const {error} = await db.from('commerce_orders').update({razorpay_order_id:recovered.id}).eq('id',previous.id);
+      check(error);
+      previous.razorpay_order_id = recovered.id;
+    }
+    if (previous.payment_status !== 'Pending Payment') throw new HttpError(409, 'This order has already been paid; check My Orders');
     return { id: previous.razorpay_order_id, order_id: previous.razorpay_order_id, amount: previous.amount, currency: 'INR', existingOrder: true };
   }
   const { data: catalog, error } = await db.from('products').select('id,name,price,stock,images,artisan_id,is_active').in('id', ids);
@@ -59,6 +69,7 @@ export async function createOrder(body: unknown) {
   const payload = { buyerId: user.id, buyerEmail: user.email, items, ...amounts, currency: 'INR', shippingAddress: input.shipping, status: 'Pending', paymentStatus: 'Pending Payment', orderDate: new Date().toISOString() };
   const { error: reservationError } = await db.from('commerce_orders').insert({ id, buyer_id: user.id, idempotency_key: input.idempotencyKey, request_hash: requestHash, amount: amounts.amount, payload });
   if (reservationError?.code === '23505') throw new HttpError(409, 'Checkout is already being processed');
+  if (reservationError?.code === '23514') throw new HttpError(409, 'Stock or price changed. Refresh your cart before paying');
   check(reservationError);
   // An ambiguous provider failure leaves the reservation pending; never charge again automatically.
   const order = await payment.orders.create({ amount: amounts.amount, currency: 'INR', receipt: id, notes: { clerkUserId: user.id } });
@@ -74,7 +85,14 @@ export async function ownedOrder(orderId: string) {
   return data;
 }
 export function presentOrder(row: Record<string, any>) {
-  return { ...row.payload, id: row.razorpay_order_id || row.id, razorpayOrderId: row.razorpay_order_id, paymentId: row.payment_id, paymentStatus: row.payment_status, status: row.payment_status === 'Paid' ? 'Processing' : row.payment_status === 'Refunded' ? 'Cancelled' : 'Pending', updatedAt: row.updated_at };
+  const sellerIds = [...new Set((row.payload.items || []).map((i: any) => i.artisanId))] as string[];
+  const fulfillment = row.fulfillment || {};
+  const statuses = sellerIds.map(id => fulfillment[id]?.status || 'Processing');
+  const status = row.payment_status === 'Refunded' ? 'Cancelled' : row.payment_status === 'Pending Payment' ? 'Pending' :
+    statuses.every(s => s === 'Delivered') ? 'Delivered' : statuses.every(s => ['Shipped','Delivered'].includes(s)) ? 'Shipped' : 'Processing';
+  return { ...row.payload, id: row.razorpay_order_id || row.id, internalId: row.id,
+    razorpayOrderId: row.razorpay_order_id, paymentId: row.payment_id, paymentStatus: row.payment_status,
+    status, fulfillment, refundRequest: row.refund_request, refundedAmount: Number(row.refunded_amount || 0)/100, updatedAt: row.updated_at };
 }
 export async function verifyPayment(body: Record<string, unknown>) {
   const orderId = body.razorpay_order_id || body.order_id;
@@ -87,6 +105,7 @@ export async function verifyPayment(body: Record<string, unknown>) {
   const payment = await provider.payments.fetch(paymentId);
   if (payment.order_id !== orderId || Number(payment.amount) !== row.amount || payment.currency !== 'INR') throw new HttpError(400, 'Payment does not match order');
   if (payment.status !== 'captured') throw new HttpError(409, 'Payment capture is pending; check order status shortly');
+  if (Number(payment.amount_refunded || 0) > 0 || row.payment_status === 'Partially Refunded') throw new HttpError(409, 'Payment has a refund; check My Orders');
   if (row.payment_status === 'Refunded') throw new HttpError(409, 'Payment has been refunded');
   if (row.payment_id && row.payment_id !== paymentId) throw new HttpError(409, 'Order has a different payment');
   const { error } = await database().from('commerce_orders').update({ payment_status: 'Paid', payment_id: paymentId, updated_at: new Date().toISOString() }).eq('id', row.id).eq('payment_status', 'Pending Payment');

@@ -123,8 +123,7 @@ def _extract_user_data(payload: Dict[str, Any]) -> Dict[str, Any]:
     )
 
     role = (
-        (payload.get("unsafe_metadata") or {}).get("role")
-        or (payload.get("public_metadata") or {}).get("role")
+        (payload.get("public_metadata") or {}).get("role")
         or "customer"
     )
 

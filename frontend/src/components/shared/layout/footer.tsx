@@ -11,14 +11,18 @@ export function Footer() {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
 
-  const handleNewsletter = (e: React.FormEvent) => {
+  const [submitting,setSubmitting] = useState(false);
+  const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    toast({
-      title: 'Namaste! Welcome to The Viraasat Circle 📜',
-      description: 'Your ₹1,500 heirloom welcome credit has been sent to ' + email + '.',
-    });
-    setEmail('');
+    if (!email || submitting) return;
+    setSubmitting(true);
+    try {
+      const response=await fetch('/api/newsletter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+      if(!response.ok)throw new Error('Subscription unavailable');
+      toast({title:'Subscribed',description:'You are subscribed to Viraasat updates.'});
+      setEmail('');
+    }catch {toast({title:'Subscription failed',description:'Please try again later.',variant:'destructive'});}
+    finally{setSubmitting(false);}
   };
 
   return (
@@ -34,20 +38,22 @@ export function Footer() {
               {t('footer.circleTitle') || "Receive Private Previews of Masterpiece Drops"}
             </h3>
             <p className="text-xs text-[#655B53] text-stone-400">
-              {t('footer.circleSubtitle') || "Join 34,000+ art lovers. Enjoy ₹1,500 off your inaugural heirloom acquisition."}
+              Get occasional updates on new crafts and artisan stories.
             </p>
           </div>
-          <form onSubmit={handleNewsletter} className="flex w-full md:w-auto max-w-md gap-2">
+          <form onSubmit={handleNewsletter} className="flex flex-col sm:flex-row w-full md:w-auto max-w-md gap-2">
             <input
+              aria-label="Email for newsletter"
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('footer.emailPlaceholder') || "Enter your email address"}
-              className="bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#C59B4B] w-full sm:w-64"
+              className="bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#C59B4B] min-w-0 w-full sm:w-64"
             />
             <button
               type="submit"
+              disabled={submitting}
               className="bg-[#C59B4B] hover:bg-[#E8CA82] text-[#221C18] font-bold text-xs uppercase tracking-wider px-6 py-2.5 rounded-full transition-colors whitespace-nowrap cursor-pointer shadow"
             >
               {t('footer.joinCircle') || "Join Circle"}
@@ -76,15 +82,6 @@ export function Footer() {
                 title="Instagram"
               >
                 <Instagram className="w-4 h-4" />
-              </a>
-              <a href="#" className="hover:text-white transition-colors" title="Facebook">
-                <Facebook className="w-4 h-4" />
-              </a>
-              <a href="#" className="hover:text-white transition-colors" title="Youtube">
-                <Youtube className="w-4 h-4" />
-              </a>
-              <a href="#" className="hover:text-white transition-colors" title="LinkedIn">
-                <Linkedin className="w-4 h-4" />
               </a>
             </div>
           </div>
@@ -144,7 +141,7 @@ export function Footer() {
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Heritage Trade</Link>
             <Link href="/about" className="hover:text-white transition-colors">GI Compliance</Link>
             <span className="text-[#C59B4B] flex items-center gap-1">
-              <Shield className="w-3.5 h-3.5" /> Government Handloom Board Certified
+              <Shield className="w-3.5 h-3.5" /> Celebrating Indian craft
             </span>
           </div>
         </div>

@@ -8,5 +8,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
   const product = await ProductService.getProductById(id);
 
+  if (!product) notFound();
   return <ProductDetailPageClient initialProduct={product} productId={id} />;
 }

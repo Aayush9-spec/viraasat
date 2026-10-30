@@ -1,5 +1,7 @@
 # Retest findings
 
+> Historical report: the implementation and validation results below are superseded by [the final studio and repair review](final-studio-review.md).
+
 Scope: current local working tree, including uncommitted remediation. Dataset sufficiency and model accuracy are excluded. This is a bounded review, not proof that all possible defects have been found.
 
 ## Fresh validation

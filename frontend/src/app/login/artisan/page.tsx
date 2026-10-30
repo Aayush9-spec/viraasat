@@ -22,7 +22,7 @@ function ArtisanLoginContent() {
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
-      const role = user?.unsafeMetadata?.role;
+      const role = user?.publicMetadata?.role;
       if (role === 'artisan') {
         router.push('/artisan/dashboard');
       } else if (role === 'buyer') {

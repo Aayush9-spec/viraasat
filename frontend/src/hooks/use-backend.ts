@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { BACKEND_URL, BackendError } from '@/services/backend/client';
 
@@ -25,6 +25,7 @@ export function useBackend(): UseBackendResult {
         ...init,
         headers,
         cache: 'no-store',
+        signal: init.signal ?? AbortSignal.timeout(20000),
       });
 
       if (!response.ok) {
@@ -53,5 +54,5 @@ export function useBackend(): UseBackendResult {
     [request],
   );
 
-  return { get, post };
+  return useMemo(() => ({ get, post }), [get, post]);
 }

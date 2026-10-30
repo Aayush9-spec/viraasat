@@ -268,6 +268,7 @@ export default function AdminDashboardPage() {
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center px-4">
         <ShieldAlert className="h-14 w-14 text-amber-700" />
         <h1 className="font-heading text-2xl md:text-3xl text-[#5e2c18]">Administrator Access Restricted</h1>
+<a href="/admin/orders" className="inline-flex min-h-11 items-center underline">Order operations and refund requests</a>
         <p className="max-w-md text-sm text-muted-foreground leading-relaxed">
           This portal is strictly reserved for authorized Viraasat administrators with a valid security passcode.
         </p>

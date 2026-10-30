@@ -26,12 +26,12 @@ export const artisanNavItems = [
   { href: '/artisan/profile', key: 'profile', label: 'Profile', icon: UserCircle },
 ];
 
-export function ArtisanNav() {
+export function ArtisanNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { t } = useTranslation();
 
   return (
-    <nav className="grid items-start gap-1.5 px-2 text-sm font-medium lg:px-4 py-2">
+    <nav aria-label="Artisan studio" className="grid items-start gap-1.5 px-2 text-sm font-medium lg:px-4 py-2">
       {artisanNavItems.map(({ href, key, label, icon: Icon }) => {
         const isActive = pathname === href || (href !== '/artisan/dashboard' && pathname.startsWith(href));
         const translatedLabel = t(`artisan.${key}`) || label;
@@ -39,8 +39,10 @@ export function ArtisanNav() {
           <Link
             key={href}
             href={href}
+            aria-current={isActive ? 'page' : undefined}
+            onClick={onNavigate}
             className={cn(
-              'flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-muted-foreground transition-all duration-200 hover:text-foreground hover:bg-amber-900/10 dark:hover:bg-amber-950/40',
+              'flex min-h-11 items-center gap-3 rounded-xl px-3.5 py-2.5 text-muted-foreground transition-colors duration-200 hover:text-foreground hover:bg-amber-900/10 dark:hover:bg-amber-950/40',
               isActive && 'bg-[#5e2c18] text-amber-50 font-semibold shadow-md dark:bg-amber-950/90 dark:text-amber-100 dark:border dark:border-amber-800/40'
             )}
           >

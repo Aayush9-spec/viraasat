@@ -107,8 +107,8 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
     : isArtisan
       ? USER_ROLES.ARTISAN
       : USER_ROLES.BUYER;
-  const rawRedirect =
-    searchParams && typeof searchParams.get === 'function' ? searchParams.get('redirectUrl') : null;
+  const requestedRedirect = searchParams?.get('redirectUrl');
+  const rawRedirect = requestedRedirect?.startsWith('/') && !requestedRedirect.startsWith('//') && !requestedRedirect.includes('\\') ? requestedRedirect : null;
   const targetRedirect = isAdmin
     ? (rawRedirect || '/admin')
     : isArtisan
@@ -299,23 +299,6 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
         variant: 'destructive',
       });
       return;
-    }
-
-    if (isAdmin) {
-      const adminPin = (formData.get('adminPin') as string || '').trim();
-      const expectedPin = process.env.NEXT_PUBLIC_ADMIN_PIN || 'Viraasat@Admin2026';
-      if (!adminPin || adminPin !== expectedPin) {
-        toast({
-          title: 'Admin Access Denied',
-          description: 'Invalid Administrator Security Passcode. Access is strictly restricted to system administrators.',
-          variant: 'destructive',
-        });
-        return;
-      }
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(STORAGE_KEYS.ADMIN_VERIFIED, 'true');
-        window.dispatchEvent(new Event('storage'));
-      }
     }
 
     if (isSignUp && confirmPassword && password !== confirmPassword) {
@@ -1111,58 +1094,17 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
     } catch (err: unknown) {
       console.error('Verification error:', err);
 
-      // Resilient fallback for local development with test code 424242
-      if (code === '424242') {
-        const userId = `user-${Date.now()}`;
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(STORAGE_KEYS.SESSION_ROLE, role);
-          localStorage.setItem('viraasat_session_uid', userId);
-          localStorage.setItem(
-            'viraasat_demo_user',
-            JSON.stringify({
-              id: userId,
-              name: currentName || currentEmail.split('@')[0],
-              email: currentEmail,
-              role: role,
-            })
-          );
-          window.dispatchEvent(new Event('storage'));
-          window.dispatchEvent(new Event('viraasat_auth_change'));
-        }
-
-        try {
-          await fetch('/api/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: userId,
-              name: currentName || currentEmail.split('@')[0],
-              email: currentEmail,
-              role: role,
-              profile: { lastLoginAt: new Date().toISOString() },
-            }),
-          });
-        } catch {}
-
-        toast({
-          title: 'Email Verified (Dev Mode)',
-          description: `Successfully verified with test code 424242! Welcome to Viraasat.`,
-        });
-        router.push(targetRedirect);
-        return;
-      }
-
       const errObj = (err as any)?.errors?.[0];
       let message =
         errObj?.longMessage ||
         errObj?.message ||
         (err as Error)?.message ||
-        'Invalid verification code. Please check your code or use test code 424242 in development.';
+        'Invalid verification code. Please check your code.';
 
       if (errObj?.code === 'form_password_pwned') {
         message = 'The chosen password was found in a known data breach. Please choose a different, stronger password.';
       } else if (errObj?.code === 'form_code_incorrect') {
-        message = 'The verification code entered is incorrect. Please recheck your email for the 6-digit code or use 424242.';
+        message = 'The verification code entered is incorrect. Please recheck your email for the 6-digit code.';
       } else if (errObj?.code === 'verification_expired') {
         message = 'The verification code has expired. Please click "Resend Code" to receive a fresh code.';
       } else if (
@@ -1209,7 +1151,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
           await activeSignUp.prepareEmailAddressVerification({ strategy: 'email_code' });
           toast({
             title: 'Code Resent',
-            description: `A new 6-digit code was sent to ${currentEmail || 'your email'}. In local dev, test code 424242 is also active.`,
+            description: `A new 6-digit code was sent to ${currentEmail || 'your email'}.`,
           });
         }
       } else {
@@ -1237,7 +1179,7 @@ export function useAuthForm({ userType, initialIsSignUp = false }: UseAuthFormOp
         }
         toast({
           title: 'Code Resent',
-          description: `A new 6-digit code was sent to ${currentEmail || 'your email'}. In local dev, test code 424242 is also active.`,
+          description: `A new 6-digit code was sent to ${currentEmail || 'your email'}.`,
         });
       }
     } catch (err: unknown) {

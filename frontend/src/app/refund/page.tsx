@@ -25,7 +25,7 @@ const sections = [
   },
   {
     title: '3. How to Request a Refund',
-    body: 'Open the order in your account, click "Request Refund", and upload up to 4 photos showing the issue. Our team reviews requests within 2 business days. Approved refunds are issued to the original payment method within 5\u20137 business days. Razorpay processing times may vary.',
+    body: 'Open the order in your account, click "Request Refund", and describe the issue. Support may request photographs by email. Our team reviews requests within 2 business days. Approved refunds are issued to the original payment method within 5\u20137 business days. Razorpay processing times may vary.',
   },
   {
     title: '4. Damaged or Defective Items',

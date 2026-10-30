@@ -126,68 +126,32 @@ async def get_evaluation_metrics(request: Request):
     rec_eval         = _load_eval("recommendation_model.pkl")
     user_eval        = _load_eval("user_identification_model.pkl")
 
+    def measured(metrics, model_name, fields):
+        metrics = metrics or {}
+        return {"model_name": metrics.get("model_arch", model_name),
+                "is_evaluated": bool(metrics), "verified_accuracy": metrics.get("verified_accuracy"),
+                **{output: metrics.get(source) for output, source in fields.items()}}
+
     return {
-        "recommendation_engine": {
-            "model_name": rec_eval.get("model_arch", "Two-Tower NN + GBT Ranker") if rec_eval else "Two-Tower NN + GBT Ranker",
-            "precision_at_10": rec_eval.get("two_tower_precision_at_10", 0.545) if rec_eval else 0.884,
-            "recall_at_10": round(rec_eval.get("ranker_auc_roc", 0.852), 3) if rec_eval else 0.852,
-            "map_score": round(rec_eval.get("ranker_avg_precision", 0.819), 3) if rec_eval else 0.819,
-            "ndcg_at_10": 0.841,
-            "dataset_size": f"{rec_eval.get('dataset_interactions', 24000):,} Interactions" if rec_eval else "24,000 Interactions",
-            "verified_accuracy": rec_eval.get("verified_accuracy") if rec_eval else None,
-            "is_evaluated": bool(rec_eval),
-        },
-        "demand_predictor": {
-            "model_name": "Ridge Regression Time-Series Pipeline",
-            "rmse": 10.82,
-            "mape": f"{round((forecasting_eval.get('demand_mape', 0.1888) * 100), 1)}%" if forecasting_eval else "18.9%",
-            "r2_score": forecasting_eval.get("demand_r2", 0.8388) if forecasting_eval else 0.8388,
-            "verified_accuracy": forecasting_eval.get("verified_accuracy") if forecasting_eval else None,
-            "is_evaluated": bool(forecasting_eval),
-        },
-        "market_predictor": {
-            "model_name": market_eval.get("model_arch", "LSTM + GBT Ensemble") if market_eval else "LSTM + GBT Ensemble",
-            "mape": f"{round((market_eval.get('ensemble_mape', 0.1493) * 100), 1)}%" if market_eval else "14.9%",
-            "gbt_r2_revenue": market_eval.get("gbt_r2_revenue", 0.9741) if market_eval else 0.9741,
-            "verified_accuracy": market_eval.get("verified_accuracy") if market_eval else None,
-            "is_evaluated": bool(market_eval),
-        },
-        "user_segmentation": {
-            "model_name": user_eval.get("model_arch", "GBT + K-Means Dual Model") if user_eval else "GBT + K-Means Dual Model",
-            "accuracy": f"{round((user_eval.get('gbt_accuracy', 0.9875) * 100), 1)}%" if user_eval else "98.8%",
-            "auc_roc": user_eval.get("gbt_auc_roc", 0.9996) if user_eval else 0.9996,
-            "verified_accuracy": user_eval.get("verified_accuracy") if user_eval else None,
-            "is_evaluated": bool(user_eval),
-        },
-        "pricing_engine": {
-            "model_name": "RandomForest Pricing Regressor",
-            "mae": f"₹{pricing_eval.get('mae', 1280.43)}" if pricing_eval else "₹1280.43",
-            "mape": f"{round((pricing_eval.get('mape', 0.0906) * 100), 1)}%" if pricing_eval else "9.1%",
-            "r2_score": pricing_eval.get("r2_score", 0.9596) if pricing_eval else 0.9596,
-            "verified_accuracy": pricing_eval.get("verified_accuracy") if pricing_eval else None,
-            "is_evaluated": bool(pricing_eval),
-        },
-        "fraud_detector": {
-            "model_name": "RandomForest Review Spam Classifier",
-            "accuracy": f"{round((fraud_eval.get('accuracy', 1.0) * 100), 1)}%" if fraud_eval else "100.0%",
-            "precision": fraud_eval.get("precision", 1.0) if fraud_eval else 1.0,
-            "recall": fraud_eval.get("recall", 1.0) if fraud_eval else 1.0,
-            "f1_score": fraud_eval.get("f1_score", 1.0) if fraud_eval else 1.0,
-            "is_evaluated": bool(fraud_eval),
-        },
-        "computer_vision": {
-            "model_name": "Vision Transformer (ViT-B/16)",
-            "accuracy": "93.8%",
-            "top5_accuracy": "98.2%",
-            "f1_score": 0.912,
-        },
-        "system_telemetry": {
-            "search_latency_ms": 42.6,
-            "api_response_time_ms": 12.8,
-            "ai_inference_latency_ms": 285.4,
-            "total_uptime": "99.98%",
-        },
+        "recommendation_engine": measured(rec_eval, "Two-Tower NN + GBT Ranker", {
+            "precision_at_10": "two_tower_precision_at_10", "recall_at_10": "recall_at_10",
+            "map_score": "map_at_10", "ndcg_at_10": "ndcg_at_10", "dataset_size": "dataset_interactions"}),
+        "demand_predictor": measured(forecasting_eval, "Ridge Regression", {
+            "rmse": "demand_rmse", "mape": "demand_mape", "r2_score": "demand_r2"}),
+        "market_predictor": measured(market_eval, "LSTM + GBT Ensemble", {
+            "mape": "ensemble_mape", "gbt_r2_revenue": "gbt_r2_revenue"}),
+        "user_segmentation": measured(user_eval, "GBT + K-Means", {
+            "accuracy": "gbt_accuracy", "auc_roc": "gbt_auc_roc"}),
+        "pricing_engine": measured(pricing_eval, "RandomForest Pricing Regressor", {
+            "mae": "mae", "mape": "mape", "r2_score": "r2_score"}),
+        "fraud_detector": measured(fraud_eval, "RandomForest Review Spam Classifier", {
+            "accuracy": "accuracy", "precision": "precision", "recall": "recall", "f1_score": "f1_score"}),
+        "computer_vision": {"model_name": "Provider vision inference", "is_evaluated": False,
+                            "accuracy": None, "top5_accuracy": None, "f1_score": None},
+        "system_telemetry": {"is_measured": False, "search_latency_ms": None,
+                             "api_response_time_ms": None, "ai_inference_latency_ms": None, "total_uptime": None},
     }
+
 
 
 
