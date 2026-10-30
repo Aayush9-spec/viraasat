@@ -86,5 +86,7 @@ test-results/
 frontend/test-results/
 
 
+scripts/unsigned.apk
+scripts/signed_temp.apk
 dist_apk/
 *.idsig
