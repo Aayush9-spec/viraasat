@@ -110,7 +110,7 @@ export function Footer() {
               {t('footer.quickLinks') || "Quick Links"}
             </h4>
             <ul className="space-y-2 text-stone-400">
-              <li><Link href="/download" className="hover:text-[#C59B4B] transition-colors font-medium text-[#E8CA82] flex items-center gap-1.5">📱 Download Android APK & App</Link></li>
+              <li><Link href="/download" className="hover:text-[#C59B4B] transition-colors font-medium text-[#E8CA82] flex items-center gap-1.5">📱 Get the Viraasat app</Link></li>
               <li><Link href="/login/artisan" className="hover:text-[#C59B4B] transition-colors font-medium text-[#E8CA82]">Artisan Portal Login</Link></li>
               <li><Link href="/apply" className="hover:text-[#C59B4B] transition-colors">Cooperative Grants</Link></li>
               <li><Link href="/artisan/provenance" className="hover:text-[#C59B4B] transition-colors">GI Verification Hub</Link></li>

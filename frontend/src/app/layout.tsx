@@ -36,6 +36,7 @@ export const metadata: Metadata = {
     description: siteConfig.description,
   },
   manifest: '/manifest.json',
+  icons: { icon: [{ url: '/icons/viraasat-48.png', sizes: '48x48', type: 'image/png' }], apple: [{ url: '/icons/viraasat-180.png', sizes: '180x180', type: 'image/png' }] },
 };
 
 export const viewport: Viewport = {
@@ -58,8 +59,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`clay ${inter.variable} ${cormorant.variable}`}>
             <head suppressHydrationWarning>
         <meta property="og:image" content="/viraasat-hero-cream.png" />
-        <link rel="icon" href="/viraasat-logo-full.png" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
       <body className="font-sans antialiased text-foreground bg-background" suppressHydrationWarning>
         <AppProviders>

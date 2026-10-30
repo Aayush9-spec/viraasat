@@ -90,3 +90,9 @@ scripts/unsigned.apk
 scripts/signed_temp.apk
 dist_apk/
 *.idsig
+
+# Android build outputs and private signing material
+android/build/
+*.keystore
+*.jks
+*.p12
