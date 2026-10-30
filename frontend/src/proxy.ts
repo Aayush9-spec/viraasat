@@ -63,7 +63,10 @@ if (hasClerkKeys) {
       if (!isPublicRoute(req)) {
         try {
           await auth.protect();
-        } catch (err) {
+        } catch (err: any) {
+          if (err?.digest?.startsWith('NEXT_REDIRECT') || err?.message === 'NEXT_REDIRECT') {
+            throw err;
+          }
           console.warn('[Viraasat Middleware] Route protection skipped:', err);
         }
       }

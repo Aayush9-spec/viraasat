@@ -1,6 +1,6 @@
-import { PRODUCT_NAME_TRANSLATIONS, getTranslatedProductName } from '@/core/utils/product-translations';
 'use client';
 
+import { PRODUCT_NAME_TRANSLATIONS, getTranslatedProductName } from '@/core/utils/product-translations';
 import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import en from '@/locales/en.json';
 import hi from '@/locales/hi.json';
@@ -375,7 +375,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     translateProduct,
     dir,
     isRTL,
-  }), [language, setLanguage, t, dir, isRTL]);
+  }), [language, setLanguage, t, translateProduct, dir, isRTL]);
 
   return (
     <LanguageContext.Provider value={contextValue}>
