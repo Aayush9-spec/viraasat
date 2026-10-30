@@ -61,3 +61,4 @@ export async function PATCH(req: NextRequest) {
     return handleApiError(err, 'Failed to update notification');
   }
 }
+

@@ -273,3 +273,4 @@ export function NotificationBell({ className = '' }: { className?: string }) {
     </Popover>
   );
 }
+

@@ -19,3 +19,4 @@ export interface InAppNotification {
   createdAt: string;
   updatedAt?: string;
 }
+
