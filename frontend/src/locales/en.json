@@ -285,5 +285,33 @@
         "quickLinks": "Quick Links",
         "policies": "Policies",
         "allRightsReserved": "All rights reserved. Empowering indigenous heritage guilds."
+    },
+    "download": {
+        "badge": "Android Mobile App • Viraasat v2.4.0",
+        "title": "Carry India's Living Heritage in Your Pocket",
+        "subtitle": "Download the official Viraasat Android application. Explore GI-certified artisan crafts, verify cryptographic provenance, and purchase directly from rural master craftsmen with zero middleman commissions.",
+        "downloadApk": "Download Android APK (2.9 MB)",
+        "installed": "App Already Installed",
+        "installWebApk": "Install Instant WebAPK",
+        "addToHome": "Add to Home Screen",
+        "card1Title": "AI Cultural Story & Vision",
+        "card1Desc": "Explore authentic Indian handicrafts with AI-powered craft recognition, uncovering historical ethnography, materials, and centuries-old cultural heritage.",
+        "card2Title": "Direct Artisan Fair Wages",
+        "card2Desc": "Every purchase guarantees transparent 85%+ payouts directly to master artisans and rural guilds, eliminating exploitation by commercial middlemen.",
+        "card3Title": "GI Certification & Provenance",
+        "card3Desc": "Verifiable proof of origin and Geographical Indication (GI) certification, linking each heirloom directly to registered Shilp Guru master craftsmen lineages.",
+        "guideTitle": "How to Install the APK on Your Android Device",
+        "guideSubtitle": "Follow these 3 quick steps to install and run Viraasat on any phone running Android 8.0+.",
+        "safeBadge": "Safe & Verified Package",
+        "step1Title": "Download the APK",
+        "step1Desc": "Click the \"Download Android APK\" button above. When your mobile browser prompts \"This type of file can harm your device\", tap Download anyway.",
+        "step2Title": "Allow Unknown Sources",
+        "step2Desc": "Tap the downloaded file in your notification drawer. If prompted, go to Settings and enable Allow from this source for your browser.",
+        "step3Title": "Install & Launch",
+        "step3Desc": "Tap Install. Once finished, open Viraasat from your app drawer and sign in to explore authentic Indian artisanal heritage.",
+        "packageSpecs": "Package Specifications",
+        "returnMarketplace": "Return to Marketplace",
+        "downloadToastTitle": "Downloading Viraasat APK",
+        "downloadToastDesc": "The native Android APK bundle is downloading. Open the downloaded file to install on your Android device."
     }
 }
