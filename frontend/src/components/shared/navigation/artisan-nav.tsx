@@ -11,6 +11,7 @@ import {
   TrendingUp,
   ShieldCheck,
   UserCircle,
+  Star,
 } from 'lucide-react';
 import { cn } from '@/core/utils/utils';
 import { useTranslation } from '@/core/hooks/use-translation';
@@ -19,6 +20,7 @@ export const artisanNavItems = [
   { href: '/artisan/dashboard', key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/artisan/products', key: 'products', label: 'Products', icon: Package },
   { href: '/artisan/orders', key: 'orders', label: 'Orders', icon: ShoppingCart },
+  { href: '/artisan/reviews', key: 'reviews', label: 'Reviews & Feedback', icon: Star },
   { href: '/artisan/analytics', key: 'analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/artisan/ai-tools', key: 'aiTools', label: 'AI Tools', icon: Sparkles },
   { href: '/artisan/business-advisor', key: 'businessAdvisor', label: 'Business Advisor', icon: TrendingUp },

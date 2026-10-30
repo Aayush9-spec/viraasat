@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import VoiceSearch from '@/features/ai/components/voice-search';
+import { NotificationBell } from '@/components/shared/navigation/notification-bell';
 
 export function Header() {
   const { t } = useTranslation();
@@ -182,6 +183,9 @@ export function Header() {
                 <Heart className="h-5 w-5" />
               </Link>
             </Button>
+
+            {/* In-App Notifications for Reviews and Order updates */}
+            <NotificationBell />
 
             {/* Cart Button */}
             <Button

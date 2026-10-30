@@ -4,6 +4,7 @@ import { ProtectedRoute } from '@/features/auth/components/protected-route';
 import { ArtisanNav } from '@/components/shared/navigation/artisan-nav';
 import { ViraasatLogo } from '@/components/shared/visuals/viraasat-logo';
 import { UserNav } from '@/components/shared/navigation/user-nav';
+import { NotificationBell } from '@/components/shared/navigation/notification-bell';
 import LanguageSwitcher from '@/components/shared/navigation/language-switcher';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -52,6 +53,7 @@ export default function ArtisanLayout({
             </h1>
             <div className="flex items-center gap-3">
               <LanguageSwitcher showLabel />
+              <NotificationBell />
               <UserNav />
             </div>
           </header>
