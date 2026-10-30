@@ -22,8 +22,8 @@ export default function PsitPage() {
             PSIT Student Showcase
           </Badge>
           <h1 className="font-heading text-5xl font-normal leading-[0.95] text-[#5e2c18] sm:text-6xl">
-            Celebrating the creativity, innovation, and unique perspectives
-            <span className="block italic text-[#8c2b2b]">of Pranveer Singh Institute of Technology,</span>
+            Celebrating the creativity, innovation, and unique perspectives of students from <br />
+            <span className="block italic text-[#8c2b2b]">Pranveer Singh Institute of Technology,</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl font-serif text-lg italic leading-relaxed text-[#8b4513]/70">
             A collection celebrating the creative expression of PSIT students and the distinct point of view behind each piece.
