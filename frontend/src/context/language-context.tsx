@@ -1,6 +1,15 @@
 'use client';
 
-import { PRODUCT_NAME_TRANSLATIONS, getTranslatedProductName } from '@/core/utils/product-translations';
+import {
+  PRODUCT_NAME_TRANSLATIONS,
+  PRODUCT_DESCRIPTION_TRANSLATIONS,
+  PRODUCT_CATEGORY_TRANSLATIONS,
+  PRODUCT_REGION_TRANSLATIONS,
+  getTranslatedProductName,
+  getTranslatedProductDescription,
+  getTranslatedProductCategory,
+  getTranslatedRegion,
+} from '@/core/utils/product-translations';
 import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import en from '@/locales/en.json';
 import hi from '@/locales/hi.json';

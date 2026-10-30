@@ -1,49 +1,13 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
+import { PsitBuyButton } from '@/features/psit/psit-buy-button';
+import { psitShowcaseItems } from '@/features/psit/psit-products';
 
 export const metadata: Metadata = {
   title: 'PSIT Student Showcase — Viraasat',
   description: 'A showcase of creative work by PSIT students, presented by Viraasat.',
 };
-
-const students = [
-  {
-    name: 'Arpit Tiwari',
-    year: '3rd Year',
-    image: '/psit/arpit-tiwari.jpeg',
-  },
-  {
-    name: 'Akanksha Mishra',
-    year: '3rd Year',
-    image: '/psit/akanksha-mishra.jpeg',
-  },
-  {
-    name: 'Kanchan Singh',
-    year: '2nd Year',
-    image: '/psit/kanchan-singh.jpeg',
-  },
-  {
-    name: 'Shreya Jaiswal',
-    year: '2nd Year',
-    image: '/psit/shreya-jaiswal.jpeg',
-  },
-  {
-    name: 'Malavika Raj',
-    year: '1st Year',
-    image: '/psit/malavika-raj.jpeg',
-  },
-  {
-    name: 'Shivanya Shukla',
-    year: '1st Year',
-    image: '/psit/shivanya-shukla.jpeg',
-  },
-  {
-    name: 'Jaideep Yadav',
-    year: '3rd Year',
-    image: '/psit/jaideep-yadav.jpeg',
-  },
-] as const;
 
 export default function PsitPage() {
   return (
@@ -73,16 +37,16 @@ export default function PsitPage() {
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8f6826]">The collection</p>
             <h2 className="mt-2 font-heading text-3xl text-[#5e2c18] sm:text-4xl">Meet the student creators</h2>
           </div>
-          <p className="text-sm text-foreground/60">{students.length} featured students · PSIT</p>
+          <p className="text-sm text-foreground/60">{psitShowcaseItems.length} featured students · PSIT</p>
         </div>
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {students.map((student, index) => (
-            <article key={student.name} className="group">
+          {psitShowcaseItems.map((item, index) => (
+            <article key={item.product.id} className="group">
               <div className="relative aspect-[4/5] overflow-hidden border border-[#e8dccb] bg-[#f3ede2] shadow-[0_10px_30px_rgba(94,44,24,0.08)] transition-shadow duration-500 group-hover:shadow-[0_16px_36px_rgba(94,44,24,0.16)]">
                 <Image
-                  src={student.image}
-                  alt={`Creative work by ${student.name}`}
+                  src={item.product.images[0]}
+                  alt={`Creative work by ${item.studentName}`}
                   fill
                   sizes="(min-width: 1536px) 20vw, (min-width: 1280px) 24vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
@@ -93,8 +57,15 @@ export default function PsitPage() {
                 </span>
               </div>
               <div className="border-x border-b border-[#e8dccb] bg-card px-5 py-5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8f6826]">PSIT · {student.year}</p>
-                <h3 className="mt-2 font-heading text-2xl leading-none text-[#5e2c18]">{student.name}</h3>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8f6826]">PSIT · {item.year}</p>
+                <h3 className="mt-2 font-heading text-2xl leading-none text-[#5e2c18]">{item.studentName}</h3>
+                <div className="mt-5 flex items-baseline justify-between border-t border-[#e8dccb] pt-4">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/50">Price</span>
+                  <span className="font-heading text-2xl font-semibold text-[#701d24]">₹{item.product.price.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="mt-4">
+                  <PsitBuyButton product={item.product} />
+                </div>
               </div>
             </article>
           ))}
