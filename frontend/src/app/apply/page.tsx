@@ -36,7 +36,7 @@ import { useUser } from '@clerk/nextjs';
 import { supabase } from '@/services/supabase';
 import { sendApplyReceipt } from '@/lib/notifications/email';
 
-export const INDIAN_STATES = [
+const INDIAN_STATES = [
   'Andhra Pradesh',
   'Arunachal Pradesh',
   'Assam',

@@ -2,6 +2,8 @@
 
 Date: 2026-10-30. This change addresses the download-page claims, app branding and installation behavior. It is not a claim that the deployed website, AI models or live payment providers were validated.
 
+This records the initial repair branch. Subsequent emulator testing and preparation against the newer `main` are documented in [Android release validation](android-release-validation.md).
+
 ## Findings and fixes
 
 The former 2.9 MB APK contained a 460-byte DEX with one class and two constructor methods. It had no `onCreate` screen, website-opening logic or functioning app workflow. Its manifest did not reference the bundled launcher images, its unused configuration pointed to `viraasat.org`, and its build script announced success even if signing failed. A signing key and password had been committed alongside it.

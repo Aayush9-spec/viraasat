@@ -1,4 +1,8 @@
 import type { NextConfig } from 'next';
+import androidRelease from './src/config/android-release.json';
+
+const release: { available: boolean; url?: string } = androidRelease;
+const apkDestination = release.available && release.url ? release.url : '/download';
 
 const nextConfig: NextConfig = {
   // Enable compression
@@ -65,14 +69,22 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
-      { source: '/viraasat.apk', destination: '/download', permanent: false },
-      { source: '/download/viraasat.apk', destination: '/download', permanent: false },
+      { source: '/viraasat.apk', destination: apkDestination, permanent: false },
+      { source: '/download/viraasat.apk', destination: apkDestination, permanent: false },
     ];
   },
 
   // Security & PWA headers
   async headers() {
     return [
+      {
+        source: '/download/:file(.*[.]apk)',
+        headers: [
+          { key: 'Content-Type', value: 'application/vnd.android.package-archive' },
+          { key: 'Content-Disposition', value: 'attachment' },
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+        ],
+      },
       {
         source: '/:path*',
         headers: [

@@ -1,12 +1,22 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import DownloadPage from '@/app/download/page';
+import releaseData from '@/config/android-release.json';
 const mockInstall = jest.fn(); let mockStatus = 'unavailable';
+const mockRelease = releaseData as { available: boolean; version?: string; bytes?: number; sha256?: string; url?: string; minAndroid?: string };
 jest.mock('../install-store', () => ({ useAppInstall: () => ({ status: mockStatus, install: mockInstall }) }));
+jest.mock('@/config/android-release.json', () => ({ available: false }));
 beforeEach(() => {
-  jest.clearAllMocks(); mockStatus = 'unavailable';
+  jest.clearAllMocks(); mockStatus = 'unavailable'; mockRelease.available = false;
   Object.defineProperty(window, 'matchMedia', { writable: true, value: jest.fn(() => ({ matches: true })) });
   HTMLElement.prototype.scrollIntoView = jest.fn();
+});
+test('a published release exposes its real download URL, version and size', () => {
+  Object.assign(mockRelease, { available: true, version: '2.4.1', bytes: 400000, sha256: 'a'.repeat(64), url: '/download/viraasat-2.4.1.apk', minAndroid: '8.0' });
+  render(<DownloadPage />);
+  expect(screen.getByRole('link', { name: /Download Android APK/ })).toHaveAttribute('href', '/download/viraasat-2.4.1.apk');
+  expect(screen.getByText(/Version 2.4.1/)).toHaveTextContent('Android 8.0 or later');
+  expect(screen.queryByText(/An Android APK release is not available yet/)).not.toBeInTheDocument();
 });
 test('download page uses the brand icon and gives honest feature and APK availability information', () => {
   render(<DownloadPage />);

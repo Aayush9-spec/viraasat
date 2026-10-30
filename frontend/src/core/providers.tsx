@@ -14,6 +14,7 @@ import PWALifecycle from '@/components/shared/common/pwa-lifecycle';
 import InstallPrompt from '@/components/shared/common/install-prompt';
 import OnlineStatus from '@/components/shared/common/online-status';
 import { ErrorBoundary } from '@/components/shared/common/error-boundary';
+import { Toaster } from '@/components/ui/toaster';
 
 export interface AppProvidersProps {
   children: React.ReactNode;
