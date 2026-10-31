@@ -29,3 +29,4 @@ export interface UniqueArtAuction {
   sellerEmail?: string;
   createdAt: string;
 }
+

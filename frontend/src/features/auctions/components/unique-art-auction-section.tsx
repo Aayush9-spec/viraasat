@@ -949,3 +949,4 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
 }
 
 export default UniqueArtAuctionSection;
+
