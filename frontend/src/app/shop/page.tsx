@@ -67,7 +67,7 @@ function ShopPageContent() {
   const { addItem } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, translateProduct, translateDescription, translateCategory, translateRegion } = useTranslation();
 
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -456,7 +456,7 @@ function ShopPageContent() {
                     }}
                   />
                   <span className="group-hover:translate-x-0.5 transition-transform text-xs font-medium">
-                    {cat}
+                    {translateCategory(cat)}
                   </span>
                 </div>
                 <span className="text-[10px] text-[#655B53] font-mono bg-[#FAF7F2] border border-[#E8DCCB] px-1.5 py-0.5 rounded">
@@ -497,7 +497,7 @@ function ShopPageContent() {
                     }}
                   />
                   <span className="group-hover:translate-x-0.5 transition-transform text-xs font-medium">
-                    {region}
+                    {translateRegion(region)}
                   </span>
                 </div>
                 <span className="text-[9.5px] text-[#8F6826] font-medium truncate max-w-[130px]" title={tag}>
@@ -983,7 +983,7 @@ function ShopPageContent() {
                     />
                     <span className="absolute top-3 left-3 bg-[#FAF7F2]/95 backdrop-blur-md text-[#221C18] text-[10px] font-bold px-2.5 py-1 rounded-md border border-[#C59B4B] flex items-center gap-1 shadow-xs">
                       <ShieldCheck className="w-3.5 h-3.5 text-[#C59B4B]" />
-                      <span>{inspectedProduct.region ? `GI • ${inspectedProduct.region}` : 'GI Certified'}</span>
+                      <span>{inspectedProduct.region ? `GI • ${translateRegion(inspectedProduct.region)}` : 'GI Certified'}</span>
                     </span>
                   </div>
 
@@ -1030,16 +1030,16 @@ function ShopPageContent() {
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-xs uppercase tracking-widest text-[#8F6826] font-bold">
-                      {inspectedProduct.category || 'Heirloom Craft'}
+                      {translateCategory(inspectedProduct.category) || 'Heirloom Craft'}
                     </span>
                     <span className="text-[#655B53]">•</span>
                     <span className="text-xs text-[#655B53] font-medium">
-                      {inspectedProduct.region || 'India'}
+                      {translateRegion(inspectedProduct.region) || 'India'}
                     </span>
                   </div>
 
                   <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#221C18] leading-snug">
-                    {t(inspectedProduct.name)}
+                    {translateProduct(inspectedProduct)}
                   </h2>
 
                   {/* Master Artisan Chip */}
@@ -1058,7 +1058,7 @@ function ShopPageContent() {
                         {inspectedArtisan?.name || inspectedProduct.artisanName || 'Master Artisan'}
                       </p>
                       <p className="text-[11px] text-[#655B53]">
-                        {inspectedArtisan?.shopName || 'Authentic Lineage Guild'} • {inspectedArtisan?.location || inspectedProduct.region || 'India'}
+                        {inspectedArtisan?.shopName || 'Authentic Lineage Guild'} • {inspectedArtisan?.location || translateRegion(inspectedProduct.region) || 'India'}
                       </p>
                     </div>
                   </div>
@@ -1087,7 +1087,7 @@ function ShopPageContent() {
 
                   {/* Description & Materials */}
                   <div className="mt-4 text-xs text-[#655B53] leading-relaxed space-y-2">
-                    <p>{inspectedProduct.description || 'Handcrafted using sacred generational techniques passed down through master craft guilds.'}</p>
+                    <p>{translateDescription(inspectedProduct) || 'Handcrafted using sacred generational techniques passed down through master craft guilds.'}</p>
                     <div className="grid grid-cols-2 gap-2 pt-2 text-[11px] text-[#221C18]">
                       <div className="bg-[#FAF7F2] p-2.5 rounded-lg border border-[#E8DCCB]">
                         <span className="text-[#655B53] block text-[10px] uppercase font-bold">Materials</span>

@@ -95,15 +95,15 @@ export default function InstallPrompt() {
                     <ul className="space-y-2 text-sm text-gray-300">
                         <li className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
-                            Works offline with cached content
+                            Fast home screen access & instant launch
                         </li>
                         <li className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-pink-400 rounded-full" />
-                            Faster loading and performance
+                            Direct access to artisan catalog & stories
                         </li>
                         <li className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
-                            Install on your home screen
+                            Lightweight native app performance
                         </li>
                     </ul>
 

@@ -1,5 +1,13 @@
 import '@testing-library/jest-dom';
 
+// Polyfill standard Web Fetch API globals in jsdom environment from Node
+if (typeof global.Request === 'undefined' && typeof globalThis.Request !== 'undefined') {
+  global.Request = globalThis.Request;
+  global.Response = globalThis.Response;
+  global.Headers = globalThis.Headers;
+  global.fetch = globalThis.fetch;
+}
+
 // jsdom does not implement IntersectionObserver (used by LazyCarousel).
 // A no-op stub keeps component tests focused on rendering, not viewport math.
 class MockIntersectionObserver {
@@ -8,17 +16,21 @@ class MockIntersectionObserver {
   disconnect() {}
 }
 
-Object.defineProperty(window, 'IntersectionObserver', {
-  writable: true,
-  configurable: true,
-  value: MockIntersectionObserver,
-});
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: MockIntersectionObserver,
+  });
+}
 
-Object.defineProperty(global, 'IntersectionObserver', {
-  writable: true,
-  configurable: true,
-  value: MockIntersectionObserver,
-});
+if (typeof global !== 'undefined') {
+  Object.defineProperty(global, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: MockIntersectionObserver,
+  });
+}
 
 // Clerk needs a browser + provider; unit tests provide neither. Sign-in
 // state defaults to an anonymous, signed-out user.
@@ -62,5 +74,7 @@ jest.mock('@/ai/genkit', () => ({
 
 // Fluid cache clear between tests (firestore hooks cache product lookups).
 afterEach(() => {
-  window.localStorage.clear();
+  if (typeof window !== 'undefined' && window.localStorage) {
+    window.localStorage.clear();
+  }
 });

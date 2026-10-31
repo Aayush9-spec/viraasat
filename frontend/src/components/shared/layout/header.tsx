@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import VoiceSearch from '@/features/ai/components/voice-search';
+import { NotificationBell } from '@/components/shared/navigation/notification-bell';
 
 export function Header() {
   const { t } = useTranslation();
@@ -124,6 +125,9 @@ export function Header() {
               <Link href="/shop" className="text-foreground/80 hover:text-primary transition-colors font-semibold text-primary">
                 {t('nav.shop')}
               </Link>
+              <Link href="/psit" className="text-foreground/80 hover:text-primary transition-colors">
+                PSIT Showcase
+              </Link>
               <Link href="/download" className="text-foreground/80 hover:text-primary transition-colors font-semibold flex items-center gap-1">
                 <Smartphone className="w-3.5 h-3.5 text-[#C59B4B]" />
                 <span>{t('nav.app') || 'App'}</span>
@@ -183,6 +187,9 @@ export function Header() {
               </Link>
             </Button>
 
+            {/* In-App Notifications for Reviews and Order updates */}
+            <NotificationBell />
+
             {/* Cart Button */}
             <Button
               variant="ghost"
@@ -207,7 +214,10 @@ export function Header() {
                     appearance={{
                       elements: {
                         userButtonAvatarBox: "h-9 w-9 ring-2 ring-primary/20 hover:ring-primary/40 transition-all",
-                        userButtonPopoverCard: "shadow-2xl border border-border rounded-2xl p-1",
+                        userButtonPopoverCard: "shadow-2xl border border-border/80 rounded-2xl p-1 bg-[#FAF7F2] dark:bg-[#1C1815] text-foreground z-[9999] backdrop-blur-none",
+                        userButtonPopoverFooter: "hidden",
+                        footerAction: "hidden",
+                        footer: "hidden",
                       },
                     }}
                   >
@@ -368,6 +378,9 @@ export function Header() {
                       )}
                       <Link href="/shop" className="text-lg font-medium hover:text-primary transition-colors">
                         {t('nav.shop')}
+                      </Link>
+                      <Link href="/psit" className="text-lg font-medium hover:text-primary transition-colors">
+                        PSIT Showcase
                       </Link>
                       <Link href="/#heritage-crafts" className="text-lg font-medium hover:text-primary transition-colors">
                         {t('nav.heritageCrafts') || 'Heritage Crafts'}

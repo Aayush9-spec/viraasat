@@ -69,7 +69,7 @@ export function ProductDetailPageClient({
   productId?: string; 
 }) {
   const router = useRouter();
-  const { t, language } = useLanguage();
+  const { t, language, translateProduct, translateDescription, translateCategory, translateRegion } = useLanguage();
   const [product, setProduct] = useState<Product | undefined>(initialProduct || directProduct);
   const [hasCheckedClient, setHasCheckedClient] = useState<boolean>(Boolean(initialProduct || directProduct));
   const { addItem } = useCart();
@@ -288,10 +288,10 @@ export function ProductDetailPageClient({
                 Certified Artisan Heritage
               </span>
               <h1 className="text-3xl sm:text-4xl xl:text-5xl font-heading font-medium tracking-tight text-primary">
-                {product.name}
+                {translateProduct(product)}
               </h1>
               <p className="text-xs text-muted-foreground mt-2 font-mono">
-                Item ID: {product.id} • Registered Origin: {product.region}
+                Item ID: {product.id} • Registered Origin: {translateRegion(product.region)}
               </p>
             </div>
 
@@ -322,7 +322,7 @@ export function ProductDetailPageClient({
               )}
 
               <p className="text-sm sm:text-base leading-relaxed text-foreground/80 font-serif">
-                {translatedDesc || product.description}
+                {translatedDesc || translateDescription(product) || product.description}
               </p>
 
               <div className="flex items-center gap-2 pt-1">

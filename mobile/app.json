@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Viraasat - Heritage Artisan Marketplace",
+    "slug": "viraasat-mobile",
+    "version": "2.4.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FAF7F2"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "org.viraasat.heritage.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#701D24"
+      },
+      "package": "org.viraasat.heritage.app",
+      "versionCode": 240,
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "CAMERA"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
+    }
+  }
+}
+

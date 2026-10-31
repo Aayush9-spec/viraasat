@@ -411,6 +411,12 @@ def main():
         with open(icon_path, 'rb') as f:
             icon_bytes = f.read()
 
+    logo_path = 'frontend/public/viraasat-logo-full.png'
+    logo_bytes = b''
+    if os.path.exists(logo_path):
+        with open(logo_path, 'rb') as f:
+            logo_bytes = f.read()
+
     manifest_data = {
         'name': 'Viraasat - Heritage Artisan Marketplace',
         'short_name': 'Viraasat',
@@ -449,10 +455,14 @@ def main():
             'theme_color': '#701D24',
             'background_color': '#FAF7F2'
         }, indent=2).encode('utf-8'), compress_type=zipfile.ZIP_DEFLATED)
-        # Icons for all densities
+        # Icons and branding for all densities
         if icon_bytes:
             for density in ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']:
                 z.writestr(f'res/mipmap-{density}/ic_launcher.png', icon_bytes, compress_type=zipfile.ZIP_DEFLATED)
+        if logo_bytes:
+            z.writestr('assets/logo.png', logo_bytes, compress_type=zipfile.ZIP_DEFLATED)
+            z.writestr('res/drawable/logo.png', logo_bytes, compress_type=zipfile.ZIP_DEFLATED)
+            z.writestr('res/drawable-nodpi/viraasat_logo.png', logo_bytes, compress_type=zipfile.ZIP_DEFLATED)
 
     print(f"Unsigned APK created: {os.path.getsize(unsigned_apk)} bytes")
 

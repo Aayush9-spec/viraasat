@@ -8,6 +8,10 @@
     "build": "cd frontend && npm run build",
     "start": "chmod +x run_all_viraasat.sh && ./run_all_viraasat.sh",
     "typecheck": "cd frontend && npm run typecheck",
-    "lint": "cd frontend && npm run lint"
+    "lint": "cd frontend && npm run lint",
+    "mobile": "cd mobile && npx expo start",
+    "mobile:web": "cd mobile && npx expo start --web",
+    "mobile:android": "cd mobile && npx expo start --android",
+    "package:apk": "python3 scripts/package-apk.py"
   }
 }

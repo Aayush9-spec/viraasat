@@ -1,6 +1,15 @@
-import { PRODUCT_NAME_TRANSLATIONS, getTranslatedProductName } from '@/core/utils/product-translations';
 'use client';
 
+import {
+  PRODUCT_NAME_TRANSLATIONS,
+  PRODUCT_DESCRIPTION_TRANSLATIONS,
+  PRODUCT_CATEGORY_TRANSLATIONS,
+  PRODUCT_REGION_TRANSLATIONS,
+  getTranslatedProductName,
+  getTranslatedProductDescription,
+  getTranslatedProductCategory,
+  getTranslatedRegion,
+} from '@/core/utils/product-translations';
 import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import en from '@/locales/en.json';
 import hi from '@/locales/hi.json';
@@ -278,6 +287,9 @@ interface LanguageContextType {
   setLanguage: (language: string) => void;
   t: (key: string, params?: Record<string, string | number>) => string;
   translateProduct: (nameOrProduct: any) => string;
+  translateDescription: (descOrProduct: any) => string;
+  translateCategory: (category: string | null | undefined) => string;
+  translateRegion: (region: string | null | undefined) => string;
   dir: 'ltr' | 'rtl';
   isRTL: boolean;
 }
@@ -321,12 +333,24 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
     let text = '';
 
-    // 1. Direct product name translation match for active language
-    if (language !== 'en' && PRODUCT_NAME_TRANSLATIONS[key]?.[language]) {
-      text = PRODUCT_NAME_TRANSLATIONS[key][language];
-    } else if (language !== 'en' && PHRASE_DICTIONARY[language]?.[key]) {
-      text = PHRASE_DICTIONARY[language][key];
+    // 1. Direct translation matches for active language
+    if (language !== 'en') {
+      if (PRODUCT_NAME_TRANSLATIONS[key]?.[language]) {
+        text = PRODUCT_NAME_TRANSLATIONS[key][language];
+      } else if (PRODUCT_DESCRIPTION_TRANSLATIONS[key]?.[language]) {
+        text = PRODUCT_DESCRIPTION_TRANSLATIONS[key][language];
+      } else if (PRODUCT_CATEGORY_TRANSLATIONS[key]?.[language]) {
+        text = PRODUCT_CATEGORY_TRANSLATIONS[key][language];
+      } else if (PRODUCT_REGION_TRANSLATIONS[key]?.[language]) {
+        text = PRODUCT_REGION_TRANSLATIONS[key][language];
+      } else if (PHRASE_DICTIONARY[language]?.[key]) {
+        text = PHRASE_DICTIONARY[language][key];
+      }
     } else {
+      text = '';
+    }
+
+    if (!text) {
       // 2. Dot-notation key resolution
       const keys = key.split('.');
       let result = translations[language];
@@ -368,14 +392,29 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return getTranslatedProductName(nameOrProduct, language);
   }, [language]);
 
+  const translateDescription = useCallback((descOrProduct: any) => {
+    return getTranslatedProductDescription(descOrProduct, language);
+  }, [language]);
+
+  const translateCategory = useCallback((category: string | null | undefined) => {
+    return getTranslatedProductCategory(category, language);
+  }, [language]);
+
+  const translateRegion = useCallback((region: string | null | undefined) => {
+    return getTranslatedRegion(region, language);
+  }, [language]);
+
   const contextValue = useMemo(() => ({
     language,
     setLanguage,
     t,
     translateProduct,
+    translateDescription,
+    translateCategory,
+    translateRegion,
     dir,
     isRTL,
-  }), [language, setLanguage, t, dir, isRTL]);
+  }), [language, setLanguage, t, translateProduct, translateDescription, translateCategory, translateRegion, dir, isRTL]);
 
   return (
     <LanguageContext.Provider value={contextValue}>
@@ -388,6 +427,9 @@ const defaultContextValue: LanguageContextType = {
   language: 'en',
   setLanguage: () => {},
   translateProduct: (p: any) => typeof p === 'string' ? p : p?.name || '',
+  translateDescription: (d: any) => typeof d === 'string' ? d : d?.description || '',
+  translateCategory: (c: any) => c || '',
+  translateRegion: (r: any) => r || '',
   t: (key: string, params?: Record<string, string | number>) => {
     if (!key) return '';
     const keys = key.split('.');

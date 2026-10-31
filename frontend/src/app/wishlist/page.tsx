@@ -1,5 +1,6 @@
-import { useTranslation } from '@/core/hooks/use-translation';
 'use client';
+
+import { useTranslation } from '@/core/hooks/use-translation';
 
 import Link from 'next/link';
 import Image from 'next/image';

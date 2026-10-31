@@ -1,4 +1,5 @@
 import type { Product, Artisan, Order, User } from './types';
+import { psitProducts } from '@/features/psit/psit-products';
 
 export function getLocalProducts(): Product[] {
   if (typeof window === 'undefined') return [];
@@ -245,6 +246,7 @@ export const artisans: Artisan[] = [
 ];
 
 export const products: Product[] = [
+  ...psitProducts,
   {
     id: 'prod-1',
     artisanId: 'artisan-1',

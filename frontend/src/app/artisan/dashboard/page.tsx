@@ -4,11 +4,13 @@ import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Package, ShoppingCart, TrendingUp, Sparkles, Plus, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Package, ShoppingCart, TrendingUp, Sparkles, Plus, ArrowRight, ShieldCheck, Star, MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/services/supabase';
 import { Product } from '@/lib/types';
 import { products as staticProducts, getLocalProducts } from '@/lib/data';
+import { ReviewService } from '@/features/reviews/review-service';
+import type { ProductReview } from '@/types/review';
 
 export default function ArtisanDashboardPage() {
   const { user } = useUser();
@@ -17,6 +19,8 @@ export default function ArtisanDashboardPage() {
   const [ordersCount, setOrdersCount] = useState<number | null>(null);
   const [monthlyRevenue, setMonthlyRevenue] = useState<number | null>(null);
   const [metricsLoading, setMetricsLoading] = useState(true);
+  const [recentReviews, setRecentReviews] = useState<ProductReview[]>([]);
+  const [reviewStats, setReviewStats] = useState({ total: 0, avg: 5.0, pending: 0 });
 
   useEffect(() => {
     const refreshLocal = () => setLocalProducts(getLocalProducts());
@@ -105,6 +109,18 @@ export default function ArtisanDashboardPage() {
       })
       .catch(() => setMetricsLoading(false));
 
+    const artisanId = user?.id || 'artisan-1';
+    ReviewService.getArtisanReviews(artisanId, { sortBy: 'recent' })
+      .then((res) => {
+        setRecentReviews(res.reviews.slice(0, 3));
+        setReviewStats({
+          total: res.totalReviews,
+          avg: res.averageRating,
+          pending: res.pendingRepliesCount,
+        });
+      })
+      .catch(() => {});
+
     return () => {
       window.removeEventListener('focus', refreshLocal);
       window.removeEventListener('storage', refreshLocal);
@@ -184,12 +200,21 @@ export default function ArtisanDashboardPage() {
 
         <Card className="border-border/60 hover:border-amber-700/40 transition-all duration-300 shadow-sm bg-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Provenances Verified</CardTitle>
-            <ShieldCheck className="h-5 w-5 text-amber-700 dark:text-amber-400" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Customer Rating &amp; Reviews</CardTitle>
+            <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-heading">{allProducts.length}</div>
-            <p className="text-xs text-muted-foreground mt-1">Products on blockchain</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold font-heading">{reviewStats.avg.toFixed(1)}</span>
+              <span className="text-xs text-muted-foreground">({reviewStats.total} reviews)</span>
+            </div>
+            <Link
+              href="/artisan/reviews"
+              className="text-xs text-amber-700 dark:text-amber-400 font-semibold hover:underline mt-1 inline-flex items-center gap-1"
+            >
+              <span>{reviewStats.pending > 0 ? `${reviewStats.pending} need reply` : 'View all reviews'}</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
           </CardContent>
         </Card>
       </div>
@@ -253,6 +278,71 @@ export default function ArtisanDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Collector Feedback Section */}
+      <Card className="border-border/60 shadow-sm bg-card">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-lg font-heading flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-amber-700 dark:text-amber-400" />
+              Recent Collector Feedback
+            </CardTitle>
+            <CardDescription>
+              Latest customer reviews on your heritage artifacts
+            </CardDescription>
+          </div>
+          <Button asChild variant="outline" size="sm" className="text-xs">
+            <Link href="/artisan/reviews">
+              Manage All Reviews ({reviewStats.total})
+            </Link>
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {recentReviews.length === 0 ? (
+            <div className="text-center py-8 text-sm text-muted-foreground border border-dashed rounded-xl">
+              No customer reviews yet. As connoisseurs review your creations, their feedback will appear here.
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {recentReviews.map((rev) => (
+                <div
+                  key={rev.id}
+                  className="p-4 rounded-xl border border-border/70 bg-background/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-sm text-foreground">{rev.reviewerName}</span>
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star
+                            key={s}
+                            className={`w-3 h-3 ${s <= rev.rating ? 'fill-amber-500 text-amber-500' : 'text-stone-300'}`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs text-muted-foreground">on {rev.productName || 'Heirloom Piece'}</span>
+                    </div>
+                    <p className="text-xs text-foreground/80 line-clamp-2 italic">
+                      &ldquo;{rev.comment}&rdquo;
+                    </p>
+                  </div>
+                  <div className="shrink-0 flex items-center gap-2">
+                    {rev.artisanResponse ? (
+                      <span className="text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full font-medium">
+                        Replied
+                      </span>
+                    ) : (
+                      <Button asChild size="sm" className="bg-[#701D24] hover:bg-[#8C2B2B] text-white text-xs h-8">
+                        <Link href="/artisan/reviews">Reply</Link>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
