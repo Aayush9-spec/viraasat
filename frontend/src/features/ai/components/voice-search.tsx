@@ -176,7 +176,7 @@ export default function VoiceSearch() {
       {/* Regular Search Bar in Header with Microphone Action */}
       <form
         onSubmit={handleManualSearch}
-        className="relative w-[150px] sm:w-[220px] md:w-[260px] lg:w-[320px] flex items-center"
+        className="relative w-[120px] sm:w-[150px] md:w-[180px] lg:w-[170px] xl:w-[220px] 2xl:w-[260px] flex items-center shrink-0 transition-all duration-300 focus-within:lg:w-[220px] focus-within:xl:w-[260px]"
         role="search"
         aria-label="Sitewide Product Search"
       >

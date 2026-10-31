@@ -11,6 +11,7 @@ import { useTranslation } from "@/core/hooks/use-translation";
 import { ProductService } from "@/features/marketplace/product-service";
 import { journalArticles } from "@/features/journal/articles";
 import { AboutTeamSection } from "@/features/about/components/about-team-section";
+import { UniqueArtAuctionSection } from "@/features/auctions/components/unique-art-auction-section";
 import type { Product } from "@/types/product";
 import {
   ShieldCheck,
@@ -1297,6 +1298,9 @@ export default function Marketplace() {
           </div>
         </div>
       </section>
+
+      {/* ================= 6. UNIQUE ART & HEIRLOOM AUCTIONS ================= */}
+      <UniqueArtAuctionSection id="unique-art-auctions" />
 
       {/* ================= 6. ARTISAN GUILD INDUCTION BANNER (LIVE DB CONNECTED) ================= */}
       <section id="artisan-portal-banner" className="py-16 bg-[#701D24] text-[#FAF7F2] relative overflow-hidden">

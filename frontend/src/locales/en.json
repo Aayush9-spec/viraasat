@@ -30,7 +30,9 @@
         "searchAria": "Search authentic handicrafts",
         "voiceSearchAria": "Search using your voice",
         "voiceModalTitle": "Voice Product Search",
-        "voiceModalDesc": "Speak in Hindi, English, Tamil, Bengali, or your preferred language to find authentic handcrafted heirlooms."
+        "voiceModalDesc": "Speak in Hindi, English, Tamil, Bengali, or your preferred language to find authentic handcrafted heirlooms.",
+        "auctions": "Art Auctions",
+        "explore": "Explore"
     },
     "artisan": {
         "studioTitle": "Artisan Business Studio",

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles, ShoppingBag, Shield, Smartphone } from 'lucide-react';
+import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles, ShoppingBag, Shield, Smartphone, ChevronDown, Gavel, Award, BookOpen, Users } from 'lucide-react';
 import { useTranslation } from '@/core/hooks/use-translation';
 import { useCart } from '@/context/cart-context';
 import { useUserRole } from '@/features/auth/hooks/use-user-role';
@@ -103,32 +103,85 @@ export function Header() {
           {/* Logo and Primary Nav */}
           <div className="flex min-w-0 items-center gap-8">
             <ViraasatLogo className="shrink-0" />
-            <div className="hidden lg:flex items-center space-x-5 xl:space-x-8 text-sm font-medium tracking-wide">
-              <Link href="/" className="text-foreground/80 hover:text-primary transition-colors">
+            <div className="hidden lg:flex items-center space-x-2.5 xl:space-x-5 2xl:space-x-6 text-xs xl:text-sm font-medium tracking-wide shrink-0">
+              <Link href="/" className="text-foreground/80 hover:text-primary transition-colors whitespace-nowrap">
                 {t('nav.home')}
               </Link>
-              <Link href="/#heritage-crafts" className="text-foreground/80 hover:text-primary transition-colors">
-                {t('nav.heritageCrafts') || 'Heritage Crafts'}
-              </Link>
-              <Link href="/#artisan-lineage" className="text-foreground/80 hover:text-primary transition-colors">
-                {t('nav.masterArtisans') || 'Master Artisans'}
-              </Link>
-              <Link href="/#curated-treasures" className="text-foreground/80 hover:text-primary transition-colors">
-                {t('nav.curatedHeirlooms') || 'Curated Heirlooms'}
-              </Link>
-              <Link href="/about" className="text-foreground/80 hover:text-primary transition-colors">
-                {t('nav.aboutUs') || 'About Us'}
-              </Link>
-              <Link href="/#why-viraasat" className="text-foreground/80 hover:text-primary transition-colors">
-                {t('nav.philosophy') || 'Philosophy'}
-              </Link>
-              <Link href="/shop" className="text-foreground/80 hover:text-primary transition-colors font-semibold text-primary">
+              <Link href="/shop" className="text-foreground/80 hover:text-primary transition-colors font-semibold text-primary whitespace-nowrap">
                 {t('nav.shop')}
               </Link>
-              <Link href="/psit" className="text-foreground/80 hover:text-primary transition-colors">
-                PSIT Showcase
+              <Link href="/#unique-art-auctions" className="text-foreground/80 hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap font-medium">
+                <Gavel className="w-3.5 h-3.5 text-[#C59B4B]" />
+                <span>{t('nav.auctions') || 'Art Auctions'}</span>
+                <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-[#701D24] text-[#FAF7F2] uppercase tracking-wider animate-pulse">
+                  Live
+                </span>
               </Link>
-              <Link href="/download" className="text-foreground/80 hover:text-primary transition-colors font-semibold flex items-center gap-1">
+              <Link href="/#heritage-crafts" className="text-foreground/80 hover:text-primary transition-colors whitespace-nowrap">
+                {t('nav.heritageCrafts') || 'Heritage Crafts'}
+              </Link>
+              <Link href="/about" className="text-foreground/80 hover:text-primary transition-colors whitespace-nowrap">
+                {t('nav.aboutUs') || 'About Us'}
+              </Link>
+
+              {/* Explore Dropdown for Secondary Features */}
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-1 text-foreground/80 hover:text-primary transition-colors cursor-pointer py-1 px-2 rounded-md hover:bg-muted/50 whitespace-nowrap text-xs xl:text-sm">
+                  <span>{t('nav.explore') || 'Explore'}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56 bg-[#FAF7F2] dark:bg-[#1C1815] border border-[#E8DCCB] shadow-xl rounded-xl p-1.5 z-[9999]">
+                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg hover:bg-[#F3EDE2] dark:hover:bg-white/10">
+                    <Link href="/#artisan-lineage" className="flex items-center gap-2.5 py-2 text-xs">
+                      <Users className="w-4 h-4 text-[#701D24]" />
+                      <div>
+                        <div className="font-semibold">{t('nav.masterArtisans') || 'Master Artisans'}</div>
+                        <div className="text-[10px] text-muted-foreground">Ancestral Guild Lineages</div>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg hover:bg-[#F3EDE2] dark:hover:bg-white/10">
+                    <Link href="/#curated-treasures" className="flex items-center gap-2.5 py-2 text-xs">
+                      <Sparkles className="w-4 h-4 text-[#C59B4B]" />
+                      <div>
+                        <div className="font-semibold">{t('nav.curatedHeirlooms') || 'Curated Heirlooms'}</div>
+                        <div className="text-[10px] text-muted-foreground">Certified Museum Artifacts</div>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg hover:bg-[#F3EDE2] dark:hover:bg-white/10">
+                    <Link href="/#why-viraasat" className="flex items-center gap-2.5 py-2 text-xs">
+                      <BookOpen className="w-4 h-4 text-[#5E2C18]" />
+                      <div>
+                        <div className="font-semibold">{t('nav.philosophy') || 'Philosophy'}</div>
+                        <div className="text-[10px] text-muted-foreground">Fair Trade & Heritage Ethics</div>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-[#E8DCCB]/60 my-1" />
+                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg hover:bg-[#F3EDE2] dark:hover:bg-white/10">
+                    <Link href="/psit" className="flex items-center gap-2.5 py-2 text-xs">
+                      <Award className="w-4 h-4 text-amber-600" />
+                      <div>
+                        <div className="font-semibold">PSIT Showcase</div>
+                        <div className="text-[10px] text-muted-foreground">Institutional Innovation</div>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg hover:bg-[#F3EDE2] dark:hover:bg-white/10">
+                    <Link href="/download" className="flex items-center gap-2.5 py-2 text-xs">
+                      <Smartphone className="w-4 h-4 text-[#701D24]" />
+                      <div>
+                        <div className="font-semibold">{t('nav.app') || 'Download Android APK'}</div>
+                        <div className="text-[10px] text-muted-foreground">Mobile Native Client</div>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Direct App Link on Extra-Large Displays */}
+              <Link href="/download" className="hidden 2xl:flex text-foreground/80 hover:text-primary transition-colors font-semibold items-center gap-1 whitespace-nowrap">
                 <Smartphone className="w-3.5 h-3.5 text-[#C59B4B]" />
                 <span>{t('nav.app') || 'App'}</span>
               </Link>
@@ -378,6 +431,10 @@ export function Header() {
                       )}
                       <Link href="/shop" className="text-lg font-medium hover:text-primary transition-colors">
                         {t('nav.shop')}
+                      </Link>
+                      <Link href="/#unique-art-auctions" className="text-lg font-medium hover:text-primary transition-colors flex items-center justify-between">
+                        <span className="flex items-center gap-2"><Gavel className="w-5 h-5 text-[#C59B4B]" /> {t('nav.auctions') || 'Unique Art Auctions'}</span>
+                        <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#701D24] text-[#FAF7F2] uppercase">Live</span>
                       </Link>
                       <Link href="/psit" className="text-lg font-medium hover:text-primary transition-colors">
                         PSIT Showcase
