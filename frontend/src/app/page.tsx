@@ -10,6 +10,7 @@ import { useToast } from "@/core/hooks/use-toast";
 import { useTranslation } from "@/core/hooks/use-translation";
 import { ProductService } from "@/features/marketplace/product-service";
 import { journalArticles } from "@/features/journal/articles";
+import { AboutTeamSection } from "@/features/about/components/about-team-section";
 import type { Product } from "@/types/product";
 import {
   ShieldCheck,
@@ -1456,6 +1457,9 @@ export default function Marketplace() {
           </div>
         </div>
       </section>
+
+      {/* ================= 9. ABOUT US & FOUNDING ARCHITECTS ================= */}
+      <AboutTeamSection id="about-us" />
 
       {/* ================= MODAL 1: QUICK VIEW PRODUCT ================= */}
       {quickViewProduct && (

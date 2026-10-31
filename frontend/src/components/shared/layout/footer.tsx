@@ -114,6 +114,7 @@ export function Footer() {
               <li><Link href="/login/artisan" className="hover:text-[#C59B4B] transition-colors font-medium text-[#E8CA82]">Artisan Portal Login</Link></li>
               <li><Link href="/apply" className="hover:text-[#C59B4B] transition-colors">Cooperative Grants</Link></li>
               <li><Link href="/artisan/provenance" className="hover:text-[#C59B4B] transition-colors">GI Verification Hub</Link></li>
+              <li><Link href="/about" className="hover:text-[#C59B4B] transition-colors font-semibold text-[#E8CA82]">About Us & Founding Team</Link></li>
               <li><Link href="/about" className="hover:text-[#C59B4B] transition-colors">Natural Dye Sourcing</Link></li>
               <li><Link href="/shipping" className="hover:text-[#C59B4B] transition-colors">Rural Packaging Hubs</Link></li>
             </ul>

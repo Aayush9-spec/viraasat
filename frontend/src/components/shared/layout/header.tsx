@@ -115,6 +115,9 @@ export function Header() {
               <Link href="/#curated-treasures" className="text-foreground/80 hover:text-primary transition-colors">
                 {t('nav.curatedHeirlooms') || 'Curated Heirlooms'}
               </Link>
+              <Link href="/about" className="text-foreground/80 hover:text-primary transition-colors">
+                {t('nav.aboutUs') || 'About Us'}
+              </Link>
               <Link href="/#why-viraasat" className="text-foreground/80 hover:text-primary transition-colors">
                 {t('nav.philosophy') || 'Philosophy'}
               </Link>
