@@ -6,10 +6,10 @@ const isBrokenClerkKey = (val?: string) =>
   Boolean(val && (val.includes("dmlyYWFzYXQtZXRh") || val.includes("Y2xlcmsudmlyYWFzYXQtZXRh")));
 
 if (typeof process !== "undefined" && process.env) {
-  if (isBrokenClerkKey(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)) {
+  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || isBrokenClerkKey(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)) {
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA";
   }
-  if (isBrokenClerkKey(process.env.CLERK_PUBLISHABLE_KEY)) {
+  if (!process.env.CLERK_PUBLISHABLE_KEY || isBrokenClerkKey(process.env.CLERK_PUBLISHABLE_KEY)) {
     process.env.CLERK_PUBLISHABLE_KEY = "pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA";
   }
   if (!process.env.CLERK_SECRET_KEY || isBrokenClerkKey(process.env.CLERK_SECRET_KEY)) {

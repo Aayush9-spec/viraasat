@@ -25,8 +25,8 @@ export const env = {
     environment: getEnvVar('NEXT_PUBLIC_VERCEL_ENV', getEnvVar('NODE_ENV', 'development')),
   },
   clerk: {
-    publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || getEnvVar('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', ''),
-    secretKey: getEnvVar('CLERK_SECRET_KEY', ''),
+    publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA',
+    secretKey: process.env.CLERK_SECRET_KEY || 'sk_test_aJ5w4a5QHqS3UiaxXzFR64HA2fIZViqiQEM5MwZtE0',
     signInUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || getEnvVar('NEXT_PUBLIC_CLERK_SIGN_IN_URL', '/login'),
     signUpUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL || getEnvVar('NEXT_PUBLIC_CLERK_SIGN_UP_URL', '/signup'),
     signInFallbackRedirect: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL || getEnvVar('NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL', '/'),

@@ -5,7 +5,7 @@
   "description": "Viraasat Platform Root Launcher",
   "scripts": {
     "dev": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build",
+    "build": "cd frontend && npm install && npm run build",
     "start": "chmod +x run_all_viraasat.sh && ./run_all_viraasat.sh",
     "typecheck": "cd frontend && npm run typecheck",
     "lint": "cd frontend && npm run lint",
