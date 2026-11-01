@@ -1,6 +1,5 @@
 {
   "framework": "nextjs",
-  "installCommand": "if [ -d \"frontend\" ]; then (cd frontend && npm install --legacy-peer-deps); else npm install --legacy-peer-deps; fi",
-  "buildCommand": "if [ -d \"frontend\" ]; then (cd frontend && npm run build); else npm run build; fi",
-  "outputDirectory": "frontend/.next"
+  "installCommand": "cd frontend && npm install --legacy-peer-deps",
+  "buildCommand": "cd frontend && npm run build"
 }

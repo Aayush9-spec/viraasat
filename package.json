@@ -3,12 +3,9 @@
   "version": "2.0.0",
   "private": true,
   "description": "Viraasat Platform Root Launcher",
-  "workspaces": [
-    "frontend"
-  ],
   "scripts": {
     "dev": "cd frontend && npm run dev",
-    "build": "if [ -d \"frontend\" ]; then (cd frontend && npm run build); else npm run build; fi",
+    "build": "cd frontend && npm run build",
     "start": "chmod +x run_all_viraasat.sh && ./run_all_viraasat.sh",
     "typecheck": "cd frontend && npm run typecheck",
     "lint": "cd frontend && npm run lint",
@@ -16,8 +13,5 @@
     "mobile:web": "cd mobile && npx expo start --web",
     "mobile:android": "cd mobile && npx expo start --android",
     "package:apk": "python3 scripts/package-apk.py"
-  },
-  "dependencies": {
-    "next": "^16.3.0"
   }
 }
