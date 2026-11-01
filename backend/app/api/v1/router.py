@@ -7,7 +7,7 @@ _ai_dir = os.path.abspath(os.path.join(_curr_dir, "../../services"))
 if _ai_dir not in sys.path:
     sys.path.insert(0, _ai_dir)
 
-from fastapi import APIRouter, Depends, Request, BackgroundTasks
+from fastapi import APIRouter, Depends, Request, BackgroundTasks, Query
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
