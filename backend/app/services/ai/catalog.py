@@ -60,7 +60,7 @@ def _try_sync_supabase():
         pass
 
 
-def get_catalog_products(category: Optional[str] = None, region: Optional[str] = None) -> List[dict]:
+def get_catalog_products(category: Optional[str] = None, region: Optional[str] = None, artisan_id: Optional[str] = None) -> List[dict]:
     """
     Retrieve live product list from the active database.
     Ensures newly added artisan items are dynamically available to ML search,
@@ -68,7 +68,7 @@ def get_catalog_products(category: Optional[str] = None, region: Optional[str] =
     """
     _try_sync_supabase()
     store = get_store()
-    raw_products = store.get_products(category=category, region=region)
+    raw_products = store.get_products(category=category, region=region, artisan_id=artisan_id)
 
     normalized: List[dict] = []
     seen_ids = set()

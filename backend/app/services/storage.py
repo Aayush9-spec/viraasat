@@ -236,7 +236,7 @@ class SQLiteStore:
 
     # --- products catalog ---
 
-    def get_products(self, category: Optional[str] = None, region: Optional[str] = None) -> List[dict]:
+    def get_products(self, category: Optional[str] = None, region: Optional[str] = None, artisan_id: Optional[str] = None) -> List[dict]:
         with self._cur() as cur:
             query = "SELECT raw_json FROM products WHERE 1=1"
             params = []
@@ -246,10 +246,17 @@ class SQLiteStore:
             if region:
                 query += " AND LOWER(region) = LOWER(?)"
                 params.append(region)
+            if artisan_id:
+                query += " AND (LOWER(artisan_id) = LOWER(?) OR LOWER(artisan_id) = LOWER(?))"
+                params.extend([artisan_id, artisan_id])
             rows = cur.execute(query, params).fetchall()
             if rows:
                 return [json.loads(r[0]) for r in rows]
-        return self._load_seed_products()
+        seeds = self._load_seed_products()
+        if artisan_id:
+            aid = str(artisan_id).lower().strip()
+            return [p for p in seeds if str(p.get("artisanId") or p.get("artisan_id") or "").lower().strip() == aid]
+        return seeds
 
     def upsert_product(self, product: dict) -> None:
         now_str = datetime.utcnow().isoformat() + "Z"
@@ -398,12 +405,15 @@ class MemoryStore:
     def get_all_ml_configs(self) -> dict[str, Any]:
         return dict(self._ml_configs)
 
-    def get_products(self, category: Optional[str] = None, region: Optional[str] = None) -> List[dict]:
+    def get_products(self, category: Optional[str] = None, region: Optional[str] = None, artisan_id: Optional[str] = None) -> List[dict]:
         prods = list(self._products.values())
         if category:
             prods = [p for p in prods if (p.get("category") or "").lower() == category.lower()]
         if region:
             prods = [p for p in prods if (p.get("region") or "").lower() == region.lower()]
+        if artisan_id:
+            aid = str(artisan_id).lower().strip()
+            prods = [p for p in prods if str(p.get("artisanId") or p.get("artisan_id") or "").lower().strip() == aid]
         return prods
 
     def upsert_product(self, product: dict) -> None:
@@ -476,13 +486,15 @@ class FirestoreStore:  # pragma: no cover - exercised in production only
             pass
         return configs
 
-    def get_products(self, category: Optional[str] = None, region: Optional[str] = None) -> List[dict]:
+    def get_products(self, category: Optional[str] = None, region: Optional[str] = None, artisan_id: Optional[str] = None) -> List[dict]:
         try:
             query = self._db.collection("products")
             if category:
                 query = query.where("category", "==", category)
             if region:
                 query = query.where("region", "==", region)
+            if artisan_id:
+                query = query.where("artisan_id", "==", artisan_id)
             return [d.to_dict() for d in query.stream()]
         except Exception:
             return []

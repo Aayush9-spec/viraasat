@@ -27,6 +27,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category');
     const query = searchParams.get('query');
+    const artisanId = searchParams.get('artisanId') || searchParams.get('artisan_id');
 
     const dbProducts = await ProductService.getAllProducts();
     const fileProducts = getStoredFileProducts();
@@ -42,6 +43,14 @@ export async function GET(req: NextRequest) {
     });
 
     let all = Array.from(map.values());
+
+    if (artisanId) {
+      const aid = artisanId.trim().toLowerCase();
+      all = all.filter((p) => {
+        const pAid = String(p.artisanId || p.artisan_id || '').trim().toLowerCase();
+        return pAid === aid;
+      });
+    }
 
     if (category) {
       all = all.filter((p) => p.category?.toLowerCase() === category.toLowerCase());

@@ -93,6 +93,16 @@ export class ProductService {
     return products.find((p) => p.id === id);
   }
 
+  static async getProductsByArtisan(artisanId: string): Promise<Product[]> {
+    if (!artisanId) return [];
+    const all = await this.getAllProducts();
+    const aid = artisanId.trim().toLowerCase();
+    return all.filter((p) => {
+      const pAid = String(p.artisanId || (p as any).artisan_id || '').trim().toLowerCase();
+      return pAid === aid;
+    });
+  }
+
   static async getProductsByCategory(category: string): Promise<Product[]> {
     const all = await this.getAllProducts();
     return all.filter((p) => p.category.toLowerCase() === category.toLowerCase());
