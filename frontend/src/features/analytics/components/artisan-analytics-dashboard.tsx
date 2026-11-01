@@ -1,6 +1,6 @@
+'use client';
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
-'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

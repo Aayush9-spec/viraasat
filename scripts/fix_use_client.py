@@ -16,3 +16,4 @@ with open(path, 'w', encoding='utf-8') as f:
     f.writelines(new_lines)
 
 print("Successfully fixed 'use client' at top of", path)
+
