@@ -28,7 +28,7 @@ export interface TeamMember {
   division: string;
   isHead?: boolean;
   avatarText: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   badge: string;
   bio: string;
   focus: string[];
@@ -356,7 +356,7 @@ export function AboutTeamSection({
                   <div className="text-xs font-semibold text-[#701D24] uppercase tracking-wider mt-1 mb-0.5">
                     {member.role}
                   </div>
-                  <div className="text-[11px] font-mono text-[#5E2C18]/65 mb-4">
+                  <div className="text-[11px] font-mono text-[#5E2C18]/85 mb-4 font-semibold">
                     {member.division}
                   </div>
 
@@ -439,31 +439,31 @@ export function AboutTeamSection({
             <div className="space-y-1">
               <div className="font-serif text-3xl sm:text-4xl font-bold text-[#E8CA82]">5</div>
               <div className="text-xs uppercase tracking-wider text-stone-300 font-medium">Founding Builders</div>
-              <div className="text-[10px] text-stone-500 font-mono">Cross-Disciplinary Team</div>
+              <div className="text-[10px] text-stone-300/90 font-mono">Cross-Disciplinary Team</div>
             </div>
 
             <div className="space-y-1">
               <div className="font-serif text-3xl sm:text-4xl font-bold text-[#E8CA82]">7</div>
               <div className="text-xs uppercase tracking-wider text-stone-300 font-medium">Live ML Models</div>
-              <div className="text-[10px] text-stone-500 font-mono">Pricing, Recs, Fraud, Forecaster</div>
+              <div className="text-[10px] text-stone-300/90 font-mono">Pricing, Recs, Fraud, Forecaster</div>
             </div>
 
             <div className="space-y-1">
               <div className="font-serif text-3xl sm:text-4xl font-bold text-[#E8CA82]">13</div>
               <div className="text-xs uppercase tracking-wider text-stone-300 font-medium">Indian Languages</div>
-              <div className="text-[10px] text-stone-500 font-mono">Reactive Localization Engine</div>
+              <div className="text-[10px] text-stone-300/90 font-mono">Reactive Localization Engine</div>
             </div>
 
             <div className="space-y-1">
               <div className="font-serif text-3xl sm:text-4xl font-bold text-[#E8CA82]">35+</div>
               <div className="text-xs uppercase tracking-wider text-stone-300 font-medium">GI Crafts Mapped</div>
-              <div className="text-[10px] text-stone-500 font-mono">Knowledge Graph & Lineages</div>
+              <div className="text-[10px] text-stone-300/90 font-mono">Knowledge Graph & Lineages</div>
             </div>
 
             <div className="col-span-2 sm:col-span-1 space-y-1">
               <div className="font-serif text-3xl sm:text-4xl font-bold text-[#E8CA82]">100%</div>
               <div className="text-xs uppercase tracking-wider text-stone-300 font-medium">Cryptographic Ledger</div>
-              <div className="text-[10px] text-stone-500 font-mono">SHA-256 Provenance Chain</div>
+              <div className="text-[10px] text-stone-300/90 font-mono">SHA-256 Provenance Chain</div>
             </div>
           </div>
         </div>

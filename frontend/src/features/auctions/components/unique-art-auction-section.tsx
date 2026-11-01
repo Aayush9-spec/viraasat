@@ -474,7 +474,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                     {/* Live Ticker Floating Pill */}
                     <div className="absolute top-3 left-3 bg-[#221C18]/90 backdrop-blur-md text-[#FAF7F2] px-3 py-1 rounded-full text-xs font-mono flex items-center gap-1.5 border border-white/20 shadow">
                       <Clock className={cn('w-3.5 h-3.5', timeInfo.isUrgent ? 'text-red-400 animate-pulse' : 'text-[#C59B4B]')} />
-                      <span className={cn(timeInfo.isUrgent ? 'text-red-300 font-bold' : 'text-stone-200')}>
+                      <span suppressHydrationWarning className={cn(timeInfo.isUrgent ? 'text-red-300 font-bold' : 'text-stone-200')}>
                         {timeInfo.text}
                       </span>
                     </div>
@@ -508,7 +508,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                   <div className="p-5 sm:p-6 space-y-3">
                     <div className="text-[11px] uppercase tracking-wider text-[#701D24] font-semibold flex items-center justify-between">
                       <span>{auction.craftCategory}</span>
-                      <span className="text-stone-500 font-normal">{auction.durationHours}h Period</span>
+                      <span className="text-stone-700 font-normal">{auction.durationHours}h Period</span>
                     </div>
 
                     <h3 className="font-serif text-lg font-bold text-[#221C18] line-clamp-2 group-hover:text-[#701D24] transition-colors leading-snug">
@@ -516,7 +516,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                     </h3>
 
                     <div className="text-xs text-[#5E2C18] font-medium">
-                      By {auction.artisanName} • <span className="text-stone-500">{auction.artisanRegion}</span>
+                      By {auction.artisanName} • <span className="text-stone-700">{auction.artisanRegion}</span>
                     </div>
 
                     <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
@@ -529,7 +529,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                 <div className="p-5 sm:p-6 pt-0 mt-auto">
                   <div className="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8DCCB] mb-4 flex items-center justify-between">
                     <div>
-                      <div className="text-[10px] uppercase tracking-wider text-stone-500 font-bold">
+                      <div className="text-[10px] uppercase tracking-wider text-stone-700 font-bold">
                         Current Highest Bid
                       </div>
                       <div className="font-serif text-xl sm:text-2xl font-bold text-[#701D24]">
@@ -537,7 +537,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-[10px] uppercase tracking-wider text-stone-500">
+                      <div className="text-[10px] uppercase tracking-wider text-stone-700 font-semibold">
                         Min. Reserve Price
                       </div>
                       <div className="text-xs font-mono text-stone-700 font-semibold">
