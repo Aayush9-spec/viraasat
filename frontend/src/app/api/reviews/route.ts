@@ -8,12 +8,22 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const productId = searchParams.get('productId');
     const artisanId = searchParams.get('artisanId');
+    const reviewerId = searchParams.get('reviewerId') || searchParams.get('customerId');
     const sortBy = searchParams.get('sortBy') as 'recent' | 'highest' | 'lowest' | 'verified' | null;
     const filterRating = searchParams.get('rating') ? parseInt(searchParams.get('rating')!, 10) : undefined;
     const verifiedOnly = searchParams.get('verifiedOnly') === 'true';
     const page = searchParams.get('page') ? parseInt(searchParams.get('page')!, 10) : 1;
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!, 10) : 20;
     const needsResponseOnly = searchParams.get('needsResponseOnly') === 'true';
+
+    // 0. Customer-specific query (for customer dashboard reviews section)
+    if (reviewerId) {
+      const customerReviews = await ReviewService.getCustomerReviews(reviewerId);
+      return apiSuccess({
+        reviews: customerReviews,
+        total: customerReviews.length,
+      });
+    }
 
     // 1. Artisan-specific queries (for the artisan reviews dashboard)
     if (artisanId) {
@@ -175,6 +185,33 @@ export async function PUT(req: NextRequest) {
       return apiSuccess({
         success: true,
         message: 'Artisan reply posted and customer notified.',
+      });
+    }
+
+    // Action: Customer Edit Review
+    if (action === 'edit_review' || action === 'update') {
+      const result = await ReviewService.updateReview(
+        {
+          reviewId,
+          rating: body.rating,
+          comment: body.comment,
+          title: body.title,
+          images: body.images,
+        },
+        {
+          id: authUserId || body.reviewerId || 'customer-1',
+          role: authUserRole,
+        }
+      );
+
+      if (!result.success) {
+        return apiError(result.error || 'Failed to update review', 400);
+      }
+
+      return apiSuccess({
+        success: true,
+        review: result.review,
+        message: 'Review updated successfully.',
       });
     }
 

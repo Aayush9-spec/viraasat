@@ -385,6 +385,9 @@ export function Header() {
                       ) : (
                         <>
                           <DropdownMenuItem asChild>
+                            <Link href="/dashboard" className="cursor-pointer font-medium text-primary">My Dashboard</Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
                             <Link href="/shop" className="cursor-pointer">Browse Shop</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
