@@ -1,11 +1,8 @@
 import { env } from '@/core/config/env';
-// PWA registration helpers.
 
+// PWA registration helpers.
 const SW_PATH = '/sw.js';
 
-// Cached at module load so we don't hit the network just to compute the URL.
-// `build-sw.js` writes this file at every build; in dev it falls back to a
-// timestamp so we still get a fresh SW on every reload.
 declare global {
   interface Window {
     __SW_BUILD_ID__?: string;
@@ -19,10 +16,17 @@ function getBuildId(): string {
   return env.app.commitSha || 'dev';
 }
 
+// Controller change & refresh guards to prevent infinite reload loops and startup crashes
+let refreshing = false;
+let hadController = typeof navigator !== 'undefined' && 'serviceWorker' in navigator
+  ? Boolean(navigator.serviceWorker.controller)
+  : false;
+let waitingWorker: ServiceWorker | null = null;
+
 export function registerServiceWorker() {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
 
-  // In development mode, unregister existing service workers to prevent Turbopack chunk load conflicts.
+  // In development mode, unregister existing service workers to prevent Turbopack chunk conflicts.
   if (process.env.NODE_ENV === 'development') {
     navigator.serviceWorker.getRegistrations().then((registrations) => {
       for (const reg of registrations) {
@@ -32,61 +36,77 @@ export function registerServiceWorker() {
     return;
   }
 
-  window.addEventListener('load', async () => {
-    // Evict any old SW that might be caching /_next/ chunks (causes ChunkLoadError).
-    // The new SW explicitly passes /_next/ through to the network, so cached
-    // stale chunks from a previous build can never be served again.
-    const regs = await navigator.serviceWorker.getRegistrations();
-    for (const reg of regs) {
-      const sw = reg.active || reg.installing || reg.waiting;
-      if (sw) {
-        // Fetch the current SW script and check if it contains the /_next/ bypass.
-        // If not, it's the old version — unregister it so the new one installs fresh.
-        try {
-          const res = await fetch(SW_PATH, { cache: 'no-store' });
-          const text = await res.text();
-          if (!text.includes('/_next/')) {
-            await reg.unregister();
-          }
-        } catch {
-          // network error — leave existing SW in place
-        }
-      }
-    }
+  // Update hadController state on startup
+  hadController = Boolean(navigator.serviceWorker.controller);
 
-    const url = `${SW_PATH}?v=${getBuildId()}`;
+  // Prevent multiple controllerchange listeners
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    // If there was no controller when the page initially loaded, this is just
+    // the first activation claiming the client. DO NOT reload the page!
+    if (!hadController) {
+      hadController = true;
+      return;
+    }
+    // Prevent infinite reload loops
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+
+  window.addEventListener('load', () => {
+    const url = `${SW_PATH}?v=${encodeURIComponent(getBuildId())}`;
+
     navigator.serviceWorker
-      .register(url)
+      .register(url, { scope: '/' })
       .then((registration) => {
-        // Periodically check for an updated SW (every 60s).
-        setInterval(() => registration.update(), 60_000);
+        // Periodically check for an updated SW (every 5 minutes, jitter-safe)
+        setInterval(() => {
+          registration.update().catch(() => {});
+        }, 5 * 60_000);
+
+        // Check if there is already a waiting worker on boot
+        if (registration.waiting && navigator.serviceWorker.controller) {
+          waitingWorker = registration.waiting;
+          window.dispatchEvent(
+            new CustomEvent('viraasat_sw_update_available', {
+              detail: { registration, worker: waitingWorker },
+            }),
+          );
+        }
 
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (!newWorker) return;
+
           newWorker.addEventListener('statechange', () => {
             if (
               newWorker.state === 'installed' &&
               navigator.serviceWorker.controller
             ) {
-              // A new build is waiting. The new SW will call skipWaiting()
-              // on its own; we just tell the user.
-              if (confirm('A new version of Viraasat is available. Reload now?')) {
-                newWorker.postMessage({ type: 'SKIP_WAITING' });
-              }
+              waitingWorker = newWorker;
+              // Dispatch non-blocking event so UI can show a friendly update banner
+              window.dispatchEvent(
+                new CustomEvent('viraasat_sw_update_available', {
+                  detail: { registration, worker: newWorker },
+                }),
+              );
             }
           });
         });
       })
       .catch((error) => {
-        console.error('Service Worker registration failed:', error);
+        console.warn('[Viraasat PWA] Service Worker registration failed:', error);
       });
-
-    // When the new SW takes over, reload so the page picks up new bundles.
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload();
-    });
   });
+}
+
+/**
+ * Manually trigger the waiting service worker to take over and update
+ */
+export function applyServiceWorkerUpdate() {
+  if (waitingWorker) {
+    waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+  }
 }
 
 export function unregisterServiceWorker() {
@@ -104,7 +124,7 @@ export function isAppInstalled() {
   );
 }
 
-// Inline install prompt helpers (unchanged).
+// Inline install prompt helpers
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
 interface BeforeInstallPromptEvent extends Event {

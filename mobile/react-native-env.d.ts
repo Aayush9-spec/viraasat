@@ -24,3 +24,4 @@ declare module 'react-native' {
 }
 
 declare function require(moduleName: string): any;
+

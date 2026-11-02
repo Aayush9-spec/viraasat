@@ -1,4 +1,5 @@
 import os
+import sys
 import struct
 import zlib
 import hashlib
@@ -400,6 +401,17 @@ def build_resources_arsc():
 def main():
     print("Building Viraasat APK artifacts...")
     os.makedirs('frontend/public/download', exist_ok=True)
+
+    # If build_full_apk is available and SDK exists, delegate to proper full native APK builder
+    full_builder = os.path.join(os.path.dirname(__file__), 'build_full_apk.py')
+    sdk_root = os.path.expanduser("~/Library/Android/sdk")
+    if os.path.exists(full_builder) and os.path.exists(os.path.join(sdk_root, "build-tools")):
+        try:
+            print("Detected Android SDK & build-tools. Invoking build_full_apk.py...")
+            subprocess.check_call([sys.executable, full_builder])
+            return
+        except Exception as e:
+            print(f"Notice: build_full_apk failed ({e}), continuing with standalone fallback.")
 
     axml_bytes = build_axml()
     dex_bytes = build_dex()
