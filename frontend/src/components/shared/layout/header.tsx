@@ -431,8 +431,11 @@ export function Header() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[80vw] sm:w-[350px]">
-                  <SheetHeader>
-                    <SheetTitle className="text-left font-heading text-2xl">Menu</SheetTitle>
+                  <SheetHeader className="border-b border-border pb-3">
+                    <div className="flex items-center justify-between">
+                      <ViraasatLogo variant="full" size="md" />
+                      <SheetTitle className="sr-only">Viraasat Navigation Menu</SheetTitle>
+                    </div>
                   </SheetHeader>
                   <div className="flex flex-col gap-6 mt-6">
                     <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border">

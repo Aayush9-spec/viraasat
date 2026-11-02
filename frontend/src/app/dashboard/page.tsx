@@ -63,6 +63,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { ViraasatLogo } from '@/components/shared/visuals/viraasat-logo';
 
 import { ProtectedRoute } from '@/features/auth/components/protected-route';
 import { useWishlist } from '@/context/wishlist-context';
@@ -764,16 +765,19 @@ function CustomerDashboardContent() {
     <ProtectedRoute allowedRoles={['buyer']}>
       <div className="max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
         {/* ================= TOP BREADCRUMB & CONNOISSEUR TITLE ================= */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8DCCB] dark:border-stone-800 pb-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#8F6826] dark:text-[#C59B4B]">
-              <Link href="/" className="hover:text-[#701D24] transition-colors">Home</Link>
-              <span>/</span>
-              <span className="text-[#221C18] dark:text-[#FAF7F2]">Customer Sanctuary</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E8DCCB] dark:border-stone-800 pb-5">
+          <div className="flex items-center gap-3.5">
+            <ViraasatLogo variant="icon" size="md" className="hidden sm:inline-flex shrink-0" />
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#8F6826] dark:text-[#C59B4B]">
+                <Link href="/" className="hover:text-[#701D24] transition-colors">Home</Link>
+                <span>/</span>
+                <span className="text-[#221C18] dark:text-[#FAF7F2]">Customer Sanctuary</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#701D24] dark:text-[#E8CA82] tracking-tight">
+                Customer Account & Collection Hub
+              </h1>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#701D24] dark:text-[#E8CA82] tracking-tight">
-              Customer Account & Collection Hub
-            </h1>
           </div>
 
           <div className="flex items-center gap-2.5">
@@ -805,6 +809,14 @@ function CustomerDashboardContent() {
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-8 items-start">
           {/* ================= LEFT SIDEBAR NAVIGATION ================= */}
           <aside className="w-full bg-white dark:bg-[#221C18] rounded-3xl border border-[#E8DCCB] dark:border-stone-800 shadow-sm p-4 sm:p-5 sticky top-24 z-20">
+            {/* Viraasat Brand Medallion */}
+            <div className="mb-4 pb-4 border-b border-[#E8DCCB]/60 dark:border-stone-800 flex items-center justify-between">
+              <ViraasatLogo variant="full" size="md" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#C59B4B] font-bold">
+                Patron Hub
+              </span>
+            </div>
+
             {/* Customer Avatar & Lineage Card */}
             <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB]/60 dark:border-stone-800 mb-5">
               <Avatar className="h-12 w-12 border-2 border-[#C59B4B] shadow-sm">

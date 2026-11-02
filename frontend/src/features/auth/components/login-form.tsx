@@ -63,9 +63,9 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
               ? 'from-amber-700 via-orange-600 to-amber-800' 
               : 'from-amber-800 via-primary to-amber-900'
         } shadow-inner`}>
-          <div className="flex justify-center mb-2">
-            <div className="bg-white/15 p-2.5 rounded-full backdrop-blur-md border border-white/20 shadow-sm">
-              <ViraasatLogo />
+          <div className="flex justify-center mb-3">
+            <div className="bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 shadow-md">
+              <ViraasatLogo variant="icon" size="lg" />
             </div>
           </div>
           <h2 className="text-2xl sm:text-3xl font-heading font-bold tracking-tight text-white drop-shadow-sm">

@@ -16,7 +16,6 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Separator } from '@/components/ui/separator';
-import { ViraasatLogo } from '@/components/viraasat-logo';
 import { ReviewsSection } from './reviews-section';
 import { CulturalKnowledgeGraph } from './cultural-knowledge-graph';
 import { useCart } from '@/context/cart-context';

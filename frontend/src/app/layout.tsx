@@ -58,7 +58,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`clay ${inter.variable} ${cormorant.variable}`}>
             <head suppressHydrationWarning>
         <meta property="og:image" content="/viraasat-hero-cream.png" />
-        <link rel="icon" href="/viraasat-logo-full.png" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-72x72.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
       <body className="font-sans antialiased text-foreground bg-background" suppressHydrationWarning>
