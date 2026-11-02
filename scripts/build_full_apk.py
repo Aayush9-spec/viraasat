@@ -53,16 +53,22 @@ def main():
         f.write('''package org.viraasat.heritage.app;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Window;
+import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class MainActivity extends Activity {
     private WebView webView;
+    private static final String APP_URL = "https://www.virrasat.in/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +76,8 @@ public class MainActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         webView = new WebView(this);
+        webView.setBackgroundColor(Color.parseColor("#FAF7F2"));
+
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -79,11 +87,41 @@ public class MainActivity extends Activity {
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+        settings.setAllowContentAccess(true);
+        settings.setAllowFileAccess(false);
         settings.setUserAgentString(settings.getUserAgentString() + " ViraasatAndroidApp/2.4.0");
+
+        // Enable cookies & third-party cookies for Clerk / Supabase auth
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        cookieManager.setAcceptThirdPartyCookies(webView, true);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return handleUrl(view, url);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return handleUrl(view, request.getUrl().toString());
+            }
+
+            private boolean handleUrl(WebView view, String url) {
+                if (url == null) return false;
+                // External protocols (UPI, telephone, email, WhatsApp)
+                if (url.startsWith("tel:") || url.startsWith("mailto:") ||
+                    url.startsWith("whatsapp:") || url.startsWith("upi:") ||
+                    url.startsWith("intent:")) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        view.getContext().startActivity(intent);
+                    } catch (Exception e) {
+                        // ignore if no handler installed
+                    }
+                    return true;
+                }
                 view.loadUrl(url);
                 return true;
             }
@@ -91,7 +129,7 @@ public class MainActivity extends Activity {
 
         webView.setWebChromeClient(new WebChromeClient());
         setContentView(webView);
-        webView.loadUrl("https://virasat.in/");
+        webView.loadUrl(APP_URL);
     }
 
     @Override

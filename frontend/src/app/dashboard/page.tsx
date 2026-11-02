@@ -830,7 +830,7 @@ function CustomerDashboardContent() {
                   {user?.fullName || user?.firstName || 'Art Connoisseur'}
                 </h3>
                 <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
-                  {user?.primaryEmailAddress?.emailAddress || 'patron@virasat.in'}
+                  {user?.primaryEmailAddress?.emailAddress || 'patron@virrasat.in'}
                 </p>
                 <div className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold uppercase tracking-wider text-[#C59B4B]">
                   <ShieldCheck className="w-3 h-3" /> Verified Patron

@@ -7,13 +7,13 @@ export const siteConfig = {
   tagline: 'Authentic Indian Artisan Marketplace',
   description:
     'A premium marketplace for authentic artisan crafts and heritage products, powered by AI.',
-  url: 'https://viraasat.in',
+  url: 'https://www.virrasat.in',
   author: 'Viraasat Crafts Community',
   links: {
     instagram: 'https://instagram.com/viraasat_india',
     facebook: 'https://facebook.com/viraasat.india',
     twitter: 'https://twitter.com/viraasat_crafts',
-    supportEmail: 'care@viraasat.in',
+    supportEmail: 'care@virrasat.in',
   },
   mainNav: [
     { title: 'nav.home', href: '/' },

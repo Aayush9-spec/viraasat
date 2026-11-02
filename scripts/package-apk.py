@@ -439,7 +439,7 @@ def main():
         'targetSdkVersion': 34,
         'themeColor': '#701D24',
         'backgroundColor': '#FAF7F2',
-        'startUrl': 'https://viraasat.org/',
+        'startUrl': 'https://www.virrasat.in/',
         'display': 'standalone',
         'orientation': 'portrait',
         'scope': '/',
@@ -462,7 +462,7 @@ def main():
         z.writestr('assets/manifest.json', json.dumps(manifest_data, indent=2).encode('utf-8'), compress_type=zipfile.ZIP_DEFLATED)
         z.writestr('assets/webapk_config.json', json.dumps({
             'app_id': 'org.viraasat.heritage.app',
-            'start_url': 'https://viraasat.org/',
+            'start_url': 'https://www.virrasat.in/',
             'name': 'Viraasat',
             'theme_color': '#701D24',
             'background_color': '#FAF7F2'
