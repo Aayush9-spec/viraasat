@@ -42,14 +42,14 @@ export interface TeamMember {
 
 export const TEAM_MEMBERS: TeamMember[] = [
   {
-    id: 'arpit-tiwari',
-    name: 'Arpit Tiwari',
-    role: 'Project Head & Chief Systems Architect',
+    id: 'aayush-kumar-singh',
+    name: 'Aayush Kumar Singh',
+    role: 'Team Lead & Chief Systems Architect',
     division: 'Executive Leadership & AI Strategy',
     isHead: true,
-    avatarText: 'AT',
+    avatarText: 'AS',
     icon: Crown,
-    badge: 'Project Head',
+    badge: 'Team Lead',
     bio: 'Steers Viraasat’s overall architectural vision, technical strategy, and engineering roadmap. Spearheaded the cross-stack integration linking deep learning models, cultural ontologies, and decentralized provenance to empower India’s traditional artisan guilds with world-class digital dignity.',
     focus: [
       'Full-Stack System Architecture',
@@ -59,9 +59,9 @@ export const TEAM_MEMBERS: TeamMember[] = [
     ],
     quote: 'Preserving India’s ancestral heritage requires modern engineering dignity—connecting centuries of artisanal genius with transparent, fair technology.',
     socials: {
-      github: 'https://github.com/arpittiwari',
-      linkedin: 'https://linkedin.com/in/arpit-tiwari',
-      email: 'mailto:arpit.tiwari@viraasat.in'
+      github: 'https://github.com/Aayush9-spec',
+      linkedin: 'https://www.linkedin.com/in/aayush9-spec/',
+      email: 'mailto:aayush03061102@gmail.com'
     }
   },
   {
@@ -87,11 +87,11 @@ export const TEAM_MEMBERS: TeamMember[] = [
     }
   },
   {
-    id: 'aayush-kumar-singh',
-    name: 'Aayush Kumar Singh',
+    id: 'arpit-tiwari',
+    name: 'Arpit Tiwari',
     role: 'Machine Learning & Predictive Intelligence',
     division: 'Data Science & Predictive Regressors',
-    avatarText: 'AS',
+    avatarText: 'AT',
     icon: BrainCircuit,
     badge: 'Core Specialist',
     bio: 'Engineered Viraasat’s predictive intelligence suite: craft-specific fair-wage pricing regressors with zero target leakage, multi-month Holt-Winters demand forecasting, and Kaggle-trained review spam NLP classifiers.',
@@ -103,9 +103,9 @@ export const TEAM_MEMBERS: TeamMember[] = [
     ],
     quote: 'Machine learning should empower fair trade, protecting traditional craftspeople from predatory middlemen and opaque pricing practices.',
     socials: {
-      github: 'https://github.com/aayush-kumar-singh',
-      linkedin: 'https://linkedin.com/in/aayush-kumar-singh',
-      email: 'mailto:aayush.singh@viraasat.in'
+      github: 'https://github.com/arpittiwari',
+      linkedin: 'https://linkedin.com/in/arpit-tiwari',
+      email: 'mailto:arpit.tiwari@viraasat.in'
     }
   },
   {
@@ -200,7 +200,7 @@ export function AboutTeamSection({
           </div>
         )}
 
-        {/* ================= 1. FEATURED TEAM HEAD: ARPIT TIWARI ================= */}
+        {/* ================= 1. FEATURED TEAM HEAD: AAYUSH KUMAR SINGH ================= */}
         <div className="mb-14 max-w-5xl mx-auto">
           <div className="bg-[#FAF7F2] rounded-3xl p-6 sm:p-8 md:p-10 border-2 border-[#C59B4B] shadow-xl relative overflow-hidden group hover:shadow-2xl transition-all duration-300">
             {/* Top Royal Watermark Pill */}
