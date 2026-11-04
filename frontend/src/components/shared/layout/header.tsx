@@ -101,9 +101,9 @@ export function Header() {
       <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
         <div className="flex min-w-0 items-center justify-between gap-3 py-3 sm:py-4">
           {/* Logo and Primary Nav */}
-          <div className="flex min-w-0 items-center gap-8">
+          <div className="flex min-w-0 items-center gap-3 xl:gap-6 flex-1">
             <ViraasatLogo className="shrink-0" />
-            <div className="hidden lg:flex items-center space-x-2.5 xl:space-x-5 2xl:space-x-6 text-xs xl:text-sm font-medium tracking-wide shrink-0">
+            <div className="hidden lg:flex items-center space-x-2 xl:space-x-3.5 2xl:space-x-4 text-xs xl:text-sm font-medium tracking-wide">
               <Link href="/" className="text-foreground/80 hover:text-primary transition-colors whitespace-nowrap">
                 {t('nav.home')}
               </Link>
@@ -113,7 +113,8 @@ export function Header() {
               <Link href="/#unique-art-auctions" className="text-foreground/80 hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap font-medium">
                 <Gavel className="w-3.5 h-3.5 text-[#C59B4B]" />
                 <span>{t('nav.auctions') || 'Art Auctions'}</span>
-                <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-[#701D24] text-[#FAF7F2] uppercase tracking-wider animate-pulse">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-[#701D24] text-white uppercase tracking-wider shadow-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
                   Live
                 </span>
               </Link>
@@ -124,9 +125,27 @@ export function Header() {
                 {t('nav.aboutUs') || 'About Us'}
               </Link>
 
-              {/* Explore Dropdown for Secondary Features */}
+              {/* PSIT Showcase — Institutional Innovation */}
+              <Link
+                href="/psit"
+                className="text-foreground/80 hover:text-amber-700 dark:hover:text-amber-400 transition-colors flex items-center gap-1 font-semibold whitespace-nowrap px-1.5 py-0.5 rounded-md hover:bg-amber-500/10"
+              >
+                <Award className="w-3.5 h-3.5 text-amber-600" />
+                <span>PSIT Showcase</span>
+              </Link>
+
+              {/* App Button — Mobile Native Client */}
+              <Link
+                href="/download"
+                className="text-foreground/80 hover:text-primary transition-colors font-semibold flex items-center gap-1 whitespace-nowrap px-1.5 py-0.5 rounded-md hover:bg-primary/10"
+              >
+                <Smartphone className="w-3.5 h-3.5 text-[#C59B4B]" />
+                <span>{t('nav.app') || 'App'}</span>
+              </Link>
+
+              {/* Explore Dropdown for Lineage & Philosophy */}
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1 text-foreground/80 hover:text-primary transition-colors cursor-pointer py-1 px-2 rounded-md hover:bg-muted/50 whitespace-nowrap text-xs xl:text-sm">
+                <DropdownMenuTrigger className="flex items-center gap-1 text-foreground/80 hover:text-primary transition-colors cursor-pointer py-1 px-1.5 rounded-md hover:bg-muted/50 whitespace-nowrap text-xs xl:text-sm">
                   <span>{t('nav.explore') || 'Explore'}</span>
                   <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
                 </DropdownMenuTrigger>
@@ -179,17 +198,11 @@ export function Header() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              {/* Direct App Link on Extra-Large Displays */}
-              <Link href="/download" className="hidden 2xl:flex text-foreground/80 hover:text-primary transition-colors font-semibold items-center gap-1 whitespace-nowrap">
-                <Smartphone className="w-3.5 h-3.5 text-[#C59B4B]" />
-                <span>{t('nav.app') || 'App'}</span>
-              </Link>
             </div>
           </div>
 
           {/* Action Toolbar */}
-          <div className="flex shrink-0 items-center space-x-1 sm:space-x-3 xl:space-x-5">
+          <div className="flex shrink-0 items-center space-x-1 sm:space-x-1.5 xl:space-x-2.5">
             <div className="hidden sm:block">
               <VoiceSearch />
             </div>
@@ -204,7 +217,7 @@ export function Header() {
             {mounted && isAdminRole ? (
               <Link
                 href="/admin"
-                className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-400 hover:bg-red-600 hover:text-white transition-all duration-300"
+                className="hidden xl:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-400 hover:bg-red-600 hover:text-white transition-all duration-300"
               >
                 <Shield className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
                 <span>{t('nav.adminConsole') || 'Admin Console'}</span>
@@ -212,7 +225,7 @@ export function Header() {
             ) : mounted && isSignedIn && isArtisan ? (
               <Link
                 href="/switch-role?to=buyer"
-                className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-amber-600/40 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-600 hover:text-white transition-all duration-300"
+                className="hidden xl:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-amber-600/40 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-600 hover:text-white transition-all duration-300"
               >
                 <ShoppingBag className="w-3.5 h-3.5" />
                 <span>{t('nav.customerShop') || 'Customer Shop'}</span>
@@ -220,7 +233,7 @@ export function Header() {
             ) : (
               <Link
                 href={mounted && isSignedIn ? "/switch-role?to=artisan" : "/login/artisan"}
-                className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+                className="hidden xl:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider py-1.5 px-3 rounded-full border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#C59B4B]" />
                 <span>{t('nav.artisanPortal') || 'Artisan Portal'}</span>
@@ -372,6 +385,9 @@ export function Header() {
                       ) : (
                         <>
                           <DropdownMenuItem asChild>
+                            <Link href="/dashboard" className="cursor-pointer font-medium text-primary">My Dashboard</Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
                             <Link href="/shop" className="cursor-pointer">Browse Shop</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
@@ -406,7 +422,7 @@ export function Header() {
             )}
 
             {/* Mobile Drawer Trigger */}
-            <div className="xl:hidden">
+            <div className="lg:hidden">
               <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="-mr-2">
@@ -415,8 +431,11 @@ export function Header() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[80vw] sm:w-[350px]">
-                  <SheetHeader>
-                    <SheetTitle className="text-left font-heading text-2xl">Menu</SheetTitle>
+                  <SheetHeader className="border-b border-border pb-3">
+                    <div className="flex items-center justify-between">
+                      <ViraasatLogo variant="full" size="md" />
+                      <SheetTitle className="sr-only">Viraasat Navigation Menu</SheetTitle>
+                    </div>
                   </SheetHeader>
                   <div className="flex flex-col gap-6 mt-6">
                     <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border">

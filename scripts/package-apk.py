@@ -1,4 +1,5 @@
 import os
+import sys
 import struct
 import zlib
 import hashlib
@@ -401,6 +402,17 @@ def main():
     print("Building Viraasat APK artifacts...")
     os.makedirs('frontend/public/download', exist_ok=True)
 
+    # If build_full_apk is available and SDK exists, delegate to proper full native APK builder
+    full_builder = os.path.join(os.path.dirname(__file__), 'build_full_apk.py')
+    sdk_root = os.path.expanduser("~/Library/Android/sdk")
+    if os.path.exists(full_builder) and os.path.exists(os.path.join(sdk_root, "build-tools")):
+        try:
+            print("Detected Android SDK & build-tools. Invoking build_full_apk.py...")
+            subprocess.check_call([sys.executable, full_builder])
+            return
+        except Exception as e:
+            print(f"Notice: build_full_apk failed ({e}), continuing with standalone fallback.")
+
     axml_bytes = build_axml()
     dex_bytes = build_dex()
     arsc_bytes = build_resources_arsc()
@@ -427,7 +439,7 @@ def main():
         'targetSdkVersion': 34,
         'themeColor': '#701D24',
         'backgroundColor': '#FAF7F2',
-        'startUrl': 'https://viraasat.org/',
+        'startUrl': 'https://www.virrasat.in/',
         'display': 'standalone',
         'orientation': 'portrait',
         'scope': '/',
@@ -450,7 +462,7 @@ def main():
         z.writestr('assets/manifest.json', json.dumps(manifest_data, indent=2).encode('utf-8'), compress_type=zipfile.ZIP_DEFLATED)
         z.writestr('assets/webapk_config.json', json.dumps({
             'app_id': 'org.viraasat.heritage.app',
-            'start_url': 'https://viraasat.org/',
+            'start_url': 'https://www.virrasat.in/',
             'name': 'Viraasat',
             'theme_color': '#701D24',
             'background_color': '#FAF7F2'

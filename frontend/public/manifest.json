@@ -1,109 +1,127 @@
 {
-    "name": "Viraasat - Heritage Artisan Marketplace",
-    "short_name": "Viraasat",
-    "description": "India's AI-driven marketplace for authentic traditional artisans & GI crafts",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#fbf7f0",
-    "theme_color": "#9c4221",
-    "orientation": "portrait-primary",
-    "scope": "/",
-    "icons": [
+  "id": "/",
+  "name": "Viraasat - Heritage Artisan Marketplace",
+  "short_name": "Viraasat",
+  "description": "India's AI-driven marketplace for authentic traditional artisans & GI crafts",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui",
+    "window-controls-overlay"
+  ],
+  "background_color": "#FAF7F2",
+  "theme_color": "#701D24",
+  "orientation": "portrait-primary",
+  "categories": [
+    "shopping",
+    "lifestyle",
+    "business"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse Heritage Catalog",
+      "short_name": "Shop",
+      "description": "Explore authentic handcrafted heritage pieces",
+      "url": "/shop",
+      "icons": [
         {
-            "src": "/icons/icon-72x72.png",
-            "sizes": "72x72",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "/icons/icon-96x96.png",
-            "sizes": "96x96",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "/icons/icon-128x128.png",
-            "sizes": "128x128",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "/icons/icon-144x144.png",
-            "sizes": "144x144",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "/icons/icon-152x152.png",
-            "sizes": "152x152",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "/icons/icon-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "/icons/icon-384x384.png",
-            "sizes": "384x384",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "/icons/icon-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any maskable"
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
-    ],
-    "categories": [
-        "shopping",
-        "lifestyle",
-        "business"
-    ],
-    "screenshots": [
+      ]
+    },
+    {
+      "name": "Artisan Studio",
+      "short_name": "Studio",
+      "description": "Artisan creation portal and studio analytics",
+      "url": "/dashboard",
+      "icons": [
         {
-            "src": "/screenshots/desktop-1.png",
-            "sizes": "1920x1080",
-            "type": "image/png",
-            "form_factor": "wide"
-        },
-        {
-            "src": "/screenshots/mobile-1.png",
-            "sizes": "750x1334",
-            "type": "image/png",
-            "form_factor": "narrow"
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
-    ],
-    "shortcuts": [
-        {
-            "name": "Browse Heritage Catalog",
-            "short_name": "Shop",
-            "description": "Explore authentic handcrafted heritage pieces",
-            "url": "/shop",
-            "icons": [
-                {
-                    "src": "/icons/icon-96x96.png",
-                    "sizes": "96x96",
-                    "type": "image/png"
-                }
-            ]
-        },
-        {
-            "name": "Artisan Studio",
-            "short_name": "Studio",
-            "description": "Artisan creation portal and studio analytics",
-            "url": "/dashboard",
-            "icons": [
-                {
-                    "src": "/icons/icon-96x96.png",
-                    "sizes": "96x96",
-                    "type": "image/png"
-                }
-            ]
-        }
-    ],
-    "prefer_related_applications": false
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-1.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/mobile-1.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "prefer_related_applications": false
 }

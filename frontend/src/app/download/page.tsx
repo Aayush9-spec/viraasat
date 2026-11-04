@@ -103,30 +103,32 @@ export default function DownloadPage() {
 
           {/* Quick Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <Button
+              type="button"
+              onClick={handleInstallPWA}
+              className="w-full sm:w-auto px-8 py-3.5 bg-[#8C2B2B] hover:bg-[#702222] text-white rounded-xl text-xs uppercase tracking-widest font-semibold transition-all shadow-md hover:shadow-lg h-auto cursor-pointer flex items-center justify-center gap-2"
+            >
+              <Zap className="w-4 h-4 text-[#E8CA82]" />
+              {isInstalled
+                ? (t('download.installed') || 'App Already Installed ✓')
+                : isInstallable
+                ? (t('download.installWebApk') || 'Install Instant WebAPK (Recommended)')
+                : (t('download.addToHome') || 'Add to Home Screen (Instant)')}
+            </Button>
+
             <a
               href="/download/viraasat.apk"
               download="Viraasat-v2.4.0.apk"
               onClick={handleDownloadApk}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-[#8C2B2B] hover:bg-[#702222] text-white rounded-xl text-xs uppercase tracking-widest font-semibold transition-all shadow-md hover:shadow-lg cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-[#8C2B2B]/40 hover:border-[#8C2B2B] text-[#8C2B2B] bg-white hover:bg-[#F3EDE2] rounded-xl text-xs uppercase tracking-widest font-semibold transition-all shadow-sm cursor-pointer"
             >
-              <Download className="w-4 h-4 text-[#E8CA82]" />
-              {t('download.downloadApk') || 'Download Android APK (2.9 MB)'}
+              <Download className="w-4 h-4 text-[#8C2B2B]" />
+              {t('download.downloadApk') || 'Download Android APK (Direct Sideload)'}
             </a>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleInstallPWA}
-              className="w-full sm:w-auto px-6 py-3.5 border-[#C59B4B]/60 text-[#221C18] hover:bg-[#F3EDE2] rounded-xl text-xs uppercase tracking-widest font-semibold h-auto"
-            >
-              <Zap className="w-4 h-4 mr-2 text-[#C59B4B]" />
-              {isInstalled
-                ? (t('download.installed') || 'App Already Installed')
-                : isInstallable
-                ? (t('download.installWebApk') || 'Install Instant WebAPK')
-                : (t('download.addToHome') || 'Add to Home Screen')}
-            </Button>
           </div>
+          <p className="text-xs text-[#8C2B2B] font-medium pt-1">
+            ⚡ Recommended: Instant WebAPK requires no unknown-sources warning, updates automatically, and is verified by Google Play Services.
+          </p>
         </div>
 
         {/* Feature Highlights Grid */}

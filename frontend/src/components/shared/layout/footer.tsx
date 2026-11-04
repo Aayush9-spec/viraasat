@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Instagram, Facebook, Youtube, Linkedin, Shield } from 'lucide-react';
 import { useToast } from '@/core/hooks/use-toast';
 import { useTranslation } from '@/core/hooks/use-translation';
+import { ViraasatLogo } from '@/components/shared/visuals/viraasat-logo';
 
 export function Footer() {
   const { toast } = useToast();
@@ -59,11 +60,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-14 text-xs font-light">
           {/* Col 1: Brand */}
           <div className="col-span-2 space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="font-serif text-2xl font-bold tracking-wider text-[#E8CA82] uppercase">
-                Viraasat
-              </span>
-            </div>
+            <ViraasatLogo variant="full" size="lg" className="brightness-110" />
             <p className="text-stone-400 leading-relaxed max-w-sm">
               India&apos;s foremost collective for Geographical Indication (GI) tagged handicrafts, heritage weaves, and ancestral lost arts. Directly empowering indigenous guilds with dignity and fair trade.
             </p>
