@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import {
+  type LucideIcon,
   Crown,
   Sparkles,
   Code2,
@@ -28,7 +29,7 @@ export interface TeamMember {
   division: string;
   isHead?: boolean;
   avatarText: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   badge: string;
   bio: string;
   focus: string[];
