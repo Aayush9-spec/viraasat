@@ -234,11 +234,16 @@ export function AIAssistant() {
   ];
 
   return (
-    <div className="fixed bottom-8 right-8 z-[9999]">
+    <div className={cn(
+      "fixed z-[9999] transition-all duration-200",
+      isOpen
+        ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] right-3 left-3 sm:left-auto sm:right-6 md:right-8 md:bottom-8 flex justify-end"
+        : "bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] right-4 sm:right-6 md:right-8 md:bottom-8"
+    )}>
       {isOpen ? (
-        <Card className="w-[380px] md:w-[440px] h-[600px] flex flex-col shadow-2xl border-primary/20 !rounded-none overflow-hidden">
+        <Card className="w-full sm:w-[380px] md:w-[420px] max-w-[420px] h-[min(580px,calc(100dvh-6.5rem-env(safe-area-inset-bottom,0px)))] flex flex-col shadow-2xl border border-primary/20 rounded-2xl overflow-hidden bg-background animate-in fade-in zoom-in-95 duration-200">
           {/* Header */}
-          <CardHeader className="bg-[#5e2c18] text-white py-3 px-4 flex flex-row items-center justify-between !rounded-none shrink-0">
+          <CardHeader className="bg-[#5e2c18] text-white py-3 px-4 flex flex-row items-center justify-between shrink-0">
             <CardTitle className="text-sm flex items-center gap-2 font-heading tracking-wide">
               <Sparkles className="h-4 w-4 text-amber-400" />
               Viraasat AI Assistant
@@ -251,8 +256,9 @@ export function AIAssistant() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 text-white hover:bg-white/10 !rounded-none"
+                className="h-7 w-7 text-white hover:bg-white/10 rounded-full"
                 onClick={() => setIsOpen(false)}
+                aria-label="Close AI Assistant"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -424,7 +430,7 @@ export function AIAssistant() {
           )}
 
           {/* Input bar */}
-          <CardFooter className="p-3 border-t border-primary/10 bg-secondary/70 !rounded-none shrink-0">
+          <CardFooter className="p-3 border-t border-primary/10 bg-secondary/70 shrink-0">
             <div className="flex w-full gap-1.5 items-center">
               <input
                 type="file"
@@ -438,11 +444,12 @@ export function AIAssistant() {
                 size="icon"
                 variant="outline"
                 className={cn(
-                  '!rounded-none border-primary/20 bg-card hover:bg-secondary text-foreground h-9 w-9 shrink-0',
+                  'rounded-lg border-primary/20 bg-card hover:bg-secondary text-foreground h-9 w-9 shrink-0',
                   selectedImage && 'text-green-600 border-green-300'
                 )}
                 onClick={() => fileInputRef.current?.click()}
                 title="Attach craft image"
+                aria-label="Attach craft image"
               >
                 <Camera className="h-3.5 w-3.5" />
               </Button>
@@ -450,9 +457,10 @@ export function AIAssistant() {
                 type="button"
                 size="icon"
                 variant={isRecording ? 'destructive' : 'outline'}
-                className="!rounded-none border-primary/20 bg-card hover:bg-secondary text-foreground h-9 w-9 shrink-0"
+                className="rounded-lg border-primary/20 bg-card hover:bg-secondary text-foreground h-9 w-9 shrink-0"
                 onClick={toggleRecording}
                 title={isRecording ? 'Stop recording' : 'Voice input'}
+                aria-label={isRecording ? 'Stop recording' : 'Voice input'}
               >
                 {isRecording
                   ? <MicOff className="h-3.5 w-3.5" />
@@ -466,13 +474,14 @@ export function AIAssistant() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 disabled={isTyping}
-                className="!rounded-none border-primary/20 focus-visible:ring-primary/20 bg-background text-xs h-9"
+                className="rounded-lg border-primary/20 focus-visible:ring-primary/20 bg-background text-base sm:text-xs h-9"
               />
               <Button
                 size="icon"
                 onClick={handleSend}
                 disabled={isTyping || (!input.trim() && !selectedImage)}
-                className="bg-primary hover:bg-primary/90 disabled:opacity-40 !rounded-none shrink-0 h-9 w-9 text-white"
+                className="bg-primary hover:bg-primary/90 disabled:opacity-40 rounded-lg shrink-0 h-9 w-9 text-white"
+                aria-label="Send message"
               >
                 {isTyping
                   ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -485,10 +494,11 @@ export function AIAssistant() {
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="h-14 w-14 bg-primary hover:bg-primary/90 text-white shadow-2xl border border-[#5e2c18]/20 flex items-center justify-center transition-transform hover:scale-105 relative"
+          className="h-12 w-12 sm:h-14 sm:w-14 bg-primary hover:bg-primary/90 text-white shadow-2xl border border-[#5e2c18]/20 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 rounded-2xl relative shadow-clay"
           title="Open AI Assistant"
+          aria-label="Open Viraasat AI Assistant"
         >
-          <MessageSquare className="h-6 w-6" />
+          <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6" />
           <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500" />

@@ -123,10 +123,39 @@
     border-color: hsl(var(--border));
   }
 
+  html {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
     color: hsl(var(--foreground));
     background-color: hsl(var(--background));
     font-family: var(--font-sans);
+    overflow-x: hidden;
+    max-width: 100vw;
+    touch-action: manipulation;
+  }
+
+  /* Prevent accidental double-tap zoom while preserving pinch zoom & pan */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  label {
+    touch-action: manipulation;
+  }
+
+  /* Prevent unwanted mobile focus auto-zoom on iOS Safari & Android WebView */
+  @media (max-width: 768px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
   }
 
   .font-heading {

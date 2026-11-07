@@ -736,7 +736,7 @@ export default function Marketplace() {
                 placeholder={t('home.searchLiveHeirlooms') || "Search live heirlooms, crafts..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border border-[#E8DCCB] rounded-full py-2.5 pl-10 pr-4 text-xs text-[#221C18] placeholder-[#655B53] focus:outline-none focus:border-[#C59B4B] shadow-sm"
+                className="w-full bg-white border border-[#E8DCCB] rounded-full py-2.5 pl-10 pr-4 text-base sm:text-xs text-[#221C18] placeholder-[#655B53] focus:outline-none focus:border-[#C59B4B] shadow-sm"
               />
               <Search className="w-4 h-4 text-[#8F6826] absolute left-3.5 top-3" />
               {searchQuery && (
@@ -1627,7 +1627,7 @@ export default function Marketplace() {
                   placeholder="e.g. Ustad Mansoor Ali"
                   value={appForm.fullName}
                   onChange={(e) => setAppForm({ ...appForm, fullName: e.target.value })}
-                  className="w-full text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
+                  className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
                 />
               </div>
 
@@ -1639,7 +1639,7 @@ export default function Marketplace() {
                     placeholder="e.g. Pashmina Heritage Guild"
                     value={appForm.workshopName}
                     onChange={(e) => setAppForm({ ...appForm, workshopName: e.target.value })}
-                    className="w-full text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
+                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
                   />
                 </div>
                 <div>
@@ -1647,7 +1647,7 @@ export default function Marketplace() {
                   <select
                     value={appForm.state}
                     onChange={(e) => setAppForm({ ...appForm, state: e.target.value })}
-                    className="w-full text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none bg-white"
+                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none bg-white"
                   >
                     <option value="Rajasthan">Rajasthan</option>
                     <option value="Jammu and Kashmir">Jammu and Kashmir</option>
@@ -1670,7 +1670,7 @@ export default function Marketplace() {
                     placeholder="artisan@example.com"
                     value={appForm.email}
                     onChange={(e) => setAppForm({ ...appForm, email: e.target.value })}
-                    className="w-full text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
+                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
                   />
                 </div>
                 <div>
@@ -1680,7 +1680,7 @@ export default function Marketplace() {
                     placeholder="+91 98765 43210"
                     value={appForm.phone}
                     onChange={(e) => setAppForm({ ...appForm, phone: e.target.value })}
-                    className="w-full text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
+                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
                   />
                 </div>
               </div>
@@ -1693,7 +1693,7 @@ export default function Marketplace() {
                   placeholder="e.g. Bastar Dhokra Lost-Wax Metallurgy, Pashmina Weaving..."
                   value={appForm.craft}
                   onChange={(e) => setAppForm({ ...appForm, craft: e.target.value })}
-                  className="w-full text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
+                  className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
                 />
               </div>
 

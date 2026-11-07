@@ -29,11 +29,7 @@ export interface TeamMember {
   division: string;
   isHead?: boolean;
   avatarText: string;
-<<<<<<< HEAD
   icon: LucideIcon;
-=======
-  icon: React.ComponentType<{ className?: string }>;
->>>>>>> b233ed5631368770ac37d24a96c6a76e308a3f07
   badge: string;
   bio: string;
   focus: string[];

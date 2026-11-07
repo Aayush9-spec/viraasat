@@ -23,7 +23,7 @@ export function Footer() {
   };
 
   return (
-    <footer id="about-viraasat" className="bg-[#221C18] text-[#FAF7F2] pt-16 pb-12 border-t-2 border-[#C59B4B] relative z-20">
+    <footer id="about-viraasat" className="bg-[#221C18] text-[#FAF7F2] pt-16 pb-24 md:pb-12 border-t-2 border-[#C59B4B] relative z-20">
       <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
         {/* Top Newsletter Row */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-14 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -45,7 +45,7 @@ export function Footer() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('footer.emailPlaceholder') || "Enter your email address"}
-              className="bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#C59B4B] w-full sm:w-64"
+              className="bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-base sm:text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#C59B4B] w-full sm:w-64"
             />
             <button
               type="submit"
