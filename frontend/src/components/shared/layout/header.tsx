@@ -128,16 +128,16 @@ export function Header() {
               {/* PSIT Showcase — Institutional Innovation */}
               <Link
                 href="/psit"
-                className="text-foreground/80 hover:text-amber-700 dark:hover:text-amber-400 transition-colors flex items-center gap-1 font-semibold whitespace-nowrap px-1.5 py-0.5 rounded-md hover:bg-amber-500/10"
+                className="text-foreground/80 hover:text-amber-700 dark:hover:text-amber-400 transition-colors hidden xl:flex items-center gap-1 font-semibold whitespace-nowrap px-1.5 py-0.5 rounded-md hover:bg-amber-500/10"
               >
                 <Award className="w-3.5 h-3.5 text-amber-600" />
-                <span>PSIT Showcase</span>
+                <span>{t('nav.psitShowcase') || 'PSIT Showcase'}</span>
               </Link>
 
               {/* App Button — Mobile Native Client */}
               <Link
                 href="/download"
-                className="text-foreground/80 hover:text-primary transition-colors font-semibold flex items-center gap-1 whitespace-nowrap px-1.5 py-0.5 rounded-md hover:bg-primary/10"
+                className="text-foreground/80 hover:text-primary transition-colors font-semibold hidden 2xl:flex items-center gap-1 whitespace-nowrap px-1.5 py-0.5 rounded-md hover:bg-primary/10"
               >
                 <Smartphone className="w-3.5 h-3.5 text-[#C59B4B]" />
                 <span>{t('nav.app') || 'App'}</span>
@@ -145,7 +145,7 @@ export function Header() {
 
               {/* Explore Dropdown for Lineage & Philosophy */}
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1 text-foreground/80 hover:text-primary transition-colors cursor-pointer py-1 px-1.5 rounded-md hover:bg-muted/50 whitespace-nowrap text-xs xl:text-sm">
+                <DropdownMenuTrigger className="flex items-center gap-1 text-foreground/80 hover:text-primary transition-colors cursor-pointer py-1 px-1.5 rounded-md hover:bg-muted/50 whitespace-nowrap text-xs xl:text-sm shrink-0">
                   <span>{t('nav.explore') || 'Explore'}</span>
                   <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
                 </DropdownMenuTrigger>

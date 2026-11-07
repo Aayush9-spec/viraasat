@@ -262,13 +262,13 @@ export default function ArtisanDashboardPage() {
               <span className="text-2xl font-bold font-heading">
                 {reviewStats.total > 0 ? reviewStats.avg.toFixed(1) : '5.0'}
               </span>
-              <span className="text-xs text-muted-foreground">({reviewStats.total} reviews)</span>
+              <span className="text-xs text-muted-foreground">({reviewStats.total} {reviewStats.total === 1 ? 'review' : 'reviews'})</span>
             </div>
             <Link
               href="/artisan/reviews"
               className="text-xs text-amber-700 dark:text-amber-400 font-semibold hover:underline mt-1 inline-flex items-center gap-1"
             >
-              <span>{reviewStats.pending > 0 ? `${reviewStats.pending} need reply` : 'View your reviews'}</span>
+              <span>{reviewStats.pending > 0 ? `${reviewStats.pending} ${reviewStats.pending === 1 ? 'needs reply' : 'need reply'}` : 'View your reviews'}</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </CardContent>

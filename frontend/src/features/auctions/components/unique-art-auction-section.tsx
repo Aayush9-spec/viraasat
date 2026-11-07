@@ -390,7 +390,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
               Unique Art & Heirloom Auctions
             </h2>
             <p className="text-sm sm:text-base text-[#5E2C18]/80 mt-2 max-w-2xl font-sans">
-              Acquire one-of-a-kind national treasures direct from master creators. Artisans set their minimum reserve price
+              Acquire one-of-a-kind national treasures directly from master creators. Artisans set their minimum reserve price
               and auction period; connoisseurs compete with transparent on-chain provenance.
             </p>
           </div>

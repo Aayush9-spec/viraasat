@@ -32,7 +32,8 @@
         "voiceModalTitle": "Voice Product Search",
         "voiceModalDesc": "Speak in Hindi, English, Tamil, Bengali, or your preferred language to find authentic handcrafted heirlooms.",
         "auctions": "Art Auctions",
-        "explore": "Explore"
+        "explore": "Explore",
+        "psitShowcase": "PSIT Showcase"
     },
     "artisan": {
         "studioTitle": "Artisan Business Studio",
@@ -83,7 +84,8 @@
         "multilingualAi": "Multilingual AI",
         "speakName": "Speak Name",
         "voiceDetails": "Voice Details",
-        "aiGenerate": "AI Generate (Native + English)"
+        "aiGenerate": "AI Generate (Native + English)",
+        "reviews": "Reviews & Feedback"
     },
     "marketplace": {
         "title": "Living Heritage Catalog",

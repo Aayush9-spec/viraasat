@@ -32,7 +32,8 @@
         "voiceModalDesc": "اصلی روایتی نوادرات تلاش کرنے کے لیے اپنی پسندیدہ زبان میں بولیں۔",
         "aboutUs": "ہمارے بارے میں",
         "auctions": "فن کی نیلامی",
-        "explore": "دریافت کریں"
+        "explore": "دریافت کریں",
+        "psitShowcase": "پی ایس آئی ٹی شوکیس"
     },
     "artisan": {
         "studioTitle": "دستکار بزنس اسٹوڈیو",
@@ -83,7 +84,8 @@
         "multilingualAi": "کثیر لسانی AI",
         "speakName": "نام بولیں",
         "voiceDetails": "آواز سے تفصیل",
-        "aiGenerate": "AI سے تفصیل بنائیں (مقامی + انگریزی)"
+        "aiGenerate": "AI سے تفصیل بنائیں (مقامی + انگریزی)",
+        "reviews": "جائزے اور رائے"
     },
     "marketplace": {
         "title": "زندہ ورثہ کیٹلاگ",

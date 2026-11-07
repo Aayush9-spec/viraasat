@@ -36,7 +36,8 @@ export function ArtisanNav() {
     <nav className="grid items-start gap-1.5 px-2 text-sm font-medium lg:px-4 py-2">
       {artisanNavItems.map(({ href, key, label, icon: Icon }) => {
         const isActive = pathname === href || (href !== '/artisan/dashboard' && pathname.startsWith(href));
-        const translatedLabel = t(`artisan.${key}`) || label;
+        const rawTranslated = t(`artisan.${key}`);
+        const translatedLabel = rawTranslated && rawTranslated !== `artisan.${key}` ? rawTranslated : label;
         return (
           <Link
             key={href}

@@ -328,7 +328,7 @@ export function ReviewsSection({ product }: { product: Product }) {
           </div>
 
           <p className="text-xs text-[#655B53] mt-2 font-medium">
-            Based on <span className="font-bold text-[#221C18]">{stats.totalReviews}</span> verified customer reviews
+            Based on <span className="font-bold text-[#221C18]">{stats.totalReviews}</span> verified customer {stats.totalReviews === 1 ? 'review' : 'reviews'}
           </p>
 
           <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">

@@ -32,7 +32,8 @@
         "voiceModalDesc": "ਅਸਲੀ ਦਸਤਕਾਰੀ ਲੱਭਣ ਲਈ ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਵਿੱਚ ਬੋਲੋ।",
         "aboutUs": "ਸਾਡੇ ਬਾਰੇ",
         "auctions": "ਕਲਾ ਨਿਲਾਮੀ",
-        "explore": "ਪੜਚੋਲ ਕਰੋ"
+        "explore": "ਪੜਚੋਲ ਕਰੋ",
+        "psitShowcase": "ਪੀਐਸਆਈਟੀ ਸ਼ੋਕੇਸ"
     },
     "artisan": {
         "studioTitle": "ਕਾਰੀਗਰ ਬਿਜ਼ਨਸ ਸਟੂਡੀਓ",
@@ -83,7 +84,8 @@
         "multilingualAi": "ਬਹੁਭਾਸ਼ਾਈ AI",
         "speakName": "ਨਾਮ ਬੋਲੋ",
         "voiceDetails": "ਆਵਾਜ਼ ਵੇਰਵੇ",
-        "aiGenerate": "AI ਰਾਹੀਂ ਬਣਾਓ (ਦੇਸੀ + ਅੰਗਰੇਜ਼ੀ)"
+        "aiGenerate": "AI ਰਾਹੀਂ ਬਣਾਓ (ਦੇਸੀ + ਅੰਗਰੇਜ਼ੀ)",
+        "reviews": "ਸਮੀਖਿਆਵਾਂ ਅਤੇ ਫੀਡਬੈਕ"
     },
     "marketplace": {
         "title": "ਜੀਵੰਤ ਵਿਰਾਸਤ ਕੈਟਾਲਾਗ",

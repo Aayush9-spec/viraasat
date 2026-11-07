@@ -881,7 +881,7 @@ export function ProductForm({ product }: ProductFormProps) {
                         <FormItem>
                           <FormLabel className="text-[11px] font-medium text-amber-900">GI Registration / Tag No. (Optional)</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g. GI-APP-NO-124 (Jaipur Blue Pottery)" className="bg-white text-xs h-8" {...field} />
+                            <Input placeholder="e.g. GI-APP-NO-124 (Jaipur Blue Pottery)" className="bg-white text-base sm:text-xs h-8" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -1496,7 +1496,7 @@ export function ProductForm({ product }: ProductFormProps) {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input type="number" step="0.1" placeholder="1.0" className="text-xs h-8" {...field} />
+                              <Input type="number" step="0.1" placeholder="1.0" className="text-base sm:text-xs h-8" {...field} />
                             </FormControl>
                           </FormItem>
                         )}
