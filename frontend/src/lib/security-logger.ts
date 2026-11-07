@@ -74,3 +74,4 @@ export function logSecurityEvent(event: SecurityEvent) {
     console.warn('[SECURITY AUDIT]', JSON.stringify(payload));
   }
 }
+

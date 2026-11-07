@@ -152,3 +152,4 @@ Thirteen distinct vulnerabilities were discovered, ranging from Critical to Medi
 - **Finding:** Image validation checked only client file extensions and MIME types. An attacker could upload an executable shell script or polyglot renamed to `.png`.
 - **Impact:** Malicious file storage, potential remote code execution or stored XSS.
 - **Remediation:** Implemented `validateImageMagicBytes` in `/api/upload` inspecting initial binary signatures (JPEG `FF D8 FF`, PNG `89 50 4E 47`, WebP `RIFF...WEBP`). Enforced 5MB size limit and cryptographic UUID filenames.
+

@@ -42,3 +42,4 @@ export function validateImageMagicBytes(buffer: Buffer): { valid: boolean; forma
 
   return { valid: false };
 }
+

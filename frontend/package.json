@@ -15,7 +15,7 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "test:unit": "jest --runInBand",
+    "test:unit": "jest --runInBand --forceExit",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:a11y": "playwright test tests/e2e/a11y.spec.ts",

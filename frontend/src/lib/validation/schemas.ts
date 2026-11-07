@@ -84,3 +84,4 @@ export const ArtisanApplicationSchema = z.object({
   region: z.string().min(2).max(100),
   bio: z.string().max(2000).optional(),
 });
+

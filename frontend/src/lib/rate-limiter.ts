@@ -11,9 +11,10 @@ interface RateLimitRecord {
 // In-memory token store for route rate-limiting
 const store = new Map<string, RateLimitRecord>();
 
-// Periodically clean up stale rate limit entries
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
+// Periodically clean up stale rate limit entries in server runtime.
+// Skipped in test runner, and unref'd so Node event loop never hangs.
+if (typeof setInterval !== 'undefined' && process.env.NODE_ENV !== 'test') {
+  const cleanupTimer = setInterval(() => {
     const now = Date.now();
     for (const [key, record] of store.entries()) {
       if (now > record.resetAt) {
@@ -21,6 +22,9 @@ if (typeof setInterval !== 'undefined') {
       }
     }
   }, 60000);
+  if (cleanupTimer && typeof cleanupTimer === 'object' && 'unref' in cleanupTimer) {
+    (cleanupTimer as any).unref();
+  }
 }
 
 /**
@@ -90,3 +94,4 @@ export const SecurityRateLimits = {
   // General forms / newsletter: 10 per minute
   GENERAL_FORM: { windowMs: 60 * 1000, max: 10 },
 } as const;
+

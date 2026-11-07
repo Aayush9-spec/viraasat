@@ -205,3 +205,4 @@ CREATE POLICY "product_images_artisan_upload"
     bucket_id = 'product-images'
     AND auth.role() = 'authenticated'
   );
+

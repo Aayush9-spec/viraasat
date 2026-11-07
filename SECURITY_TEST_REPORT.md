@@ -109,3 +109,4 @@ Time:        3.01 s
    - Never define `NEXT_PUBLIC_ADMIN_PIN` or `NEXT_PUBLIC_CLERK_SECRET_KEY`.
 3. **Webhooks Setup:**
    - In Razorpay Dashboard -> Webhooks, ensure `RAZORPAY_WEBHOOK_SECRET` matches the environment variable configured on Vercel.
+
