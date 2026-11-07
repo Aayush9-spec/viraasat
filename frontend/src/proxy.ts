@@ -15,12 +15,13 @@ function applySecurityHeaders(res: NextResponse): NextResponse {
   // Content Security Policy
   const cspHeader = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.accounts.dev https://*.clerk.com https://checkout.razorpay.com",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.virrasat.in https://*.virrasat.in https://clerk.virasat.in https://*.virasat.in https://checkout.razorpay.com https://cdn.jsdelivr.net",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob: https:",
-    "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://*.supabase.co https://api.razorpay.com https://checkout.razorpay.com https://generativelanguage.googleapis.com https://*.onrender.com",
-    "frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com",
+    "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.virrasat.in https://*.virrasat.in https://clerk.virasat.in https://*.virasat.in https://cdn.jsdelivr.net https://*.supabase.co https://api.razorpay.com https://checkout.razorpay.com https://generativelanguage.googleapis.com https://*.onrender.com https://viraasat-backend-f0c1.onrender.com",
+    "frame-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.virrasat.in https://*.virrasat.in https://clerk.virasat.in https://*.virasat.in https://checkout.razorpay.com https://api.razorpay.com",
+    "worker-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self' https://checkout.razorpay.com",

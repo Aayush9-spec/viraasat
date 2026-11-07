@@ -52,13 +52,19 @@ export function NotificationBell({ className = '' }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const currentUserId = user?.id || (isArtisan ? 'artisan-1' : 'default');
+  const currentUserId = user?.id || '';
   const role = isArtisan ? 'artisan' : 'customer';
 
   const fetchNotifications = useCallback(async () => {
+    if (!isSignedIn || !user?.id) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
+    }
+
     try {
       setLoading(true);
-      const res = await fetch(`/api/notifications?userId=${encodeURIComponent(currentUserId)}&role=${role}`);
+      const res = await fetch(`/api/notifications?userId=${encodeURIComponent(user.id)}&role=${role}`);
       if (res.ok) {
         const json = await res.json();
         if (json?.data?.notifications) {
@@ -71,9 +77,15 @@ export function NotificationBell({ className = '' }: { className?: string }) {
     } finally {
       setLoading(false);
     }
-  }, [currentUserId, role]);
+  }, [isSignedIn, user?.id, role]);
 
   useEffect(() => {
+    if (!isSignedIn || !user?.id) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
+    }
+
     fetchNotifications();
 
     // Listen to real-time notification events in browser
@@ -93,7 +105,7 @@ export function NotificationBell({ className = '' }: { className?: string }) {
       window.removeEventListener('viraasat_notification_created', handleNewNotif);
       clearInterval(interval);
     };
-  }, [fetchNotifications]);
+  }, [isSignedIn, user?.id, fetchNotifications]);
 
   const markAsRead = async (id: string, link?: string) => {
     // Optimistic UI update
@@ -101,6 +113,8 @@ export function NotificationBell({ className = '' }: { className?: string }) {
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
+
+    if (!isSignedIn || !user?.id) return;
 
     try {
       await fetch('/api/notifications', {
@@ -122,11 +136,13 @@ export function NotificationBell({ className = '' }: { className?: string }) {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     setUnreadCount(0);
 
+    if (!isSignedIn || !user?.id) return;
+
     try {
       await fetch('/api/notifications', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ markAll: true, userId: currentUserId }),
+        body: JSON.stringify({ markAll: true, userId: user.id }),
       });
     } catch (e) {
       console.warn('Could not mark all read:', e);
@@ -194,7 +210,20 @@ export function NotificationBell({ className = '' }: { className?: string }) {
 
         {/* List of notifications */}
         <div className="max-h-[380px] overflow-y-auto divide-y divide-border/40">
-          {notifications.length === 0 ? (
+          {!isSignedIn ? (
+            <div className="py-10 px-4 text-center">
+              <div className="h-10 w-10 rounded-full bg-amber-100/60 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 flex items-center justify-center mx-auto mb-3">
+                <Bell className="h-5 w-5" />
+              </div>
+              <p className="text-sm font-medium text-foreground">Sign in for updates</p>
+              <p className="text-xs text-muted-foreground mt-1 max-w-[220px] mx-auto mb-4">
+                Log in to stay updated on orders, artisan messages, and exclusive heirloom drops.
+              </p>
+              <Button asChild size="sm" className="bg-amber-800 hover:bg-amber-900 text-white text-xs" onClick={() => setIsOpen(false)}>
+                <Link href="/login">Sign In</Link>
+              </Button>
+            </div>
+          ) : notifications.length === 0 ? (
             <div className="py-10 px-4 text-center">
               <div className="h-10 w-10 rounded-full bg-amber-100/60 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 flex items-center justify-center mx-auto mb-3">
                 <Sparkles className="h-5 w-5" />
@@ -242,33 +271,35 @@ export function NotificationBell({ className = '' }: { className?: string }) {
         </div>
 
         {/* Footer */}
-        <div className="p-2 border-t border-border/60 bg-muted/20 text-center">
-          {isArtisan ? (
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="w-full text-xs text-amber-800 dark:text-amber-400 hover:text-amber-900"
-              onClick={() => setIsOpen(false)}
-            >
-              <Link href="/artisan/reviews">
-                Manage All Product Reviews & Feedback →
-              </Link>
-            </Button>
-          ) : (
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="w-full text-xs text-muted-foreground hover:text-foreground"
-              onClick={() => setIsOpen(false)}
-            >
-              <Link href="/orders">
-                View Past Orders & Leave Reviews →
-              </Link>
-            </Button>
-          )}
-        </div>
+        {isSignedIn && (
+          <div className="p-2 border-t border-border/60 bg-muted/20 text-center">
+            {isArtisan ? (
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="w-full text-xs text-amber-800 dark:text-amber-400 hover:text-amber-900"
+                onClick={() => setIsOpen(false)}
+              >
+                <Link href="/artisan/reviews">
+                  Manage All Product Reviews & Feedback →
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="w-full text-xs text-muted-foreground hover:text-foreground"
+                onClick={() => setIsOpen(false)}
+              >
+                <Link href="/orders">
+                  View Past Orders & Leave Reviews →
+                </Link>
+              </Button>
+            )}
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );

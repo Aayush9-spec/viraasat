@@ -33,6 +33,10 @@ export function AppProviders({ children }: AppProvidersProps) {
           env.app.url,
           'https://virrasat.in',
           'https://www.virrasat.in',
+          'https://virasat.in',
+          'https://www.virasat.in',
+          'https://clerk.virrasat.in',
+          'https://clerk.virasat.in',
           'https://viraasat-eta.vercel.app',
         ].filter(Boolean)}
         appearance={{ theme: shadcn }}
