@@ -4,6 +4,11 @@ import { apiSuccess, handleApiError } from '@/core/api/api-response';
 import fs from 'fs';
 import path from 'path';
 
+import { auth } from '@clerk/nextjs/server';
+import { checkRateLimit, getClientIp, SecurityRateLimits } from '@/lib/rate-limiter';
+import { logSecurityEvent } from '@/lib/security-logger';
+import { ProductMutationSchema } from '@/lib/validation/schemas';
+
 function getStoredFileProducts(): any[] {
   const possiblePaths = [
     path.resolve(process.cwd(), '../database/products.json'),
@@ -73,49 +78,81 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+
+  // 1. Rate limiting on product creation
+  const rateLimit = checkRateLimit(`product-post:${ip}`, SecurityRateLimits.PRODUCT_MUTATION);
+  if (!rateLimit.allowed) {
+    logSecurityEvent({
+      type: 'RATE_LIMIT_EXCEEDED',
+      ip,
+      path: '/api/products',
+    });
+    return NextResponse.json(
+      { error: 'Too many product listing requests. Please wait a moment.' },
+      { status: 429 }
+    );
+  }
+
   try {
-    const body = await req.json();
-    if (!body || !body.name) {
-      return NextResponse.json({ error: 'Product name is required' }, { status: 400 });
+    // 2. Authentication and Role verification
+    const { userId, sessionClaims } = await auth();
+    if (!userId) {
+      logSecurityEvent({
+        type: 'AUTH_UNAUTHORIZED_ACCESS',
+        ip,
+        path: '/api/products',
+        details: { action: 'unauthenticated product creation' },
+      });
+      return NextResponse.json({ error: 'Unauthorized: Authentication required to list crafts' }, { status: 401 });
     }
+
+    const role = (sessionClaims?.metadata as any)?.role || (sessionClaims as any)?.role;
+    // Allow verified artisans or admins
+    if (role && role !== 'artisan' && role !== 'admin') {
+      logSecurityEvent({
+        type: 'RBAC_PRIVILEGE_VIOLATION',
+        userId,
+        ip,
+        path: '/api/products',
+        details: { role, attemptedAction: 'create product' },
+      });
+      return NextResponse.json(
+        { error: 'Forbidden: Only verified artisans or admins may publish products' },
+        { status: 403 }
+      );
+    }
+
+    const rawBody = await req.json().catch(() => ({}));
+    const parseResult = ProductMutationSchema.safeParse(rawBody);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid product data', details: parseResult.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const body = parseResult.data;
+
+    // Enforce artisan ownership: an artisan can only list products under their own ID
+    const assignedArtisanId = role === 'admin' && rawBody.artisanId ? String(rawBody.artisanId) : userId;
 
     const newProduct = {
       id: body.id || `creation-${Date.now()}`,
-      artisanId: body.artisanId || body.artisan_id || 'artisan-1',
-      name: String(body.name).trim(),
-      description: String(body.description || '').trim(),
-      originalLanguage: body.originalLanguage || body.original_language || 'Hindi',
-      englishDescription: body.englishDescription || body.english_description || '',
-      descriptions: body.descriptions || (body.description ? { hi: String(body.description).trim() } : {}),
-      price: Number(body.price) || 0,
+      artisanId: assignedArtisanId,
+      name: body.name.trim(),
+      description: body.description.trim(),
+      originalLanguage: body.originalLanguage || 'Hindi',
+      englishDescription: body.englishDescription || '',
+      descriptions: { hi: body.description.trim() },
+      price: body.price,
       currency: body.currency || 'INR',
-      category: body.category || 'Home Decor',
-      images: (() => {
-        if (Array.isArray(body.images) && body.images.length > 0 && !body.images[0].includes('1610701596007')) {
-          return body.images;
-        }
-        const n = String(body.name || '').toLowerCase();
-        if (n.includes('diya') || n.includes('deepam') || n.includes('lamp')) {
-          return ['/images/products/clean/handcrafted-terracotta-diya.jpg'];
-        }
-        if (n.includes('pottery') || n.includes('vase') || n.includes('urn')) {
-          return ['/images/products/clean/jaipur-blue-pottery-urn.jpg'];
-        }
-        if (n.includes('channapatna') || n.includes('toy') || n.includes('train')) {
-          return ['/images/products/clean/channapatna-wooden-toy-train.jpg'];
-        }
-        if (n.includes('shawl') || n.includes('pashmina')) {
-          return ['/images/products/clean/kashmiri-sozni-pashmina-shawl.jpg'];
-        }
-        if (n.includes('brass') || n.includes('dhokra')) {
-          return ['/images/products/clean/moradabad-brass-ganesh-idol.jpg'];
-        }
-        return ['/images/products/clean/handcrafted-terracotta-diya.jpg'];
-      })(),
-      aiInsights: body.aiInsights || body.ai_insights || null,
+      category: body.category,
+      images: body.images,
+      aiInsights: body.aiInsights || null,
       isActive: true,
       status: 'active',
-      createdAt: body.createdAt || new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 

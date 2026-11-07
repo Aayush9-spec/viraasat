@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth, currentUser as clerkCurrentUser } from '@clerk/nextjs/server';
 import { ReviewService } from '@/features/reviews/review-service';
 import { apiSuccess, handleApiError, apiError } from '@/core/api/api-response';
+import { checkRateLimit, getClientIp, SecurityRateLimits } from '@/lib/rate-limiter';
+import { logSecurityEvent } from '@/lib/security-logger';
+import { CreateReviewSchema, ArtisanReplySchema } from '@/lib/validation/schemas';
 
 export async function GET(req: NextRequest) {
   try {
@@ -81,48 +84,63 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+
+  // Rate limiting on review submissions
+  const rateLimit = checkRateLimit(`review-post:${ip}`, SecurityRateLimits.REVIEW_SUBMISSION);
+  if (!rateLimit.allowed) {
+    logSecurityEvent({
+      type: 'RATE_LIMIT_EXCEEDED',
+      ip,
+      path: '/api/reviews',
+    });
+    return apiError('Too many review submissions. Please wait a moment.', 429, 'RATE_LIMIT_EXCEEDED');
+  }
+
   try {
-    let authUser: { id: string; name?: string; email?: string; avatarUrl?: string } | null = null;
+    const { userId } = await auth();
+    if (!userId) {
+      logSecurityEvent({
+        type: 'AUTH_UNAUTHORIZED_ACCESS',
+        ip,
+        path: '/api/reviews',
+        details: { action: 'unauthenticated review submission' },
+      });
+      return apiError('Authentication required to submit a verified craft review', 401, 'UNAUTHORIZED');
+    }
 
-    try {
-      const { userId } = await auth();
-      if (userId) {
-        const clerkUser = await clerkCurrentUser();
-        authUser = {
-          id: userId,
-          name: clerkUser?.fullName || clerkUser?.username || clerkUser?.primaryEmailAddress?.emailAddress?.split('@')[0],
-          email: clerkUser?.primaryEmailAddress?.emailAddress || undefined,
-          avatarUrl: clerkUser?.imageUrl || undefined,
-        };
-      }
-    } catch {}
-
-    const body = await req.json().catch(() => ({}));
-    const { productId, rating, comment, title, images } = body;
-
-    // Use authenticated user or fallback to client-provided reviewer info if in verified test/demo mode
-    const reviewerUser = authUser || {
-      id: body.reviewerId || 'demo-user',
-      name: body.reviewerName || 'Artisan Patron',
-      email: body.reviewerEmail || 'patron@viraasat.in',
-      avatarUrl: body.reviewerAvatar || undefined,
+    const clerkUser = await clerkCurrentUser();
+    const reviewerUser = {
+      id: userId,
+      name: clerkUser?.fullName || clerkUser?.username || clerkUser?.primaryEmailAddress?.emailAddress?.split('@')[0] || 'Artisan Patron',
+      email: clerkUser?.primaryEmailAddress?.emailAddress || undefined,
+      avatarUrl: clerkUser?.imageUrl || undefined,
     };
 
-    if (!reviewerUser.id) {
-      return apiError('Authentication required to submit a review', 401, 'UNAUTHORIZED');
-    }
+    const rawBody = await req.json().catch(() => ({}));
 
-    if (!productId) {
+    if (!rawBody.productId) {
       return apiError('Product ID is required', 400, 'MISSING_PRODUCT_ID');
     }
+    if (typeof rawBody.rating === 'number' && (rawBody.rating < 1 || rawBody.rating > 5)) {
+      return apiError('Rating must be between 1 and 5 stars', 400, 'INVALID_RATING');
+    }
+
+    const parseResult = CreateReviewSchema.safeParse(rawBody);
+    if (!parseResult.success) {
+      const firstError = parseResult.error.issues[0]?.message || 'Invalid review data';
+      return apiError(firstError, 400, 'VALIDATION_ERROR', parseResult.error.flatten().fieldErrors);
+    }
+
+    const { productId, rating, comment, title, images } = parseResult.data;
 
     const result = await ReviewService.createReview(
       {
         productId,
-        rating: Number(rating),
-        comment: String(comment || ''),
-        title: title ? String(title) : undefined,
-        images: Array.isArray(images) ? images : [],
+        rating,
+        comment: comment.trim(),
+        title: title ? title.trim() : undefined,
+        images: images || [],
       },
       reviewerUser
     );
@@ -141,18 +159,25 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  try {
-    let authUserId: string | null = null;
-    let authUserRole: string | undefined = undefined;
-    let authUserName: string | undefined = undefined;
+  const ip = getClientIp(req);
 
-    try {
-      const session = await auth();
-      authUserId = session.userId;
-      authUserRole = (session.sessionClaims?.metadata as any)?.role || (session.sessionClaims as any)?.role;
-      const clerkUser = await clerkCurrentUser();
-      authUserName = clerkUser?.fullName || clerkUser?.username || 'Master Artisan';
-    } catch {}
+  try {
+    const session = await auth();
+    const authUserId = session.userId;
+    const authUserRole = (session.sessionClaims?.metadata as any)?.role || (session.sessionClaims as any)?.role;
+
+    if (!authUserId) {
+      logSecurityEvent({
+        type: 'AUTH_UNAUTHORIZED_ACCESS',
+        ip,
+        path: '/api/reviews',
+        details: { action: 'unauthenticated review mutation' },
+      });
+      return apiError('Authentication required to modify reviews or post artisan replies', 401, 'UNAUTHORIZED');
+    }
+
+    const clerkUser = await clerkCurrentUser();
+    const authUserName = clerkUser?.fullName || clerkUser?.username || 'Master Artisan';
 
     const body = await req.json().catch(() => ({}));
     const { reviewId, action, response, responseText } = body;
@@ -163,10 +188,26 @@ export async function PUT(req: NextRequest) {
 
     // Action: Artisan Response
     if (action === 'artisan_response' || response !== undefined || responseText !== undefined) {
-      const replyContent = response || responseText || '';
+      // Role enforcement: only artisans or admins can reply to reviews
+      if (authUserRole && authUserRole !== 'artisan' && authUserRole !== 'admin') {
+        logSecurityEvent({
+          type: 'RBAC_PRIVILEGE_VIOLATION',
+          userId: authUserId,
+          ip,
+          path: '/api/reviews',
+          details: { role: authUserRole, attemptedAction: 'artisan review reply' },
+        });
+        return apiError('Only artisans or administrators can post official craft replies', 403, 'FORBIDDEN');
+      }
+
+      const replyContent = (response || responseText || '').trim();
+      if (!replyContent) {
+        return apiError('Response content cannot be empty', 400, 'EMPTY_RESPONSE');
+      }
+
       const artisanUser = {
-        id: authUserId || body.artisanId || 'artisan-1',
-        name: authUserName || body.artisanName || 'Master Artisan Guild',
+        id: authUserId,
+        name: authUserName,
         role: authUserRole || 'artisan',
       };
 
@@ -194,12 +235,12 @@ export async function PUT(req: NextRequest) {
         {
           reviewId,
           rating: body.rating,
-          comment: body.comment,
-          title: body.title,
+          comment: body.comment ? String(body.comment).trim() : undefined,
+          title: body.title ? String(body.title).trim() : undefined,
           images: body.images,
         },
         {
-          id: authUserId || body.reviewerId || 'customer-1',
+          id: authUserId,
           role: authUserRole,
         }
       );
@@ -222,6 +263,8 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const ip = getClientIp(req);
+
   try {
     const { searchParams } = new URL(req.url);
     const reviewId = searchParams.get('id');
@@ -230,16 +273,22 @@ export async function DELETE(req: NextRequest) {
       return apiError('Review ID is required to delete', 400);
     }
 
-    let authUserId: string | null = null;
-    let authUserRole: string | undefined = undefined;
-    try {
-      const session = await auth();
-      authUserId = session.userId;
-      authUserRole = (session.sessionClaims?.metadata as any)?.role || (session.sessionClaims as any)?.role;
-    } catch {}
+    const session = await auth();
+    const authUserId = session.userId;
+    const authUserRole = (session.sessionClaims?.metadata as any)?.role || (session.sessionClaims as any)?.role;
+
+    if (!authUserId) {
+      logSecurityEvent({
+        type: 'AUTH_UNAUTHORIZED_ACCESS',
+        ip,
+        path: '/api/reviews',
+        details: { action: 'unauthenticated review deletion' },
+      });
+      return apiError('Authentication required to delete a review', 401, 'UNAUTHORIZED');
+    }
 
     const currentUser = {
-      id: authUserId || searchParams.get('userId') || 'user',
+      id: authUserId,
       role: authUserRole,
     };
 

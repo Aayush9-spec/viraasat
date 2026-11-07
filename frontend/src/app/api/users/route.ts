@@ -2,17 +2,33 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { apiError, handleApiError } from '@/core/api/api-response';
 import { supabase } from '@/services/supabase';
+import { checkRateLimit, getClientIp, SecurityRateLimits } from '@/lib/rate-limiter';
+import { logSecurityEvent } from '@/lib/security-logger';
 
 // GET - list all users from Supabase (restricted to verified admins)
-export async function GET() {
+export async function GET(request: Request) {
+  const ip = getClientIp(request);
   try {
     const { userId, sessionClaims } = await auth();
     if (!userId) {
+      logSecurityEvent({
+        type: 'AUTH_UNAUTHORIZED_ACCESS',
+        ip,
+        path: '/api/users',
+        details: { action: 'unauthenticated list users' },
+      });
       return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
     }
 
     const role = (sessionClaims?.metadata as any)?.role || (sessionClaims as any)?.role;
     if (role !== 'admin') {
+      logSecurityEvent({
+        type: 'RBAC_PRIVILEGE_VIOLATION',
+        userId,
+        ip,
+        path: '/api/users',
+        details: { role, action: 'non-admin attempted to list all users' },
+      });
       return NextResponse.json({ error: 'Forbidden: Admin privilege required' }, { status: 403 });
     }
 

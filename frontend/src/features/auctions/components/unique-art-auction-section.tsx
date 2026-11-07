@@ -323,48 +323,77 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
     setBidModalOpen(true);
   };
 
-  // Submit Bid
-  const handlePlaceBid = (e: React.FormEvent) => {
+  // Submit Bid with server validation
+  const handlePlaceBid = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedAuction) return;
 
     const minimumAllowed = selectedAuction.currentBid + selectedAuction.minIncrement;
     if (bidAmount < minimumAllowed) {
       toast({
+        variant: 'destructive',
         title: 'Bid Below Minimum Increment',
         description: `Your bid must be at least ₹${minimumAllowed.toLocaleString('en-IN')}.`,
       });
       return;
     }
 
-    const newBid: Bid = {
-      id: `bid-${Date.now()}`,
-      auctionId: selectedAuction.id,
-      bidderName: bidderName.trim() || 'Verified Connoisseur Patron',
-      bidderRole: 'collector',
-      amount: bidAmount,
-      timestamp: 'Just now',
-    };
+    try {
+      const res = await fetch('/api/auctions/bid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          auctionId: selectedAuction.id,
+          amount: bidAmount,
+        }),
+      });
 
-    const updatedAuctions = auctions.map((auc) => {
-      if (auc.id === selectedAuction.id) {
-        return {
-          ...auc,
-          currentBid: bidAmount,
-          bidCount: auc.bidCount + 1,
-          bids: [newBid, ...auc.bids],
-        };
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.success) {
+        toast({
+          variant: 'destructive',
+          title: 'Bid Submission Denied',
+          description: data.error || 'Server validation failed. Please sign in or check bid requirements.',
+        });
+        return;
       }
-      return auc;
-    });
 
-    saveAuctions(updatedAuctions);
-    setBidModalOpen(false);
+      const verifiedBid = data.bid || {
+        id: `bid-${Date.now()}`,
+        auctionId: selectedAuction.id,
+        bidderName: bidderName.trim() || 'Verified Connoisseur Patron',
+        bidderRole: 'collector',
+        amount: bidAmount,
+        timestamp: 'Just now',
+      };
 
-    toast({
-      title: '🔨 Bid Placed Successfully!',
-      description: `You are now the leading bidder at ₹${bidAmount.toLocaleString('en-IN')} on "${selectedAuction.title}".`,
-    });
+      const updatedAuctions = auctions.map((auc) => {
+        if (auc.id === selectedAuction.id) {
+          return {
+            ...auc,
+            currentBid: bidAmount,
+            bidCount: auc.bidCount + 1,
+            bids: [verifiedBid, ...auc.bids],
+          };
+        }
+        return auc;
+      });
+
+      saveAuctions(updatedAuctions);
+      setBidModalOpen(false);
+
+      toast({
+        title: '🔨 Bid Placed Successfully!',
+        description: `You are now the verified leading bidder at ₹${bidAmount.toLocaleString('en-IN')} on "${selectedAuction.title}".`,
+      });
+    } catch {
+      toast({
+        variant: 'destructive',
+        title: 'Network Error',
+        description: 'Could not connect to live auction ledger. Please try again.',
+      });
+    }
   };
 
   return (

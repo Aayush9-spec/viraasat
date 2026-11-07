@@ -39,41 +39,36 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
 
       const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
 
-      const cachedRole = typeof window !== 'undefined' ? (localStorage.getItem('viraasat_session_role') as UserRole | null) : null;
-      const activeLocalRole = cachedRole;
-
+      // Enforce server-validated Clerk authentication. An unauthenticated visitor
+      // can never access protected artisan or customer dashboard routes.
       if (!isSignedIn || !user) {
-        // If a verified local/demo session exists matching the required role, authorize immediately
-        if (activeLocalRole && rolesArray.includes(activeLocalRole)) {
-          setIsAuthorized(true);
-          setCheckingAuth(false);
-          return;
-        }
-
-        // User is not signed in and has no active local session — redirect to login
-        const loginRedirect = pathname.startsWith('/artisan') ? '/login/artisan' : `/login?redirectUrl=${encodeURIComponent(pathname)}`;
+        const loginRedirect = pathname.startsWith('/artisan')
+          ? '/login/artisan'
+          : `/login?redirectUrl=${encodeURIComponent(pathname)}`;
         router.push(loginRedirect);
         setCheckingAuth(false);
         return;
       }
 
-      // Fast path: check Clerk metadata, local session, or database/users.json
-      const metaRole = user.unsafeMetadata?.role as UserRole | undefined;
+      // Read role from verified Clerk metadata or server user record
+      const metaRole = (user.publicMetadata?.role || user.unsafeMetadata?.role) as UserRole | undefined;
       const userEmail = user.primaryEmailAddress?.emailAddress?.toLowerCase();
 
-      // Priority 1: active session role in localStorage, or Clerk metadata
-      let finalRole: UserRole | null = cachedRole || metaRole || 'buyer';
+      let finalRole: UserRole | null = metaRole || 'buyer';
 
-      // Priority 2: check verified artisan status by email
+      // Verify artisan status against database
       if ((!finalRole || finalRole === 'buyer') && userEmail) {
         try {
           const res = await fetch('/api/users');
           if (res.ok) {
             const users = await res.json();
-             
-            const matched = users.find((u: any) => u.email?.toLowerCase() === userEmail);
+            const matched = Array.isArray(users)
+              ? users.find((u: any) => u.email?.toLowerCase() === userEmail)
+              : null;
             if (matched?.role === 'artisan') {
               finalRole = 'artisan';
+            } else if (matched?.role === 'admin') {
+              finalRole = 'admin';
             }
           }
         } catch {
@@ -82,36 +77,23 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
       }
 
       if (!finalRole) {
-        // No role anywhere — send to role selection
         router.push('/select-role');
         setCheckingAuth(false);
         return;
       }
 
+      // Check if user's verified role satisfies the required roles
       if (!rolesArray.includes(finalRole)) {
-        // Redirect the user to their matching dashboard
+        // Prevent privilege escalation: redirect user to their appropriate dashboard
         router.push(finalRole === 'artisan' ? '/artisan/dashboard' : '/dashboard');
         setCheckingAuth(false);
         return;
       }
 
-      // Cache verified role and synchronize Clerk unsafeMetadata
+      // Cache verified session role for client UI display
       if (typeof window !== 'undefined') {
         localStorage.setItem('viraasat_session_role', finalRole);
         localStorage.setItem('viraasat_session_uid', user.id);
-      }
-
-      if (user && typeof user.update === 'function' && user.unsafeMetadata?.role !== finalRole) {
-        try {
-          await user.update({
-            unsafeMetadata: {
-              ...user.unsafeMetadata,
-              role: finalRole,
-            },
-          });
-        } catch {
-          // non-fatal
-        }
       }
 
       setIsAuthorized(true);

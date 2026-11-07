@@ -53,6 +53,22 @@ jest.mock('@clerk/nextjs', () => ({
   UserButton: () => null,
 }));
 
+// Mock @clerk/nextjs/server for API route handlers in unit tests
+jest.mock('@clerk/nextjs/server', () => ({
+  auth: jest.fn(async () => ({
+    userId: 'user_artisan_1',
+    sessionClaims: { role: 'artisan', metadata: { role: 'artisan' } },
+  })),
+  currentUser: jest.fn(async () => ({
+    id: 'user_artisan_1',
+    fullName: 'Priya Mukherjee',
+    username: 'priya_m',
+    primaryEmailAddress: { emailAddress: 'priya@viraasat.in' },
+  })),
+  clerkMiddleware: jest.fn((handler: any) => handler),
+  createRouteMatcher: jest.fn(() => () => true),
+}));
+
 // Mock Genkit for unit tests so flows can be tested with isolated mocked prompts & flows
 jest.mock('@/ai/genkit', () => ({
   ai: {

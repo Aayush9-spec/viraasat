@@ -1,41 +1,46 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Detect and sanitize broken legacy key that points to non-existent clerk.viraasat-eta.vercel.app
-const isBrokenClerkKey = (val?: string) =>
-  Boolean(val && (val.includes("dmlyYWFzYXQtZXRh") || val.includes("Y2xlcmsudmlyYWFzYXQtZXRh")));
+// Security headers applied across all responses
+function applySecurityHeaders(res: NextResponse): NextResponse {
+  res.headers.set('X-Content-Type-Options', 'nosniff');
+  res.headers.set('X-Frame-Options', 'SAMEORIGIN');
+  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.headers.set('Permissions-Policy', 'camera=(self), microphone=(self), geolocation=()');
+  res.headers.set(
+    'Strict-Transport-Security',
+    'max-age=63072000; includeSubDomains; preload'
+  );
 
-if (typeof process !== "undefined" && process.env) {
-  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || isBrokenClerkKey(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)) {
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA";
-  }
-  if (!process.env.CLERK_PUBLISHABLE_KEY || isBrokenClerkKey(process.env.CLERK_PUBLISHABLE_KEY)) {
-    process.env.CLERK_PUBLISHABLE_KEY = "pk_test_Y29vbC1sb2JzdGVyLTguY2xlcmsuYWNjb3VudHMuZGV2JA";
-  }
-  if (!process.env.CLERK_SECRET_KEY || isBrokenClerkKey(process.env.CLERK_SECRET_KEY)) {
-    process.env.CLERK_SECRET_KEY = "sk_test_aJ5w4a5QHqS3UiaxXzFR64HA2fIZViqiQEM5MwZtE0";
-  }
+  // Content Security Policy
+  const cspHeader = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.accounts.dev https://*.clerk.com https://checkout.razorpay.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com data:",
+    "img-src 'self' data: blob: https:",
+    "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://*.supabase.co https://api.razorpay.com https://checkout.razorpay.com https://generativelanguage.googleapis.com https://*.onrender.com",
+    "frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self' https://checkout.razorpay.com",
+  ].join('; ');
+
+  res.headers.set('Content-Security-Policy', cspHeader);
+  return res;
 }
 
-
+// Strictly define public routes. Sensitive dashboards, orders, artisan hubs,
+// and mutative APIs are protected by Clerk server-side middleware.
 const isPublicRoute = createRouteMatcher([
-  '/api(.*)',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/login(.*)',
-  '/signup(.*)',
-  '/select-role(.*)',
-  '/sso-callback(.*)',
   '/',
   '/shop(.*)',
   '/product(.*)',
   '/products(.*)',
   '/category(.*)',
   '/artisans(.*)',
+  '/auctions(.*)',
   '/psit(.*)',
-  '/artisan(.*)',
-  '/dashboard(.*)',
-  '/orders(.*)',
   '/about(.*)',
   '/contact(.*)',
   '/journal(.*)',
@@ -44,10 +49,27 @@ const isPublicRoute = createRouteMatcher([
   '/terms(.*)',
   '/privacy(.*)',
   '/refund(.*)',
+  '/download(.*)',
   '/offline(.*)',
   '/manifest(.*)',
   '/favicon(.*)',
   '/icons(.*)',
+  '/pwa-test(.*)',
+  // Auth flow endpoints
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/login(.*)',
+  '/signup(.*)',
+  '/select-role(.*)',
+  '/sso-callback(.*)',
+  // Public APIs
+  '/api/chat(.*)',
+  '/api/recommendations(.*)',
+  '/api/newsletter(.*)',
+  '/api/apply(.*)',
+  '/api/razorpay/webhook(.*)',
+  '/api/admin/verify-pin(.*)',
+  '/api/ai(.*)',
 ]);
 
 // Determine if valid Clerk keys exist in the environment
@@ -56,19 +78,33 @@ const hasClerkKeys = Boolean(
   (process.env.CLERK_SECRET_KEY)
 );
 
-// Only initialize clerkMiddleware if keys exist, avoiding unhandled promise rejections on unconfigured environments
 let clerkHandler: any = null;
 if (hasClerkKeys) {
   try {
     clerkHandler = clerkMiddleware(async (auth, req) => {
-      if (!isPublicRoute(req)) {
+      // Allow GET requests on public product/artisan listings without blocking
+      const pathname = req.nextUrl.pathname;
+      const isPublicGetApi =
+        req.method === 'GET' &&
+        (pathname.startsWith('/api/products') ||
+          pathname.startsWith('/api/artisans') ||
+          pathname.startsWith('/api/reviews'));
+
+      if (!isPublicRoute(req) && !isPublicGetApi) {
         try {
           await auth.protect();
         } catch (err: any) {
           if (err?.digest?.startsWith('NEXT_REDIRECT') || err?.message === 'NEXT_REDIRECT') {
             throw err;
           }
-          console.warn('[Viraasat Middleware] Route protection skipped:', err);
+          console.warn('[Viraasat Middleware] Access restricted by auth.protect():', pathname);
+          // Return 401 JSON for unauthorized API calls
+          if (pathname.startsWith('/api/')) {
+            return applySecurityHeaders(
+              NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+            );
+          }
+          throw err;
         }
       }
     });
@@ -79,22 +115,26 @@ if (hasClerkKeys) {
 
 export default async function middleware(req: NextRequest, event: any) {
   if (!clerkHandler) {
-    // If Clerk keys are missing (preview builds, bot branches, or unconfigured environments),
-    // allow the request to proceed gracefully without throwing 500 Internal Server Error
-    return NextResponse.next();
+    const res = NextResponse.next();
+    return applySecurityHeaders(res);
   }
 
   try {
-    return await clerkHandler(req, event);
+    const response = await clerkHandler(req, event);
+    if (response instanceof NextResponse) {
+      return applySecurityHeaders(response);
+    }
+    const res = NextResponse.next();
+    return applySecurityHeaders(res);
   } catch (err) {
-    console.warn('[Viraasat Middleware] Auth middleware bypassed due to runtime error:', err);
-    return NextResponse.next();
+    console.warn('[Viraasat Middleware] Auth middleware handled redirect/error:', err);
+    throw err;
   }
 }
 
 export const config = {
   matcher: [
-    '/((?!_next|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
     '/(api|trpc)(.*)',
   ],
 };

@@ -87,7 +87,7 @@ public class MainActivity extends Activity {
         settings.setSupportZoom(false);
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
-        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setAllowContentAccess(true);
         settings.setAllowFileAccess(false);
         settings.setUserAgentString(settings.getUserAgentString() + " ViraasatAndroidApp/2.4.0");
@@ -122,6 +122,26 @@ public class MainActivity extends Activity {
                     }
                     return true;
                 }
+
+                // Security: Validate domain to prevent open redirect and session theft
+                try {
+                    Uri parsedUri = Uri.parse(url);
+                    String host = parsedUri.getHost();
+                    if (host != null) {
+                        host = host.toLowerCase();
+                        boolean isTrusted = host.endsWith("virrasat.in") ||
+                                           host.endsWith("viraasat.in") ||
+                                           host.endsWith("clerk.accounts.dev") ||
+                                           host.endsWith("clerk.com") ||
+                                           host.endsWith("razorpay.com");
+                        if (!isTrusted) {
+                            Intent extIntent = new Intent(Intent.ACTION_VIEW, parsedUri);
+                            view.getContext().startActivity(extIntent);
+                            return true;
+                        }
+                    }
+                } catch (Exception ignored) {}
+
                 view.loadUrl(url);
                 return true;
             }
@@ -206,9 +226,9 @@ public class MainActivity extends Activity {
         android:label="Viraasat"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
+        android:usesCleartextTraffic="false"
         android:theme="@android:style/Theme.NoTitleBar">
         <activity
             android:name="org.viraasat.heritage.app.MainActivity"
