@@ -106,8 +106,8 @@ export default function ArtisanDashboardPage() {
   }, [user, isLoaded, currentUserId, deterministicUuid]);
 
   // Filter local creations to ONLY those belonging to the logged-in artisan
-  const activeLocal = localProducts.length > 0 ? localProducts : (typeof window !== 'undefined' ? getLocalProducts() : []);
   const myLocalProducts = useMemo(() => {
+    const activeLocal = localProducts.length > 0 ? localProducts : (typeof window !== 'undefined' ? getLocalProducts() : []);
     return activeLocal.filter((p) => {
       const aid = String(p.artisanId || (p as any).artisan_id || '').trim().toLowerCase();
       if (!aid) return isDemoUser;
@@ -117,7 +117,7 @@ export default function ArtisanDashboardPage() {
       if (isDemoUser && aid === 'artisan-1') return true;
       return false;
     });
-  }, [activeLocal, currentUserId, currentUserEmail, deterministicUuid, isDemoUser]);
+  }, [localProducts, currentUserId, currentUserEmail, deterministicUuid, isDemoUser]);
 
   // Demo seeds strictly for demo user
   const seedItems = useMemo(() => {

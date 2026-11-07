@@ -52,11 +52,11 @@ export function NotificationBell({ className = '' }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const currentUserId = user?.id || '';
+  const userId = user?.id;
   const role = isArtisan ? 'artisan' : 'customer';
 
   const fetchNotifications = useCallback(async () => {
-    if (!isSignedIn || !user?.id) {
+    if (!isSignedIn || !userId) {
       setNotifications([]);
       setUnreadCount(0);
       return;
@@ -64,7 +64,7 @@ export function NotificationBell({ className = '' }: { className?: string }) {
 
     try {
       setLoading(true);
-      const res = await fetch(`/api/notifications?userId=${encodeURIComponent(user.id)}&role=${role}`);
+      const res = await fetch(`/api/notifications?userId=${encodeURIComponent(userId)}&role=${role}`);
       if (res.ok) {
         const json = await res.json();
         if (json?.data?.notifications) {
@@ -77,10 +77,10 @@ export function NotificationBell({ className = '' }: { className?: string }) {
     } finally {
       setLoading(false);
     }
-  }, [isSignedIn, user?.id, role]);
+  }, [isSignedIn, userId, role]);
 
   useEffect(() => {
-    if (!isSignedIn || !user?.id) {
+    if (!isSignedIn || !userId) {
       setNotifications([]);
       setUnreadCount(0);
       return;
@@ -105,7 +105,7 @@ export function NotificationBell({ className = '' }: { className?: string }) {
       window.removeEventListener('viraasat_notification_created', handleNewNotif);
       clearInterval(interval);
     };
-  }, [isSignedIn, user?.id, fetchNotifications]);
+  }, [isSignedIn, userId, fetchNotifications]);
 
   const markAsRead = async (id: string, link?: string) => {
     // Optimistic UI update
@@ -114,7 +114,7 @@ export function NotificationBell({ className = '' }: { className?: string }) {
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
 
-    if (!isSignedIn || !user?.id) return;
+    if (!isSignedIn || !userId) return;
 
     try {
       await fetch('/api/notifications', {
@@ -136,13 +136,13 @@ export function NotificationBell({ className = '' }: { className?: string }) {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     setUnreadCount(0);
 
-    if (!isSignedIn || !user?.id) return;
+    if (!isSignedIn || !userId) return;
 
     try {
       await fetch('/api/notifications', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ markAll: true, userId: user.id }),
+        body: JSON.stringify({ markAll: true, userId }),
       });
     } catch (e) {
       console.warn('Could not mark all read:', e);

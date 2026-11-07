@@ -118,11 +118,9 @@ export default function ArtisanProductsPage() {
     };
   }, [user, isLoaded, currentUserId, deterministicUuid, refreshLocal]);
 
-  // Synchronously fallback to getLocalProducts() if state is not updated yet
-  const activeLocalProducts = localProducts.length > 0 ? localProducts : (typeof window !== 'undefined' ? getLocalProducts() : []);
-
   // Filter local creations to ONLY those belonging to the logged-in artisan
   const myLocalProducts = useMemo(() => {
+    const activeLocalProducts = localProducts.length > 0 ? localProducts : (typeof window !== 'undefined' ? getLocalProducts() : []);
     return activeLocalProducts.filter((p) => {
       const aid = String(p.artisanId || (p as any).artisan_id || '').trim().toLowerCase();
       if (!aid) return isDemoUser;
@@ -132,7 +130,7 @@ export default function ArtisanProductsPage() {
       if (isDemoUser && aid === 'artisan-1') return true;
       return false;
     });
-  }, [activeLocalProducts, currentUserId, currentUserEmail, deterministicUuid, isDemoUser]);
+  }, [localProducts, currentUserId, currentUserEmail, deterministicUuid, isDemoUser]);
 
   // For demo/unauthenticated test mode only: show artisan-1 sample seeds
   const seedItems = useMemo(() => {
