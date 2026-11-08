@@ -36,32 +36,32 @@ const pillars = [
 
 export default function AboutPage() {
   return (
-    <div className="bg-[#FAF7F2] min-h-screen text-[#221C18]">
+    <div className="bg-background min-h-screen text-foreground">
       {/* ================= HERO HEADER ================= */}
-      <header className="relative py-20 md:py-28 overflow-hidden bg-[#FBF7F0] border-b border-[#E8DCCB]">
+      <header className="relative py-20 md:py-28 overflow-hidden bg-secondary/50 border-b border-border">
         <div className="absolute inset-0 opacity-[0.03] clay-texture pointer-events-none" />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <Badge
             variant="outline"
-            className="mb-4 border-[#C59B4B] text-[#701D24] px-4 py-1.5 uppercase tracking-widest text-[11px] font-semibold bg-[#FAF7F2]"
+            className="mb-4 border-accent text-primary px-4 py-1.5 uppercase tracking-widest text-[11px] font-semibold bg-background"
           >
             The Viraasat Chronicle & Mission
           </Badge>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-normal text-[#221C18] mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-normal text-foreground mb-6 leading-tight">
             Handcrafted Stories Deserve a Global Stage
           </h1>
-          <div className="w-24 h-0.5 bg-[#C59B4B] mx-auto mb-6" />
-          <p className="max-w-3xl mx-auto text-lg sm:text-xl text-[#5E2C18]/85 font-serif italic leading-relaxed">
+          <div className="w-24 h-0.5 bg-accent mx-auto mb-6" />
+          <p className="max-w-3xl mx-auto text-lg sm:text-xl text-muted-foreground font-serif italic leading-relaxed">
             &ldquo;Viraasat — the Hindi word for heritage — began with a foundational conviction: why should an Indian craftsman&rsquo;s generational genius be constrained by language barriers, unfair intermediaries, or lack of modern technology?&rdquo;
           </p>
         </div>
       </header>
 
       {/* ================= STORY & MANIFESTO ================= */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 border-b border-[#E8DCCB]">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 border-b border-border">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7 space-y-5 text-base sm:text-lg text-[#221C18]/85 leading-relaxed font-sans">
-            <h2 className="font-serif text-2xl sm:text-3xl text-[#701D24] font-bold">
+          <div className="lg:col-span-7 space-y-5 text-base sm:text-lg text-foreground/85 leading-relaxed font-sans">
+            <h2 className="font-serif text-2xl sm:text-3xl text-primary font-bold">
               Bridging Millennia of Craft with Ethical Machine Intelligence
             </h2>
             <p>
@@ -72,22 +72,22 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="lg:col-span-5 bg-[#F3EDE2] p-8 rounded-3xl border border-[#E8DCCB] shadow-inner space-y-4">
-            <div className="flex items-center gap-3 text-[#701D24] font-serif font-bold text-xl">
-              <BookOpen className="w-6 h-6 text-[#C59B4B]" />
+          <div className="lg:col-span-5 bg-card p-8 rounded-3xl border border-border shadow-inner space-y-4">
+            <div className="flex items-center gap-3 text-primary font-serif font-bold text-xl">
+              <BookOpen className="w-6 h-6 text-accent" />
               <span>Our Core Manifesto</span>
             </div>
-            <ul className="space-y-3 text-sm text-[#5E2C18] leading-relaxed">
+            <ul className="space-y-3 text-sm text-card-foreground leading-relaxed">
               <li className="flex items-start gap-2">
-                <span className="text-[#C59B4B] font-bold">✓</span>
+                <span className="text-accent font-bold">✓</span>
                 <span><strong>Direct-to-Artisan Capital:</strong> Eliminating exploitative middlemen so 85%+ value reaches creator families.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#C59B4B] font-bold">✓</span>
+                <span className="text-accent font-bold">✓</span>
                 <span><strong>Cryptographic Provenance:</strong> Immutable lineage tracking verifying GI certifications and generational authenticity.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#C59B4B] font-bold">✓</span>
+                <span className="text-accent font-bold">✓</span>
                 <span><strong>Multilingual Dignity:</strong> Supporting 13 Indian languages so no artisan is silenced by linguistic barriers.</span>
               </li>
             </ul>
@@ -101,14 +101,14 @@ export default function AboutPage() {
             return (
               <div
                 key={pillar.title}
-                className="border border-[#E8DCCB] bg-white rounded-2xl p-6 shadow-sm hover:border-[#C59B4B] transition-all duration-300 flex flex-col justify-between"
+                className="border border-border bg-card rounded-2xl p-6 shadow-sm hover:border-accent transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-[#FAF7F2] border border-[#C59B4B]/40 flex items-center justify-center text-[#701D24] mb-4">
-                    <Icon className="w-6 h-6 text-[#C59B4B]" />
+                  <div className="w-12 h-12 rounded-xl bg-secondary border border-border flex items-center justify-center text-primary mb-4">
+                    <Icon className="w-6 h-6 text-accent" />
                   </div>
-                  <h3 className="font-serif text-lg font-bold text-[#221C18] mb-2">{pillar.title}</h3>
-                  <p className="text-xs text-[#5E2C18]/80 leading-relaxed font-sans">{pillar.body}</p>
+                  <h3 className="font-serif text-lg font-bold text-card-foreground mb-2">{pillar.title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed font-sans">{pillar.body}</p>
                 </div>
               </div>
             );
@@ -121,17 +121,17 @@ export default function AboutPage() {
 
       {/* ================= CALL TO ACTION ================= */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-        <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mb-4">
+        <h2 className="font-serif text-3xl sm:text-4xl text-foreground font-normal mb-4">
           Become Part of India&rsquo;s Living Legacy
         </h2>
-        <p className="text-[#5E2C18]/80 mb-8 max-w-xl mx-auto text-base">
+        <p className="text-muted-foreground mb-8 max-w-xl mx-auto text-base">
           Whether you are an authentic master craftsman sharing your ancestral art or a discerning collector acquiring a certified heirloom, the Viraasat family welcomes you.
         </p>
         <div className="flex items-center justify-center gap-4 flex-wrap">
-          <Button asChild className="bg-[#701D24] hover:bg-[#8C2B2B] text-[#FAF7F2] px-8 py-6 rounded-full font-semibold shadow-md cursor-pointer">
+          <Button asChild className="bg-primary hover:opacity-90 text-white px-8 py-6 rounded-full font-semibold shadow-md cursor-pointer">
             <Link href="/shop">Explore the Collection</Link>
           </Button>
-          <Button asChild variant="outline" className="border-[#C59B4B] text-[#5E2C18] hover:bg-[#FAF7F2] px-8 py-6 rounded-full font-semibold cursor-pointer">
+          <Button asChild variant="outline" className="border-accent text-foreground hover:bg-secondary px-8 py-6 rounded-full font-semibold cursor-pointer">
             <Link href="/apply">Join as an Artisan Guild</Link>
           </Button>
         </div>

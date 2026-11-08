@@ -400,7 +400,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
     <section
       id={id}
       aria-label="Unique Art Auctions"
-      className="py-20 md:py-28 bg-[#F3EDE2]/40 border-b border-[#E8DCCB] relative overflow-hidden"
+      className="py-20 md:py-28 bg-secondary/40 border-b border-border relative overflow-hidden"
     >
       {/* Decorative Heritage Motif Background */}
       <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#C59B4B] to-transparent opacity-80" />
@@ -410,15 +410,15 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#701D24]/10 border border-[#701D24]/20 text-[#701D24] text-xs font-semibold uppercase tracking-widest mb-3">
-              <Gavel className="w-3.5 h-3.5 text-[#C59B4B]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold uppercase tracking-widest mb-3">
+              <Gavel className="w-3.5 h-3.5 text-accent" />
               <span>Live Royal Auctions</span>
               <span className="w-2 h-2 rounded-full bg-red-600 animate-ping inline-block" />
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#221C18] tracking-tight">
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-foreground tracking-tight">
               Unique Art & Heirloom Auctions
             </h2>
-            <p className="text-sm sm:text-base text-[#5E2C18]/80 mt-2 max-w-2xl font-sans">
+            <p className="text-sm sm:text-base text-muted-foreground mt-2 max-w-2xl font-sans">
               Acquire one-of-a-kind national treasures directly from master creators. Artisans set their minimum reserve price
               and auction period; connoisseurs compete with transparent on-chain provenance.
             </p>
@@ -430,22 +430,22 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
             <Button
               type="button"
               onClick={() => setCreateAuctionOpen(true)}
-              className="bg-[#701D24] hover:bg-[#8C2B2B] text-[#FAF7F2] font-semibold text-xs uppercase tracking-wider px-6 py-6 rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
+              className="bg-primary hover:opacity-90 text-white font-semibold text-xs uppercase tracking-wider px-6 py-6 rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
             >
-              <Plus className="w-4 h-4 text-[#C59B4B]" />
+              <Plus className="w-4 h-4 text-accent" />
               <span>Auction Your Unique Art</span>
             </Button>
 
             {/* Filter Toggle Buttons */}
-            <div className="inline-flex rounded-full p-1 bg-[#FAF7F2] border border-[#E8DCCB] text-xs font-medium">
+            <div className="inline-flex rounded-full p-1 bg-secondary border border-border text-xs font-medium">
               <button
                 type="button"
                 onClick={() => setActiveFilter('all')}
                 className={cn(
                   'px-3.5 py-1.5 rounded-full transition-all cursor-pointer',
                   activeFilter === 'all'
-                    ? 'bg-[#5E2C18] text-[#FAF7F2] shadow-sm font-semibold'
-                    : 'text-[#5E2C18] hover:text-[#221C18]'
+                    ? 'bg-primary text-white shadow-sm font-semibold'
+                    : 'text-muted-foreground hover:text-foreground'
                 )}
               >
                 All ({auctions.length})
@@ -456,8 +456,8 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                 className={cn(
                   'px-3.5 py-1.5 rounded-full transition-all cursor-pointer',
                   activeFilter === 'reserve-met'
-                    ? 'bg-[#5E2C18] text-[#FAF7F2] shadow-sm font-semibold'
-                    : 'text-[#5E2C18] hover:text-[#221C18]'
+                    ? 'bg-primary text-white shadow-sm font-semibold'
+                    : 'text-muted-foreground hover:text-foreground'
                 )}
               >
                 Reserve Met
@@ -468,11 +468,11 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                 className={cn(
                   'px-3.5 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1',
                   activeFilter === 'ending-soon'
-                    ? 'bg-[#5E2C18] text-[#FAF7F2] shadow-sm font-semibold'
-                    : 'text-[#5E2C18] hover:text-[#221C18]'
+                    ? 'bg-primary text-white shadow-sm font-semibold'
+                    : 'text-muted-foreground hover:text-foreground'
                 )}
               >
-                <Flame className="w-3 h-3 text-[#C59B4B]" /> Ending Soon
+                <Flame className="w-3 h-3 text-accent" /> Ending Soon
               </button>
             </div>
           </div>
@@ -487,11 +487,11 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
             return (
               <div
                 key={auction.id}
-                className="bg-white rounded-2xl overflow-hidden border border-[#E8DCCB] shadow-sm hover:border-[#C59B4B] hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group relative"
+                className="bg-card text-card-foreground rounded-2xl overflow-hidden border border-border shadow-sm hover:border-primary hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group relative"
               >
                 <div>
                   {/* Image Container with Badges */}
-                  <div className="aspect-[4/3] relative bg-[#FAF7F2] overflow-hidden">
+                  <div className="aspect-[4/3] relative bg-secondary overflow-hidden">
                     <Image
                       src={auction.imageUrl}
                       alt={auction.title}
@@ -501,23 +501,23 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                     />
 
                     {/* Live Ticker Floating Pill */}
-                    <div className="absolute top-3 left-3 bg-[#221C18]/90 backdrop-blur-md text-[#FAF7F2] px-3 py-1 rounded-full text-xs font-mono flex items-center gap-1.5 border border-white/20 shadow">
-                      <Clock className={cn('w-3.5 h-3.5', timeInfo.isUrgent ? 'text-red-400 animate-pulse' : 'text-[#C59B4B]')} />
-                      <span suppressHydrationWarning className={cn(timeInfo.isUrgent ? 'text-red-300 font-bold' : 'text-stone-200')}>
+                    <div className="absolute top-3 left-3 bg-background/90 backdrop-blur-md text-foreground px-3 py-1 rounded-full text-xs font-mono flex items-center gap-1.5 border border-border shadow">
+                      <Clock className={cn('w-3.5 h-3.5', timeInfo.isUrgent ? 'text-red-400 animate-pulse' : 'text-accent')} />
+                      <span suppressHydrationWarning className={cn(timeInfo.isUrgent ? 'text-red-400 font-bold' : 'text-muted-foreground')}>
                         {timeInfo.text}
                       </span>
                     </div>
 
                     {/* GI Tag Certified Pill */}
                     {auction.giTagCertified && (
-                      <div className="absolute top-3 right-3 bg-[#701D24]/90 backdrop-blur-md text-[#FAF7F2] px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow">
-                        <ShieldCheck className="w-3 h-3 text-[#C59B4B]" />
+                      <div className="absolute top-3 right-3 bg-primary/90 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow">
+                        <ShieldCheck className="w-3 h-3 text-accent" />
                         <span>GI Tag</span>
                       </div>
                     )}
 
                     {/* Reserve Status Indicator Bottom Bar */}
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-6 flex items-center justify-between text-[11px] text-[#FAF7F2]">
+                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-6 flex items-center justify-between text-[11px] text-white">
                       <span className="font-mono text-stone-300">
                         {auction.bidCount} bids placed
                       </span>
@@ -535,20 +535,20 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
 
                   {/* Body Content */}
                   <div className="p-5 sm:p-6 space-y-3">
-                    <div className="text-[11px] uppercase tracking-wider text-[#701D24] font-semibold flex items-center justify-between">
+                    <div className="text-[11px] uppercase tracking-wider text-primary font-semibold flex items-center justify-between">
                       <span>{auction.craftCategory}</span>
-                      <span className="text-stone-700 font-normal">{auction.durationHours}h Period</span>
+                      <span className="text-muted-foreground font-normal">{auction.durationHours}h Period</span>
                     </div>
 
-                    <h3 className="font-serif text-lg font-bold text-[#221C18] line-clamp-2 group-hover:text-[#701D24] transition-colors leading-snug">
+                    <h3 className="font-serif text-lg font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-snug">
                       {auction.title}
                     </h3>
 
-                    <div className="text-xs text-[#5E2C18] font-medium">
-                      By {auction.artisanName} • <span className="text-stone-700">{auction.artisanRegion}</span>
+                    <div className="text-xs text-muted-foreground font-medium">
+                      By {auction.artisanName} • <span>{auction.artisanRegion}</span>
                     </div>
 
-                    <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                       {auction.description}
                     </p>
                   </div>
@@ -556,20 +556,20 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
 
                 {/* Footer Pricing & Bid Action */}
                 <div className="p-5 sm:p-6 pt-0 mt-auto">
-                  <div className="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8DCCB] mb-4 flex items-center justify-between">
+                  <div className="bg-secondary/50 p-4 rounded-xl border border-border mb-4 flex items-center justify-between">
                     <div>
-                      <div className="text-[10px] uppercase tracking-wider text-stone-700 font-bold">
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
                         Current Highest Bid
                       </div>
-                      <div className="font-serif text-xl sm:text-2xl font-bold text-[#701D24]">
+                      <div className="font-serif text-xl sm:text-2xl font-bold text-primary">
                         ₹{auction.currentBid.toLocaleString('en-IN')}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-[10px] uppercase tracking-wider text-stone-700 font-semibold">
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                         Min. Reserve Price
                       </div>
-                      <div className="text-xs font-mono text-stone-700 font-semibold">
+                      <div className="text-xs font-mono text-muted-foreground font-semibold">
                         ₹{auction.minPrice.toLocaleString('en-IN')}
                       </div>
                     </div>
@@ -591,7 +591,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                         setSelectedAuction(auction);
                         setHistoryModalOpen(true);
                       }}
-                      className="h-11 w-11 rounded-xl border-[#E8DCCB] text-stone-700 hover:text-[#701D24] hover:bg-[#FAF7F2]"
+                      className="h-11 w-11 rounded-xl border-border text-foreground hover:text-primary hover:bg-secondary"
                       title="View Bid Ledger"
                       aria-label="View Bid Ledger"
                     >
@@ -607,16 +607,16 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
 
       {/* ================= MODAL 1: SELLER CREATE AUCTION ================= */}
       <Dialog open={createAuctionOpen} onOpenChange={setCreateAuctionOpen}>
-        <DialogContent className="max-w-2xl bg-[#FAF7F2] border-2 border-[#C59B4B] rounded-3xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl bg-card text-card-foreground border border-border rounded-3xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto">
           <DialogHeader className="text-left space-y-1 mb-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#701D24]/10 text-[#701D24] text-xs font-semibold uppercase tracking-wider w-fit">
-              <Gavel className="w-3.5 h-3.5 text-[#C59B4B]" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider w-fit">
+              <Gavel className="w-3.5 h-3.5 text-accent" />
               <span>Artisan Portal • Launch Auction</span>
             </div>
-            <DialogTitle className="font-serif text-2xl sm:text-3xl text-[#221C18]">
+            <DialogTitle className="font-serif text-2xl sm:text-3xl text-foreground">
               Auction Your Unique Indian Heirloom
             </DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm text-[#5E2C18]/80 font-sans">
+            <DialogDescription className="text-xs sm:text-sm text-muted-foreground font-sans">
               Set your minimum reserve price and auction period. Your piece will be featured on the national
               Viraasat Heritage Live Bidding Floor with full cryptographic provenance.
             </DialogDescription>
@@ -624,7 +624,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
 
           <form onSubmit={handleCreateAuction} className="space-y-4">
             <div>
-              <label htmlFor="auction-title" className="text-xs font-bold uppercase tracking-wider text-[#5E2C18] block mb-1">
+              <label htmlFor="auction-title" className="text-xs font-bold uppercase tracking-wider text-foreground block mb-1">
                 Unique Artwork / Artifact Title *
               </label>
               <Input
@@ -633,13 +633,13 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                 value={sellerForm.title}
                 onChange={(e) => setSellerForm({ ...sellerForm, title: e.target.value })}
                 placeholder="e.g. Master Banarasi Pure Zari Saree (c. 1982 Vintage)"
-                className="bg-white border-[#E8DCCB] focus:border-[#C59B4B] rounded-xl text-sm"
+                className="bg-background border-border focus:border-primary rounded-xl text-sm text-foreground"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="artisan-name" className="text-xs font-bold uppercase tracking-wider text-[#5E2C18] block mb-1">
+                <label htmlFor="artisan-name" className="text-xs font-bold uppercase tracking-wider text-foreground block mb-1">
                   Master Artisan / Workshop Name
                 </label>
                 <Input
@@ -647,12 +647,12 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                   value={sellerForm.artisanName}
                   onChange={(e) => setSellerForm({ ...sellerForm, artisanName: e.target.value })}
                   placeholder="e.g. Ustad Ghulam Rasool"
-                  className="bg-white border-[#E8DCCB] focus:border-[#C59B4B] rounded-xl text-sm"
+                  className="bg-background border-border focus:border-primary rounded-xl text-sm text-foreground"
                 />
               </div>
 
               <div>
-                <label htmlFor="artisan-region" className="text-xs font-bold uppercase tracking-wider text-[#5E2C18] block mb-1">
+                <label htmlFor="artisan-region" className="text-xs font-bold uppercase tracking-wider text-foreground block mb-1">
                   Craft Region / State
                 </label>
                 <Input
@@ -660,20 +660,20 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                   value={sellerForm.artisanRegion}
                   onChange={(e) => setSellerForm({ ...sellerForm, artisanRegion: e.target.value })}
                   placeholder="e.g. Varanasi, Uttar Pradesh"
-                  className="bg-white border-[#E8DCCB] focus:border-[#C59B4B] rounded-xl text-sm"
+                  className="bg-background border-border focus:border-primary rounded-xl text-sm text-foreground"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* MINIMUM RESERVE PRICE (EXPLICIT USER REQUIREMENT) */}
-              <div className="bg-white p-4 rounded-2xl border-2 border-[#C59B4B]/60 shadow-sm">
-                <label htmlFor="min-price" className="text-xs font-bold uppercase tracking-wider text-[#701D24] flex items-center justify-between mb-1">
+              <div className="bg-secondary/40 p-4 rounded-2xl border border-border shadow-sm">
+                <label htmlFor="min-price" className="text-xs font-bold uppercase tracking-wider text-primary flex items-center justify-between mb-1">
                   <span>Minimum Reserve Price (₹) *</span>
-                  <Award className="w-4 h-4 text-[#C59B4B]" />
+                  <Award className="w-4 h-4 text-accent" />
                 </label>
                 <div className="relative mt-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 font-serif font-bold text-base">₹</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-serif font-bold text-base">₹</span>
                   <Input
                     id="min-price"
                     type="number"
@@ -682,25 +682,25 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                     required
                     value={sellerForm.minPrice}
                     onChange={(e) => setSellerForm({ ...sellerForm, minPrice: Number(e.target.value) })}
-                    className="pl-8 bg-[#FAF7F2] border-[#E8DCCB] focus:border-[#701D24] rounded-xl text-base font-bold text-[#701D24]"
+                    className="pl-8 bg-background border-border focus:border-primary rounded-xl text-base font-bold text-primary"
                   />
                 </div>
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className="text-[10px] text-muted-foreground mt-1">
                   The floor price below which the artifact will not be sold.
                 </p>
               </div>
 
               {/* AUCTION PERIOD / DURATION (EXPLICIT USER REQUIREMENT) */}
-              <div className="bg-white p-4 rounded-2xl border-2 border-[#C59B4B]/60 shadow-sm">
-                <label htmlFor="duration-select" className="text-xs font-bold uppercase tracking-wider text-[#701D24] flex items-center justify-between mb-1">
+              <div className="bg-secondary/40 p-4 rounded-2xl border border-border shadow-sm">
+                <label htmlFor="duration-select" className="text-xs font-bold uppercase tracking-wider text-primary flex items-center justify-between mb-1">
                   <span>Auction Period / Duration *</span>
-                  <Clock className="w-4 h-4 text-[#C59B4B]" />
+                  <Clock className="w-4 h-4 text-accent" />
                 </label>
                 <select
                   id="duration-select"
                   value={sellerForm.durationHours}
                   onChange={(e) => setSellerForm({ ...sellerForm, durationHours: Number(e.target.value) })}
-                  className="w-full mt-1 bg-[#FAF7F2] border border-[#E8DCCB] focus:border-[#701D24] rounded-xl p-2.5 text-sm font-semibold text-[#5E2C18] focus:outline-none"
+                  className="w-full mt-1 bg-background border border-border focus:border-primary rounded-xl p-2.5 text-sm font-semibold text-foreground focus:outline-none"
                 >
                   <option value={24}>24 Hours (Flash Guild Auction)</option>
                   <option value={48}>48 Hours (2 Days)</option>
@@ -709,7 +709,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                   <option value={168}>168 Hours (7 Days - Curator&rsquo;s Week)</option>
                   <option value={336}>336 Hours (14 Days - Royal Exhibition)</option>
                 </select>
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className="text-[10px] text-muted-foreground mt-1">
                   Live bidding automatically ends at the close of this period.
                 </p>
               </div>
@@ -717,14 +717,14 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="craft-category" className="text-xs font-bold uppercase tracking-wider text-[#5E2C18] block mb-1">
+                <label htmlFor="craft-category" className="text-xs font-bold uppercase tracking-wider text-foreground block mb-1">
                   Craft Genre
                 </label>
                 <select
                   id="craft-category"
                   value={sellerForm.craftCategory}
                   onChange={(e) => setSellerForm({ ...sellerForm, craftCategory: e.target.value })}
-                  className="w-full bg-white border border-[#E8DCCB] focus:border-[#C59B4B] rounded-xl p-2.5 text-xs font-medium text-stone-700"
+                  className="w-full bg-background border border-border focus:border-primary rounded-xl p-2.5 text-xs font-medium text-foreground"
                 >
                   <option value="Banarasi Brocade & Silk Weaving">Banarasi Brocade & Silk Weaving</option>
                   <option value="Zardozi & Gold Metallic Embroidery">Zardozi & Gold Metallic Embroidery</option>
@@ -739,14 +739,14 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
               </div>
 
               <div>
-                <label htmlFor="min-increment" className="text-xs font-bold uppercase tracking-wider text-[#5E2C18] block mb-1">
+                <label htmlFor="min-increment" className="text-xs font-bold uppercase tracking-wider text-foreground block mb-1">
                   Minimum Bid Step Up (₹)
                 </label>
                 <select
                   id="min-increment"
                   value={sellerForm.minIncrement}
                   onChange={(e) => setSellerForm({ ...sellerForm, minIncrement: Number(e.target.value) })}
-                  className="w-full bg-white border border-[#E8DCCB] focus:border-[#C59B4B] rounded-xl p-2.5 text-xs font-medium text-stone-700"
+                  className="w-full bg-background border border-border focus:border-primary rounded-xl p-2.5 text-xs font-medium text-foreground"
                 >
                   <option value={500}>+₹500 per bid</option>
                   <option value={1000}>+₹1,000 per bid</option>
@@ -806,33 +806,33 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
 
       {/* ================= MODAL 2: PLACE A BID ================= */}
       <Dialog open={bidModalOpen} onOpenChange={setBidModalOpen}>
-        <DialogContent className="max-w-md bg-[#FAF7F2] border-2 border-[#C59B4B] rounded-3xl p-6">
+        <DialogContent className="max-w-md bg-card text-card-foreground border border-border rounded-3xl p-6">
           {selectedAuction && (
             <div>
               <DialogHeader className="text-left space-y-1 mb-4">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#701D24]/10 text-[#701D24] text-[11px] font-bold uppercase tracking-wider w-fit">
-                  <Gavel className="w-3.5 h-3.5 text-[#C59B4B]" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-bold uppercase tracking-wider w-fit">
+                  <Gavel className="w-3.5 h-3.5 text-accent" />
                   <span>Place Competing Bid</span>
                 </div>
-                <DialogTitle className="font-serif text-xl sm:text-2xl text-[#221C18]">
+                <DialogTitle className="font-serif text-xl sm:text-2xl text-foreground">
                   {selectedAuction.title}
                 </DialogTitle>
-                <div className="text-xs text-stone-600">
+                <div className="text-xs text-muted-foreground">
                   By {selectedAuction.artisanName} • {selectedAuction.artisanRegion}
                 </div>
               </DialogHeader>
 
-              <div className="bg-white p-4 rounded-2xl border border-[#E8DCCB] mb-5 space-y-2">
-                <div className="flex items-center justify-between text-xs text-stone-500">
+              <div className="bg-secondary/40 p-4 rounded-2xl border border-border mb-5 space-y-2">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>Current Highest Bid</span>
                   <span className="font-mono">{selectedAuction.bidCount} bids</span>
                 </div>
-                <div className="font-serif text-2xl font-bold text-[#701D24]">
+                <div className="font-serif text-2xl font-bold text-primary">
                   ₹{selectedAuction.currentBid.toLocaleString('en-IN')}
                 </div>
-                <div className="text-[11px] text-stone-600 flex items-center justify-between pt-2 border-t border-stone-100">
+                <div className="text-[11px] text-muted-foreground flex items-center justify-between pt-2 border-t border-border">
                   <span>Minimum Required Next Bid:</span>
-                  <span className="font-bold text-[#5E2C18]">
+                  <span className="font-bold text-foreground">
                     ₹{(selectedAuction.currentBid + selectedAuction.minIncrement).toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -840,7 +840,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
 
               <form onSubmit={handlePlaceBid} className="space-y-4">
                 <div>
-                  <label htmlFor="bidder-name" className="text-xs font-bold uppercase tracking-wider text-[#5E2C18] block mb-1">
+                  <label htmlFor="bidder-name" className="text-xs font-bold uppercase tracking-wider text-foreground block mb-1">
                     Your Name / Collector Handle
                   </label>
                   <Input
@@ -848,12 +848,12 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                     value={bidderName}
                     onChange={(e) => setBidderName(e.target.value)}
                     placeholder="e.g. Royal Heritage Collector"
-                    className="bg-white border-[#E8DCCB] rounded-xl text-sm"
+                    className="bg-background border-border rounded-xl text-sm text-foreground"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="bid-amount" className="text-xs font-bold uppercase tracking-wider text-[#5E2C18] block mb-1">
+                  <label htmlFor="bid-amount" className="text-xs font-bold uppercase tracking-wider text-foreground block mb-1">
                     Your Bid Amount (₹)
                   </label>
                   <Input
@@ -863,13 +863,13 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                     step={selectedAuction.minIncrement}
                     value={bidAmount}
                     onChange={(e) => setBidAmount(Number(e.target.value))}
-                    className="bg-white border-[#E8DCCB] font-bold text-lg text-[#701D24] rounded-xl"
+                    className="bg-background border-border font-bold text-lg text-primary rounded-xl"
                   />
                 </div>
 
                 {/* Quick Increment Buttons */}
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-stone-500 block mb-1.5">
+                  <span className="text-[10px] uppercase font-bold text-muted-foreground block mb-1.5">
                     Quick Step Up:
                   </span>
                   <div className="flex flex-wrap gap-2">
@@ -878,7 +878,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                         key={inc}
                         type="button"
                         onClick={() => setBidAmount(selectedAuction.currentBid + inc)}
-                        className="px-3 py-1.5 text-xs bg-white border border-[#E8DCCB] hover:border-[#C59B4B] rounded-lg font-medium text-[#5E2C18] cursor-pointer"
+                        className="px-3 py-1.5 text-xs bg-secondary hover:bg-secondary/80 border border-border rounded-lg font-medium text-foreground cursor-pointer"
                       >
                         +₹{inc.toLocaleString('en-IN')}
                       </button>
@@ -910,18 +910,18 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
 
       {/* ================= MODAL 3: BID HISTORY LEDGER ================= */}
       <Dialog open={historyModalOpen} onOpenChange={setHistoryModalOpen}>
-        <DialogContent className="max-w-md bg-[#FAF7F2] border-2 border-[#C59B4B] rounded-3xl p-6">
+        <DialogContent className="max-w-md bg-card text-card-foreground border border-border rounded-3xl p-6">
           {selectedAuction && (
             <div>
               <DialogHeader className="text-left space-y-1 mb-4">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#701D24]/10 text-[#701D24] text-[11px] font-bold uppercase tracking-wider w-fit">
-                  <History className="w-3.5 h-3.5 text-[#C59B4B]" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-bold uppercase tracking-wider w-fit">
+                  <History className="w-3.5 h-3.5 text-accent" />
                   <span>Transparent Provenance Ledger</span>
                 </div>
-                <DialogTitle className="font-serif text-xl sm:text-2xl text-[#221C18]">
+                <DialogTitle className="font-serif text-xl sm:text-2xl text-foreground">
                   Bid History Ledger
                 </DialogTitle>
-                <div className="text-xs text-stone-600 line-clamp-1">
+                <div className="text-xs text-muted-foreground line-clamp-1">
                   {selectedAuction.title}
                 </div>
               </DialogHeader>
@@ -933,20 +933,20 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                     className={cn(
                       'p-3 rounded-xl border flex items-center justify-between',
                       idx === 0
-                        ? 'bg-white border-[#C59B4B] shadow-sm'
-                        : 'bg-white/60 border-stone-200 text-stone-600'
+                        ? 'bg-secondary/60 border-primary shadow-sm'
+                        : 'bg-secondary/20 border-border text-muted-foreground'
                     )}
                   >
                     <div>
-                      <div className="text-xs font-bold text-[#221C18] flex items-center gap-1.5">
+                      <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
                         {b.bidderName}
                         {idx === 0 && (
-                          <span className="text-[9px] bg-[#701D24] text-white px-1.5 py-0.2 rounded uppercase font-bold">
+                          <span className="text-[9px] bg-primary text-white px-1.5 py-0.2 rounded uppercase font-bold">
                             Leader
                           </span>
                         )}
                       </div>
-                      <div className="text-[10px] text-stone-400 font-mono mt-0.5">
+                      <div className="text-[10px] text-muted-foreground font-mono mt-0.5">
                         {b.timestamp}
                       </div>
                     </div>

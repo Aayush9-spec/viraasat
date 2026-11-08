@@ -2,6 +2,8 @@
 @import '@clerk/ui/themes/shadcn.css';
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -46,74 +48,73 @@
 }
 
 @layer base {
-  /* Default :root is the signature Viraasat Clay Theme */
+  /* Default :root, .light, and legacy .clay follow the coordinated Indian heritage Light Mode */
   :root,
+  .light,
   .clay {
-    --background: 32 30% 95%;
-    --foreground: 20 42% 13%;
-    --card: 35 32% 98%;
-    --card-foreground: 20 42% 13%;
-    --popover: 35 32% 98%;
-    --popover-foreground: 20 42% 13%;
-    --primary: 22 62% 32%;
-    --primary-foreground: 36 45% 98%;
-    --secondary: 30 24% 90%;
-    --secondary-foreground: 20 42% 13%;
-    --muted: 28 20% 87%;
-    --muted-foreground: 24 18% 38%;
-    --accent: 34 82% 46%;
-    --accent-foreground: 36 45% 98%;
-    --destructive: 0 74% 50%;
-    --destructive-foreground: 36 45% 98%;
-    --border: 26 24% 82%;
-    --input: 26 24% 82%;
-    --ring: 22 62% 36%;
-    --radius: 0.75rem;
-  }
-
-  .light {
-    --background: 35 25% 98%;
-    --foreground: 20 40% 12%;
+    /* Main background: Warm ivory #F8F5EF */
+    --background: 40 33% 96%;
+    /* Primary text: Deep charcoal #29231F */
+    --foreground: 24 14% 14%;
+    /* Card background: White #FFFFFF */
     --card: 0 0% 100%;
-    --card-foreground: 20 40% 12%;
+    --card-foreground: 24 14% 14%;
+    /* Popover: White #FFFFFF */
     --popover: 0 0% 100%;
-    --popover-foreground: 20 40% 12%;
-    --primary: 25 52% 32%;
-    --primary-foreground: 35 40% 98%;
-    --secondary: 28 30% 95%;
-    --secondary-foreground: 20 40% 12%;
-    --muted: 28 20% 92%;
-    --muted-foreground: 25 15% 42%;
-    --accent: 38 85% 45%;
-    --accent-foreground: 35 40% 98%;
-    --destructive: 0 84.2% 60.2%;
+    --popover-foreground: 24 14% 14%;
+    /* Primary brand: Terracotta #8B3A32 */
+    --primary: 5 47% 37%;
+    --primary-foreground: 40 33% 97%;
+    /* Secondary background: #F0EAE0 */
+    --secondary: 38 35% 91%;
+    --secondary-foreground: 24 14% 14%;
+    /* Muted background & text: #F0EAE0 & #756B61 */
+    --muted: 38 30% 90%;
+    --muted-foreground: 30 9% 42%;
+    /* Accent: Antique gold #B18A45 */
+    --accent: 38 44% 48%;
+    --accent-foreground: 40 33% 97%;
+    /* Destructive: Accessible red */
+    --destructive: 0 74% 45%;
     --destructive-foreground: 0 0% 98%;
-    --border: 25 25% 88%;
-    --input: 25 25% 88%;
-    --ring: 38 85% 45%;
+    /* Borders: #E5DDD1 */
+    --border: 36 27% 86%;
+    --input: 36 27% 86%;
+    --ring: 38 44% 48%;
     --radius: 0.75rem;
   }
 
+  /* Dark Mode: Obsidian night palette with warm antique gold and subtle bronze borders */
   .dark {
-    --background: 24 22% 8%;
-    --foreground: 35 25% 95%;
-    --card: 24 18% 12%;
-    --card-foreground: 35 25% 95%;
-    --popover: 24 18% 12%;
-    --popover-foreground: 35 25% 95%;
-    --primary: 38 85% 50%;
-    --primary-foreground: 24 25% 8%;
-    --secondary: 24 15% 17%;
-    --secondary-foreground: 35 25% 95%;
-    --muted: 24 15% 17%;
-    --muted-foreground: 30 15% 65%;
-    --accent: 25 52% 40%;
-    --accent-foreground: 35 25% 95%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 35 25% 98%;
-    --border: 24 18% 22%;
-    --input: 24 18% 22%;
-    --ring: 38 85% 50%;
+    /* Main background: Obsidian charcoal #14100E */
+    --background: 24 22% 7%;
+    /* Primary text: Warm ivory #FAF7F2 */
+    --foreground: 40 33% 96%;
+    /* Card background: Deep bronze charcoal #1E1815 */
+    --card: 24 18% 10%;
+    --card-foreground: 40 33% 96%;
+    /* Popover: #1E1815 */
+    --popover: 24 18% 10%;
+    --popover-foreground: 40 33% 96%;
+    /* Primary brand: Antique gold #C59B4B */
+    --primary: 38 52% 53%;
+    --primary-foreground: 24 22% 7%;
+    /* Secondary background: #28211C */
+    --secondary: 24 17% 13%;
+    --secondary-foreground: 40 33% 96%;
+    /* Muted background & text: #28211C & #A89F91 */
+    --muted: 24 17% 13%;
+    --muted-foreground: 36 12% 61%;
+    /* Accent: Warm terracotta #A04328 */
+    --accent: 13 60% 39%;
+    --accent-foreground: 40 33% 96%;
+    /* Destructive */
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 98%;
+    /* Subtle borders: #332822 */
+    --border: 24 20% 17%;
+    --input: 24 20% 17%;
+    --ring: 38 52% 53%;
     --radius: 0.75rem;
   }
 }
@@ -307,8 +308,8 @@
 
   
   .bg-motif {
-    background-color: #FAF7F2;
-    background-image: radial-gradient(rgba(197, 155, 75, 0.22) 1px, transparent 1px);
+    background-color: hsl(var(--background));
+    background-image: radial-gradient(rgba(197, 155, 75, 0.18) 1px, transparent 1px);
     background-size: 26px 26px;
   }
 
@@ -337,7 +338,7 @@
    ───────────────────────────────────────────────────────────────────────────── */
 .cl-userButtonPopoverCard,
 [class*="cl-userButtonPopoverCard"] {
-  background-color: #FAF7F2 !important;
+  background-color: hsl(var(--card)) !important;
   color: hsl(var(--foreground)) !important;
   box-shadow: 0 25px 50px -12px rgba(44, 24, 16, 0.22), 0 0 0 1px hsl(var(--border)) !important;
   z-index: 99999 !important;
@@ -347,8 +348,8 @@
 
 .dark .cl-userButtonPopoverCard,
 .dark [class*="cl-userButtonPopoverCard"] {
-  background-color: #1C1815 !important;
-  color: #F5EFEB !important;
+  background-color: #1E1815 !important;
+  color: #FAF7F2 !important;
 }
 
 .cl-userButtonPopoverFooter,

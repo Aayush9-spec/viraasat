@@ -73,11 +73,11 @@ export default function ProductCard({
       : '5 Days Handcrafted';
 
   return (
-    <article className="group relative bg-white rounded-2xl overflow-hidden border border-[#E8DCCB] hover:border-[#C59B4B] shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between h-full">
+    <article className="group relative bg-card text-card-foreground rounded-2xl overflow-hidden border border-border hover:border-primary/60 shadow-xs hover:shadow-xl transition-all duration-500 flex flex-col justify-between h-full">
       <Link href={`/product/${product.id}`} className="flex flex-col h-full justify-between">
         <div>
           {/* IMAGE & CRAFT BADGES CONTAINER */}
-          <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#FAF7F2]">
+          <div className="relative w-full aspect-[4/3] overflow-hidden bg-secondary">
             <Image
               src={imageUrl}
               alt={product.name}
@@ -90,7 +90,7 @@ export default function ProductCard({
 
             {/* Top Left Provenance Badges */}
             <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5 z-10 pointer-events-none">
-              <span className="bg-[#FAF7F2]/95 backdrop-blur-md text-[#221C18] text-[9.5px] font-bold px-2.5 py-1 rounded-md border border-[#C59B4B]/50 shadow-xs flex items-center gap-1 uppercase tracking-wider">
+              <span className="bg-card/95 backdrop-blur-md text-foreground text-[9.5px] font-bold px-2.5 py-1 rounded-md border border-border shadow-xs flex items-center gap-1 uppercase tracking-wider">
                 <ShieldCheck className="w-3 h-3 text-[#C59B4B]" />
                 <span>{product.region ? `GI • ${translateRegion(product.region)}` : 'GI Certified'}</span>
               </span>
@@ -157,12 +157,12 @@ export default function ProductCard({
               </div>
 
               {/* Product Title in Editorial Serif */}
-              <h3 className="font-serif text-lg font-bold text-[#221C18] group-hover:text-[#701D24] transition-colors line-clamp-1 leading-snug">
+              <h3 className="font-serif text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1 leading-snug">
                 {translateProduct(product)}
               </h3>
 
               {/* Master Artisan Attribution Chip */}
-              <div className="mt-2.5 flex items-center gap-2 py-1.5 px-2 rounded-lg bg-[#FAF7F2] border border-[#E8DCCB]/60">
+              <div className="mt-2.5 flex items-center gap-2 py-1.5 px-2 rounded-lg bg-secondary/60 border border-border/60">
                 <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#C59B4B] shrink-0">
                   <Image
                     src={artisan?.profilePicture || '/images/artisans/bannuram-baid.jpg'}
@@ -173,39 +173,39 @@ export default function ProductCard({
                   />
                 </div>
                 <div className="truncate">
-                  <span className="text-[10px] text-[#221C18] font-bold block leading-tight truncate">
+                  <span className="text-[10px] text-foreground font-bold block leading-tight truncate">
                     {artisan?.name || product.artisanName || 'Master Artisan'}
                   </span>
-                  <span className="text-[9px] text-[#655B53] block leading-tight truncate">
+                  <span className="text-[9px] text-muted-foreground block leading-tight truncate">
                     {artisan?.shopName || 'Authentic Lineage Guild'}
                   </span>
                 </div>
               </div>
 
               {/* Craft Attributes: Materials and Time */}
-              <div className="mt-2.5 flex items-center gap-1.5 flex-wrap text-[10px] text-[#655B53]">
-                <span className="px-2 py-0.5 rounded-full bg-[#FAF7F2] border border-[#E8DCCB] font-medium truncate max-w-[150px]">
+              <div className="mt-2.5 flex items-center gap-1.5 flex-wrap text-[10px] text-muted-foreground">
+                <span className="px-2 py-0.5 rounded-full bg-secondary border border-border font-medium truncate max-w-[150px]">
                   {translateCategory(product.category) || 'Handcrafted'}
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-[#FAF7F2] border border-[#E8DCCB] font-medium">
+                <span className="px-2 py-0.5 rounded-full bg-secondary border border-border font-medium">
                   {craftDuration}
                 </span>
               </div>
             </div>
 
             {/* Price & Fair Impact Valuation Section */}
-            <div className="mt-4 pt-3.5 border-t border-[#E8DCCB]/80">
+            <div className="mt-4 pt-3.5 border-t border-border/80">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <span className="text-[9px] uppercase tracking-wider text-[#655B53] font-semibold block">
+                  <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold block">
                     {t('marketplace.fairGuildPrice') || 'Fair Guild Price'}
                   </span>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="font-serif text-xl font-bold text-[#701D24]">
+                    <span className="font-serif text-xl font-bold text-primary">
                       ₹{safePrice.toFixed(0)}
                     </span>
                     {safePrice > 400 && (
-                      <span className="text-xs text-[#655B53] line-through">
+                      <span className="text-xs text-muted-foreground line-through">
                         ₹{Math.round(safePrice * 1.2).toFixed(0)}
                       </span>
                     )}
@@ -214,7 +214,7 @@ export default function ProductCard({
 
                 <div className="text-right">
                   <span
-                    className="inline-flex items-center gap-1 text-[9.5px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200"
+                    className="inline-flex items-center gap-1 text-[9.5px] font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800"
                     title="Transparent revenue sharing"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block" />
@@ -228,7 +228,7 @@ export default function ProductCard({
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="w-full py-2.5 bg-[#FAF7F2] hover:bg-[#701D24] text-[#221C18] hover:text-white rounded-xl text-xs font-semibold tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-2 border border-[#E8DCCB] hover:border-transparent active:scale-[0.99] shadow-xs hover:shadow-md cursor-pointer"
+                  className="w-full py-2.5 bg-secondary hover:bg-primary text-foreground hover:text-primary-foreground rounded-xl text-xs font-semibold tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-2 border border-border hover:border-transparent active:scale-[0.99] shadow-xs hover:shadow-md cursor-pointer"
                 >
                   <ShoppingBag className="w-3.5 h-3.5" />
                   <span>{t('marketplace.acquireHeirloom') || 'Acquire Heirloom'}</span>

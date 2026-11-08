@@ -56,7 +56,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`clay ${inter.variable} ${cormorant.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${cormorant.variable}`}>
             <head suppressHydrationWarning>
         <meta property="og:image" content="/viraasat-hero-cream.png" />
         <link rel="icon" href="/favicon.ico" sizes="any" />

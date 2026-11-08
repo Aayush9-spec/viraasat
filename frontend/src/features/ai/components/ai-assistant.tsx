@@ -50,7 +50,7 @@ function renderMarkdown(text: string): React.ReactNode {
     const parts = content.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
     const formatted = parts.map((part, i) => {
       if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i} className="font-semibold text-[#5e2c18]">{part.slice(2, -2)}</strong>;
+        return <strong key={i} className="font-semibold text-primary">{part.slice(2, -2)}</strong>;
       }
       if (part.startsWith('*') && part.endsWith('*')) {
         return <em key={i}>{part.slice(1, -1)}</em>;
@@ -266,7 +266,7 @@ export function AIAssistant() {
           </CardHeader>
 
           {/* Messages */}
-          <CardContent className="flex-1 overflow-y-auto p-3 space-y-3 bg-[#fbf7f0]/40 min-h-0">
+          <CardContent className="flex-1 overflow-y-auto p-3 space-y-3 bg-secondary/30 min-h-0">
             {messages.map((msg, i) => (
               <div
                 key={i}
@@ -277,7 +277,7 @@ export function AIAssistant() {
               >
                 {/* Agent label */}
                 {msg.agent && msg.role === 'bot' && (
-                  <span className="text-[8px] uppercase tracking-widest text-[#5e2c18]/50 font-bold ml-9">
+                  <span className="text-[8px] uppercase tracking-widest text-muted-foreground font-bold ml-9">
                     🤖 {msg.agent}
                   </span>
                 )}
@@ -290,10 +290,10 @@ export function AIAssistant() {
                   <div className={cn(
                     'h-7 w-7 rounded flex items-center justify-center shrink-0 border mt-0.5',
                     msg.role === 'user'
-                      ? 'bg-amber-50 border-amber-200 text-[#5e2c18]'
+                      ? 'bg-primary/10 border-primary/20 text-primary'
                       : msg.isError
-                        ? 'bg-red-100 border-red-200 text-red-600'
-                        : 'bg-[#5e2c18] border-[#5e2c18] text-white'
+                        ? 'bg-red-100 dark:bg-red-950/40 border-red-200 dark:border-red-900 text-red-600'
+                        : 'bg-[#5e2c18] dark:bg-[#A04328] border-primary text-white'
                   )}>
                     {msg.role === 'user'
                       ? <User className="h-3.5 w-3.5" />
@@ -310,11 +310,11 @@ export function AIAssistant() {
                       msg.role === 'user'
                         ? 'bg-card border-border text-card-foreground'
                         : msg.isError
-                          ? 'bg-red-50 border-red-200 text-red-800'
+                          ? 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900 text-red-800 dark:text-red-300'
                           : 'bg-card border-border text-card-foreground'
                     )}>
                       {msg.image && (
-                        <div className="relative w-full aspect-video mb-2 border overflow-hidden rounded">
+                        <div className="relative w-full aspect-video mb-2 border border-border overflow-hidden rounded">
                           <Image
                             src={msg.image}
                             alt="Uploaded craft"
@@ -342,9 +342,9 @@ export function AIAssistant() {
                               key={id}
                               href={`/product/${id}`}
                               onClick={() => setIsOpen(false)}
-                              className="block bg-card border border-border hover:border-amber-600/30 p-2 transition-all group rounded"
+                              className="block bg-card border border-border hover:border-primary/40 p-2 transition-all group rounded"
                             >
-                              <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 mb-1 rounded">
+                              <div className="relative aspect-square w-full overflow-hidden bg-secondary mb-1 rounded">
                                 <Image
                                   src={product.images[0]}
                                   alt={product.name}
@@ -354,7 +354,7 @@ export function AIAssistant() {
                                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 />
                               </div>
-                              <p className="text-[10px] font-semibold text-[#5e2c18] truncate leading-tight">{product.name}</p>
+                              <p className="text-[10px] font-semibold text-foreground truncate leading-tight">{product.name}</p>
                               <p className="text-[9px] text-muted-foreground">₹{product.price.toLocaleString('en-IN')}</p>
                             </Link>
                           );

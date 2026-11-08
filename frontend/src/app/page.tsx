@@ -371,9 +371,9 @@ export default function Marketplace() {
   };
 
   return (
-    <div className="bg-[#FAF7F2] text-[#221C18] min-h-screen selection:bg-[#C59B4B]/30 selection:text-[#701D24]">
+    <div className="bg-background text-foreground min-h-screen selection:bg-primary/30 selection:text-primary">
       {/* ================= 1. HERO SECTION ================= */}
-      <section className="relative bg-motif pt-12 pb-20 md:py-24 border-b border-[#E8DCCB] overflow-hidden">
+      <section className="relative bg-motif pt-12 pb-20 md:py-24 border-b border-border overflow-hidden">
         {/* Decorative ambient elements */}
         <div className="absolute top-1/2 -left-32 w-[500px] h-[500px] rounded-full bg-[#C59B4B]/8 filter blur-3xl pointer-events-none -translate-y-1/2" />
         <div className="absolute top-1/2 -right-32 w-[600px] h-[600px] rounded-full bg-[#701D24]/6 filter blur-3xl pointer-events-none -translate-y-1/2" />
@@ -384,20 +384,20 @@ export default function Marketplace() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 2xl:gap-20 items-center">
             {/* Left Headline & Pitch */}
             <div className="lg:col-span-7 xl:col-span-7 space-y-6 xl:space-y-8 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EDE2] border border-[#C59B4B]/40 text-xs text-[#5E2C18] font-medium tracking-wide">
-                <span className="w-2 h-2 rounded-full bg-[#701D24] animate-pulse" />
-                <span className="uppercase text-[11px] font-bold text-[#5E2C18]">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary border border-border text-xs text-foreground font-medium tracking-wide">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="uppercase text-[11px] font-bold text-foreground">
                   {t('home.badge') || "Direct GI-Origin Craft Marketplace • Live Database Connected"}
                 </span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-serif font-bold text-[#221C18] leading-[1.12] tracking-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-serif font-bold text-foreground leading-[1.12] tracking-tight">
                 {t('home.heroPart1') || "Preserving"}{" "}
-                <span className="text-[#8C2B2B] italic">{t('home.heroHighlight') || "India's Living Heritage"}</span>
+                <span className="text-primary italic">{t('home.heroHighlight') || "India's Living Heritage"}</span>
                 {t('home.heroPart2') || ", One Handcrafted Heirloom at a Time."}
               </h1>
 
-              <p className="text-[#655B53] text-base sm:text-lg xl:text-xl max-w-2xl xl:max-w-3xl font-light leading-relaxed mx-auto lg:mx-0">
+              <p className="text-muted-foreground text-base sm:text-lg xl:text-xl max-w-2xl xl:max-w-3xl font-light leading-relaxed mx-auto lg:mx-0">
                 {t('home.heroDescription') || "Discover authentic Indian handicrafts, each one a unique piece of art, telling a story of tradition and skill. Every single piece is handmade by master artisans across rural India—carrying centuries of lineage, patience, and ancestral soul."}
               </p>
 
@@ -409,7 +409,7 @@ export default function Marketplace() {
                     const el = document.getElementById("curated-treasures");
                     el?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[#701D24] hover:bg-[#8C2B2B] text-white rounded-full font-medium text-sm tracking-wide transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[#701D24] dark:bg-primary hover:bg-[#8C2B2B] dark:hover:bg-primary/90 text-white dark:text-primary-foreground rounded-full font-medium text-sm tracking-wide transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
                 >
                   <span>{t('home.exploreCollection') || "Enter The Viraasat — Explore Collection"}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -421,42 +421,42 @@ export default function Marketplace() {
                     const el = document.getElementById("artisan-lineage");
                     el?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#F3EDE2]/80 hover:bg-white text-[#221C18] border border-[#E8DCCB] hover:border-[#C59B4B] rounded-full font-medium text-sm transition-all shadow-sm cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-secondary hover:bg-card text-foreground border border-border hover:border-primary rounded-full font-medium text-sm transition-all shadow-sm cursor-pointer"
                 >
-                  <Users className="w-4 h-4 text-[#8F6826]" />
+                  <Users className="w-4 h-4 text-primary" />
                   <span>{t('home.meetArtisans') || "Meet Master Artisans"}</span>
                 </button>
               </div>
 
               {/* Provenance Badges */}
-              <div className="pt-6 border-t border-[#E8DCCB]/80 grid grid-cols-3 gap-4 xl:gap-6 max-w-lg xl:max-w-2xl mx-auto lg:mx-0 text-left">
+              <div className="pt-6 border-t border-border/80 grid grid-cols-3 gap-4 xl:gap-6 max-w-lg xl:max-w-2xl mx-auto lg:mx-0 text-left">
                 <div className="flex items-start gap-2.5">
-                  <div className="p-1.5 rounded-md bg-[#F3EDE2] text-[#8F6826] mt-0.5">
+                  <div className="p-1.5 rounded-md bg-secondary text-primary mt-0.5">
                     <Award className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">{t('home.badgeCertified') || "100% Certified"}</h4>
-                    <p className="text-[11px] text-[#655B53]">{t('home.badgeCertifiedDesc') || "Geographical Indication (GI) tags"}</p>
+                    <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider">{t('home.badgeCertified') || "100% Certified"}</h4>
+                    <p className="text-[11px] text-muted-foreground">{t('home.badgeCertifiedDesc') || "Geographical Indication (GI) tags"}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2.5">
-                  <div className="p-1.5 rounded-md bg-[#F3EDE2] text-[#8F6826] mt-0.5">
+                  <div className="p-1.5 rounded-md bg-secondary text-primary mt-0.5">
                     <ShieldCheck className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">{t('home.badgeFairWage') || "Fair Wage"}</h4>
-                    <p className="text-[11px] text-[#655B53]">{t('home.badgeFairWageDesc') || "85%+ direct to artisan guilds"}</p>
+                    <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider">{t('home.badgeFairWage') || "Fair Wage"}</h4>
+                    <p className="text-[11px] text-muted-foreground">{t('home.badgeFairWageDesc') || "85%+ direct to artisan guilds"}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2.5">
-                  <div className="p-1.5 rounded-md bg-[#F3EDE2] text-[#8F6826] mt-0.5">
+                  <div className="p-1.5 rounded-md bg-secondary text-primary mt-0.5">
                     <Feather className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-[#221C18] uppercase tracking-wider">{t('home.badgePureCraft') || "Pure Craft"}</h4>
-                    <p className="text-[11px] text-[#655B53]">{t('home.badgePureCraftDesc') || "Zero factory synthetic molds"}</p>
+                    <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider">{t('home.badgePureCraft') || "Pure Craft"}</h4>
+                    <p className="text-[11px] text-muted-foreground">{t('home.badgePureCraftDesc') || "Zero factory synthetic molds"}</p>
                   </div>
                 </div>
               </div>
@@ -569,13 +569,13 @@ export default function Marketplace() {
       </section>
 
       {/* ================= 2. REGIONAL CRAFT DISCIPLINES ================= */}
-      <section id="heritage-crafts" className="py-20 bg-[#F3EDE2]/40 border-b border-[#E8DCCB]">
+      <section id="heritage-crafts" className="py-20 bg-secondary/40 border-b border-border">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="text-center max-w-3xl mx-auto mb-14">
-            <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
+            <span className="text-xs uppercase tracking-widest text-primary font-semibold">
               {t('home.ancestralDisciplines') || "Ancestral Regional Disciplines"}
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-2">
+            <h2 className="font-serif text-3xl sm:text-4xl text-foreground font-normal mt-2">
               {t('home.browseGeographical') || "Browse by Geographical Heritage"}
             </h2>
             <div className="w-16 h-0.5 bg-[#C59B4B] mx-auto mt-4" />
@@ -585,9 +585,9 @@ export default function Marketplace() {
             {/* Discipline 1: Rajasthan */}
             <Link
               href="/shop?region=Rajasthan"
-              className="bg-white p-4 rounded-xl border border-[#E8DCCB] text-center hover:border-[#C59B4B] hover:shadow-lg transition-all group block"
+              className="bg-card p-4 rounded-xl border border-border text-center hover:border-primary/60 hover:shadow-lg transition-all group block"
             >
-              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-[#FAF7F2] relative">
+              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-secondary relative">
                 <Image
                   src="/images/products/clean/jaipur-blue-pottery-urn.jpg"
                   alt="Jaipur Blue Pottery"
@@ -595,10 +595,10 @@ export default function Marketplace() {
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <h3 className="font-serif font-bold text-sm text-[#221C18] group-hover:text-[#701D24] transition-colors">
+              <h3 className="font-serif font-bold text-sm text-foreground group-hover:text-primary transition-colors">
                 Royal Blue Pottery
               </h3>
-              <p className="text-[11px] text-[#655B53] mt-0.5">
+              <p className="text-[11px] text-muted-foreground mt-0.5">
                 Rajasthan • {regionalCounts["Rajasthan"] || 14} Items
               </p>
             </Link>
@@ -606,9 +606,9 @@ export default function Marketplace() {
             {/* Discipline 2: Kashmir */}
             <Link
               href="/shop?region=Kashmir"
-              className="bg-white p-4 rounded-xl border border-[#E8DCCB] text-center hover:border-[#C59B4B] hover:shadow-lg transition-all group block"
+              className="bg-card p-4 rounded-xl border border-border text-center hover:border-primary/60 hover:shadow-lg transition-all group block"
             >
-              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-[#FAF7F2] relative">
+              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-secondary relative">
                 <Image
                   src="/images/artisans/ghulam-nabi.jpg"
                   alt="Kashmiri Pashmina"
@@ -617,10 +617,10 @@ export default function Marketplace() {
                   className="object-cover object-[center_top] group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <h3 className="font-serif font-bold text-sm text-[#221C18] group-hover:text-[#701D24] transition-colors">
+              <h3 className="font-serif font-bold text-sm text-foreground group-hover:text-primary transition-colors">
                 Pashmina Shawls
               </h3>
-              <p className="text-[11px] text-[#655B53] mt-0.5">
+              <p className="text-[11px] text-muted-foreground mt-0.5">
                 Kashmir • {regionalCounts["Kashmir"] || 8} Weaves
               </p>
             </Link>
@@ -628,9 +628,9 @@ export default function Marketplace() {
             {/* Discipline 3: Mithila Bihar */}
             <Link
               href="/shop?region=Bihar"
-              className="bg-white p-4 rounded-xl border border-[#E8DCCB] text-center hover:border-[#C59B4B] hover:shadow-lg transition-all group block"
+              className="bg-card p-4 rounded-xl border border-border text-center hover:border-primary/60 hover:shadow-lg transition-all group block"
             >
-              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-[#FAF7F2] relative">
+              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-secondary relative">
                 <Image
                   src="/images/artisans/dulari-devi.jpg"
                   alt="Madhubani Paintings"
@@ -639,10 +639,10 @@ export default function Marketplace() {
                   className="object-cover object-[center_top] group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <h3 className="font-serif font-bold text-sm text-[#221C18] group-hover:text-[#701D24] transition-colors">
+              <h3 className="font-serif font-bold text-sm text-foreground group-hover:text-primary transition-colors">
                 Madhubani Art
               </h3>
-              <p className="text-[11px] text-[#655B53] mt-0.5">
+              <p className="text-[11px] text-muted-foreground mt-0.5">
                 Mithila, Bihar • {regionalCounts["Bihar"] || 6} Folios
               </p>
             </Link>
@@ -650,9 +650,9 @@ export default function Marketplace() {
             {/* Discipline 4: Bastar Chhattisgarh */}
             <Link
               href="/shop?region=Chhattisgarh"
-              className="bg-white p-4 rounded-xl border border-[#E8DCCB] text-center hover:border-[#C59B4B] hover:shadow-lg transition-all group block"
+              className="bg-card p-4 rounded-xl border border-border text-center hover:border-primary/60 hover:shadow-lg transition-all group block"
             >
-              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-[#FAF7F2] relative">
+              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-secondary relative">
                 <Image
                   src="/images/products/clean/bastar-dhokra-dancing-bull.jpg"
                   alt="Bastar Dhokra Bronze"
@@ -660,10 +660,10 @@ export default function Marketplace() {
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <h3 className="font-serif font-bold text-sm text-[#221C18] group-hover:text-[#701D24] transition-colors">
+              <h3 className="font-serif font-bold text-sm text-foreground group-hover:text-primary transition-colors">
                 Dhokra Bell Metal
               </h3>
-              <p className="text-[11px] text-[#655B53] mt-0.5">
+              <p className="text-[11px] text-muted-foreground mt-0.5">
                 Bastar • {regionalCounts["Chhattisgarh"] || 5} Sculptures
               </p>
             </Link>
@@ -671,9 +671,9 @@ export default function Marketplace() {
             {/* Discipline 5: Varanasi UP */}
             <Link
               href="/shop?region=Uttar Pradesh"
-              className="bg-white p-4 rounded-xl border border-[#E8DCCB] text-center hover:border-[#C59B4B] hover:shadow-lg transition-all group block"
+              className="bg-card p-4 rounded-xl border border-border text-center hover:border-primary/60 hover:shadow-lg transition-all group block"
             >
-              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-[#FAF7F2] relative">
+              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-secondary relative">
                 <Image
                   src="/images/products/clean/banarasi-silk-saree.jpg"
                   alt="Banarasi Brocade Silks"
@@ -681,10 +681,10 @@ export default function Marketplace() {
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <h3 className="font-serif font-bold text-sm text-[#221C18] group-hover:text-[#701D24] transition-colors">
+              <h3 className="font-serif font-bold text-sm text-foreground group-hover:text-primary transition-colors">
                 Banarasi Brocade
               </h3>
-              <p className="text-[11px] text-[#655B53] mt-0.5">
+              <p className="text-[11px] text-muted-foreground mt-0.5">
                 Varanasi, UP • {regionalCounts["Uttar Pradesh"] || 12} Silks
               </p>
             </Link>
@@ -692,9 +692,9 @@ export default function Marketplace() {
             {/* Discipline 6: Gujarat */}
             <Link
               href="/shop?region=Gujarat"
-              className="bg-white p-4 rounded-xl border border-[#E8DCCB] text-center hover:border-[#C59B4B] hover:shadow-lg transition-all group block"
+              className="bg-card p-4 rounded-xl border border-border text-center hover:border-primary/60 hover:shadow-lg transition-all group block"
             >
-              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-[#FAF7F2] relative">
+              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-secondary relative">
                 <Image
                   src="https://images.unsplash.com/photo-1562869929-bda0650edb1f?auto=format&fit=crop&w=400&q=80"
                   alt="Gujarat Handloom Weaves"
@@ -702,10 +702,10 @@ export default function Marketplace() {
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <h3 className="font-serif font-bold text-sm text-[#221C18] group-hover:text-[#701D24] transition-colors">
+              <h3 className="font-serif font-bold text-sm text-foreground group-hover:text-primary transition-colors">
                 Gujarat Textiles
               </h3>
-              <p className="text-[11px] text-[#655B53] mt-0.5">
+              <p className="text-[11px] text-muted-foreground mt-0.5">
                 Kutch, Gujarat • {regionalCounts["Gujarat"] || 6} Weaves
               </p>
             </Link>
@@ -714,17 +714,17 @@ export default function Marketplace() {
       </section>
 
       {/* ================= 3. CURATED HEIRLOOMS CATALOG (LIVE DB) ================= */}
-      <section id="curated-treasures" className="py-20 bg-motif border-b border-[#E8DCCB]">
+      <section id="curated-treasures" className="py-20 bg-motif border-b border-border">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
-              <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
+              <span className="text-xs uppercase tracking-widest text-primary font-semibold">
                 {t('home.curatedAcquisitions') || "Curated Guild Acquisitions"}
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-1">
+              <h2 className="font-serif text-3xl sm:text-4xl text-foreground font-normal mt-1">
                 {t('home.certifiedHeirlooms') || "Authentic Certified Heirlooms"}
               </h2>
-              <p className="text-xs text-[#655B53] mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {products.length} {t('home.liveArtifactsSync') || "live artifacts currently synchronized from the guild registry database."}
               </p>
             </div>
@@ -736,14 +736,14 @@ export default function Marketplace() {
                 placeholder={t('home.searchLiveHeirlooms') || "Search live heirlooms, crafts..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border border-[#E8DCCB] rounded-full py-2.5 pl-10 pr-4 text-base sm:text-xs text-[#221C18] placeholder-[#655B53] focus:outline-none focus:border-[#C59B4B] shadow-sm"
+                className="w-full bg-card border border-border rounded-full py-2.5 pl-10 pr-4 text-base sm:text-xs text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary shadow-xs"
               />
-              <Search className="w-4 h-4 text-[#8F6826] absolute left-3.5 top-3" />
+              <Search className="w-4 h-4 text-primary absolute left-3.5 top-3" />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-3 text-stone-400 hover:text-stone-700"
+                  className="absolute right-3 top-3 text-stone-400 hover:text-foreground"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -760,8 +760,8 @@ export default function Marketplace() {
                 onClick={() => setCurrentFilter(cat)}
                 className={`px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-300 capitalize cursor-pointer ${
                   currentFilter === cat
-                    ? "bg-[#701D24] text-white shadow"
-                    : "bg-white text-[#655B53] hover:text-[#221C18] border border-[#E8DCCB]"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-card text-muted-foreground hover:text-foreground border border-border hover:bg-secondary"
                 }`}
               >
                 {cat === "all" ? `${t('home.allTreasures') || 'All Treasures'} (${products.length})` : cat}
@@ -922,43 +922,43 @@ export default function Marketplace() {
       </section>
 
       {/* ================= 3B. TWO-TOWER NEURAL RECOMMENDATIONS (ML ENGINE) ================= */}
-      <section id="neural-recommendations" className="py-20 bg-[#FAF7F2] border-b border-[#E8DCCB] relative overflow-hidden">
+      <section id="neural-recommendations" className="py-20 bg-background border-b border-border relative overflow-hidden">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
+                <span className="text-xs uppercase tracking-widest text-primary font-semibold">
                   {t('home.patronCuration') || "Personalized Patron Curation"}
                 </span>
-                <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-[#F3EDE2] text-[#701D24] border border-[#C59B4B]/40 rounded-full font-bold">
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-secondary text-primary border border-border rounded-full font-bold">
                   <Sparkles className="w-3 h-3 text-[#C59B4B]" /> Two-Tower Retrieval + GBT Ranker
                 </span>
                 {recAccuracy && (
-                  <span className="inline-flex items-center text-[10px] font-mono px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full font-bold">
+                  <span className="inline-flex items-center text-[10px] font-mono px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full font-bold">
                     {(recAccuracy * 100).toFixed(1)}% Precision@10
                   </span>
                 )}
               </div>
-              <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal">
+              <h2 className="font-serif text-3xl sm:text-4xl text-foreground font-normal">
                 {t('home.curatedForTaste') || "Curated for Your Taste & Regional Affinity"}
               </h2>
-              <p className="text-[#655B53] text-sm mt-2 max-w-2xl">
+              <p className="text-muted-foreground text-sm mt-2 max-w-2xl">
                 {t('home.neuralMatchingDesc') || "Real-time neural matching algorithm connecting your regional preferences with authentic GI-tagged masterpieces."}
               </p>
             </div>
 
             {/* Preference Region Chips */}
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-semibold text-[#655B53]">{t('home.targetOrigin') || "Target Origin:"}</span>
+              <span className="text-xs font-semibold text-muted-foreground">{t('home.targetOrigin') || "Target Origin:"}</span>
               {['Rajasthan', 'Kashmir', 'Kutch', 'Uttar Pradesh', 'Chhattisgarh'].map((reg) => (
                 <button
                   key={reg}
                   type="button"
                   onClick={() => setRecRegion(reg)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-all font-medium ${
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-all font-medium cursor-pointer ${
                     recRegion === reg
-                      ? 'bg-[#701D24] text-white border-[#701D24] shadow-sm'
-                      : 'bg-white text-[#221C18] border-[#E8DCCB] hover:border-[#C59B4B]'
+                      ? 'bg-primary text-primary-foreground border-primary shadow-xs'
+                      : 'bg-card text-foreground border-border hover:border-primary/50'
                   }`}
                 >
                   {reg}
@@ -970,8 +970,8 @@ export default function Marketplace() {
           {/* Recommended Products Grid */}
           {isLoadingRecs ? (
             <div className="py-16 text-center">
-              <Loader2 className="w-8 h-8 text-[#701D24] animate-spin mx-auto mb-3" />
-              <p className="text-xs uppercase font-semibold tracking-widest text-[#655B53]">
+              <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-3" />
+              <p className="text-xs uppercase font-semibold tracking-widest text-muted-foreground">
                 Querying Two-Tower Vector Space & Ranking Artifacts...
               </p>
             </div>
@@ -988,11 +988,11 @@ export default function Marketplace() {
                 return (
                   <div
                     key={p.id || `rec-${idx}`}
-                    className="group bg-white rounded-2xl border border-[#E8DCCB] hover:border-[#C59B4B] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between overflow-hidden relative"
+                    className="group bg-card text-card-foreground rounded-2xl border border-border hover:border-primary/50 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between overflow-hidden relative"
                   >
                     <div>
                       {/* Image Frame */}
-                      <div className="relative aspect-[4/3] bg-[#F3EDE2] overflow-hidden">
+                      <div className="relative aspect-[4/3] bg-secondary overflow-hidden">
                         <Image
                           src={imgUrl}
                           alt={p.name || 'Artisan Heirloom'}
@@ -1054,22 +1054,22 @@ export default function Marketplace() {
                         </div>
 
                         <Link href={`/product/${p.id}`} className="block">
-                          <h3 className="font-serif text-base font-bold text-[#221C18] group-hover:text-[#701D24] transition-colors line-clamp-1">
+                          <h3 className="font-serif text-base font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
                             {translateProduct(p)}
                           </h3>
                         </Link>
 
-                        <p className="text-xs text-[#655B53] line-clamp-2 mt-1 leading-relaxed">
+                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-relaxed">
                           {translateDescription(p) || 'Authentic artisan masterpiece selected via Two-Tower embedding retrieval.'}
                         </p>
                       </div>
                     </div>
 
                     {/* Price & Action */}
-                    <div className="px-4 pb-4 pt-2 border-t border-[#E8DCCB]/60 flex items-center justify-between">
+                    <div className="px-4 pb-4 pt-2 border-t border-border/60 flex items-center justify-between">
                       <div>
-                        <span className="text-[10px] text-[#655B53] block">{t('home.directPayout') || "Direct Payout"}</span>
-                        <p className="text-base font-serif font-bold text-[#221C18]">
+                        <span className="text-[10px] text-muted-foreground block">{t('home.directPayout') || "Direct Payout"}</span>
+                        <p className="text-base font-serif font-bold text-primary">
                           {formatPrice(p.price || 2400)}
                         </p>
                       </div>
@@ -1104,16 +1104,16 @@ export default function Marketplace() {
       </section>
 
       {/* ================= 4. MASTER ARTISANS SPOTLIGHT (LIVE DB) ================= */}
-      <section id="artisan-lineage" className="py-20 bg-[#F3EDE2]/60 border-b border-[#E8DCCB] relative overflow-hidden">
+      <section id="artisan-lineage" className="py-20 bg-secondary/40 border-b border-border relative overflow-hidden">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
+            <span className="text-xs uppercase tracking-widest text-[#701D24] dark:text-[#C59B4B] font-semibold">
               {t('home.custodiansTitle') || "The Custodians of Culture"}
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-2">
+            <h2 className="font-serif text-3xl sm:text-4xl text-foreground font-normal mt-2">
               {t('home.meetHands') || "Meet the Hands Behind the Legacy"}
             </h2>
-            <p className="text-[#655B53] text-sm mt-3">
+            <p className="text-muted-foreground text-sm mt-3">
               Master craftsmen from our verified Supabase artisan database, preserving ancestral guilds without middlemen.
             </p>
           </div>
@@ -1177,10 +1177,10 @@ export default function Marketplace() {
             ]).slice(0, 6).map((art) => (
               <div
                 key={art.id}
-                className="bg-white rounded-2xl overflow-hidden border border-[#E8DCCB] p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                className="bg-card text-card-foreground rounded-2xl overflow-hidden border border-border p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
-                  <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden mb-5 bg-[#FAF7F2]">
+                  <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden mb-5 bg-secondary">
                     <Image
                       src={
                         art.avatarUrl ||
@@ -1195,17 +1195,17 @@ export default function Marketplace() {
                       <MapPin className="w-3 h-3" /> {art.region || "India"}
                     </div>
                   </div>
-                  <span className="text-[11px] font-bold text-[#8C2B2B] uppercase tracking-widest">
+                  <span className="text-[11px] font-bold text-primary uppercase tracking-widest">
                     {t('home.verifiedMasterArtisan') || "Verified Master Artisan"}
                   </span>
-                  <h3 className="font-serif text-2xl font-bold text-[#221C18] mt-1">{art.name}</h3>
-                  <p className="text-xs text-[#655B53] mt-2 line-clamp-3 leading-relaxed">
+                  <h3 className="font-serif text-2xl font-bold text-foreground mt-1">{art.name}</h3>
+                  <p className="text-xs text-muted-foreground mt-2 line-clamp-3 leading-relaxed">
                     {art.bio || "Dedicated master craftsman preserving regional handloom and ancestral metallurgy."}
                   </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-[#E8DCCB]/70 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#8F6826]">
+                <div className="mt-6 pt-4 border-t border-border flex items-center justify-between">
+                  <span className="text-xs font-semibold text-accent">
                     {t('home.giLineageAuth') || "GI Lineage Authenticated"}
                   </span>
                   <button
@@ -1220,7 +1220,7 @@ export default function Marketplace() {
                         email: art.email
                       })
                     }
-                    className="text-xs font-bold text-[#701D24] hover:text-[#8C2B2B] underline flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-bold text-primary hover:text-primary/80 underline flex items-center gap-1 cursor-pointer"
                   >
                     {t('home.readBiography') || "Read Biography"} <ChevronRight className="w-3.5 h-3.5" />
                   </button>
@@ -1232,38 +1232,38 @@ export default function Marketplace() {
       </section>
 
       {/* ================= 5. PHILOSOPHY & LIVE DATABASE STATS ================= */}
-      <section id="why-viraasat" className="py-20 bg-[#FAF7F2] border-b border-[#E8DCCB]">
+      <section id="why-viraasat" className="py-20 bg-background border-b border-border">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-5 space-y-6">
-              <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
+              <span className="text-xs uppercase tracking-widest text-[#701D24] dark:text-[#C59B4B] font-semibold">
                 {t('home.ethicalCraft') || "Ethical Craft Infrastructure"}
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal leading-tight">
+              <h2 className="font-serif text-3xl sm:text-4xl text-foreground font-normal leading-tight">
                 {t('home.whySourceTitle') || "Why Patrons & Museums Source Through Viraasat"}
               </h2>
-              <p className="text-sm text-[#655B53] font-light leading-relaxed">
+              <p className="text-sm text-muted-foreground font-light leading-relaxed">
                 By bridging indigenous craft clusters directly to global collectors, we eliminate the 7-tier middleman system that historically kept master creators in perpetual economic vulnerability.
               </p>
 
               <div className="space-y-4 pt-2">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-[#701D24] text-white flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                  <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
                     ✓
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-[#221C18]">{t('home.fullProvenance') || "Full Provenance Transparency"}</h4>
-                    <p className="text-xs text-[#655B53]">{t('home.fullProvenanceDesc') || "Every acquisition arrives with a signed and sealed Certificate of Lineage with GI authentication."}</p>
+                    <h4 className="text-sm font-semibold text-foreground">{t('home.fullProvenance') || "Full Provenance Transparency"}</h4>
+                    <p className="text-xs text-muted-foreground">{t('home.fullProvenanceDesc') || "Every acquisition arrives with a signed and sealed Certificate of Lineage with GI authentication."}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-[#701D24] text-white flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                  <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
                     ✓
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-[#221C18]">{t('home.whiteGloveTransit') || "Insured Global White-Glove Transit"}</h4>
-                    <p className="text-xs text-[#655B53]">Custom crating for fragile terracotta, bronze statues, and delicate handwoven cashmere.</p>
+                    <h4 className="text-sm font-semibold text-foreground">{t('home.whiteGloveTransit') || "Insured Global White-Glove Transit"}</h4>
+                    <p className="text-xs text-muted-foreground">Custom crating for fragile terracotta, bronze statues, and delicate handwoven cashmere.</p>
                   </div>
                 </div>
               </div>
@@ -1271,28 +1271,28 @@ export default function Marketplace() {
 
             {/* Live Stats Grid */}
             <div className="lg:col-span-7 grid grid-cols-2 gap-6">
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
-                <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">100%</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.provenanceGuaranteed') || "Provenance Guaranteed"}</h4>
-                <p className="text-xs text-[#655B53] mt-1">Verified with Geographical Indication tags</p>
+              <div className="bg-card p-6 sm:p-8 rounded-2xl border border-border shadow-sm">
+                <span className="font-serif text-3xl sm:text-4xl font-bold text-primary">100%</span>
+                <h4 className="font-serif text-base font-bold text-card-foreground mt-2">{t('home.provenanceGuaranteed') || "Provenance Guaranteed"}</h4>
+                <p className="text-xs text-muted-foreground mt-1">Verified with Geographical Indication tags</p>
               </div>
 
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
-                <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">85%+</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.directArtisanShare') || "Direct Artisan Share"}</h4>
-                <p className="text-xs text-[#655B53] mt-1">Zero commission deduction for rural guilds</p>
+              <div className="bg-card p-6 sm:p-8 rounded-2xl border border-border shadow-sm">
+                <span className="font-serif text-3xl sm:text-4xl font-bold text-primary">85%+</span>
+                <h4 className="font-serif text-base font-bold text-card-foreground mt-2">{t('home.directArtisanShare') || "Direct Artisan Share"}</h4>
+                <p className="text-xs text-muted-foreground mt-1">Zero commission deduction for rural guilds</p>
               </div>
 
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
-                <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">{products.length}+</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.liveCertifiedArtifacts') || "Live Certified Artifacts"}</h4>
-                <p className="text-xs text-[#655B53] mt-1">Synchronized directly with database inventory</p>
+              <div className="bg-card p-6 sm:p-8 rounded-2xl border border-border shadow-sm">
+                <span className="font-serif text-3xl sm:text-4xl font-bold text-primary">{products.length}+</span>
+                <h4 className="font-serif text-base font-bold text-card-foreground mt-2">{t('home.liveCertifiedArtifacts') || "Live Certified Artifacts"}</h4>
+                <p className="text-xs text-muted-foreground mt-1">Synchronized directly with database inventory</p>
               </div>
 
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E8DCCB] shadow-sm">
-                <span className="font-serif text-3xl sm:text-4xl font-bold text-[#701D24]">{Object.keys(regionalCounts).length || 6}+</span>
-                <h4 className="font-serif text-base font-bold text-[#221C18] mt-2">{t('home.heritageGiClusters') || "Heritage GI Clusters"}</h4>
-                <p className="text-xs text-[#655B53] mt-1">Active rural cooperatives and artisan families</p>
+              <div className="bg-card p-6 sm:p-8 rounded-2xl border border-border shadow-sm">
+                <span className="font-serif text-3xl sm:text-4xl font-bold text-primary">{Object.keys(regionalCounts).length || 6}+</span>
+                <h4 className="font-serif text-base font-bold text-card-foreground mt-2">{t('home.heritageGiClusters') || "Heritage GI Clusters"}</h4>
+                <p className="text-xs text-muted-foreground mt-1">Active rural cooperatives and artisan families</p>
               </div>
             </div>
           </div>
@@ -1338,13 +1338,13 @@ export default function Marketplace() {
       </section>
 
       {/* ================= 7. CONNOISSEURS TESTIMONIALS (LIVE DB) ================= */}
-      <section className="py-20 bg-[#F3EDE2]/40 border-b border-[#E8DCCB]">
+      <section className="py-20 bg-secondary/40 border-b border-border">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
+            <span className="text-xs uppercase tracking-widest text-[#701D24] dark:text-[#C59B4B] font-semibold">
               {t('home.patronsOfViraasat') || "Patrons of Viraasat"}
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-2">
+            <h2 className="font-serif text-3xl sm:text-4xl text-foreground font-normal mt-2">
               {t('home.wordsRoyalFoundations') || "Words from Royal Foundations & Curators"}
             </h2>
           </div>
@@ -1373,20 +1373,20 @@ export default function Marketplace() {
                 created_at: new Date().toISOString()
               }
             ]).map((rev) => (
-              <div key={rev.id} className="bg-white p-8 rounded-2xl border border-[#E8DCCB] shadow-sm flex flex-col justify-between">
+              <div key={rev.id} className="bg-card text-card-foreground p-8 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
                 <div>
                   <div className="flex text-amber-500 text-sm mb-4">
                     {Array.from({ length: rev.rating || 5 }).map((_, i) => (
                       <span key={i}>★</span>
                     ))}
                   </div>
-                  <p className="font-serif text-sm italic text-[#221C18] leading-relaxed">
+                  <p className="font-serif text-sm italic text-foreground leading-relaxed">
                     &ldquo;{rev.comment}&rdquo;
                   </p>
                 </div>
-                <div className="mt-6 pt-4 border-t border-[#E8DCCB]/60 flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#701D24]">{rev.reviewer_name}</span>
-                  <span className="text-[10px] text-stone-600 font-medium">{t('home.verifiedPatron') || "Verified Patron"}</span>
+                <div className="mt-6 pt-4 border-t border-border flex items-center justify-between">
+                  <span className="text-xs font-bold text-primary">{rev.reviewer_name}</span>
+                  <span className="text-[10px] text-muted-foreground font-medium">{t('home.verifiedPatron') || "Verified Patron"}</span>
                 </div>
               </div>
             ))}
@@ -1395,20 +1395,20 @@ export default function Marketplace() {
       </section>
 
       {/* ================= 8. HERITAGE JOURNAL ================= */}
-      <section className="py-20 bg-motif border-b border-[#E8DCCB]">
+      <section className="py-20 bg-motif border-b border-border">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="flex items-end justify-between mb-12">
             <div>
-              <span className="text-xs uppercase tracking-widest text-[#701D24] font-semibold">
+              <span className="text-xs uppercase tracking-widest text-[#701D24] dark:text-[#C59B4B] font-semibold">
                 {t('home.chroniclesLostArts') || "Chronicles of Lost Arts"}
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl text-[#221C18] font-normal mt-1">
+              <h2 className="font-serif text-3xl sm:text-4xl text-foreground font-normal mt-1">
                 {t('home.heritageJournal') || "The Heritage Journal"}
               </h2>
             </div>
             <Link
               href="/journal"
-              className="text-xs uppercase font-bold tracking-wider text-[#701D24] hover:text-[#8C2B2B] flex items-center gap-1"
+              className="text-xs uppercase font-bold tracking-wider text-[#701D24] dark:text-[#C59B4B] hover:opacity-80 flex items-center gap-1"
             >
               {t('home.allEssays') || "All Essays"} <ChevronRight className="w-4 h-4" />
             </Link>
@@ -1427,9 +1427,9 @@ export default function Marketplace() {
                 <Link
                   key={article.slug}
                   href={`/journal/${article.slug}`}
-                  className="bg-white rounded-2xl overflow-hidden border border-[#E8DCCB] group hover:border-[#C59B4B] shadow-sm hover:shadow-xl transition-all block"
+                  className="bg-card text-card-foreground rounded-2xl overflow-hidden border border-border group hover:border-primary shadow-sm hover:shadow-xl transition-all block"
                 >
-                  <div className="aspect-[16/10] relative overflow-hidden bg-stone-100">
+                  <div className="aspect-[16/10] relative overflow-hidden bg-secondary">
                     <Image
                       src={coverImg}
                       alt={article.title}
@@ -1437,21 +1437,21 @@ export default function Marketplace() {
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover object-[center_top] group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-[#701D24] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">
+                    <div className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">
                       {article.category || "Heritage"}
                     </div>
                   </div>
                   <div className="p-6">
-                    <div className="text-[11px] text-[#655B53] mb-2 flex items-center gap-2">
+                    <div className="text-[11px] text-muted-foreground mb-2 flex items-center gap-2">
                       <Calendar className="w-3 h-3" />
                       <span>{article.readTime || "6 min read"}</span>
                       <span>•</span>
                       <span>{article.region ? `${article.region} Guild` : "Viraasat Heritage Guild"}</span>
                     </div>
-                    <h3 className="font-serif text-xl font-bold text-[#221C18] group-hover:text-[#701D24] transition-colors leading-snug">
+                    <h3 className="font-serif text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-snug">
                       {article.title}
                     </h3>
-                    <p className="text-xs text-[#655B53] mt-2 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
                       {article.excerpt}
                     </p>
                   </div>
@@ -1468,17 +1468,17 @@ export default function Marketplace() {
       {/* ================= MODAL 1: QUICK VIEW PRODUCT ================= */}
       {quickViewProduct && (
         <div className="fixed inset-0 glass-backdrop z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl border border-[#E8DCCB] relative animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-card text-card-foreground rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl border border-border relative animate-in fade-in zoom-in-95 duration-200">
             <button
               type="button"
               onClick={() => setQuickViewProduct(null)}
-              className="absolute top-4 right-4 z-10 bg-white/80 rounded-full p-1.5 text-[#221C18] hover:text-[#701D24] shadow cursor-pointer"
+              className="absolute top-4 right-4 z-10 bg-background/80 rounded-full p-1.5 text-foreground hover:text-primary shadow cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="grid grid-cols-1 md:grid-cols-2">
-              <div className="aspect-square relative bg-[#FAF7F2]">
+              <div className="aspect-square relative bg-secondary">
                 <Image
                   src={
                     (Array.isArray(quickViewProduct.images) && quickViewProduct.images[0]) ||
@@ -1493,19 +1493,19 @@ export default function Marketplace() {
 
               <div className="p-6 sm:p-8 flex flex-col justify-between">
                 <div>
-                  <div className="inline-block px-2.5 py-0.5 bg-[#F3EDE2] text-[#5E2C18] text-[10px] font-bold uppercase tracking-wider rounded mb-2">
+                  <div className="inline-block px-2.5 py-0.5 bg-secondary text-primary text-[10px] font-bold uppercase tracking-wider rounded mb-2">
                     {quickViewProduct.region ? `GI Tag: ${translateRegion(quickViewProduct.region)}` : "Certified GI Origin"}
                   </div>
-                  <h3 className="font-serif text-2xl font-bold text-[#221C18]">
+                  <h3 className="font-serif text-2xl font-bold text-foreground">
                     {translateProduct(quickViewProduct)}
                   </h3>
-                  <p className="text-xs text-[#8C2B2B] font-semibold mt-0.5">
+                  <p className="text-xs text-primary font-semibold mt-0.5">
                     {translateCategory(quickViewProduct.category)}
                   </p>
-                  <p className="font-serif text-xl font-bold text-[#221C18] mt-3">
+                  <p className="font-serif text-xl font-bold text-primary mt-3">
                     {formatPrice(quickViewProduct.price)}
                   </p>
-                  <p className="text-xs text-[#655B53] mt-3 leading-relaxed">
+                  <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
                     {translateDescription(quickViewProduct) || "Every piece is crafted entirely by hand using ancestral techniques without industrial stamping."}
                   </p>
                 </div>
@@ -1517,13 +1517,13 @@ export default function Marketplace() {
                       handleAddToCart(quickViewProduct);
                       setQuickViewProduct(null);
                     }}
-                    className="w-full py-3 bg-[#701D24] hover:bg-[#8C2B2B] text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3 bg-[#701D24] dark:bg-[#A04328] hover:opacity-90 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition-colors flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <ShoppingBag className="w-4 h-4" /> {t('home.addToCollectionBag') || "Add to Collection Bag"}
                   </button>
                   <Link
                     href={`/product/${quickViewProduct.id}`}
-                    className="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-[#221C18] rounded-xl text-xs font-semibold tracking-wider uppercase text-center block transition-colors"
+                    className="w-full py-2.5 bg-secondary hover:bg-secondary/80 text-foreground rounded-xl text-xs font-semibold tracking-wider uppercase text-center block transition-colors"
                   >
                     {t('home.viewCompleteDetails') || "View Complete Artifact Details"}
                   </Link>
@@ -1537,17 +1537,17 @@ export default function Marketplace() {
       {/* ================= MODAL 2: ARTISAN STORY ================= */}
       {artisanStory && (
         <div className="fixed inset-0 glass-backdrop z-50 flex items-center justify-center p-4">
-          <div className="bg-[#FAF7F2] rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-[#C59B4B] relative animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-card text-card-foreground rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-border relative animate-in fade-in zoom-in-95 duration-200">
             <button
               type="button"
               onClick={() => setArtisanStory(null)}
-              className="absolute top-4 right-4 text-[#221C18] hover:text-[#701D24] p-1 cursor-pointer"
+              className="absolute top-4 right-4 text-foreground hover:text-primary p-1 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-4 mb-5">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#C59B4B] shrink-0">
+              <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-primary shrink-0">
                 <Image
                   src={artisanStory.img}
                   alt={artisanStory.name}
@@ -1557,24 +1557,24 @@ export default function Marketplace() {
                 />
               </div>
               <div>
-                <span className="text-[10px] font-bold text-[#701D24] uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-primary uppercase tracking-widest">
                   {artisanStory.location}
                 </span>
-                <h3 className="font-serif text-2xl font-bold text-[#221C18]">
+                <h3 className="font-serif text-2xl font-bold text-foreground">
                   {artisanStory.name}
                 </h3>
-                <p className="text-xs text-[#8C2B2B] font-medium">
+                <p className="text-xs text-primary font-medium">
                   {artisanStory.craft}
                 </p>
               </div>
             </div>
 
-            <div className="space-y-3 text-xs text-[#221C18]/80 leading-relaxed bg-white p-5 rounded-xl border border-[#E8DCCB]">
-              <h4 className="font-serif text-sm font-bold text-[#221C18]">
+            <div className="space-y-3 text-xs text-foreground/80 leading-relaxed bg-secondary/40 p-5 rounded-xl border border-border">
+              <h4 className="font-serif text-sm font-bold text-foreground">
                 The Master&apos;s Chronicle &amp; Craft Ethos
               </h4>
               <p>{artisanStory.bio}</p>
-              <p className="text-[#655B53]">
+              <p className="text-muted-foreground">
                 All raw materials are gathered locally without chemical adulterants. Every acquisition guarantees sustainable livelihood support directly to the artisan family.
               </p>
             </div>
@@ -1582,14 +1582,14 @@ export default function Marketplace() {
             <div className="mt-6 flex items-center justify-between">
               <Link
                 href={`/shop?region=${encodeURIComponent(artisanStory.location)}`}
-                className="text-xs font-semibold text-[#701D24] hover:underline"
+                className="text-xs font-semibold text-primary hover:underline"
               >
                 Browse creations from {artisanStory.location}
               </Link>
               <button
                 type="button"
                 onClick={() => setArtisanStory(null)}
-                className="px-5 py-2.5 bg-[#221C18] text-white rounded-lg text-xs font-semibold uppercase tracking-wider cursor-pointer"
+                className="px-5 py-2.5 bg-foreground text-background rounded-lg text-xs font-semibold uppercase tracking-wider cursor-pointer"
               >
                 {t('home.closeBiography') || "Close Biography"}
               </button>
@@ -1601,53 +1601,53 @@ export default function Marketplace() {
       {/* ================= MODAL 3: ARTISAN GUILD INDUCTION (LIVE DB POST) ================= */}
       {artisanModalOpen && (
         <div className="fixed inset-0 glass-backdrop z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-[#C59B4B] relative animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-card text-card-foreground rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-border relative animate-in fade-in zoom-in-95 duration-200">
             <button
               type="button"
               onClick={() => setArtisanModalOpen(false)}
-              className="absolute top-4 right-4 text-[#221C18] hover:text-[#701D24] p-1 cursor-pointer"
+              className="absolute top-4 right-4 text-foreground hover:text-primary p-1 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="text-center mb-6">
-              <div className="w-12 h-12 bg-[#F3EDE2] rounded-full flex items-center justify-center mx-auto mb-2 text-[#8C2B2B]">
+              <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-2 text-primary">
                 <Sparkles className="w-6 h-6" />
               </div>
-              <h3 className="font-serif text-2xl font-bold text-[#221C18]">Viraasat Artisan Guild Induction</h3>
-              <p className="text-xs text-[#655B53] mt-1">Direct application saved immediately into our national artisan registry.</p>
+              <h3 className="font-serif text-2xl font-bold text-foreground">Viraasat Artisan Guild Induction</h3>
+              <p className="text-xs text-muted-foreground mt-1">Direct application saved immediately into our national artisan registry.</p>
             </div>
 
             <form onSubmit={handleGuildApplication} className="space-y-4 text-left">
               <div>
-                <label className="block text-xs font-semibold text-[#221C18] mb-1">Master Artisan / Weaver Full Name *</label>
+                <label className="block text-xs font-semibold text-foreground mb-1">Master Artisan / Weaver Full Name *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Ustad Mansoor Ali"
                   value={appForm.fullName}
                   onChange={(e) => setAppForm({ ...appForm, fullName: e.target.value })}
-                  className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
+                  className="w-full text-base sm:text-xs p-3 rounded-lg border border-border bg-background text-foreground focus:border-primary focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#221C18] mb-1">Workshop / Guild Name</label>
+                  <label className="block text-xs font-semibold text-foreground mb-1">Workshop / Guild Name</label>
                   <input
                     type="text"
                     placeholder="e.g. Pashmina Heritage Guild"
                     value={appForm.workshopName}
                     onChange={(e) => setAppForm({ ...appForm, workshopName: e.target.value })}
-                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
+                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-border bg-background text-foreground focus:border-primary focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#221C18] mb-1">State / Cluster *</label>
+                  <label className="block text-xs font-semibold text-foreground mb-1">State / Cluster *</label>
                   <select
                     value={appForm.state}
                     onChange={(e) => setAppForm({ ...appForm, state: e.target.value })}
-                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none bg-white"
+                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-border bg-background text-foreground focus:border-primary focus:outline-none"
                   >
                     <option value="Rajasthan">Rajasthan</option>
                     <option value="Jammu and Kashmir">Jammu and Kashmir</option>
@@ -1663,55 +1663,55 @@ export default function Marketplace() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#221C18] mb-1">Email Address *</label>
+                  <label className="block text-xs font-semibold text-foreground mb-1">Email Address *</label>
                   <input
                     type="email"
                     required
                     placeholder="artisan@example.com"
                     value={appForm.email}
                     onChange={(e) => setAppForm({ ...appForm, email: e.target.value })}
-                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
+                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-border bg-background text-foreground focus:border-primary focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#221C18] mb-1">Phone / WhatsApp Number</label>
+                  <label className="block text-xs font-semibold text-foreground mb-1">Phone / WhatsApp Number</label>
                   <input
                     type="tel"
                     placeholder="+91 98765 43210"
                     value={appForm.phone}
                     onChange={(e) => setAppForm({ ...appForm, phone: e.target.value })}
-                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
+                    className="w-full text-base sm:text-xs p-3 rounded-lg border border-border bg-background text-foreground focus:border-primary focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#221C18] mb-1">Primary Craft Discipline *</label>
+                <label className="block text-xs font-semibold text-foreground mb-1">Primary Craft Discipline *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Bastar Dhokra Lost-Wax Metallurgy, Pashmina Weaving..."
                   value={appForm.craft}
                   onChange={(e) => setAppForm({ ...appForm, craft: e.target.value })}
-                  className="w-full text-base sm:text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
+                  className="w-full text-base sm:text-xs p-3 rounded-lg border border-border bg-background text-foreground focus:border-primary focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#221C18] mb-1">Ancestral Lineage / Craft Experience</label>
+                <label className="block text-xs font-semibold text-foreground mb-1">Ancestral Lineage / Craft Experience</label>
                 <textarea
                   rows={2}
                   placeholder="Mention generations in craft, national awards, or cooperative details..."
                   value={appForm.notes}
                   onChange={(e) => setAppForm({ ...appForm, notes: e.target.value })}
-                  className="w-full text-xs p-3 rounded-lg border border-[#E8DCCB] focus:border-[#C59B4B] focus:outline-none"
+                  className="w-full text-xs p-3 rounded-lg border border-border bg-background text-foreground focus:border-primary focus:outline-none"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmittingApp}
-                className="w-full py-3.5 bg-[#701D24] hover:bg-[#8C2B2B] disabled:opacity-50 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 bg-[#701D24] dark:bg-[#A04328] hover:opacity-90 disabled:opacity-50 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isSubmittingApp ? (
                   <>
