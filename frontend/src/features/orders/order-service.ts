@@ -39,7 +39,28 @@ export class OrderService {
   }
 
   static async getOrdersByBuyer(buyerId: string): Promise<Order[]> {
+    if (!buyerId) return [];
+
     try {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(buyerId);
+      let queryId = buyerId;
+
+      if (!isUuid) {
+        // Look up corresponding Supabase user UUID if buyerId is a Clerk user ID or email
+        const { data: userRow } = await supabase
+          .from('users')
+          .select('id')
+          .or(`email.eq.${buyerId},id.eq.${buyerId}`)
+          .maybeSingle();
+
+        if (userRow?.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userRow.id)) {
+          queryId = userRow.id;
+        } else {
+          // If no UUID exists in database, return empty array safely without Postgres syntax error
+          return [];
+        }
+      }
+
       const { data, error } = await supabase
         .from('orders')
         .select(`
@@ -55,7 +76,7 @@ export class OrderService {
             unit_price
           )
         `)
-        .eq('buyer_id', buyerId)
+        .eq('buyer_id', queryId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;

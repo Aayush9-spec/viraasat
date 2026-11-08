@@ -85,3 +85,14 @@ export const ArtisanApplicationSchema = z.object({
   bio: z.string().max(2000).optional(),
 });
 
+// Customer profile update schema
+export const CustomerProfileUpdateSchema = z.object({
+  firstName: z.string().min(1, 'First name is required').max(60),
+  lastName: z.string().max(60).optional().default(''),
+  phone: z.string().max(25).optional().default(''),
+  state: z.string().max(100).optional().default(''),
+  city: z.string().max(100).optional().default(''),
+  interests: z.array(z.string().max(100)).optional().default([]),
+  avatarUrl: z.string().url().or(z.string().startsWith('/')).optional().or(z.literal('')),
+});
+

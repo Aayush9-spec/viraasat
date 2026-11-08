@@ -56,20 +56,25 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
 
       let finalRole: UserRole | null = metaRole || 'buyer';
 
-      // Verify artisan status against database
-      if ((!finalRole || finalRole === 'buyer') && userEmail) {
+      // If the current role already satisfies allowedRoles, proceed immediately without extra network lookups
+      if (rolesArray.includes(finalRole)) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('viraasat_session_role', finalRole);
+          localStorage.setItem('viraasat_session_uid', user.id);
+        }
+        setIsAuthorized(true);
+        setCheckingAuth(false);
+        return;
+      }
+
+      // Verify artisan or admin status against Supabase user record if needed
+      if ((rolesArray.includes('artisan') || rolesArray.includes('admin')) && user.id) {
         try {
-          const res = await fetch('/api/users');
-          if (res.ok) {
-            const users = await res.json();
-            const matched = Array.isArray(users)
-              ? users.find((u: any) => u.email?.toLowerCase() === userEmail)
-              : null;
-            if (matched?.role === 'artisan') {
-              finalRole = 'artisan';
-            } else if (matched?.role === 'admin') {
-              finalRole = 'admin';
-            }
+          const userDoc = await getUser(user.id);
+          if (userDoc?.role === 'artisan') {
+            finalRole = 'artisan';
+          } else if (userDoc?.role === 'admin') {
+            finalRole = 'admin';
           }
         } catch {
           // non-fatal

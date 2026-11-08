@@ -38,7 +38,10 @@ import {
   Compass,
   Check,
   Share2,
+  Lock,
+  Loader2,
 } from 'lucide-react';
+import { validateName, validatePhoneNumber } from '@/lib/validation/name-validation';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -115,14 +118,14 @@ const INDIAN_STATES = [
 
 const CRAFT_PREFERENCES = [
   { id: 'blue-pottery', name: 'Jaipur Blue Pottery', region: 'Rajasthan', icon: '🏺' },
-  { id: 'banarasi-silk', name: 'Banarasi Brocade & Silk', region: 'Varanasi, UP', icon: '🧵' },
+  { id: 'banarasi-silk', name: 'Banarasi Brocade & Silk', region: 'Varanasi, Uttar Pradesh', icon: '🧵' },
   { id: 'bastar-dhokra', name: 'Bastar Lost-Wax Dhokra', region: 'Chhattisgarh', icon: '🐂' },
   { id: 'madhubani-art', name: 'Mithila Madhubani Art', region: 'Bihar', icon: '🎨' },
-  { id: 'pashmina-shawl', name: 'Kashmiri Sozni Pashmina', region: 'Kashmir', icon: '🧣' },
-  { id: 'channapatna-toys', name: 'Channapatna Lacquerware', region: 'Karnataka', icon: '🪵' },
-  { id: 'kutch-rogan', name: 'Kutch Rogan & Ajrakh', region: 'Gujarat', icon: '✨' },
-  { id: 'tanjore-gold', name: 'Tanjore 24k Gold Foil', region: 'Tamil Nadu', icon: '🖼️' },
-  { id: 'terracotta-craft', name: 'Bankura Terracotta', region: 'West Bengal', icon: '🪔' },
+  { id: 'pashmina-shawl', name: 'Kashmiri Sozni Pashmina', region: 'Jammu and Kashmir', icon: '🧣' },
+  { id: 'channapatna-toys', name: 'Channapatna Lacquerware Toys', region: 'Karnataka', icon: '🪵' },
+  { id: 'kutch-rogan', name: 'Kutch Rogan & Ajrakh Printing', region: 'Gujarat', icon: '✨' },
+  { id: 'tanjore-gold', name: 'Tanjore 24k Gold Foil Painting', region: 'Tamil Nadu', icon: '🖼️' },
+  { id: 'terracotta-craft', name: 'Bankura Terracotta Craft', region: 'West Bengal', icon: '🪔' },
 ];
 
 export interface SavedAddress {
@@ -625,36 +628,127 @@ function CustomerDashboardContent() {
     'Banarasi Brocade & Silk',
     'Bastar Lost-Wax Dhokra',
   ]);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [profileErrors, setProfileErrors] = useState<{
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+  }>({});
+  const [savedProfileSnapshot, setSavedProfileSnapshot] = useState<{
+    firstName: string;
+    lastName: string;
+    phone: string;
+    state: string;
+    city: string;
+    interests: string[];
+  }>({
+    firstName: '',
+    lastName: '',
+    phone: '',
+    state: 'Rajasthan',
+    city: '',
+    interests: [
+      'Jaipur Blue Pottery',
+      'Banarasi Brocade & Silk',
+      'Bastar Lost-Wax Dhokra',
+    ],
+  });
 
   useEffect(() => {
-    if (user) {
-      setProfileFirstName(user.firstName || '');
-      setProfileLastName(user.lastName || '');
+    if (!user) return;
+    let isMounted = true;
 
-      const meta = user.unsafeMetadata as Record<string, any> | undefined;
-      if (meta?.phone) setProfilePhone(String(meta.phone));
-      if (Array.isArray(meta?.interests) && meta.interests.length > 0) {
-        setSelectedInterests(meta.interests);
-      }
+    const initialFirst = user.firstName || '';
+    const initialLast = user.lastName || '';
+    setProfileFirstName(initialFirst);
+    setProfileLastName(initialLast);
 
-      if (typeof window !== 'undefined') {
-        try {
-          const rawAddr = localStorage.getItem('customer_shipping_address');
-          if (rawAddr) {
-            const parsed = JSON.parse(rawAddr);
-            if (parsed.city) setProfileCity(parsed.city);
-            if (parsed.stateName) setProfileState(parsed.stateName);
-            if (parsed.phone) setProfilePhone(parsed.phone);
+    const meta = user.unsafeMetadata as Record<string, any> | undefined;
+    const initialPhone = meta?.phone ? String(meta.phone) : '';
+    const initialInterests =
+      Array.isArray(meta?.interests) && meta.interests.length > 0
+        ? meta.interests
+        : [
+            'Jaipur Blue Pottery',
+            'Banarasi Brocade & Silk',
+            'Bastar Lost-Wax Dhokra',
+          ];
+    const initialState = meta?.state ? String(meta.state) : 'Rajasthan';
+    const initialCity = meta?.city ? String(meta.city) : '';
+
+    if (initialPhone) setProfilePhone(initialPhone);
+    if (initialInterests.length > 0) setSelectedInterests(initialInterests);
+    if (initialState) setProfileState(initialState);
+    if (initialCity) setProfileCity(initialCity);
+
+    setSavedProfileSnapshot({
+      firstName: initialFirst,
+      lastName: initialLast,
+      phone: initialPhone,
+      state: initialState,
+      city: initialCity,
+      interests: initialInterests,
+    });
+
+    if (typeof window !== 'undefined') {
+      try {
+        const rawAddr = localStorage.getItem('customer_shipping_address');
+        if (rawAddr) {
+          const parsed = JSON.parse(rawAddr);
+          if (parsed.city) setProfileCity(parsed.city);
+          if (parsed.stateName) setProfileState(parsed.stateName);
+          if (parsed.phone) setProfilePhone(parsed.phone);
+        }
+        const rawPrefs = localStorage.getItem('customer_profile_preferences');
+        if (rawPrefs) {
+          const parsed = JSON.parse(rawPrefs);
+          if (Array.isArray(parsed.interests) && parsed.interests.length > 0) {
+            setSelectedInterests(parsed.interests);
           }
-          const rawPrefs = localStorage.getItem('customer_profile_preferences');
-          if (rawPrefs) {
-            const parsed = JSON.parse(rawPrefs);
-            if (Array.isArray(parsed.interests)) setSelectedInterests(parsed.interests);
+        }
+      } catch {}
+    }
+
+    // Fetch persisted profile from server/database
+    async function fetchDbProfile() {
+      try {
+        const res = await fetch('/api/users/profile');
+        if (res.ok) {
+          const json = await res.json();
+          const p = json?.data?.profile;
+          if (p && isMounted) {
+            if (p.firstName) setProfileFirstName(p.firstName);
+            if (p.lastName) setProfileLastName(p.lastName);
+            if (p.phone) setProfilePhone(p.phone);
+            if (p.state) setProfileState(p.state);
+            if (p.city) setProfileCity(p.city);
+            if (Array.isArray(p.interests) && p.interests.length > 0) {
+              setSelectedInterests(p.interests);
+            }
+            setSavedProfileSnapshot({
+              firstName: p.firstName || initialFirst,
+              lastName: p.lastName || initialLast,
+              phone: p.phone || initialPhone,
+              state: p.state || initialState,
+              city: p.city || initialCity,
+              interests:
+                Array.isArray(p.interests) && p.interests.length > 0
+                  ? p.interests
+                  : initialInterests,
+            });
           }
-        } catch {}
+        }
+      } catch {
+        // Fallback to memory & Clerk metadata
       }
     }
+
+    fetchDbProfile();
+
+    return () => {
+      isMounted = false;
+    };
   }, [user]);
 
   const toggleInterest = (craftName: string) => {
@@ -663,19 +757,74 @@ function CustomerDashboardContent() {
     );
   };
 
+  const handleCancelEditProfile = () => {
+    setProfileFirstName(savedProfileSnapshot.firstName);
+    setProfileLastName(savedProfileSnapshot.lastName);
+    setProfilePhone(savedProfileSnapshot.phone);
+    setProfileState(savedProfileSnapshot.state);
+    setProfileCity(savedProfileSnapshot.city);
+    setSelectedInterests(savedProfileSnapshot.interests);
+    setProfileErrors({});
+    setIsEditingProfile(false);
+  };
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+
+    // Validate First Name (required, alphabetic, preserving actual order)
+    const firstCheck = validateName(profileFirstName, 'First Name', true);
+    // Validate Last Name (optional, alphabetic, preserving actual order)
+    const lastCheck = validateName(profileLastName, 'Last Name', false);
+    // Validate Phone Number (supporting Indian +91 & international)
+    const phoneCheck = validatePhoneNumber(profilePhone, false);
+
+    const newErrors: { firstName?: string; lastName?: string; phone?: string } = {};
+    if (!firstCheck.isValid) newErrors.firstName = firstCheck.error;
+    if (!lastCheck.isValid) newErrors.lastName = lastCheck.error;
+    if (!phoneCheck.isValid) newErrors.phone = phoneCheck.error;
+
+    if (Object.keys(newErrors).length > 0) {
+      setProfileErrors(newErrors);
+      toast({
+        title: 'Validation Error',
+        description: Object.values(newErrors)[0] || 'Please correct the highlighted fields.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setProfileErrors({});
     setIsSavingProfile(true);
 
     try {
+      // 1. Submit to server API for database persistence in Supabase
+      const res = await fetch('/api/users/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: firstCheck.value,
+          lastName: lastCheck.value,
+          phone: phoneCheck.value,
+          state: profileState,
+          city: profileCity.trim(),
+          interests: selectedInterests,
+        }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || 'Server rejected profile update.');
+      }
+
+      // 2. Synchronize with Clerk client-side session & metadata
       if (typeof user.update === 'function') {
         await user.update({
-          firstName: profileFirstName.trim(),
-          lastName: profileLastName.trim(),
+          firstName: firstCheck.value,
+          lastName: lastCheck.value,
           unsafeMetadata: {
             ...user.unsafeMetadata,
-            phone: profilePhone.trim(),
+            phone: phoneCheck.value,
             interests: selectedInterests,
             city: profileCity.trim(),
             state: profileState,
@@ -683,16 +832,39 @@ function CustomerDashboardContent() {
         });
       }
 
+      // 3. Update local caches
       if (typeof window !== 'undefined') {
         localStorage.setItem(
           'customer_profile_preferences',
           JSON.stringify({ interests: selectedInterests })
         );
+        localStorage.setItem(
+          'customer_shipping_address',
+          JSON.stringify({
+            city: profileCity.trim(),
+            stateName: profileState,
+            phone: phoneCheck.value,
+          })
+        );
       }
+
+      // 4. Update snapshot and exit edit mode
+      setProfileFirstName(firstCheck.value);
+      setProfileLastName(lastCheck.value);
+      setProfilePhone(phoneCheck.value);
+      setSavedProfileSnapshot({
+        firstName: firstCheck.value,
+        lastName: lastCheck.value,
+        phone: phoneCheck.value,
+        state: profileState,
+        city: profileCity.trim(),
+        interests: selectedInterests,
+      });
+      setIsEditingProfile(false);
 
       toast({
         title: 'Profile Updated ✨',
-        description: 'Your customer credentials and heritage craft preferences have been updated.',
+        description: 'Your profile has been updated successfully.',
       });
     } catch (err: any) {
       toast({
@@ -1866,13 +2038,56 @@ function CustomerDashboardContent() {
             {/* ================= TAB 7: PROFILE SETTINGS ================= */}
             {activeTab === 'profile' && (
               <div className="space-y-6 animate-in fade-in duration-300">
-                <div>
-                  <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#701D24] dark:text-[#E8CA82]">
-                    Profile & Craft Preferences
-                  </h2>
-                  <p className="text-xs sm:text-sm text-stone-500">
-                    Personalize your artisan collector profile and craft recommendations.
-                  </p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#701D24] dark:text-[#E8CA82]">
+                      Profile & Craft Preferences
+                    </h2>
+                    <p className="text-xs sm:text-sm text-stone-500">
+                      Personalize your profile and craft recommendations.
+                    </p>
+                  </div>
+
+                  {!isEditingProfile ? (
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setIsEditingProfile(true);
+                        setProfileErrors({});
+                      }}
+                      className="rounded-full bg-[#701D24] hover:bg-[#8C2B2B] text-white font-bold text-xs px-5 shadow-sm w-fit flex items-center gap-1.5"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      Edit Profile
+                    </Button>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleCancelEditProfile}
+                        disabled={isSavingProfile}
+                        className="rounded-full border-[#E8DCCB] dark:border-stone-800 text-xs px-4"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={handleSaveProfile}
+                        disabled={isSavingProfile}
+                        className="rounded-full bg-[#701D24] hover:bg-[#8C2B2B] text-white font-bold text-xs px-6 shadow-sm flex items-center gap-1.5"
+                      >
+                        {isSavingProfile ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          'Save Changes'
+                        )}
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 <form onSubmit={handleSaveProfile} className="space-y-6">
@@ -1882,86 +2097,187 @@ function CustomerDashboardContent() {
                       <Avatar className="h-16 w-16 border-2 border-[#C59B4B] shadow-sm">
                         <AvatarImage src={user?.imageUrl} alt={user?.fullName || 'Collector'} />
                         <AvatarFallback className="bg-[#701D24] text-white font-serif font-bold text-xl">
-                          {user?.firstName?.[0] || 'V'}
+                          {profileFirstName?.[0] || user?.firstName?.[0] || 'V'}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <h4 className="font-serif font-bold text-lg text-[#221C18] dark:text-[#FAF7F2]">
-                          {user?.fullName || 'Art Connoisseur'}
+                      <div className="min-w-0">
+                        <h4 className="font-serif font-bold text-lg text-[#221C18] dark:text-[#FAF7F2] truncate">
+                          {[profileFirstName, profileLastName].filter(Boolean).join(' ') ||
+                            user?.fullName ||
+                            'Art Connoisseur'}
                         </h4>
-                        <p className="text-xs text-stone-500">{user?.primaryEmailAddress?.emailAddress}</p>
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-stone-500 mt-0.5">
+                          <span>{user?.primaryEmailAddress?.emailAddress || 'No email registered'}</span>
+                          <span className="inline-flex items-center gap-1 text-[10px] text-stone-400 font-medium bg-stone-100 dark:bg-stone-900 px-2 py-0.5 rounded-full border border-stone-200 dark:border-stone-800">
+                            <Lock className="w-2.5 h-2.5" /> Managed by Clerk • Read-only
+                          </span>
+                        </div>
                         <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold uppercase tracking-wider text-[#C59B4B]">
                           <ShieldCheck className="w-3 h-3" /> Registered Customer Patron
                         </span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="prof-fn" className="text-xs font-bold text-stone-700 dark:text-stone-300">
-                          First Name
-                        </Label>
-                        <Input
-                          id="prof-fn"
-                          value={profileFirstName}
-                          onChange={(e) => setProfileFirstName(e.target.value)}
-                          className="bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label htmlFor="prof-ln" className="text-xs font-bold text-stone-700 dark:text-stone-300">
-                          Last Name
-                        </Label>
-                        <Input
-                          id="prof-ln"
-                          value={profileLastName}
-                          onChange={(e) => setProfileLastName(e.target.value)}
-                          className="bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs"
-                        />
-                      </div>
-                    </div>
+                    {/* View Mode Fields */}
+                    {!isEditingProfile ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="p-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] dark:border-stone-800">
+                          <p className="text-[10px] uppercase font-bold text-stone-500 tracking-wider">
+                            First Name
+                          </p>
+                          <p className="text-sm font-semibold text-[#221C18] dark:text-[#FAF7F2] mt-1">
+                            {profileFirstName || '—'}
+                          </p>
+                        </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="prof-ph" className="text-xs font-bold text-stone-700 dark:text-stone-300">
-                          Contact Phone Number
-                        </Label>
-                        <Input
-                          id="prof-ph"
-                          placeholder="+91 98765 43210"
-                          value={profilePhone}
-                          onChange={(e) => setProfilePhone(e.target.value)}
-                          className="bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs"
-                        />
-                      </div>
+                        <div className="p-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] dark:border-stone-800">
+                          <p className="text-[10px] uppercase font-bold text-stone-500 tracking-wider">
+                            Last Name
+                          </p>
+                          <p className="text-sm font-semibold text-[#221C18] dark:text-[#FAF7F2] mt-1">
+                            {profileLastName || '—'}
+                          </p>
+                        </div>
 
-                      <div className="space-y-1.5">
-                        <Label htmlFor="prof-st" className="text-xs font-bold text-stone-700 dark:text-stone-300">
-                          Home State / Region
-                        </Label>
-                        <Select value={profileState} onValueChange={setProfileState}>
-                          <SelectTrigger id="prof-st" className="bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs">
-                            <SelectValue placeholder="Select State" />
-                          </SelectTrigger>
-                          <SelectContent className="max-h-64">
-                            {INDIAN_STATES.map((st) => (
-                              <SelectItem key={st} value={st}>{st}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div className="p-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] dark:border-stone-800">
+                          <p className="text-[10px] uppercase font-bold text-stone-500 tracking-wider">
+                            Contact Phone Number
+                          </p>
+                          <p className="text-sm font-semibold text-[#221C18] dark:text-[#FAF7F2] mt-1 font-mono">
+                            {profilePhone || 'Not provided'}
+                          </p>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] dark:border-stone-800">
+                          <p className="text-[10px] uppercase font-bold text-stone-500 tracking-wider">
+                            Home State / Region
+                          </p>
+                          <p className="text-sm font-semibold text-[#221C18] dark:text-[#FAF7F2] mt-1">
+                            {profileState || 'Not selected'}
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      /* Edit Mode Form Inputs */
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <Label htmlFor="prof-fn" className="text-xs font-bold text-stone-700 dark:text-stone-300">
+                              First Name <span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                              id="prof-fn"
+                              placeholder="e.g. Aayush"
+                              value={profileFirstName}
+                              onChange={(e) => {
+                                setProfileFirstName(e.target.value);
+                                if (profileErrors.firstName) {
+                                  setProfileErrors((prev) => ({ ...prev, firstName: undefined }));
+                                }
+                              }}
+                              className={cn(
+                                'bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs transition-colors',
+                                profileErrors.firstName && 'border-red-500 focus-visible:ring-red-500'
+                              )}
+                            />
+                            {profileErrors.firstName && (
+                              <p className="text-[11px] text-red-500 font-medium flex items-center gap-1 mt-1">
+                                <AlertCircle className="w-3 h-3 shrink-0" />
+                                {profileErrors.firstName}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <Label htmlFor="prof-ln" className="text-xs font-bold text-stone-700 dark:text-stone-300">
+                              Last Name
+                            </Label>
+                            <Input
+                              id="prof-ln"
+                              placeholder="e.g. Kumar Singh"
+                              value={profileLastName}
+                              onChange={(e) => {
+                                setProfileLastName(e.target.value);
+                                if (profileErrors.lastName) {
+                                  setProfileErrors((prev) => ({ ...prev, lastName: undefined }));
+                                }
+                              }}
+                              className={cn(
+                                'bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs transition-colors',
+                                profileErrors.lastName && 'border-red-500 focus-visible:ring-red-500'
+                              )}
+                            />
+                            {profileErrors.lastName && (
+                              <p className="text-[11px] text-red-500 font-medium flex items-center gap-1 mt-1">
+                                <AlertCircle className="w-3 h-3 shrink-0" />
+                                {profileErrors.lastName}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <Label htmlFor="prof-ph" className="text-xs font-bold text-stone-700 dark:text-stone-300">
+                              Contact Phone Number
+                            </Label>
+                            <Input
+                              id="prof-ph"
+                              placeholder="+91 98765 43210"
+                              value={profilePhone}
+                              onChange={(e) => {
+                                setProfilePhone(e.target.value);
+                                if (profileErrors.phone) {
+                                  setProfileErrors((prev) => ({ ...prev, phone: undefined }));
+                                }
+                              }}
+                              className={cn(
+                                'bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs transition-colors',
+                                profileErrors.phone && 'border-red-500 focus-visible:ring-red-500'
+                              )}
+                            />
+                            {profileErrors.phone && (
+                              <p className="text-[11px] text-red-500 font-medium flex items-center gap-1 mt-1">
+                                <AlertCircle className="w-3 h-3 shrink-0" />
+                                {profileErrors.phone}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <Label htmlFor="prof-st" className="text-xs font-bold text-stone-700 dark:text-stone-300">
+                              Home State / Region
+                            </Label>
+                            <Select value={profileState} onValueChange={setProfileState}>
+                              <SelectTrigger id="prof-st" className="bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs">
+                                <SelectValue placeholder="Select State" />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-64">
+                                {INDIAN_STATES.map((st) => (
+                                  <SelectItem key={st} value={st}>{st}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </Card>
 
                   {/* Craft Preferences Card */}
                   <Card className="bg-white dark:bg-[#221C18] border border-[#E8DCCB] dark:border-stone-800 rounded-3xl p-6 shadow-sm space-y-4">
-                    <div>
-                      <CardTitle className="font-serif text-lg text-[#701D24] dark:text-[#E8CA82]">
-                        Heritage Craft Interests
-                      </CardTitle>
-                      <CardDescription className="text-xs">
-                        Select traditions you love to receive tailored exhibition alerts and rare drop notifications.
-                      </CardDescription>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                      <div>
+                        <CardTitle className="font-serif text-lg text-[#701D24] dark:text-[#E8CA82]">
+                          Heritage Craft Interests
+                        </CardTitle>
+                        <CardDescription className="text-xs">
+                          Select traditions you love to receive tailored exhibition alerts and rare drop notifications.
+                        </CardDescription>
+                      </div>
+                      <Badge variant="outline" className="w-fit text-[10px] font-semibold text-[#701D24] dark:text-[#E8CA82] border-[#C59B4B]/40">
+                        {selectedInterests.length} selected
+                      </Badge>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
@@ -1995,15 +2311,33 @@ function CustomerDashboardContent() {
                     </div>
                   </Card>
 
-                  <div className="flex items-center justify-end gap-3">
-                    <Button
-                      type="submit"
-                      disabled={isSavingProfile}
-                      className="rounded-full bg-[#701D24] hover:bg-[#8C2B2B] text-white font-bold text-xs px-8 shadow-md"
-                    >
-                      {isSavingProfile ? 'Saving Changes...' : 'Save Profile Preferences'}
-                    </Button>
-                  </div>
+                  {isEditingProfile && (
+                    <div className="flex items-center justify-end gap-3 pt-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleCancelEditProfile}
+                        disabled={isSavingProfile}
+                        className="rounded-full border-[#E8DCCB] dark:border-stone-800 text-xs px-6"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={isSavingProfile}
+                        className="rounded-full bg-[#701D24] hover:bg-[#8C2B2B] text-white font-bold text-xs px-8 shadow-md flex items-center gap-1.5"
+                      >
+                        {isSavingProfile ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            Saving Changes...
+                          </>
+                        ) : (
+                          'Save Changes'
+                        )}
+                      </Button>
+                    </div>
+                  )}
                 </form>
               </div>
             )}
