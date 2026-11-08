@@ -183,11 +183,11 @@ export default function ProductCard({
               </div>
 
               {/* Craft Attributes: Materials and Time */}
-              <div className="mt-2.5 flex items-center gap-1.5 flex-wrap text-[10px] text-muted-foreground">
-                <span className="px-2 py-0.5 rounded-full bg-secondary border border-border font-medium truncate max-w-[150px]">
+              <div className="mt-2.5 flex items-center gap-1.5 flex-wrap text-[10px]">
+                <span className="px-2 py-0.5 rounded-full bg-secondary border border-border font-medium text-foreground/85 truncate max-w-[150px]">
                   {translateCategory(product.category) || 'Handcrafted'}
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-secondary border border-border font-medium">
+                <span className="px-2 py-0.5 rounded-full bg-secondary border border-border font-medium text-foreground/85">
                   {craftDuration}
                 </span>
               </div>

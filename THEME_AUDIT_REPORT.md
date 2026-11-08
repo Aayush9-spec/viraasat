@@ -114,3 +114,4 @@ Semantic theme classes (`bg-background`, `bg-card`, `bg-secondary`, `border-bord
 - **Never rely on media queries when supporting a manual theme switcher in Tailwind v4**: Always specify `@custom-variant dark (&:where(.dark, .dark *));`.
 - **Use HSL CSS Variables**: Enables smooth theme transitions with zero runtime CSS-in-JS overhead.
 - **Consistent Storage Key**: `viraasat-theme` is synchronized across SSR and client-side hydration with `suppressHydrationWarning`.
+

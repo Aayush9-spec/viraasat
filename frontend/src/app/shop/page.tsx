@@ -500,7 +500,7 @@ function ShopPageContent() {
                     {translateRegion(region)}
                   </span>
                 </div>
-                <span className="text-[9.5px] text-accent font-medium truncate max-w-[130px]" title={tag}>
+                <span className="text-[10px] text-accent font-semibold truncate max-w-[130px]" title={tag}>
                   {tag}
                 </span>
               </label>

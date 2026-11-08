@@ -68,11 +68,11 @@
     /* Secondary background: #F0EAE0 */
     --secondary: 38 35% 91%;
     --secondary-foreground: 24 14% 14%;
-    /* Muted background & text: #F0EAE0 & #756B61 */
+    /* Muted background & text: #F0EAE0 & #63574D (WCAG AA accessible >= 5.8:1 on #F0EAE0 and white) */
     --muted: 38 30% 90%;
-    --muted-foreground: 30 9% 42%;
-    /* Accent: Antique gold #B18A45 */
-    --accent: 38 44% 48%;
+    --muted-foreground: 28 12% 35%;
+    /* Accent: Deep antique bronze gold #7A5514 (WCAG AA accessible >= 6.8:1 on white) */
+    --accent: 38 72% 28%;
     --accent-foreground: 40 33% 97%;
     /* Destructive: Accessible red */
     --destructive: 0 74% 45%;
@@ -105,9 +105,9 @@
     /* Muted background & text: #28211C & #A89F91 */
     --muted: 24 17% 13%;
     --muted-foreground: 36 12% 61%;
-    /* Accent: Warm terracotta #A04328 */
-    --accent: 13 60% 39%;
-    --accent-foreground: 40 33% 96%;
+    /* Accent: Antique light gold #E8CA82 (WCAG AA accessible >= 7:1 on dark #1E1815) */
+    --accent: 42 70% 71%;
+    --accent-foreground: 24 22% 7%;
     /* Destructive */
     --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 98%;
