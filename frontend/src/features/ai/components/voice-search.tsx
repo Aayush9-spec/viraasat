@@ -184,7 +184,7 @@ export default function VoiceSearch() {
           type="search"
           placeholder={t('nav.searchPlaceholder') || "Search heritage..."}
           aria-label={t('nav.searchAria') || "Search authentic handicrafts"}
-          className="pr-16 h-9 bg-background/80 border-input rounded-full focus:ring-primary focus:border-primary text-base sm:text-sm text-foreground placeholder:text-muted-foreground shadow-sm transition-all"
+          className="pr-16 h-9 bg-background/80 border-input rounded-full focus:ring-primary focus:border-primary text-base md:text-sm text-foreground placeholder:text-muted-foreground shadow-sm transition-all"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -329,7 +329,7 @@ export default function VoiceSearch() {
                 value={editableVoiceText}
                 onChange={(e) => setEditableVoiceText(e.target.value)}
                 placeholder="Spoken words will appear here in real time..."
-                className="text-base sm:text-sm bg-muted/30 pr-10 focus:ring-primary"
+                className="text-base md:text-sm bg-muted/30 pr-10 focus:ring-primary"
                 onKeyDown={(e) => e.key === 'Enter' && executeSearch(editableVoiceText)}
               />
               {interimTranscript && (

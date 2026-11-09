@@ -83,10 +83,11 @@ public class MainActivity extends Activity {
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setUseWideViewPort(true);
-        settings.setLoadWithOverviewMode(false);
-        settings.setSupportZoom(false);
-        settings.setBuiltInZoomControls(false);
+        settings.setLoadWithOverviewMode(true);
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
+        settings.setTextZoom(100);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setAllowContentAccess(true);
         settings.setAllowFileAccess(false);

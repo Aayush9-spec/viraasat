@@ -585,7 +585,7 @@ export default function AdminDashboardPage() {
                         <Input
                           value={fraudForm.sellerId}
                           onChange={(e) => setFraudForm({ ...fraudForm, sellerId: e.target.value })}
-                          className="h-8 text-xs"
+                          className="h-9 text-base md:text-xs"
                         />
                       </div>
                       <div className="space-y-1">
@@ -593,7 +593,7 @@ export default function AdminDashboardPage() {
                         <Input
                           value={fraudForm.reviewerId}
                           onChange={(e) => setFraudForm({ ...fraudForm, reviewerId: e.target.value })}
-                          className="h-8 text-xs"
+                          className="h-9 text-base md:text-xs"
                         />
                       </div>
                     </div>
@@ -606,7 +606,7 @@ export default function AdminDashboardPage() {
                         max={5}
                         value={fraudForm.rating}
                         onChange={(e) => setFraudForm({ ...fraudForm, rating: Number(e.target.value) })}
-                        className="h-8 text-xs"
+                        className="h-9 text-base md:text-xs"
                       />
                     </div>
 
@@ -616,7 +616,7 @@ export default function AdminDashboardPage() {
                         rows={3}
                         value={fraudForm.reviewText}
                         onChange={(e) => setFraudForm({ ...fraudForm, reviewText: e.target.value })}
-                        className="text-xs"
+                        className="text-base md:text-xs"
                       />
                     </div>
 
@@ -725,7 +725,7 @@ export default function AdminDashboardPage() {
                           type="number"
                           value={userScoreInput.totalSpendInr}
                           onChange={(e) => setUserScoreInput({ ...userScoreInput, totalSpendInr: Number(e.target.value) })}
-                          className="h-7 text-xs"
+                          className="h-8 text-base md:text-xs"
                         />
                       </div>
                       <div className="space-y-1">
@@ -734,7 +734,7 @@ export default function AdminDashboardPage() {
                           type="number"
                           value={userScoreInput.purchaseCount}
                           onChange={(e) => setUserScoreInput({ ...userScoreInput, purchaseCount: Number(e.target.value) })}
-                          className="h-7 text-xs"
+                          className="h-8 text-base md:text-xs"
                         />
                       </div>
                       <div className="space-y-1">
@@ -744,7 +744,7 @@ export default function AdminDashboardPage() {
                           step={0.1}
                           value={userScoreInput.giAffinityPct}
                           onChange={(e) => setUserScoreInput({ ...userScoreInput, giAffinityPct: Number(e.target.value) })}
-                          className="h-7 text-xs"
+                          className="h-8 text-base md:text-xs"
                         />
                       </div>
                     </div>

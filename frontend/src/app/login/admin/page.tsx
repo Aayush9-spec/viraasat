@@ -161,7 +161,7 @@ function AdminLoginContent() {
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
                     placeholder="Enter secret administrator PIN"
-                    className="h-11 text-base sm:text-sm border-amber-500/40 focus-visible:ring-2 focus-visible:ring-amber-600 rounded-xl"
+                    className="h-11 text-base md:text-sm border-amber-500/40 focus-visible:ring-2 focus-visible:ring-amber-600 rounded-xl"
                     required
                     autoFocus
                   />

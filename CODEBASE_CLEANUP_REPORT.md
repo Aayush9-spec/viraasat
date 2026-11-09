@@ -151,3 +151,4 @@ Route (app): 80 static & dynamic routes compiled without errors.
 1. **Merge to Main**: The cleanup on `chore/codebase-cleanup` is verified, committed, and ready for merging into `main`.
 2. **Dependabot Maintenance**: With dead Astro and Vue templates removed, Dependabot security alerts for unreferenced sub-package.json files will automatically be resolved.
 3. **CI Run**: Push `chore/codebase-cleanup` to trigger clean automated testing across all matrix runners.
+

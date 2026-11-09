@@ -467,7 +467,7 @@ export function ReviewsSection({ product }: { product: Product }) {
                 required
                 minLength={5}
                 maxLength={2000}
-                className="bg-[#FAF7F2] border-[#E8DCCB] text-sm focus:border-[#C59B4B] leading-relaxed"
+                className="bg-[#FAF7F2] border-[#E8DCCB] text-base md:text-sm focus:border-[#C59B4B] leading-relaxed"
               />
             </div>
 
