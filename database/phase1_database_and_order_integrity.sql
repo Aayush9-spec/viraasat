@@ -138,3 +138,4 @@ CREATE POLICY "notifications_update_policy"
 GRANT ALL ON orders TO anon, authenticated, service_role;
 GRANT ALL ON order_items TO anon, authenticated, service_role;
 GRANT ALL ON notifications TO anon, authenticated, service_role;
+

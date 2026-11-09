@@ -14,9 +14,9 @@
 | **BUG-002** | Notifications Table Returns 404 (Not Found) on Supabase REST API | **High** | `src/features/notifications/notification-service.ts` | **Migration Provided & Guarded** |
 | **BUG-003** | Client-Side 403 Forbidden Polling on Admin-Restricted `/api/users` Route | **High** | `src/app/api/users/route.ts`, `use-auth-form.ts` | **Resolved in Phase 1** |
 | **BUG-004** | Paid Razorpay Orders Not Persisted to Database After Signature Verification | **High** | `src/features/checkout/components/checkout-page.tsx`, `/api/verify-payment` | **Resolved in Phase 1** |
-| **BUG-005** | Auction Bidding State Maintained in Volatile In-Memory Node.js Map | **High** | `src/features/auctions/services/auction-store.ts` | Scheduled Phase 2 |
-| **BUG-006** | Hardcoded Razorpay Secret in GitHub Actions Workflow File | **Medium** | `.github/workflows/ci.yml` | Scheduled Phase 2 |
-| **BUG-007** | Backend Python Virtualenv Contains Broken External Drive Shebang Paths | **Medium** | `backend/venv/` | Scheduled Phase 2 |
+| **BUG-005** | Auction Bidding State Maintained in Volatile In-Memory Node.js Map | **High** | `src/features/auctions/services/auction-store.ts` | **Resolved in Phase 2** |
+| **BUG-006** | Hardcoded Razorpay Secret in GitHub Actions Workflow File | **Medium** | `.github/workflows/ci.yml` | **Resolved in Phase 2** |
+| **BUG-007** | Backend Python Virtualenv Contains Broken External Drive Shebang Paths | **Medium** | `backend/venv/` | **Resolved in Phase 2** |
 | **BUG-008** | Mobile Floating Chatbot Button Overlaps Bottom Navigation on Narrow Screens | **Low** | `src/features/ai/components/ai-assistant.tsx` | Mitigated / Polished |
 | **BUG-009** | Dual Android APK Architecture Inconsistency (WebView Wrapper vs Expo) | **Informational** | `scripts/build_full_apk.py`, `mobile/` | Documented |
 

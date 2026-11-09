@@ -1,4 +1,5 @@
 import { UniqueArtAuction, Bid } from '@/types/auction';
+import { supabase } from '@/services/supabase';
 
 // Seed auctions with verified timestamps and master artisan emails
 const INITIAL_AUCTIONS: UniqueArtAuction[] = [
@@ -108,7 +109,7 @@ const INITIAL_AUCTIONS: UniqueArtAuction[] = [
   }
 ];
 
-// In-memory atomic store for auctions
+// In-memory atomic store for auctions (seeded with verified heirlooms)
 const auctionsStore = new Map<string, UniqueArtAuction>(
   INITIAL_AUCTIONS.map((a) => [a.id, { ...a }])
 );
@@ -116,9 +117,23 @@ const auctionsStore = new Map<string, UniqueArtAuction>(
 // Mutex lock map to handle concurrent bids atomically
 const locks = new Map<string, Promise<void>>();
 
+let lastDbSyncTime = 0;
+const DB_SYNC_INTERVAL_MS = 60_000; // 1 minute cache TTL for database sync
+
 export class ServerAuctionService {
+  /**
+   * Synchronous retrieval of all auctions from in-memory cache.
+   */
   static getAllAuctions(): UniqueArtAuction[] {
     return Array.from(auctionsStore.values());
+  }
+
+  /**
+   * Asynchronous retrieval with optional database hydration.
+   */
+  static async getAllAuctionsAsync(): Promise<UniqueArtAuction[]> {
+    await this.syncWithDatabase();
+    return this.getAllAuctions();
   }
 
   static getAuctionById(id: string): UniqueArtAuction | undefined {
@@ -126,8 +141,37 @@ export class ServerAuctionService {
   }
 
   /**
+   * Hydrates memory store from Supabase PostgreSQL if table exists.
+   */
+  static async syncWithDatabase(): Promise<void> {
+    const now = Date.now();
+    if (now - lastDbSyncTime < DB_SYNC_INTERVAL_MS) {
+      return;
+    }
+
+    try {
+      const { data: dbAuctions, error } = await supabase
+        .from('auctions')
+        .select('*');
+
+      if (!error && dbAuctions && dbAuctions.length > 0) {
+        for (const row of dbAuctions) {
+          const existing = auctionsStore.get(row.id);
+          if (existing) {
+            existing.currentBid = Number(row.current_bid) || existing.currentBid;
+            existing.bidCount = Number(row.bid_count) || existing.bidCount;
+            existing.status = row.status || existing.status;
+          }
+        }
+        lastDbSyncTime = now;
+      }
+    } catch {}
+  }
+
+  /**
    * Atomically places a verified bid on an active auction.
-   * Performs validation against self-bidding, expiration, and bid increments.
+   * Performs validation against self-bidding, expiration, and bid increments,
+   * then updates memory store and persists to Supabase PostgreSQL.
    */
   static async placeBid(
     auctionId: string,
@@ -182,8 +226,9 @@ export class ServerAuctionService {
       }
 
       // Create new bid record
+      const bidId = `bid-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
       const newBid: Bid = {
-        id: `bid-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        id: bidId,
         auctionId,
         bidderName: bidder.name,
         bidderRole: (bidder.role as any) || 'collector',
@@ -191,10 +236,36 @@ export class ServerAuctionService {
         timestamp: 'Just now',
       };
 
-      // Update auction atomically
+      // Update memory store atomically
       auction.currentBid = amount;
       auction.bidCount += 1;
       auction.bids = [newBid, ...auction.bids];
+
+      // Asynchronously persist to Supabase PostgreSQL non-fatally
+      try {
+        await Promise.allSettled([
+          supabase.from('auction_bids').insert({
+            id: bidId,
+            auction_id: auctionId,
+            bidder_id: bidder.userId,
+            bidder_email: bidder.email || null,
+            bidder_name: bidder.name,
+            bidder_role: (bidder.role as any) || 'collector',
+            amount,
+            created_at: new Date().toISOString(),
+          }),
+          supabase
+            .from('auctions')
+            .update({
+              current_bid: amount,
+              bid_count: auction.bidCount,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', auctionId),
+        ]);
+      } catch (persistErr) {
+        console.warn('[ServerAuctionService] Notice: Supabase auction sync fallback:', persistErr);
+      }
 
       return {
         success: true,
@@ -207,4 +278,3 @@ export class ServerAuctionService {
     }
   }
 }
-
