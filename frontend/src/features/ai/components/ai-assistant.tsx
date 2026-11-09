@@ -237,8 +237,8 @@ export function AIAssistant() {
     <div className={cn(
       "fixed z-[9999] transition-all duration-200",
       isOpen
-        ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] right-3 left-3 sm:left-auto sm:right-6 md:right-8 md:bottom-8 flex justify-end"
-        : "bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] right-4 sm:right-6 md:right-8 md:bottom-8"
+        ? "bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] right-3 left-3 sm:left-auto sm:right-6 md:right-8 md:bottom-8 flex justify-end"
+        : "bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] right-4 sm:right-6 md:right-8 md:bottom-8"
     )}>
       {isOpen ? (
         <Card className="w-full sm:w-[380px] md:w-[420px] max-w-[420px] h-[min(580px,calc(100dvh-6.5rem-env(safe-area-inset-bottom,0px)))] flex flex-col shadow-2xl border border-primary/20 rounded-2xl overflow-hidden bg-background animate-in fade-in zoom-in-95 duration-200">
