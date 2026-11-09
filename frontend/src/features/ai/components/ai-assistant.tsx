@@ -474,7 +474,7 @@ export function AIAssistant() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 disabled={isTyping}
-                className="rounded-lg border-primary/20 focus-visible:ring-primary/20 bg-background text-base sm:text-xs h-9"
+                className="rounded-lg border-primary/20 focus-visible:ring-primary/20 bg-background text-base md:text-sm h-9"
               />
               <Button
                 size="icon"

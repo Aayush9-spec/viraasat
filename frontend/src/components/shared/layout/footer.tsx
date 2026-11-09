@@ -45,7 +45,7 @@ export function Footer() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('footer.emailPlaceholder') || "Enter your email address"}
-              className="bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-base sm:text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#C59B4B] w-full sm:w-64"
+              className="bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-base md:text-sm text-white placeholder-white/50 focus:outline-none focus:border-[#C59B4B] w-full sm:w-64"
             />
             <button
               type="submit"

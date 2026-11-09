@@ -642,7 +642,7 @@ function ShopPageContent() {
               placeholder={t('marketplace.searchPlaceholder') || "Search by craft (Dhokra, Pashmina, Blue Pottery), artisan, or region..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-secondary border border-border rounded-xl py-2.5 pl-10 pr-9 text-base sm:text-xs text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full bg-secondary border border-border rounded-xl py-2.5 pl-10 pr-9 text-base md:text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
             {searchQuery && (
               <button

@@ -120,14 +120,20 @@
 }
 
 @layer base {
-  * {
+  *,
+  *::before,
+  *::after {
     border-color: hsl(var(--border));
+    touch-action: manipulation;
   }
 
   html {
     touch-action: manipulation;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 
   body {
@@ -135,24 +141,30 @@
     background-color: hsl(var(--background));
     font-family: var(--font-sans);
     overflow-x: hidden;
+    width: 100%;
     max-width: 100vw;
     touch-action: manipulation;
   }
 
-  /* Prevent accidental double-tap zoom while preserving pinch zoom & pan */
+  /* Prevent accidental double-tap zoom while preserving pinch zoom & pan across all interactive elements */
   button,
   a,
   input,
   select,
   textarea,
   [role="button"],
-  label {
+  label,
+  summary,
+  nav,
+  header,
+  footer {
     touch-action: manipulation;
   }
 
-  /* Prevent unwanted mobile focus auto-zoom on iOS Safari & Android WebView */
-  @media (max-width: 768px) {
-    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  /* Prevent unwanted mobile focus auto-zoom on iOS Safari, Chrome Mobile & Android WebView */
+  /* Applies to all touch/coarse pointer devices and screens up to 1024px (covers portrait + landscape mobile & tablets) */
+  @media (hover: none) and (pointer: coarse), (max-width: 1024px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
     textarea,
     select {
       font-size: 16px !important;

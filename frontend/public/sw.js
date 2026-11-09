@@ -5,7 +5,7 @@
 // `activate` evicts the old one. Combined with a `?v=<hash>` query string
 // on the registration URL, this guarantees users pick up the new SW cleanly.
 
-const CACHE_NAME = "viraasat-072940e1";
+const CACHE_NAME = "viraasat-9a8d2aab";
 /* CACHE_NAME_INJECTED */
 
 const PRECACHE_ASSETS = [

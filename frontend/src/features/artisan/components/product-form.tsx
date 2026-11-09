@@ -881,7 +881,7 @@ export function ProductForm({ product }: ProductFormProps) {
                         <FormItem>
                           <FormLabel className="text-[11px] font-medium text-amber-900">GI Registration / Tag No. (Optional)</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g. GI-APP-NO-124 (Jaipur Blue Pottery)" className="bg-white text-base sm:text-xs h-8" {...field} />
+                            <Input placeholder="e.g. GI-APP-NO-124 (Jaipur Blue Pottery)" className="bg-white text-base md:text-sm h-9" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -1366,7 +1366,7 @@ export function ProductForm({ product }: ProductFormProps) {
                             <FormItem>
                               <span className="text-[10px] text-muted-foreground">Length ({dimensionUnit})</span>
                               <FormControl>
-                                <Input type="number" step="0.5" className="text-xs h-8" {...field} />
+                                <Input type="number" step="0.5" className="text-base md:text-xs h-8" {...field} />
                               </FormControl>
                             </FormItem>
                           )}
@@ -1378,7 +1378,7 @@ export function ProductForm({ product }: ProductFormProps) {
                             <FormItem>
                               <span className="text-[10px] text-muted-foreground">Width ({dimensionUnit})</span>
                               <FormControl>
-                                <Input type="number" step="0.5" className="text-xs h-8" {...field} />
+                                <Input type="number" step="0.5" className="text-base md:text-xs h-8" {...field} />
                               </FormControl>
                             </FormItem>
                           )}
@@ -1390,7 +1390,7 @@ export function ProductForm({ product }: ProductFormProps) {
                             <FormItem>
                               <span className="text-[10px] text-muted-foreground">Height ({dimensionUnit})</span>
                               <FormControl>
-                                <Input type="number" step="0.5" className="text-xs h-8" {...field} />
+                                <Input type="number" step="0.5" className="text-base md:text-xs h-8" {...field} />
                               </FormControl>
                             </FormItem>
                           )}
@@ -1466,7 +1466,7 @@ export function ProductForm({ product }: ProductFormProps) {
                             <FormItem>
                               <span className="text-[10px] text-muted-foreground">Diameter ({dimensionUnit})</span>
                               <FormControl>
-                                <Input type="number" step="0.5" className="text-xs h-8" {...field} />
+                                <Input type="number" step="0.5" className="text-base md:text-xs h-8" {...field} />
                               </FormControl>
                             </FormItem>
                           )}
@@ -1478,7 +1478,7 @@ export function ProductForm({ product }: ProductFormProps) {
                             <FormItem>
                               <span className="text-[10px] text-muted-foreground">Height / Depth ({dimensionUnit})</span>
                               <FormControl>
-                                <Input type="number" step="0.5" className="text-xs h-8" {...field} />
+                                <Input type="number" step="0.5" className="text-base md:text-xs h-8" {...field} />
                               </FormControl>
                             </FormItem>
                           )}
@@ -1496,7 +1496,7 @@ export function ProductForm({ product }: ProductFormProps) {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input type="number" step="0.1" placeholder="1.0" className="text-base sm:text-xs h-8" {...field} />
+                              <Input type="number" step="0.1" placeholder="1.0" className="text-base md:text-xs h-8" {...field} />
                             </FormControl>
                           </FormItem>
                         )}

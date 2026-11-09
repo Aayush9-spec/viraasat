@@ -137,7 +137,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                     value={resetPassword}
                     onChange={(e) => setResetPassword(e.target.value)}
                     placeholder="Minimum 15 characters (e.g. secure passphrase)"
-                    className="h-11 sm:h-12 text-base sm:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+                    className="h-11 sm:h-12 text-base md:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
                     required
                   />
                   <p className="text-[11px] text-muted-foreground">
@@ -250,7 +250,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                       name="adminPin"
                       type="password"
                       placeholder="Enter secret administrator PIN"
-                      className="h-11 sm:h-12 text-base sm:text-sm border-amber-500/40 focus-visible:ring-2 focus-visible:ring-amber-600 rounded-xl bg-background"
+                      className="h-11 sm:h-12 text-base md:text-sm border-amber-500/40 focus-visible:ring-2 focus-visible:ring-amber-600 rounded-xl bg-background"
                       required
                     />
                     <p className="text-[11px] text-muted-foreground leading-tight">
@@ -267,7 +267,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                       id="fullname"
                       name="fullname"
                       placeholder={isArtisan ? 'e.g. Riya Sharma' : 'e.g. Priya Patel'}
-                      className="h-11 sm:h-12 text-base sm:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+                      className="h-11 sm:h-12 text-base md:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
                       required
                     />
                   </div>
@@ -284,7 +284,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                     value={inputEmail}
                     onChange={(e) => setInputEmail(e.target.value)}
                     placeholder={isArtisan ? "e.g. ART-2024-1234 or email@example.com" : "you@example.com"}
-                    className="h-11 sm:h-12 text-base sm:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+                    className="h-11 sm:h-12 text-base md:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
                     required
                   />
                 </div>
@@ -309,7 +309,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                     name="password"
                     type="password"
                     placeholder="••••••••"
-                    className="h-11 sm:h-12 text-base sm:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+                    className="h-11 sm:h-12 text-base md:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
                     required
                   />
                 </div>
@@ -325,7 +325,7 @@ export function LoginForm({ userType, initialIsSignUp = false }: LoginFormProps)
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="h-11 sm:h-12 text-base sm:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+                      className="h-11 sm:h-12 text-base md:text-sm border-input focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
                       required
                     />
                   </div>

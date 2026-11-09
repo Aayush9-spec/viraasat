@@ -1440,7 +1440,7 @@ function CustomerDashboardContent() {
                       placeholder="Search by order ID or craft..."
                       value={ordersSearch}
                       onChange={(e) => setOrdersSearch(e.target.value)}
-                      className="pl-9 bg-white dark:bg-[#221C18] border-[#E8DCCB] dark:border-stone-800 rounded-full text-xs"
+                      className="pl-9 bg-white dark:bg-[#221C18] border-[#E8DCCB] dark:border-stone-800 rounded-full text-base md:text-sm"
                     />
                   </div>
                 </div>
@@ -2179,7 +2179,7 @@ function CustomerDashboardContent() {
                                 }
                               }}
                               className={cn(
-                                'bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs transition-colors',
+                                'bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-base md:text-sm transition-colors',
                                 profileErrors.firstName && 'border-red-500 focus-visible:ring-red-500'
                               )}
                             />
@@ -2206,7 +2206,7 @@ function CustomerDashboardContent() {
                                 }
                               }}
                               className={cn(
-                                'bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs transition-colors',
+                                'bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-base md:text-sm transition-colors',
                                 profileErrors.lastName && 'border-red-500 focus-visible:ring-red-500'
                               )}
                             />
@@ -2235,7 +2235,7 @@ function CustomerDashboardContent() {
                                 }
                               }}
                               className={cn(
-                                'bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs transition-colors',
+                                'bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-base md:text-sm transition-colors',
                                 profileErrors.phone && 'border-red-500 focus-visible:ring-red-500'
                               )}
                             />
@@ -2252,7 +2252,7 @@ function CustomerDashboardContent() {
                               Home State / Region
                             </Label>
                             <Select value={profileState} onValueChange={setProfileState}>
-                              <SelectTrigger id="prof-st" className="bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-xs">
+                              <SelectTrigger id="prof-st" className="bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB] dark:border-stone-800 rounded-xl text-base md:text-sm">
                                 <SelectValue placeholder="Select State" />
                               </SelectTrigger>
                               <SelectContent className="max-h-64">
@@ -2470,7 +2470,7 @@ function CustomerDashboardContent() {
                     required
                     value={addressForm.fullName}
                     onChange={(e) => setAddressForm({ ...addressForm, fullName: e.target.value })}
-                    className="rounded-xl text-xs bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
+                    className="rounded-xl text-base md:text-sm bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -2481,7 +2481,7 @@ function CustomerDashboardContent() {
                     placeholder="+91 98765 43210"
                     value={addressForm.phone}
                     onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })}
-                    className="rounded-xl text-xs bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
+                    className="rounded-xl text-base md:text-sm bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
                   />
                 </div>
               </div>
@@ -2494,7 +2494,7 @@ function CustomerDashboardContent() {
                   placeholder="e.g. 42 Heritage Lane, C-Scheme"
                   value={addressForm.addressLine1}
                   onChange={(e) => setAddressForm({ ...addressForm, addressLine1: e.target.value })}
-                  className="rounded-xl text-xs bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
+                  className="rounded-xl text-base md:text-sm bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
                 />
               </div>
 
@@ -2505,7 +2505,7 @@ function CustomerDashboardContent() {
                   placeholder="Near City Palace"
                   value={addressForm.addressLine2}
                   onChange={(e) => setAddressForm({ ...addressForm, addressLine2: e.target.value })}
-                  className="rounded-xl text-xs bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
+                  className="rounded-xl text-base md:text-sm bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
                 />
               </div>
 
@@ -2517,7 +2517,7 @@ function CustomerDashboardContent() {
                     required
                     value={addressForm.city}
                     onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })}
-                    className="rounded-xl text-xs bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
+                    className="rounded-xl text-base md:text-sm bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
                   />
                 </div>
 
@@ -2527,7 +2527,7 @@ function CustomerDashboardContent() {
                     value={addressForm.state}
                     onValueChange={(val) => setAddressForm({ ...addressForm, state: val })}
                   >
-                    <SelectTrigger id="addr-state" className="rounded-xl text-xs bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]">
+                    <SelectTrigger id="addr-state" className="rounded-xl text-base md:text-sm bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]">
                       <SelectValue placeholder="State" />
                     </SelectTrigger>
                     <SelectContent className="max-h-56">
@@ -2547,7 +2547,7 @@ function CustomerDashboardContent() {
                     placeholder="302001"
                     value={addressForm.zipCode}
                     onChange={(e) => setAddressForm({ ...addressForm, zipCode: e.target.value.replace(/\D/g, '') })}
-                    className="rounded-xl text-xs bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
+                    className="rounded-xl text-base md:text-sm bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
                   />
                 </div>
               </div>
@@ -2646,7 +2646,7 @@ function CustomerDashboardContent() {
                   placeholder="e.g. Masterful handloom weave, incredible color"
                   value={reviewForm.title}
                   onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
-                  className="rounded-xl text-xs bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
+                  className="rounded-xl text-base md:text-sm bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
                 />
               </div>
 
@@ -2659,7 +2659,7 @@ function CustomerDashboardContent() {
                   placeholder="Detail your appreciation of the craft, texture, packaging, or heritage note..."
                   value={reviewForm.comment}
                   onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                  className="rounded-xl text-xs bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
+                  className="rounded-xl text-base md:text-sm bg-[#FAF7F2] dark:bg-[#2A231F] border-[#E8DCCB]"
                 />
               </div>
 
