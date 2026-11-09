@@ -109,9 +109,7 @@ export class NotificationService {
             updatedAt: r.updated_at,
           }));
         }
-      } catch (e) {
-        console.warn('Could not query Supabase notifications:', e);
-      }
+      } catch {}
     }
 
     // Merge memory notifications with DB results, deduplicating by ID

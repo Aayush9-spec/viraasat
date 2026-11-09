@@ -169,7 +169,32 @@ export default function CheckoutPage() {
                 order_id: orderId,
                 handler: async function (razorpayResp: any) {
                     try {
-                        // Verify payment signature server-side
+                        const orderDataPayload = {
+                            buyerId: user?.id || 'verified-customer',
+                            items: cartItems.map(item => ({
+                                productId: item.id,
+                                productName: item.name,
+                                quantity: item.quantity,
+                                unitPrice: item.price,
+                                itemImageUrl: item.images?.[0] || '',
+                            })),
+                            subtotal,
+                            shippingFee: shipping,
+                            tax: gst,
+                            total,
+                            shippingAddress: {
+                                fullName: `${firstName} ${lastName}`.trim(),
+                                addressLine1: address1,
+                                addressLine2: address2,
+                                city,
+                                state: stateName,
+                                zipCode: zip,
+                                country: 'India',
+                                phone,
+                            },
+                        };
+
+                        // Verify payment signature server-side and persist order
                         let verifyResp = await fetch('/api/verify-payment', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -177,6 +202,7 @@ export default function CheckoutPage() {
                                 razorpay_order_id: razorpayResp.razorpay_order_id,
                                 razorpay_payment_id: razorpayResp.razorpay_payment_id,
                                 razorpay_signature: razorpayResp.razorpay_signature,
+                                orderData: orderDataPayload,
                             }),
                         });
                         
@@ -191,6 +217,7 @@ export default function CheckoutPage() {
                                     razorpay_order_id: razorpayResp.razorpay_order_id,
                                     razorpay_payment_id: razorpayResp.razorpay_payment_id,
                                     razorpay_signature: razorpayResp.razorpay_signature,
+                                    orderData: orderDataPayload,
                                 }),
                             });
                             verifyResult = await fallbackVerify.json();
@@ -202,21 +229,38 @@ export default function CheckoutPage() {
                             return;
                         }
 
+                        const finalOrderId = verifyResult.db_order_id || orderId;
+
                         sessionStorage.setItem('viraasat-last-order', JSON.stringify({
-                            orderId: orderId,
+                            orderId: finalOrderId,
                             paymentId: razorpayResp.razorpay_payment_id,
-                            items: cartItems.map(item => ({
-                                productId: item.id,
-                                productName: item.name,
-                                quantity: item.quantity,
-                                unitPrice: item.price,
-                            })),
+                            items: orderDataPayload.items,
                             subtotal,
                             shippingFee: shipping,
                             tax: gst,
                             total,
                             customerName: `${firstName} ${lastName}`.trim(),
                         }));
+
+                        // Persist to local storage for permanent client sync
+                        try {
+                            const rawOrders = localStorage.getItem('viraasat_orders');
+                            const orderList = rawOrders ? JSON.parse(rawOrders) : [];
+                            const newRecord = {
+                                id: finalOrderId,
+                                buyerId: user?.id || 'verified-customer',
+                                artisanId: 'artisan-1',
+                                items: orderDataPayload.items,
+                                totalAmount: total,
+                                status: 'Processing',
+                                paymentStatus: 'Paid',
+                                orderDate: new Date().toISOString(),
+                                updatedAt: new Date().toISOString(),
+                                shippingAddress: orderDataPayload.shippingAddress,
+                            };
+                            localStorage.setItem('viraasat_orders', JSON.stringify([newRecord, ...orderList]));
+                            window.dispatchEvent(new Event('storage'));
+                        } catch {}
                     } catch (e) {
                         console.error("Failed to save/verify order:", e);
                     }

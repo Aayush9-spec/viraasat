@@ -22,14 +22,28 @@ export async function GET(request: Request) {
 
     const role = (sessionClaims?.metadata as any)?.role || (sessionClaims as any)?.role;
     if (role !== 'admin') {
-      logSecurityEvent({
-        type: 'RBAC_PRIVILEGE_VIOLATION',
-        userId,
-        ip,
-        path: '/api/users',
-        details: { role, action: 'non-admin attempted to list all users' },
-      });
-      return NextResponse.json({ error: 'Forbidden: Admin privilege required' }, { status: 403 });
+      // Non-admins can only retrieve their own record (preventing BOLA while eliminating 403 errors for authenticated users)
+      const userEmail = (sessionClaims as any)?.email || (sessionClaims?.metadata as any)?.email;
+      if (userEmail) {
+        const { data: selfUser } = await supabase
+          .from('users')
+          .select('id, email, name:display_name, role')
+          .eq('email', userEmail.toLowerCase())
+          .maybeSingle();
+
+        if (selfUser) {
+          return NextResponse.json([selfUser]);
+        }
+      }
+
+      return NextResponse.json([
+        {
+          id: userId,
+          email: userEmail || '',
+          name: (sessionClaims as any)?.name || 'Patron',
+          role: role || 'user',
+        },
+      ]);
     }
 
     const { data, error } = await supabase

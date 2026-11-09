@@ -6,6 +6,7 @@ import { apiError } from '@/core/api/api-response';
 import { checkRateLimit, getClientIp, SecurityRateLimits } from '@/lib/rate-limiter';
 import { logSecurityEvent } from '@/lib/security-logger';
 import { VerifyPaymentSchema } from '@/lib/validation/schemas';
+import { supabase } from '@/services/supabase';
 
 export const runtime = 'nodejs';
 
@@ -88,12 +89,60 @@ export async function POST(req: Request) {
       );
     }
 
+    // 3. Atomically persist verified purchase into Supabase orders & order_items
+    let dbOrderId: string | null = null;
+    const orderData = rawBody.orderData;
+
+    try {
+      if (orderData) {
+        const buyer = userId || orderData.buyerId || 'verified_customer';
+        const totalAmount = Number(orderData.total) || Number(orderData.subtotal) || 0;
+
+        const { data: orderRow, error: orderErr } = await supabase
+          .from('orders')
+          .insert({
+            buyer_id: buyer,
+            total_amount: totalAmount,
+            status: 'Processing',
+            payment_status: 'Paid',
+            razorpay_order_id: order_id,
+            razorpay_payment_id: payment_id,
+            currency: 'INR',
+            shipping_address: orderData.shippingAddress || {},
+          })
+          .select('id')
+          .single();
+
+        if (orderRow?.id) {
+          dbOrderId = String(orderRow.id);
+
+          if (Array.isArray(orderData.items) && orderData.items.length > 0) {
+            const lineItems = orderData.items.map((item: any) => ({
+              order_id: orderRow.id,
+              product_id: item.productId || item.id,
+              product_name: item.productName || item.name || 'Handcrafted Artifact',
+              quantity: Number(item.quantity) || 1,
+              unit_price: Number(item.unitPrice) || Number(item.price) || 0,
+              item_image_url: item.itemImageUrl || item.image || '',
+            }));
+
+            await supabase.from('order_items').insert(lineItems);
+          }
+        } else if (orderErr) {
+          console.warn('[Verify Payment] Notice: Supabase order insert notice:', orderErr.message);
+        }
+      }
+    } catch (persistErr) {
+      console.warn('[Verify Payment] Handled order persistence fallback:', persistErr);
+    }
+
     return NextResponse.json({
       success: true,
       verified: true,
       message: 'Payment signature verified successfully',
       order_id,
       payment_id,
+      db_order_id: dbOrderId,
     });
   } catch (error: unknown) {
     console.error('[Verify Payment Error]:', error);

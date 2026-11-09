@@ -195,7 +195,10 @@ function CustomerDashboardContent() {
       setOrdersLoading(true);
       try {
         // 1. Fetch DB orders
-        const dbOrders = await OrderService.getOrdersByBuyer(user?.id || '');
+        const dbOrders = await OrderService.getOrdersByBuyer(
+          user?.id || '',
+          user?.primaryEmailAddress?.emailAddress
+        );
 
         // 2. Fetch session order if any
         let sessionOrder: Order | null = null;

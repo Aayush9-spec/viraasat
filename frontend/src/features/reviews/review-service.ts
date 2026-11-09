@@ -440,8 +440,26 @@ export class ReviewService {
   static async verifyPurchase(buyerId: string, productId: string): Promise<boolean> {
     if (!buyerId || !productId) return false;
 
+    // 1. Check local storage first if on client for instant verification
+    if (typeof window !== 'undefined') {
+      try {
+        const rawOrders = localStorage.getItem('viraasat_orders');
+        if (rawOrders) {
+          const orders = JSON.parse(rawOrders);
+          if (Array.isArray(orders)) {
+            const hasOrder = orders.some((o: any) =>
+              (o.buyerId === buyerId || o.buyerId === 'current-user') &&
+              Array.isArray(o.items) &&
+              o.items.some((it: any) => it.productId === productId || it.id === productId)
+            );
+            if (hasOrder) return true;
+          }
+        }
+      } catch {}
+    }
+
+    // 2. Query Supabase orders & order_items safely
     try {
-      // 1. Query Supabase orders & order_items
       const { data, error } = await supabase
         .from('orders')
         .select(`
@@ -463,22 +481,6 @@ export class ReviewService {
         }
       }
     } catch {}
-
-    // 2. Check local storage if on client
-    if (typeof window !== 'undefined') {
-      try {
-        const rawOrders = localStorage.getItem('viraasat_orders');
-        if (rawOrders) {
-          const orders = JSON.parse(rawOrders);
-          if (Array.isArray(orders)) {
-            const hasOrder = orders.some((o: any) =>
-              Array.isArray(o.items) && o.items.some((it: any) => it.productId === productId || it.id === productId)
-            );
-            if (hasOrder) return true;
-          }
-        }
-      } catch {}
-    }
 
     return false;
   }
