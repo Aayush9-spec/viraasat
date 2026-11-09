@@ -1,5 +1,5 @@
 -- ==============================================================================
--- Viraasat 2.0 — Phase 1: Database & Order Integrity Migration
+-- Viraasat 2.0 — Phase 1: Database & Order Integrity Migration (Updated)
 -- Run this script in your Supabase SQL Editor:
 -- https://supabase.com/dashboard/project/mkeowabbnpyenqeiybzw/sql
 -- ==============================================================================
@@ -8,14 +8,17 @@
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'users') THEN
-    -- Add clerk_id column if it doesn't exist
     ALTER TABLE users ADD COLUMN IF NOT EXISTS clerk_id TEXT;
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_clerk_id ON users(clerk_id);
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
   END IF;
 END $$;
 
--- ── 2. Orders Table: Ensure Table Exists with TEXT buyer_id ───────────────────
+-- ── 2. Orders Table: Drop Foreign Key and Convert buyer_id to TEXT ─────────────
+-- Drop foreign key constraint referencing users(id) uuid so buyer_id can accept Clerk string IDs
+ALTER TABLE IF EXISTS orders DROP CONSTRAINT IF EXISTS orders_buyer_id_fkey;
+ALTER TABLE IF EXISTS orders DROP CONSTRAINT IF EXISTS orders_user_id_fkey;
+
 CREATE TABLE IF NOT EXISTS orders (
   id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   buyer_id            TEXT NOT NULL,
@@ -30,9 +33,13 @@ CREATE TABLE IF NOT EXISTS orders (
   updated_at          TIMESTAMPTZ DEFAULT NOW()
 );
 
--- If orders table already existed with UUID buyer_id, safely alter column to TEXT
+-- Safely alter column to TEXT if it was previously UUID
 DO $$
 BEGIN
+  -- Double check foreign keys are removed
+  ALTER TABLE IF EXISTS orders DROP CONSTRAINT IF EXISTS orders_buyer_id_fkey;
+  ALTER TABLE IF EXISTS orders DROP CONSTRAINT IF EXISTS orders_user_id_fkey;
+
   IF EXISTS (
     SELECT 1 FROM information_schema.columns 
     WHERE table_name = 'orders' AND column_name = 'buyer_id' AND data_type = 'uuid'
@@ -101,7 +108,7 @@ DROP POLICY IF EXISTS "notifications_read_policy" ON notifications;
 DROP POLICY IF EXISTS "notifications_insert_policy" ON notifications;
 DROP POLICY IF EXISTS "notifications_update_policy" ON notifications;
 
--- Create resilient policies that allow authorized Clerk clients to read their own records
+-- Create resilient policies that allow authorized Clerk clients to read and write records
 CREATE POLICY "orders_read_policy"
   ON orders FOR SELECT
   USING (true);
@@ -138,4 +145,3 @@ CREATE POLICY "notifications_update_policy"
 GRANT ALL ON orders TO anon, authenticated, service_role;
 GRANT ALL ON order_items TO anon, authenticated, service_role;
 GRANT ALL ON notifications TO anon, authenticated, service_role;
-
