@@ -119,3 +119,4 @@ INSERT INTO auctions (
   NOW() - INTERVAL '12 hours', NOW() + INTERVAL '2 days', 60, 'active', 'gopal.saini@viraasat.in'
 )
 ON CONFLICT (id) DO NOTHING;
+

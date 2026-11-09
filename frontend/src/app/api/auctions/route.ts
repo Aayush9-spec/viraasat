@@ -18,3 +18,4 @@ export async function GET() {
     return handleApiError(error, 'Failed to fetch active auctions');
   }
 }
+
