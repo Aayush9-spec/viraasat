@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -240,8 +241,17 @@ export function AIAssistant() {
         ? "bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] right-3 left-3 sm:left-auto sm:right-6 md:right-8 md:bottom-8 flex justify-end"
         : "bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] right-4 sm:right-6 md:right-8 md:bottom-8"
     )}>
-      {isOpen ? (
-        <Card className="w-full sm:w-[380px] md:w-[420px] max-w-[420px] h-[min(580px,calc(100dvh-6.5rem-env(safe-area-inset-bottom,0px)))] flex flex-col shadow-2xl border border-primary/20 rounded-2xl overflow-hidden bg-background animate-in fade-in zoom-in-95 duration-200">
+      <AnimatePresence mode="wait">
+        {isOpen ? (
+          <motion.div
+            key="ai-assistant-modal"
+            initial={{ opacity: 0, scale: 0.94, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.94, y: 16 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full sm:w-[380px] md:w-[420px] max-w-[420px]"
+          >
+            <Card className="w-full h-[min(580px,calc(100dvh-6.5rem-env(safe-area-inset-bottom,0px)))] flex flex-col shadow-2xl border border-primary/20 rounded-2xl overflow-hidden bg-background">
           {/* Header */}
           <CardHeader className="bg-[#5e2c18] text-white py-3 px-4 flex flex-row items-center justify-between shrink-0">
             <CardTitle className="text-sm flex items-center gap-2 font-heading tracking-wide">
@@ -491,10 +501,17 @@ export function AIAssistant() {
             </div>
           </CardFooter>
         </Card>
+        </motion.div>
       ) : (
-        <button
+        <motion.button
+          key="ai-assistant-trigger"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.94 }}
           onClick={() => setIsOpen(true)}
-          className="h-12 w-12 sm:h-14 sm:w-14 bg-primary hover:bg-primary/90 text-white shadow-2xl border border-[#5e2c18]/20 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 rounded-2xl relative shadow-clay"
+          className="h-12 w-12 sm:h-14 sm:w-14 bg-primary hover:bg-primary/90 text-white shadow-2xl border border-[#5e2c18]/20 flex items-center justify-center rounded-2xl relative shadow-clay cursor-pointer"
           title="Open AI Assistant"
           aria-label="Open Viraasat AI Assistant"
         >
@@ -503,8 +520,9 @@ export function AIAssistant() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500" />
           </span>
-        </button>
+        </motion.button>
       )}
+      </AnimatePresence>
     </div>
   );
 }

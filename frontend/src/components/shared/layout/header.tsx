@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles, ShoppingBag, Shield, Smartphone, ChevronDown, Gavel, Award, BookOpen, Users } from 'lucide-react';
@@ -13,6 +13,7 @@ import LanguageSwitcher from '@/components/shared/navigation/language-switcher';
 import { ThemeSwitcher } from '@/components/shared/navigation/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { cn } from '@/core/utils/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +38,17 @@ export function Header() {
   const [mounted, setMounted] = useState(false);
   const [localUser, setLocalUser] = useState<{ id?: string; name?: string; email?: string; role?: string } | null>(null);
   const [isClientAuth, setIsClientAuth] = useState(false);
+  const [cartBump, setCartBump] = useState(false);
+  const prevCount = useRef(itemCount);
+
+  useEffect(() => {
+    if (prevCount.current !== itemCount) {
+      setCartBump(true);
+      const timer = setTimeout(() => setCartBump(false), 350);
+      prevCount.current = itemCount;
+      return () => clearTimeout(timer);
+    }
+  }, [itemCount]);
 
   useEffect(() => {
     setMounted(true);
@@ -104,17 +116,23 @@ export function Header() {
           <div className="flex min-w-0 items-center gap-3 xl:gap-6 flex-1">
             <ViraasatLogo className="shrink-0" />
             <div className="hidden lg:flex items-center space-x-2 xl:space-x-3.5 2xl:space-x-4 text-xs xl:text-sm font-medium tracking-wide">
-              <Link href="/" className="text-foreground/80 hover:text-primary transition-colors whitespace-nowrap">
+              <Link href="/" className={cn("transition-colors whitespace-nowrap hover:text-primary relative py-1", pathname === '/' ? "text-primary font-semibold" : "text-foreground/80")}>
                 {t('nav.home')}
+                {pathname === '/' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full transition-all duration-300" />
+                )}
               </Link>
-              <Link href="/shop" className="text-foreground/80 hover:text-primary transition-colors font-semibold text-primary whitespace-nowrap">
+              <Link href="/shop" className={cn("transition-colors whitespace-nowrap hover:text-primary relative py-1", pathname === '/shop' ? "text-primary font-semibold" : "text-foreground/80")}>
                 {t('nav.shop')}
+                {pathname === '/shop' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full transition-all duration-300" />
+                )}
               </Link>
-              <Link href="/#unique-art-auctions" className="text-foreground/80 hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap font-medium">
+              <Link href="/#unique-art-auctions" className="text-foreground/80 hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap font-medium btn-gold-shimmer py-1 px-2 rounded-lg">
                 <Gavel className="w-3.5 h-3.5 text-[#C59B4B]" />
                 <span>{t('nav.auctions') || 'Art Auctions'}</span>
                 <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-[#701D24] text-white uppercase tracking-wider shadow-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
                   Live
                 </span>
               </Link>
@@ -266,7 +284,10 @@ export function Header() {
             >
               <ShoppingCart className="h-5 w-5" />
               {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                <span className={cn(
+                  "absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground font-bold shadow-xs transition-transform",
+                  cartBump && "animate-cart-bump"
+                )}>
                   {itemCount}
                 </span>
               )}

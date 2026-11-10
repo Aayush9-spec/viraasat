@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/core/utils/utils';
 import {
   Bell,
   CheckCheck,
@@ -51,6 +52,17 @@ export function NotificationBell({ className = '' }: { className?: string }) {
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [bellRing, setBellRing] = useState(false);
+  const prevUnreadRef = useRef<number>(0);
+
+  useEffect(() => {
+    if (unreadCount > prevUnreadRef.current) {
+      setBellRing(true);
+      const timer = setTimeout(() => setBellRing(false), 600);
+      return () => clearTimeout(timer);
+    }
+    prevUnreadRef.current = unreadCount;
+  }, [unreadCount]);
 
   const userId = user?.id;
   const role = isArtisan ? 'artisan' : 'customer';
@@ -171,7 +183,7 @@ export function NotificationBell({ className = '' }: { className?: string }) {
           className={`relative text-foreground/75 hover:text-amber-800 dark:hover:text-amber-300 transition-colors ${className}`}
           aria-label="Notifications"
         >
-          <Bell className="h-5 w-5" />
+          <Bell className={cn("h-5 w-5 transition-transform", bellRing && "animate-bell-ring")} />
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-amber-600 dark:bg-amber-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-background animate-pulse">
               {unreadCount > 9 ? '9+' : unreadCount}

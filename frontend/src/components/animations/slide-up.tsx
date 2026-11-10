@@ -47,3 +47,4 @@ export function SlideUp({
     </motion.div>
   );
 }
+
