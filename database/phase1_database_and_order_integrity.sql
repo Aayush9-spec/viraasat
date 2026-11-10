@@ -4,12 +4,27 @@
 -- https://supabase.com/dashboard/project/mkeowabbnpyenqeiybzw/sql
 -- ==============================================================================
 
--- ── 1. Users Table Hardening (Clerk String ID Support) ────────────────────────
+-- ── 1. Users Table Hardening (Clerk String ID & user_id Support) ─────────────
+CREATE TABLE IF NOT EXISTS users (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id      TEXT,
+  clerk_id     TEXT,
+  email        TEXT,
+  display_name TEXT,
+  role         TEXT DEFAULT 'customer',
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  updated_at   TIMESTAMPTZ DEFAULT NOW()
+);
+
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'users') THEN
     ALTER TABLE users ADD COLUMN IF NOT EXISTS clerk_id TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS user_id TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'customer';
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_clerk_id ON users(clerk_id);
+    CREATE INDEX IF NOT EXISTS idx_users_user_id ON users(user_id);
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
   END IF;
 END $$;
@@ -94,11 +109,14 @@ CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read);
 CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at DESC);
 
 -- ── 5. Row Level Security (RLS) & Permissions ─────────────────────────────────
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
 -- Drop prior restrictive policies to avoid conflicts
+DROP POLICY IF EXISTS "users_read_policy" ON users;
+DROP POLICY IF EXISTS "users_all_policy" ON users;
 DROP POLICY IF EXISTS "orders_read_policy" ON orders;
 DROP POLICY IF EXISTS "orders_insert_policy" ON orders;
 DROP POLICY IF EXISTS "orders_update_policy" ON orders;
@@ -109,6 +127,15 @@ DROP POLICY IF EXISTS "notifications_insert_policy" ON notifications;
 DROP POLICY IF EXISTS "notifications_update_policy" ON notifications;
 
 -- Create resilient policies that allow authorized Clerk clients to read and write records
+CREATE POLICY "users_read_policy"
+  ON users FOR SELECT
+  USING (true);
+
+CREATE POLICY "users_all_policy"
+  ON users FOR ALL
+  USING (true)
+  WITH CHECK (true);
+
 CREATE POLICY "orders_read_policy"
   ON orders FOR SELECT
   USING (true);
@@ -142,6 +169,7 @@ CREATE POLICY "notifications_update_policy"
   USING (true);
 
 -- Grant appropriate permissions to anon and authenticated roles
+GRANT ALL ON users TO anon, authenticated, service_role;
 GRANT ALL ON orders TO anon, authenticated, service_role;
 GRANT ALL ON order_items TO anon, authenticated, service_role;
 GRANT ALL ON notifications TO anon, authenticated, service_role;

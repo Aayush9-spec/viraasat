@@ -165,3 +165,4 @@ export const viewport: Viewport = {
 
 ## 5. Remaining Issues
 None. The layout is stable across Android Chrome, native Android WebView, tablets, and desktop browsers.
+

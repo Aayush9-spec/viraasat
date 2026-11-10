@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Product } from '@/lib/types';
@@ -40,6 +41,7 @@ export default function ProductCard({
   const wishlisted = isWishlisted(product.id);
   const safePrice = Number(product?.price) || 0;
   const imageUrl = getProductImage(product?.images);
+  const [isPopping, setIsPopping] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -54,6 +56,8 @@ export default function ProductCard({
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsPopping(true);
+    setTimeout(() => setIsPopping(false), 350);
     toggleWishlist(product);
     toast({
       title: !wishlisted ? "Saved to Heirloom Wishlist ❤️" : "Removed from Wishlist",
@@ -114,7 +118,8 @@ export default function ProductCard({
               <Heart
                 className={cn(
                   "w-4 h-4 transition-transform",
-                  wishlisted ? "fill-[#701D24] text-[#701D24]" : "text-[#221C18]"
+                  wishlisted ? "fill-[#701D24] text-[#701D24]" : "text-[#221C18]",
+                  isPopping && "animate-heart-pop"
                 )}
               />
             </button>

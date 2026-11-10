@@ -7,6 +7,7 @@ import { Footer } from './footer';
 import CartSidebar from '@/features/cart/components/cart-sidebar';
 import { MobileNav } from '@/components/shared/navigation/mobile-nav';
 import { Toaster } from '@/components/ui/toaster';
+import { PageTransition } from '@/components/animations';
 
 const AIAssistant = dynamic(
   () => import('@/features/ai/components/ai-assistant').then((mod) => ({ default: mod.AIAssistant })),
@@ -22,7 +23,11 @@ export function AppShell({ children }: AppShellProps) {
     <>
       <div suppressHydrationWarning className="relative min-h-screen">
         <Header />
-        <main className="relative z-10">{children}</main>
+        <main className="relative z-10">
+          <PageTransition>
+            {children}
+          </PageTransition>
+        </main>
       </div>
       <Footer />
       <CartSidebar />

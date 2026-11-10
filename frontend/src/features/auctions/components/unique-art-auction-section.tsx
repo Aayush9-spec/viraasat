@@ -579,7 +579,7 @@ export function UniqueArtAuctionSection({ id = 'unique-art-auctions' }: { id?: s
                     <Button
                       type="button"
                       onClick={() => openBidModal(auction)}
-                      className="flex-1 bg-[#C59B4B] hover:bg-[#E8CA82] text-[#221C18] font-bold text-xs uppercase tracking-wider py-5 rounded-xl transition-all shadow cursor-pointer"
+                      className="flex-1 bg-[#C59B4B] hover:bg-[#E8CA82] text-[#221C18] font-bold text-xs uppercase tracking-wider py-5 rounded-xl transition-all shadow cursor-pointer btn-gold-shimmer"
                     >
                       <Gavel className="w-3.5 h-3.5 mr-1.5" /> Place Bid
                     </Button>

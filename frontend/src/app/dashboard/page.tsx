@@ -75,6 +75,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { useTranslation } from '@/core/hooks/use-translation';
 import { cn, getProductImage } from '@/core/utils/utils';
 import { orders as staticOrders, products as catalogProducts } from '@/lib/data';
+import { AnimatedCounter, SlideUp, FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
 import { OrderService } from '@/features/orders/order-service';
 import { ReviewService } from '@/features/reviews/review-service';
 import { NotificationService } from '@/features/notifications/notification-service';
@@ -970,7 +971,7 @@ function CustomerDashboardContent() {
             <Button
               asChild
               size="sm"
-              className="rounded-full bg-[#701D24] hover:bg-[#8C2B2B] text-white text-xs font-semibold shadow-xs"
+              className="rounded-full bg-[#701D24] hover:bg-[#8C2B2B] text-white text-xs font-semibold shadow-xs btn-gold-shimmer"
             >
               <Link href="/auctions" className="flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-[#E8CA82]" />
@@ -1238,63 +1239,79 @@ function CustomerDashboardContent() {
                 </div>
 
                 {/* 4 Stats Cards */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                  <Card
-                    onClick={() => changeTab('orders')}
-                    className="cursor-pointer bg-white dark:bg-[#221C18] border border-[#E8DCCB] dark:border-stone-800 rounded-2xl p-5 hover:border-[#C59B4B] transition-all shadow-xs group"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">Total Orders</span>
-                      <div className="w-8 h-8 rounded-full bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] flex items-center justify-center text-[#701D24] dark:text-[#E8CA82] group-hover:scale-110 transition-transform">
-                        <Package className="w-4 h-4" />
+                <StaggerContainer className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                  <StaggerItem>
+                    <Card
+                      onClick={() => changeTab('orders')}
+                      className="cursor-pointer bg-white dark:bg-[#221C18] border border-[#E8DCCB] dark:border-stone-800 rounded-2xl p-5 hover:border-[#C59B4B] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 group"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">Total Orders</span>
+                        <div className="w-8 h-8 rounded-full bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] flex items-center justify-center text-[#701D24] dark:text-[#E8CA82] group-hover:scale-110 transition-transform">
+                          <Package className="w-4 h-4" />
+                        </div>
                       </div>
-                    </div>
-                    <div className="font-serif text-3xl font-bold text-[#701D24] dark:text-[#E8CA82]">{totalOrdersCount}</div>
-                    <p className="text-[11px] text-stone-500 mt-1">Acquisitions from master guilds</p>
-                  </Card>
+                      <div className="font-serif text-3xl font-bold text-[#701D24] dark:text-[#E8CA82]">
+                        <AnimatedCounter value={totalOrdersCount} />
+                      </div>
+                      <p className="text-[11px] text-stone-500 mt-1">Acquisitions from master guilds</p>
+                    </Card>
+                  </StaggerItem>
 
-                  <Card
-                    onClick={() => changeTab('orders')}
-                    className="cursor-pointer bg-white dark:bg-[#221C18] border border-[#E8DCCB] dark:border-stone-800 rounded-2xl p-5 hover:border-[#C59B4B] transition-all shadow-xs group"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">Deliveries</span>
-                      <div className="w-8 h-8 rounded-full bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] flex items-center justify-center text-sky-700 dark:text-sky-300 group-hover:scale-110 transition-transform">
-                        <Truck className="w-4 h-4" />
+                  <StaggerItem>
+                    <Card
+                      onClick={() => changeTab('orders')}
+                      className="cursor-pointer bg-white dark:bg-[#221C18] border border-[#E8DCCB] dark:border-stone-800 rounded-2xl p-5 hover:border-[#C59B4B] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 group"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">Deliveries</span>
+                        <div className="w-8 h-8 rounded-full bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] flex items-center justify-center text-sky-700 dark:text-sky-300 group-hover:scale-110 transition-transform">
+                          <Truck className="w-4 h-4" />
+                        </div>
                       </div>
-                    </div>
-                    <div className="font-serif text-3xl font-bold text-sky-800 dark:text-sky-400">{pendingDeliveriesCount}</div>
-                    <p className="text-[11px] text-stone-500 mt-1">Currently en route to you</p>
-                  </Card>
+                      <div className="font-serif text-3xl font-bold text-sky-800 dark:text-sky-400">
+                        <AnimatedCounter value={pendingDeliveriesCount} />
+                      </div>
+                      <p className="text-[11px] text-stone-500 mt-1">Currently en route to you</p>
+                    </Card>
+                  </StaggerItem>
 
-                  <Card
-                    onClick={() => changeTab('wishlist')}
-                    className="cursor-pointer bg-white dark:bg-[#221C18] border border-[#E8DCCB] dark:border-stone-800 rounded-2xl p-5 hover:border-[#C59B4B] transition-all shadow-xs group"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">Saved Items</span>
-                      <div className="w-8 h-8 rounded-full bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] flex items-center justify-center text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform">
-                        <Heart className="w-4 h-4" />
+                  <StaggerItem>
+                    <Card
+                      onClick={() => changeTab('wishlist')}
+                      className="cursor-pointer bg-white dark:bg-[#221C18] border border-[#E8DCCB] dark:border-stone-800 rounded-2xl p-5 hover:border-[#C59B4B] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 group"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">Saved Items</span>
+                        <div className="w-8 h-8 rounded-full bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] flex items-center justify-center text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform">
+                          <Heart className="w-4 h-4" />
+                        </div>
                       </div>
-                    </div>
-                    <div className="font-serif text-3xl font-bold text-rose-700 dark:text-rose-400">{wishlistCount}</div>
-                    <p className="text-[11px] text-stone-500 mt-1">Treasures in your wishlist</p>
-                  </Card>
+                      <div className="font-serif text-3xl font-bold text-rose-700 dark:text-rose-400">
+                        <AnimatedCounter value={wishlistCount} />
+                      </div>
+                      <p className="text-[11px] text-stone-500 mt-1">Treasures in your wishlist</p>
+                    </Card>
+                  </StaggerItem>
 
-                  <Card
-                    onClick={() => changeTab('reviews')}
-                    className="cursor-pointer bg-white dark:bg-[#221C18] border border-[#E8DCCB] dark:border-stone-800 rounded-2xl p-5 hover:border-[#C59B4B] transition-all shadow-xs group"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">Reviews</span>
-                      <div className="w-8 h-8 rounded-full bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] flex items-center justify-center text-amber-600 dark:text-amber-300 group-hover:scale-110 transition-transform">
-                        <Star className="w-4 h-4" />
+                  <StaggerItem>
+                    <Card
+                      onClick={() => changeTab('reviews')}
+                      className="cursor-pointer bg-white dark:bg-[#221C18] border border-[#E8DCCB] dark:border-stone-800 rounded-2xl p-5 hover:border-[#C59B4B] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 group"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">Reviews</span>
+                        <div className="w-8 h-8 rounded-full bg-[#FAF7F2] dark:bg-[#2A231F] border border-[#E8DCCB] flex items-center justify-center text-amber-600 dark:text-amber-300 group-hover:scale-110 transition-transform">
+                          <Star className="w-4 h-4" />
+                        </div>
                       </div>
-                    </div>
-                    <div className="font-serif text-3xl font-bold text-[#8F6826] dark:text-[#E8CA82]">{reviewsCount}</div>
-                    <p className="text-[11px] text-stone-500 mt-1">Artisan feedback provided</p>
-                  </Card>
-                </div>
+                      <div className="font-serif text-3xl font-bold text-[#8F6826] dark:text-[#E8CA82]">
+                        <AnimatedCounter value={reviewsCount} />
+                      </div>
+                      <p className="text-[11px] text-stone-500 mt-1">Artisan feedback provided</p>
+                    </Card>
+                  </StaggerItem>
+                </StaggerContainer>
 
                 {/* Recent Acquisitions Preview */}
                 <Card className="bg-white dark:bg-[#221C18] border border-[#E8DCCB] dark:border-stone-800 rounded-3xl shadow-sm overflow-hidden">
