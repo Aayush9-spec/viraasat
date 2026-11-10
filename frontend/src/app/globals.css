@@ -374,3 +374,95 @@
   padding: 0 !important;
   margin: 0 !important;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Premium Heritage Micro-Interactions & Animation Utilities
+   ───────────────────────────────────────────────────────────────────────────── */
+@keyframes cta-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes heart-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.35); }
+  65% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+@keyframes cart-bump {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.28); }
+  60% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bell-ring {
+  0%, 100% { transform: rotate(0); }
+  15% { transform: rotate(14deg); }
+  30% { transform: rotate(-12deg); }
+  45% { transform: rotate(8deg); }
+  60% { transform: rotate(-4deg); }
+  75% { transform: rotate(0); }
+}
+
+@keyframes gold-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(197, 155, 75, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(197, 155, 75, 0); }
+}
+
+.animate-heart-pop {
+  animation: heart-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.animate-cart-bump {
+  animation: cart-bump 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.animate-bell-ring {
+  animation: bell-ring 0.6s ease-in-out;
+  transform-origin: top center;
+}
+
+.animate-gold-pulse {
+  animation: gold-pulse 2s infinite;
+}
+
+/* Primary CTA Button Shimmer Overlay */
+.btn-gold-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-gold-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.22),
+    transparent
+  );
+  transform: translateX(-150%) skewX(-20deg);
+  pointer-events: none;
+}
+
+.btn-gold-shimmer:hover::after {
+  animation: cta-shimmer 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Global Respect for Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

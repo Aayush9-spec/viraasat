@@ -75,6 +75,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { useTranslation } from '@/core/hooks/use-translation';
 import { cn, getProductImage } from '@/core/utils/utils';
 import { orders as staticOrders, products as catalogProducts } from '@/lib/data';
+import { AnimatedCounter } from '@/components/animations';
 import { OrderService } from '@/features/orders/order-service';
 import { ReviewService } from '@/features/reviews/review-service';
 import { NotificationService } from '@/features/notifications/notification-service';
@@ -1249,7 +1250,9 @@ function CustomerDashboardContent() {
                         <Package className="w-4 h-4" />
                       </div>
                     </div>
-                    <div className="font-serif text-3xl font-bold text-[#701D24] dark:text-[#E8CA82]">{totalOrdersCount}</div>
+                    <div className="font-serif text-3xl font-bold text-[#701D24] dark:text-[#E8CA82]">
+                      <AnimatedCounter value={totalOrdersCount} />
+                    </div>
                     <p className="text-[11px] text-stone-500 mt-1">Acquisitions from master guilds</p>
                   </Card>
 
@@ -1263,7 +1266,9 @@ function CustomerDashboardContent() {
                         <Truck className="w-4 h-4" />
                       </div>
                     </div>
-                    <div className="font-serif text-3xl font-bold text-sky-800 dark:text-sky-400">{pendingDeliveriesCount}</div>
+                    <div className="font-serif text-3xl font-bold text-sky-800 dark:text-sky-400">
+                      <AnimatedCounter value={pendingDeliveriesCount} />
+                    </div>
                     <p className="text-[11px] text-stone-500 mt-1">Currently en route to you</p>
                   </Card>
 
@@ -1277,7 +1282,9 @@ function CustomerDashboardContent() {
                         <Heart className="w-4 h-4" />
                       </div>
                     </div>
-                    <div className="font-serif text-3xl font-bold text-rose-700 dark:text-rose-400">{wishlistCount}</div>
+                    <div className="font-serif text-3xl font-bold text-rose-700 dark:text-rose-400">
+                      <AnimatedCounter value={wishlistCount} />
+                    </div>
                     <p className="text-[11px] text-stone-500 mt-1">Treasures in your wishlist</p>
                   </Card>
 
@@ -1291,7 +1298,9 @@ function CustomerDashboardContent() {
                         <Star className="w-4 h-4" />
                       </div>
                     </div>
-                    <div className="font-serif text-3xl font-bold text-[#8F6826] dark:text-[#E8CA82]">{reviewsCount}</div>
+                    <div className="font-serif text-3xl font-bold text-[#8F6826] dark:text-[#E8CA82]">
+                      <AnimatedCounter value={reviewsCount} />
+                    </div>
                     <p className="text-[11px] text-stone-500 mt-1">Artisan feedback provided</p>
                   </Card>
                 </div>
