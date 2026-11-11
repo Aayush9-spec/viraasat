@@ -19,18 +19,18 @@ const pillars = [
   },
   {
     icon: Cpu,
-    title: 'Artisan AI Empowerment',
-    body: 'Multimodal AI removes intimidating tech barriers—turning vernacular voice notes and mobile photos into professional, SEO-optimized listings with zero technical debt.',
+    title: 'Direct Artisan Voice',
+    body: 'Vernacular voice tools empower rural artisans to narrate their craft story in their native dialect, translating generational wisdom directly into global collector showcases.',
   },
   {
     icon: ShieldCheck,
     title: 'Fair-Wage Economics',
-    body: 'Predictive pricing regressors calculated without target leakage ensure rural creators receive fair compensation benchmarked against Ministry of Textiles labor standards.',
+    body: 'Transparent pricing frameworks aligned with Ministry of Textiles craft standards ensure master artisans receive dignified, direct compensation without intermediary markups.',
   },
   {
     icon: Globe2,
-    title: 'Global Knowledge Discovery',
-    body: 'A cultural knowledge graph mapping regional craft clusters and artisan lineages surfaces the right masterpiece to connoisseurs and collectors worldwide.',
+    title: 'Curated Cultural Discovery',
+    body: 'A living craft directory mapping regional craft clusters and artisan lineages connects discerning connoisseurs with authenticated masterworks.',
   },
 ];
 
@@ -62,13 +62,13 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-5 text-base sm:text-lg text-foreground/85 leading-relaxed font-sans">
             <h2 className="font-serif text-2xl sm:text-3xl text-primary font-bold">
-              Bridging Millennia of Craft with Ethical Machine Intelligence
+              Preserving Millennia of Craft Through Direct Artisan Sovereignty
             </h2>
             <p>
-              India is home to millions of indigenous master artisans — potters, master weavers, lost-wax bronze casters, and stone sculptors. Yet for decades, predatory supply chains, lack of fair wage transparency, and intimidating digital onboarding kept these treasures invisible to discerning collectors.
+              India is home to millions of indigenous master artisans — potters, master weavers, lost-wax bronze casters, and stone sculptors. Yet for decades, predatory supply chains, unfair commercial markups, and intimidating digital barriers kept these cultural treasures inaccessible to discerning collectors.
             </p>
             <p>
-              Viraasat deploys cutting-edge AI to restore dignity to rural workshops. An artisan records their story in their native vernacular dialect and captures a phone photo. Our AI pipeline enhances imagery, transcribes voice memos, drafts rich cultural narratives, suggests fair-wage pricing, and anchors the artifact on a tamper-proof SHA-256 blockchain ledger.
+              Viraasat restores dignity directly to rural workshops. Master craftspeople document their heritage in their own vernacular dialect from their village workshops. We preserve authentic narratives, verify Geographical Indication (GI) certifications, ensure fair-wage compensation, and connect generational talent directly to conscious collectors worldwide.
             </p>
           </div>
 
@@ -84,11 +84,11 @@ export default function AboutPage() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accent font-bold">✓</span>
-                <span><strong>Cryptographic Provenance:</strong> Immutable lineage tracking verifying GI certifications and generational authenticity.</span>
+                <span><strong>Authenticated Provenance:</strong> Verifiable lineage tracking protecting GI certifications and generational authenticity.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accent font-bold">✓</span>
-                <span><strong>Multilingual Dignity:</strong> Supporting 13 Indian languages so no artisan is silenced by linguistic barriers.</span>
+                <span><strong>Multilingual Dignity:</strong> Supporting 13 Indian languages so no master craftsperson is silenced by linguistic barriers.</span>
               </li>
             </ul>
           </div>

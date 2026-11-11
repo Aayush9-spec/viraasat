@@ -60,9 +60,9 @@ export default function ProductCard({
     setTimeout(() => setIsPopping(false), 350);
     toggleWishlist(product);
     toast({
-      title: !wishlisted ? "Saved to Heirloom Wishlist ❤️" : "Removed from Wishlist",
+      title: !wishlisted ? "Saved to Wishlist" : "Removed from Wishlist",
       description: !wishlisted
-        ? `${t(product.name)} saved to your sacred collection.`
+        ? `${t(product.name)} saved to your collection.`
         : `${t(product.name)} removed from your wishlist.`,
     });
   };

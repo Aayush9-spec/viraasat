@@ -62,7 +62,7 @@ export default function ArtisansPage() {
             {t('home.artisanQuestion') || 'Are you an artisan?'}
           </h2>
           <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-            {t('home.heroDescription') ? 'Join Viraasat and let AI handle the storytelling while you focus on the craft.' : 'Join Viraasat and let AI handle the storytelling while you focus on the craft.'}
+            {t('artisans.ctaSubtitle') || 'Join Viraasat and connect directly with conscious connoisseurs worldwide while preserving your ancestral heritage.'}
           </p>
           <Button asChild className="bg-primary text-primary-foreground">
             <Link href="/apply">{t('home.applyArtisanPortal') || 'Apply to Sell'}</Link>

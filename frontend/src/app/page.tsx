@@ -921,29 +921,24 @@ export default function Marketplace() {
         </div>
       </section>
 
-      {/* ================= 3B. TWO-TOWER NEURAL RECOMMENDATIONS (ML ENGINE) ================= */}
+      {/* ================= 3B. CURATED REGIONAL GUILD SELECTIONS ================= */}
       <section id="neural-recommendations" className="py-20 bg-background border-b border-border relative overflow-hidden">
         <div className="max-w-[1680px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-                  {t('home.patronCuration') || "Personalized Patron Curation"}
+                  {t('home.patronCuration') || "Curated Guild Showcase"}
                 </span>
-                <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-secondary text-primary border border-border rounded-full font-bold">
-                  <Sparkles className="w-3 h-3 text-[#C59B4B]" /> Two-Tower Retrieval + GBT Ranker
+                <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider px-2.5 py-0.5 bg-secondary text-primary border border-border rounded-full font-semibold">
+                  <Sparkles className="w-3 h-3 text-[#C59B4B]" /> {t('home.regionalHeritage') || "Regional Heritage Guilds"}
                 </span>
-                {recAccuracy && (
-                  <span className="inline-flex items-center text-[10px] font-mono px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full font-bold">
-                    {(recAccuracy * 100).toFixed(1)}% Precision@10
-                  </span>
-                )}
               </div>
               <h2 className="font-serif text-3xl sm:text-4xl text-foreground font-normal">
                 {t('home.curatedForTaste') || "Curated for Your Taste & Regional Affinity"}
               </h2>
               <p className="text-muted-foreground text-sm mt-2 max-w-2xl">
-                {t('home.neuralMatchingDesc') || "Real-time neural matching algorithm connecting your regional preferences with authentic GI-tagged masterpieces."}
+                {t('home.neuralMatchingDesc') || "Authenticated regional craft selections connecting your aesthetic preferences with GI-certified masterworks."}
               </p>
             </div>
 
@@ -972,7 +967,7 @@ export default function Marketplace() {
             <div className="py-16 text-center">
               <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-3" />
               <p className="text-xs uppercase font-semibold tracking-widest text-muted-foreground">
-                Querying Two-Tower Vector Space & Ranking Artifacts...
+                Curating authentic masterworks from regional guilds...
               </p>
             </div>
           ) : (
@@ -982,7 +977,6 @@ export default function Marketplace() {
                 : products.slice(0, 4)
               ).map((p: any, idx: number) => {
                 const imgUrl = (p.images && p.images[0]) || p.image || '/images/placeholder-craft.jpg';
-                const matchScore = 98 - idx * 3;
                 const isItemWishlisted = isWishlisted(p.id);
 
                 return (
@@ -1001,7 +995,7 @@ export default function Marketplace() {
                         />
                         <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
                           <span className="text-[10px] font-bold px-2.5 py-1 bg-[#221C18]/85 text-[#FAF7F2] backdrop-blur-md rounded-full shadow-sm flex items-center gap-1">
-                            <Sparkles className="w-2.5 h-2.5 text-[#C59B4B]" /> {matchScore}% {t('home.neuralMatch') || "Neural Match"}
+                            <Sparkles className="w-2.5 h-2.5 text-[#C59B4B]" /> {t('home.neuralMatch') || "Curator's Choice"}
                           </span>
                           <span className="text-[10px] font-bold px-2 py-0.5 bg-[#701D24]/90 text-white backdrop-blur-md rounded-full">
                             {t('home.giTagCertified') || "GI Certified"}
@@ -1060,7 +1054,7 @@ export default function Marketplace() {
                         </Link>
 
                         <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-relaxed">
-                          {translateDescription(p) || 'Authentic artisan masterpiece selected via Two-Tower embedding retrieval.'}
+                          {translateDescription(p) || 'Authentic artisan masterpiece hand-selected by regional master craft guilds.'}
                         </p>
                       </div>
                     </div>
@@ -1200,7 +1194,7 @@ export default function Marketplace() {
                   </span>
                   <h3 className="font-serif text-2xl font-bold text-foreground mt-1">{art.name}</h3>
                   <p className="text-xs text-muted-foreground mt-2 line-clamp-3 leading-relaxed">
-                    {art.bio || "Dedicated master craftsman preserving regional handloom and ancestral metallurgy."}
+                    {art.bio || "Master craftsperson recognized by regional guilds for preserving authenticated GI heritage traditions."}
                   </p>
                 </div>
 

@@ -82,8 +82,8 @@ export function AIAssistant() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'bot',
-      content: 'Namaste! 🙏 I am your Viraasat Intelligent Assistant.\n\nI coordinate three specialized sub-agents:\n• **Buyer Agent** — product recommendations & shopping\n• **Cultural Research Agent** — craft history, GI tags, techniques\n• **Inventory Agent** — stock, shipping, logistics\n\nAsk me about Indian heritage crafts, or describe the perfect piece you\'re looking for!',
-      agent: 'Buyer Agent',
+      content: 'Namaste! 🙏 Welcome to the Viraasat Heritage Concierge.\n\nI can assist you with:\n• **Craft Provenance & GI Lineage** — verify regional origins, materials, and master guilds\n• **Curated Recommendations** — select authenticated handcrafted pieces for your home or collection\n• **Care & Preservation** — traditional techniques for maintaining silk, brass, pottery, and textiles\n\nWhich Indian craft tradition can I help you explore today?',
+      agent: 'Craft Advisor',
     }
   ]);
   const [input, setInput] = useState('');
@@ -256,19 +256,19 @@ export function AIAssistant() {
           <CardHeader className="bg-[#5e2c18] text-white py-3 px-4 flex flex-row items-center justify-between shrink-0">
             <CardTitle className="text-sm flex items-center gap-2 font-heading tracking-wide">
               <Sparkles className="h-4 w-4 text-amber-400" />
-              Viraasat AI Assistant
+              Heritage Craft Concierge
             </CardTitle>
             <div className="flex items-center gap-1.5">
-              <div className="flex gap-1 items-center text-[10px] text-amber-300 bg-amber-900/30 rounded px-2 py-0.5">
+              <div className="flex gap-1.5 items-center text-[10px] text-amber-200 bg-amber-950/50 border border-amber-800/40 rounded-full px-2.5 py-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                3 agents online
+                Guild Desk Active
               </div>
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-white hover:bg-white/10 rounded-full"
                 onClick={() => setIsOpen(false)}
-                aria-label="Close AI Assistant"
+                aria-label="Close Concierge"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -287,8 +287,15 @@ export function AIAssistant() {
               >
                 {/* Agent label */}
                 {msg.agent && msg.role === 'bot' && (
-                  <span className="text-[8px] uppercase tracking-widest text-muted-foreground font-bold ml-9">
-                    🤖 {msg.agent}
+                  <span className="text-[8.5px] uppercase tracking-widest text-[#8F6826] dark:text-[#E8CA82] font-bold ml-9 flex items-center gap-1">
+                    <Sparkles className="w-2.5 h-2.5 text-amber-500" />
+                    {msg.agent === 'Buyer Agent'
+                      ? 'Craft Advisor'
+                      : msg.agent === 'Cultural Research Agent'
+                      ? 'Heritage Curator'
+                      : msg.agent === 'Inventory Agent'
+                      ? 'Guild Logistics'
+                      : msg.agent}
                   </span>
                 )}
 
@@ -512,8 +519,8 @@ export function AIAssistant() {
           whileTap={{ scale: 0.94 }}
           onClick={() => setIsOpen(true)}
           className="h-12 w-12 sm:h-14 sm:w-14 bg-primary hover:bg-primary/90 text-white shadow-2xl border border-[#5e2c18]/20 flex items-center justify-center rounded-2xl relative shadow-clay cursor-pointer"
-          title="Open AI Assistant"
-          aria-label="Open Viraasat AI Assistant"
+          title="Viraasat Heritage Concierge"
+          aria-label="Open Viraasat Heritage Concierge"
         >
           <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6" />
           <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">

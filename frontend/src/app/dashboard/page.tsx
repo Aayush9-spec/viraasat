@@ -948,7 +948,7 @@ function CustomerDashboardContent() {
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#8F6826] dark:text-[#C59B4B]">
                 <Link href="/" className="hover:text-[#701D24] transition-colors">Home</Link>
                 <span>/</span>
-                <span className="text-[#221C18] dark:text-[#FAF7F2]">Customer Sanctuary</span>
+                <span className="text-[#221C18] dark:text-[#FAF7F2]">Customer Hub</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#701D24] dark:text-[#E8CA82] tracking-tight">
                 Customer Account & Collection Hub

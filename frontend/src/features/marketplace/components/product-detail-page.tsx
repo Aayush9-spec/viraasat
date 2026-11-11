@@ -637,24 +637,19 @@ export function ProductDetailPageClient({
           </DialogContent>
         </Dialog>
 
-        {/* Two-Tower & Co-Purchase AI Recommendations Section */}
+        {/* Curated Recommendations Section */}
         <section className="mt-28 pt-16 border-t border-amber-900/10 relative overflow-hidden">
           <div className="text-center mb-12 space-y-2">
             <div className="flex items-center justify-center gap-2">
-              <Badge className="bg-amber-100 text-[#5e2c18] border border-amber-300 text-[10px] gap-1">
-                <Sparkles className="h-3 w-3 text-[#9c4221]" /> Two-Tower Neural Engine &amp; Co-Purchase Ranking
+              <Badge className="bg-secondary text-primary border border-border text-[10px] gap-1 uppercase tracking-widest font-semibold">
+                <Sparkles className="h-3 w-3 text-[#C59B4B]" /> Curated Heritage Guild Selection
               </Badge>
-              {recAccuracy && (
-                <Badge variant="outline" className="border-emerald-600 text-emerald-800 text-[10px]">
-                  {Math.round(recAccuracy * 100)}% Match Accuracy
-                </Badge>
-              )}
             </div>
             <h2 className="text-3xl md:text-4xl font-heading text-primary">
               Complementary Masterpieces &amp; Related Craft
             </h2>
             <p className="text-sm text-muted-foreground font-serif">
-              Personalized selections based on geographic synergy and collective patron appreciation.
+              Carefully paired selections honoring shared craft traditions and regional aesthetic harmony.
             </p>
           </div>
 

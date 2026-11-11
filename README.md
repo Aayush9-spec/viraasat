@@ -2,11 +2,11 @@
 
 # 🪔 Viraasat
 
-**The AI-Driven Marketplace for India's Traditional Artisans**
+**Curated Direct-to-Artisan Marketplace for India's Traditional Masterpieces**
 
 > *Preserve the heritage. Empower the artisans. Inspire the world.*
 
-[![Live App](https://img.shields.io/badge/App-virrasat.in-blue?logo=vercel&logoColor=white)](https://virrasat.in)
+[![Live App](https://img.shields.io/badge/App-virasat.in-blue?logo=vercel&logoColor=white)](https://virasat.in)
 [![Backend](https://img.shields.io/badge/API-FastAPI%20on%20Render-009688?logo=fastapi&logoColor=white)](https://viraasat-backend-f0c1.onrender.com/health)
 [![CI](https://img.shields.io/github/actions/workflow/status/Aayush9-spec/viraasat/ci.yml?label=CI&logo=github)](https://github.com/Aayush9-spec/viraasat/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)

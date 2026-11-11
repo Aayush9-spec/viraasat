@@ -6,7 +6,7 @@ export const siteConfig = {
   name: 'Viraasat',
   tagline: 'Authentic Indian Artisan Marketplace',
   description:
-    'A premium marketplace for authentic artisan crafts and heritage products, powered by AI.',
+    'A curated direct-to-artisan marketplace for GI-certified authentic Indian handicrafts, master handlooms, and ancestral art forms.',
   url: 'https://www.virrasat.in',
   author: 'Viraasat Crafts Community',
   links: {

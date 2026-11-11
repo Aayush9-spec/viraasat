@@ -138,10 +138,10 @@ export default function DownloadPage() {
               <Camera className="w-5 h-5 text-[#C59B4B]" />
             </div>
             <h3 className="font-serif font-bold text-lg text-[#221C18]">
-              {t('download.card1Title') || 'AI Cultural Story & Vision'}
+              {t('download.card1Title') || 'Visual Craft Recognition & Provenance'}
             </h3>
             <p className="text-xs text-[#655B53] leading-relaxed">
-              {t('download.card1Desc') || 'Explore authentic Indian handicrafts with AI-powered craft recognition, uncovering historical ethnography, materials, and centuries-old cultural heritage.'}
+              {t('download.card1Desc') || 'Identify authentic Indian handicrafts with camera lens recognition, instantly uncovering regional origin, materials, and verified GI craft lineage.'}
             </p>
           </Card>
 

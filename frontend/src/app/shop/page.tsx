@@ -1087,7 +1087,7 @@ function ShopPageContent() {
 
                   {/* Description & Materials */}
                   <div className="mt-4 text-xs text-muted-foreground leading-relaxed space-y-2">
-                    <p>{translateDescription(inspectedProduct) || 'Handcrafted using sacred generational techniques passed down through master craft guilds.'}</p>
+                    <p>{translateDescription(inspectedProduct) || 'Handcrafted using generational techniques passed down through master craft guilds.'}</p>
                     <div className="grid grid-cols-2 gap-2 pt-2 text-[11px] text-foreground">
                       <div className="bg-secondary p-2.5 rounded-lg border border-border">
                         <span className="text-muted-foreground block text-[10px] uppercase font-bold">Materials</span>
@@ -1127,7 +1127,7 @@ function ShopPageContent() {
                         toggleWishlist(inspectedProduct);
                         toast({
                           title: isWishlisted(inspectedProduct.id) ? "Removed from Wishlist" : "Saved to Wishlist ❤️",
-                          description: `${t(inspectedProduct.name)} updated in your sacred wishlist.`,
+                          description: `${t(inspectedProduct.name)} updated in your wishlist.`,
                         });
                       }}
                       className="px-4 py-3.5 bg-card border border-border hover:border-primary rounded-xl text-foreground transition-colors cursor-pointer"
