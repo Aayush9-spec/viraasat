@@ -250,7 +250,7 @@
         "patronCuration": "ذاتی نوعیت کا فنی انتخاب",
         "curatedForTaste": "آپ کی پسند اور علاقائی وابستگی کے مطابق",
         "targetOrigin": "ہدف خطہ:",
-        "neuralMatch": "نیورل مماثلت",
+        "neuralMatch": "کیوریٹر کا انتخاب",
         "giTagCertified": "جی آئی تصدیق شدہ",
         "custodiansTitle": "ثقافت کے امین",
         "meetHands": "ورثے کے تخلیق کاروں سے ملیں",
@@ -274,7 +274,9 @@
         "heritageJournal": "دی ہیریٹیج جرنل",
         "allEssays": "تمام مضامین",
         "viewCompleteDetails": "فن پارے کی مکمل تفصیلات دیکھیں",
-        "addToCollectionBag": "مجموعہ تھیلے میں شامل کریں"
+        "addToCollectionBag": "مجموعہ تھیلے میں شامل کریں",
+        "regionalHeritage": "علاقائی ورثہ دستکار انجمنیں",
+        "neuralMatchingDesc": "مستند علاقائی دستکاری کا انتخاب جو آپ کی جمالیاتی ترجیحات کو جی آئی سے تصدیق شدہ فن پاروں سے جوڑتا ہے۔"
     },
     "footer": {
         "about": {

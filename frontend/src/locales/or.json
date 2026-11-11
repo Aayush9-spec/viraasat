@@ -250,7 +250,7 @@
         "patronCuration": "ବ୍ୟକ୍ତିଗତ କଳା ସଂଗ୍ରହ",
         "curatedForTaste": "ଆପଣଙ୍କ ରୁଚି ଓ ଆଞ୍ଚଳିକ ପସନ୍ଦ ଅନୁସାରେ",
         "targetOrigin": "ଲକ୍ଷ୍ୟ ଅଞ୍ଚଳ:",
-        "neuralMatch": "ନ୍ୟୁରାଲ୍ ମେଳ",
+        "neuralMatch": "କ୍ୟୁରେଟର୍ ପସନ୍ଦ",
         "giTagCertified": "ଜିଆଇ ପ୍ରମାଣିତ",
         "custodiansTitle": "ସଂସ୍କୃତିର ସଂରକ୍ଷକ",
         "meetHands": "ଐତିହ୍ୟର ସ୍ରଷ୍ଟାଙ୍କୁ ଭେଟନ୍ତୁ",
@@ -274,7 +274,9 @@
         "heritageJournal": "ଦ ହେରିଟେଜ୍ ଜର୍ଣ୍ଣାଲ୍",
         "allEssays": "ସମସ୍ତ ପ୍ରବନ୍ଧ",
         "viewCompleteDetails": "କଳାକୃତିର ସମ୍ପୂର୍ଣ୍ଣ ବିବରଣୀ ଦେଖନ୍ତୁ",
-        "addToCollectionBag": "ସଂଗ୍ରହ ବ୍ୟାଗରେ ଯୋଡନ୍ତୁ"
+        "addToCollectionBag": "ସଂଗ୍ରହ ବ୍ୟାଗରେ ଯୋଡନ୍ତୁ",
+        "regionalHeritage": "ଆଞ୍ଚଳିକ ଐତିହ୍ୟ ସଂଘ",
+        "neuralMatchingDesc": "ପ୍ରମାଣିତ ଆଞ୍ଚଳିକ ହସ୍ତଶିଳ୍ପ ସଂଗ୍ରହ ଯାହା ଆପଣଙ୍କ ସୌନ୍ଦର୍ଯ୍ୟାତ୍ମକ ପସନ୍ଦକୁ ଜିଆଇ-ପ୍ରମାଣିତ ଉତ୍କୃଷ୍ଟ କଳାକୃତି ସହିତ ଯୋଡିଥାଏ।"
     },
     "footer": {
         "about": {

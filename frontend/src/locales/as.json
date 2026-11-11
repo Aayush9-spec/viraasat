@@ -250,7 +250,7 @@
         "patronCuration": "ব্যক্তিগতকৃত কলা সংকলন",
         "curatedForTaste": "আপোনাৰ ৰুচি আৰু আঞ্চলিক পছন্দ অনুসৰি",
         "targetOrigin": "নিৰ্দিষ্ট অঞ্চল:",
-        "neuralMatch": "নিউৰেল মিল",
+        "neuralMatch": "কিউৰেটৰৰ পছন্দ",
         "giTagCertified": "জিআই প্ৰমাণিত",
         "custodiansTitle": "সংস্কৃতিৰ অভিভাৱকসকল",
         "meetHands": "ঐতিহ্যৰ নিৰ্মাতাসকলক লগ পাওক",
@@ -274,7 +274,9 @@
         "heritageJournal": "দ্য হেৰিটেজ জাৰ্নেল",
         "allEssays": "সকলো প্ৰবন্ধ",
         "viewCompleteDetails": "শিল্পকৃতিৰ সম্পূৰ্ণ বিৱৰণ চাওক",
-        "addToCollectionBag": "সংগ্ৰহ মুনাত যোগ কৰক"
+        "addToCollectionBag": "সংগ্ৰহ মুনাত যোগ কৰক",
+        "regionalHeritage": "আঞ্চলিক ঐতিহ্য সংঘ",
+        "neuralMatchingDesc": "প্ৰমাণিত আঞ্চলিক শিল্প সংগ্ৰহ যিয়ে আপোনাৰ নান্দনিক পছন্দক জিআই-প্ৰমাণিত শিল্পকৃতিৰ সৈতে সংযোগ কৰে।"
     },
     "footer": {
         "about": {

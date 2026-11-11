@@ -250,7 +250,7 @@
         "patronCuration": "ਵਿਅਕਤੀਗਤ ਕਲਾ ਸੰਗ੍ਰਹਿ",
         "curatedForTaste": "ਤੁਹਾਡੀ ਪਸੰਦ ਅਤੇ ਖੇਤਰੀ ਲਗਾਅ ਅਨੁਸਾਰ",
         "targetOrigin": "ਨਿਸ਼ਾਨਾ ਖੇਤਰ:",
-        "neuralMatch": "ਨਿਊਰਲ ਮੇਲ",
+        "neuralMatch": "ਕਿਊਰੇਟਰ ਚੋਣ",
         "giTagCertified": "ਜੀਆਈ ਪ੍ਰਮਾਣਿਤ",
         "custodiansTitle": "ਸੱਭਿਆਚਾਰ ਦੇ ਰਾਖੇ",
         "meetHands": "ਵਿਰਾਸਤ ਦੇ ਸਿਰਜਣਹਾਰਾਂ ਨੂੰ ਮਿਲੋ",
@@ -274,7 +274,9 @@
         "heritageJournal": "ਦ ਹੈਰੀਟੇਜ ਜਰਨਲ",
         "allEssays": "ਸਾਰੇ ਲੇਖ",
         "viewCompleteDetails": "ਕਲਾਕ੍ਰਿਤੀ ਦਾ ਪੂਰਾ ਵੇਰਵਾ ਦੇਖੋ",
-        "addToCollectionBag": "ਸੰਗ੍ਰਹਿ ਝੋਲੇ ਵਿੱਚ ਪਾਓ"
+        "addToCollectionBag": "ਸੰਗ੍ਰਹਿ ਝੋਲੇ ਵਿੱਚ ਪਾਓ",
+        "regionalHeritage": "ਖੇਤਰੀ ਵਿਰਾਸਤ ਸੰਘ",
+        "neuralMatchingDesc": "ਪ੍ਰਮਾਣਿਤ ਖੇਤਰੀ ਦਸਤਕਾਰੀ ਸੰਗ੍ਰਹਿ ਜੋ ਤੁਹਾਡੀਆਂ ਕਲਾਤਮਕ ਤਰਜੀਹਾਂ ਨੂੰ ਜੀਆਈ-ਪ੍ਰਮਾਣਿਤ ਸ਼ਾਹਕਾਰਾਂ ਨਾਲ ਜੋੜਦਾ ਹੈ।"
     },
     "footer": {
         "about": {

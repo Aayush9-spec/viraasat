@@ -250,7 +250,7 @@
         "patronCuration": "ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ಕಲಾ ಸಂಗ್ರಹ",
         "curatedForTaste": "ನಿಮ್ಮ ಅಭಿರುಚಿ ಮತ್ತು ಪ್ರಾದೇಶಿಕ ಒಲವಿಗೆ ತಕ್ಕಂತೆ",
         "targetOrigin": "ಉದ್ದೇಶಿತ ಪ್ರದೇಶ:",
-        "neuralMatch": "ನ್ಯೂರಲ್ ಹೊಂದಾಣಿಕೆ",
+        "neuralMatch": "ಕ್ಯುರೇಟರ್ ಆಯ್ಕೆ",
         "giTagCertified": "ಜಿಐ ಪ್ರಮಾಣೀಕೃತ",
         "custodiansTitle": "ಸಂಸ್ಕೃತಿಯ ರಕ್ಷಕರು",
         "meetHands": "ಪರಂಪರೆಯ ಹಿಂದಿನ ಶಿಲ್ಪಿಗಳನ್ನು ಭೇಟಿ ಮಾಡಿ",
@@ -274,7 +274,9 @@
         "heritageJournal": "ದಿ ಹೆರಿಟೇಜ್ ಜರ್ನಲ್",
         "allEssays": "ಎಲ್ಲಾ ಲೇಖನಗಳು",
         "viewCompleteDetails": "ಸಂಪೂರ್ಣ ಕಲಾಕೃತಿಯ ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
-        "addToCollectionBag": "ಸಂಗ್ರಹ ಬ್ಯಾಗ್‌ಗೆ ಸೇರಿಸಿ"
+        "addToCollectionBag": "ಸಂಗ್ರಹ ಬ್ಯಾಗ್‌ಗೆ ಸೇರಿಸಿ",
+        "regionalHeritage": "ಪ್ರಾದೇಶಿಕ ಪರಂಪರೆ ಸಂಘಗಳು",
+        "neuralMatchingDesc": "ನಿಮ್ಮ ಸೌಂದರ್ಯಾತ್ಮಕ ಆದ್ಯತೆಗಳನ್ನು ಜಿಐ-ಪ್ರಮಾಣೀಕೃತ ಕರಕುಶಲ ಕೃತಿಗಳೊಂದಿಗೆ ಜೋಡಿಸುವ ಅಧಿಕೃತ ಪ್ರಾದೇಶಿಕ ಕಲೆ ಸಂಗ್ರಹ."
     },
     "footer": {
         "about": {

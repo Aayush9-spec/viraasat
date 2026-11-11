@@ -250,7 +250,7 @@
         "patronCuration": "વ્યક્તિગત કલા રસિક ક્યુરેશન",
         "curatedForTaste": "તમારી પસંદ અને પ્રાદેશિક રુચિ મુજબ",
         "targetOrigin": "લક્ષિત પ્રદેશ:",
-        "neuralMatch": "ન્યુરલ મેચ",
+        "neuralMatch": "ક્યુરેટર પસંદગી",
         "giTagCertified": "જીઆઈ પ્રમાણિત",
         "custodiansTitle": "સંસ્કૃતિના સંરક્ષકો",
         "meetHands": "વારસા પાછળના કસબીઓને મળો",
@@ -274,7 +274,9 @@
         "heritageJournal": "ધ હેરિટેજ જર્નલ",
         "allEssays": "બધા લેખો",
         "viewCompleteDetails": "કલાકૃતિની સંપૂર્ણ વિગતો જુઓ",
-        "addToCollectionBag": "સંગ્રહ બેગમાં ઉમેરો"
+        "addToCollectionBag": "સંગ્રહ બેગમાં ઉમેરો",
+        "regionalHeritage": "પ્રાદેશિક વારસો ગિલ્ડ્સ",
+        "neuralMatchingDesc": "પ્રમાણિત પ્રાદેશિક હસ્તકલા સંગ્રહ જે તમારી કલાત્મક પસંદગીઓને જીઆઈ-પ્રમાણિત ઉત્કૃષ્ટ કૃતિઓ સાથે જોડે છે."
     },
     "footer": {
         "about": {

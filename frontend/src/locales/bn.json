@@ -250,7 +250,7 @@
         "patronCuration": "ব্যক্তিগতকৃত শিল্প সংকলন",
         "curatedForTaste": "আপনার রুচি ও আঞ্চলিক পছন্দের মেলবন্ধনে",
         "targetOrigin": "নির্দিষ্ট অঞ্চল:",
-        "neuralMatch": "নিউরাল মিল",
+        "neuralMatch": "কিউরেটর পছন্দ",
         "giTagCertified": "জিআই প্রত্যয়িত",
         "custodiansTitle": "সংস্কৃতির অভিভাবকবৃন্দ",
         "meetHands": "ঐতিহ্যের রূপকারদের সাথে পরিচিত হোন",
@@ -274,7 +274,9 @@
         "heritageJournal": "দ্য হেরিটেজ জার্নাল",
         "allEssays": "সকল প্রবন্ধ",
         "viewCompleteDetails": "শিল্পকর্মের সম্পূর্ণ বিবরণ দেখুন",
-        "addToCollectionBag": "সংগ্রহের ব্যাগে যোগ করুন"
+        "addToCollectionBag": "সংগ্রহের ব্যাগে যোগ করুন",
+        "regionalHeritage": "আঞ্চলিক ঐতিহ্য গিল্ড",
+        "neuralMatchingDesc": "প্রমাণিত আঞ্চলিক কারুশিল্প সংগ্রহ যা আপনার নান্দনিক পছন্দকে জিআই-প্রত্যয়িত শ্রেষ্ঠ শিল্পকর্মের সাথে সংযুক্ত করে।"
     },
     "footer": {
         "about": {

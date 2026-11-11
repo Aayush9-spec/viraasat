@@ -250,7 +250,7 @@
         "patronCuration": "वैयक्तिक कला रसिक निवड",
         "curatedForTaste": "आपल्या आवडीनुसार आणि प्रादेशिक जवळीकीनुसार",
         "targetOrigin": "लक्षित प्रदेश:",
-        "neuralMatch": "न्यूरल जुळणी",
+        "neuralMatch": "क्युरेटर निवड",
         "giTagCertified": "जीआय प्रमाणित",
         "custodiansTitle": "संस्कृतीचे रक्षक",
         "meetHands": "या वारशाच्या शिल्पकारांना भेटा",
@@ -274,7 +274,9 @@
         "heritageJournal": "द हेरिटेज जर्नल",
         "allEssays": "सर्व निबंध",
         "viewCompleteDetails": "कलाकृतीचा संपूर्ण तपशील पहा",
-        "addToCollectionBag": "संग्रह पिशवीत टाका"
+        "addToCollectionBag": "संग्रह पिशवीत टाका",
+        "regionalHeritage": "प्रादेशिक वारसा संघ",
+        "neuralMatchingDesc": "प्रमाणित प्रादेशिक हस्तकला संग्रह जो तुमच्या कलात्मक आवडींना जीआय-प्रमाणित उत्कृष्ट कलाकृतींशी जोडतो."
     },
     "footer": {
         "about": {
