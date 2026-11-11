@@ -317,7 +317,7 @@ export function Header() {
                         />
                       )}
                       <UserButton.Link
-                        label={isArtisan ? "Artisan Dashboard" : "My Dashboard"}
+                        label={isArtisan ? "Artisan Dashboard" : "My Account"}
                         labelIcon={<LayoutDashboard className="h-4 w-4 text-primary" />}
                         href={isArtisan ? "/artisan/dashboard" : "/dashboard"}
                       />
@@ -327,12 +327,12 @@ export function Header() {
                         href={isArtisan ? "/artisan/profile" : "/dashboard/profile"}
                       />
                       <UserButton.Link
-                        label={isArtisan ? "Artisan Products" : "My Orders"}
+                        label={isArtisan ? "Artisan Products" : "Track Orders"}
                         labelIcon={<Package className="h-4 w-4 text-amber-600" />}
                         href={isArtisan ? "/artisan/products" : "/orders"}
                       />
                       <UserButton.Link
-                        label={isArtisan ? "Switch to Customer Mode" : "My Wishlist"}
+                        label={isArtisan ? "Switch to Customer Mode" : "Saved Heirlooms"}
                         labelIcon={isArtisan ? <ShoppingBag className="h-4 w-4 text-amber-600" /> : <Heart className="h-4 w-4 text-rose-500" />}
                         href={isArtisan ? "/switch-role?to=buyer" : "/wishlist"}
                       />
@@ -406,16 +406,16 @@ export function Header() {
                       ) : (
                         <>
                           <DropdownMenuItem asChild>
-                            <Link href="/dashboard" className="cursor-pointer font-medium text-primary">My Dashboard</Link>
+                            <Link href="/dashboard" className="cursor-pointer font-medium text-primary">My Account</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
                             <Link href="/shop" className="cursor-pointer">Browse Shop</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link href="/orders" className="cursor-pointer">My Orders</Link>
+                            <Link href="/orders" className="cursor-pointer">Track Orders</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link href="/wishlist" className="cursor-pointer">My Wishlist</Link>
+                            <Link href="/wishlist" className="cursor-pointer">Saved Heirlooms</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
                             <Link href="/switch-role?to=artisan" className="cursor-pointer text-amber-600 font-medium">Switch to Artisan Studio</Link>

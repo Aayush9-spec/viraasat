@@ -4,16 +4,16 @@
 
 export const siteConfig = {
   name: 'Viraasat',
-  tagline: 'Authentic Indian Artisan Marketplace',
+  tagline: 'Authentic GI-Certified Indian Crafts Directly from Master Guilds',
   description:
     'A curated direct-to-artisan marketplace for GI-certified authentic Indian handicrafts, master handlooms, and ancestral art forms.',
-  url: 'https://www.virrasat.in',
+  url: 'https://virasat.in',
   author: 'Viraasat Crafts Community',
   links: {
     instagram: 'https://instagram.com/viraasat_india',
     facebook: 'https://facebook.com/viraasat.india',
     twitter: 'https://twitter.com/viraasat_crafts',
-    supportEmail: 'care@virrasat.in',
+    supportEmail: 'care@virasat.in',
   },
   mainNav: [
     { title: 'nav.home', href: '/' },

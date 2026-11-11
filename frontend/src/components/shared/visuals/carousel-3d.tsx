@@ -34,7 +34,7 @@ export const Carousel3D = () => {
         const combined = [...localItems, ...remoteItems];
         return combined.slice(0, 12).map((prod) => ({
           ...prod,
-          carouselImageUrl: prod.images[0] || 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300',
+          carouselImageUrl: prod.images[0] || '/images/products/clean/handcrafted-terracotta-diya.jpg',
         }));
     }, []);
 

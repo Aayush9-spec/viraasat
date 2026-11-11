@@ -948,10 +948,10 @@ function CustomerDashboardContent() {
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#8F6826] dark:text-[#C59B4B]">
                 <Link href="/" className="hover:text-[#701D24] transition-colors">Home</Link>
                 <span>/</span>
-                <span className="text-[#221C18] dark:text-[#FAF7F2]">Customer Hub</span>
+                <span className="text-[#221C18] dark:text-[#FAF7F2]">My Account</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#701D24] dark:text-[#E8CA82] tracking-tight">
-                Customer Account & Collection Hub
+                My Account &amp; Heirlooms
               </h1>
             </div>
           </div>
@@ -989,7 +989,7 @@ function CustomerDashboardContent() {
             <div className="mb-4 pb-4 border-b border-[#E8DCCB]/60 dark:border-stone-800 flex items-center justify-between">
               <ViraasatLogo variant="full" size="md" />
               <span className="text-[10px] font-mono uppercase tracking-widest text-[#C59B4B] font-bold">
-                Patron Hub
+                My Account
               </span>
             </div>
 
@@ -1006,7 +1006,7 @@ function CustomerDashboardContent() {
                   {user?.fullName || user?.firstName || 'Art Connoisseur'}
                 </h3>
                 <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
-                  {user?.primaryEmailAddress?.emailAddress || 'patron@virrasat.in'}
+                  {user?.primaryEmailAddress?.emailAddress || 'patron@virasat.in'}
                 </p>
                 <div className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold uppercase tracking-wider text-[#C59B4B]">
                   <ShieldCheck className="w-3 h-3" /> Verified Patron
@@ -1028,7 +1028,7 @@ function CustomerDashboardContent() {
               >
                 <div className="flex items-center gap-2.5">
                   <LayoutDashboard className="w-4 h-4 shrink-0" />
-                  <span>Overview</span>
+                  <span>My Account</span>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 hidden lg:block opacity-60" />
               </button>
@@ -1045,7 +1045,7 @@ function CustomerDashboardContent() {
               >
                 <div className="flex items-center gap-2.5">
                   <Package className="w-4 h-4 shrink-0" />
-                  <span>My Orders</span>
+                  <span>Track Orders</span>
                 </div>
                 {totalOrdersCount > 0 && (
                   <span
@@ -1071,7 +1071,7 @@ function CustomerDashboardContent() {
               >
                 <div className="flex items-center gap-2.5">
                   <Heart className="w-4 h-4 shrink-0" />
-                  <span>Saved Wishlist</span>
+                  <span>Saved Heirlooms</span>
                 </div>
                 {wishlistCount > 0 && (
                   <span

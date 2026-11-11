@@ -290,7 +290,7 @@ export default function Marketplace() {
     const imgUrl =
       (Array.isArray(product.images) && product.images[0]) ||
       product.img ||
-      "https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=800&q=80";
+      "/images/products/clean/handcrafted-terracotta-diya.jpg";
 
     addItem({
       id: String(product.id),
@@ -610,11 +610,11 @@ export default function Marketplace() {
             >
               <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-secondary relative">
                 <Image
-                  src="/images/artisans/ghulam-nabi.jpg"
+                  src="/images/products/clean/kashmiri-sozni-pashmina-shawl.jpg"
                   alt="Kashmiri Pashmina"
                   fill
                   sizes="(max-width: 768px) 50vw, 20vw"
-                  className="object-cover object-[center_top] group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
               <h3 className="font-serif font-bold text-sm text-foreground group-hover:text-primary transition-colors">
@@ -632,11 +632,11 @@ export default function Marketplace() {
             >
               <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-secondary relative">
                 <Image
-                  src="/images/artisans/dulari-devi.jpg"
+                  src="/images/products/clean/madhubani-tree-of-life-folio.jpg"
                   alt="Madhubani Paintings"
                   fill
                   sizes="(max-width: 768px) 50vw, 20vw"
-                  className="object-cover object-[center_top] group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
               <h3 className="font-serif font-bold text-sm text-foreground group-hover:text-primary transition-colors">
@@ -696,7 +696,7 @@ export default function Marketplace() {
             >
               <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-secondary relative">
                 <Image
-                  src="https://images.unsplash.com/photo-1562869929-bda0650edb1f?auto=format&fit=crop&w=400&q=80"
+                  src="/images/products/clean/sunset-tapestry.jpg"
                   alt="Gujarat Handloom Weaves"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -803,7 +803,7 @@ export default function Marketplace() {
                 const imgUrl =
                   (Array.isArray(p.images) && p.images[0]) ||
                   p.img ||
-                  "https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=800&q=80";
+                  "/images/products/clean/handcrafted-terracotta-diya.jpg";
                 const isItemWishlisted = isWishlisted(String(p.id));
 
                 return (
@@ -1108,7 +1108,7 @@ export default function Marketplace() {
               {t('home.meetHands') || "Meet the Hands Behind the Legacy"}
             </h2>
             <p className="text-muted-foreground text-sm mt-3">
-              Master craftsmen from our verified Supabase artisan database, preserving ancestral guilds without middlemen.
+              Master craftspeople from recognized regional artisan guilds, preserving ancestral traditions without middlemen.
             </p>
           </div>
 
@@ -1118,8 +1118,8 @@ export default function Marketplace() {
                 id: "art-dulari",
                 name: "Padma Shri Dulari Devi",
                 email: "dulari.devi@mithila-viraasat.org",
-                region: "Bihar",
-                bio: "Padma Shri 2021 Awardee & Mithila Art Master, Ranti village, Madhubani. Celebrated worldwide for depicting Maithil folklore through fine line Kachni & Bharni brushwork with organic plant pigments.",
+                region: "Ranti, Bihar",
+                bio: "3rd-generation Mithila Art Master, Ranti Village Cluster, Madhubani. Renowned worldwide for Kachni & Bharni fine line-work using natural plant pigments (Aparajita flowers, neem, soot) drawn with hand-whittled bamboo nibs.",
                 avatarUrl: "/images/artisans/dulari-devi.jpg",
                 role: "artisan"
               },
@@ -1127,8 +1127,8 @@ export default function Marketplace() {
                 id: "art-bannuram",
                 name: "Shilp Guru Bannuram Baid",
                 email: "bannuram.baid@dhokra-viraasat.org",
-                region: "Chhattisgarh",
-                bio: "National Master Craftsman & Shilp Guru for Bastar Dhokra (Bell Metal Craft), Kondagaon, Bastar. Preserving 4,000-year-old Indus Valley lost-wax molten brass cast sculptures with tribal bees-wax coils.",
+                region: "Kondagaon, Bastar",
+                bio: "5th-generation Bell Metal Master, Kondagaon Bastar Cluster, Chhattisgarh. Revives 4,000-year-old lost-wax (cire-perdue) casting using wild forest beeswax coils, riverbed alluvial clay, and molten bell metal (78% copper, 22% tin).",
                 avatarUrl: "/images/artisans/bannuram-baid.jpg",
                 role: "artisan"
               },
@@ -1136,8 +1136,8 @@ export default function Marketplace() {
                 id: "art-gopal",
                 name: "Shilp Guru Gopal Saini",
                 email: "gopal.saini@jaipur-viraasat.org",
-                region: "Rajasthan",
-                bio: "Shilp Guru Awardee & National Master Potter, Jaipur, Rajasthan. Renowned for authentic low-fire Egyptian paste and quartz-stone blue pottery adorned with Persian cobalt and oxide glazes.",
+                region: "Sanganer, Jaipur",
+                bio: "4th-generation National Shilp Guru Potter, Sanganer Craft Cluster, Jaipur. Crafts authentic low-fire quartz-paste pottery using ground quartz stone, glass cullet, and organic fuller's earth with hand-painted Persian cobalt glazes.",
                 avatarUrl: "/images/artisans/gopal-saini.jpg",
                 role: "artisan"
               },
@@ -1145,8 +1145,8 @@ export default function Marketplace() {
                 id: "art-quadri",
                 name: "Padma Shri Shah Rasheed Ahmed Quadri",
                 email: "rasheed.quadri@bidri-viraasat.org",
-                region: "Karnataka",
-                bio: "Padma Shri 2023 Awardee & Shilp Guru for Bidriware, Bidar. Dedicated 50+ years to the 500-year-old Persian-origin metallurgy, inlaying pure silver wires into zinc-copper alloy oxidized with fort soil.",
+                region: "Bidar, Karnataka",
+                bio: "5th-generation Bidriware Master, Old Fort Cluster, Bidar, Karnataka. Inlays 99.9% pure silver wire into zinc-copper alloy matrices, blackened using centuries-old subterranean soil drawn exclusively from Bidar Fort.",
                 avatarUrl: "/images/artisans/shah-rasheed-quadri.webp",
                 role: "artisan"
               },
@@ -1154,8 +1154,8 @@ export default function Marketplace() {
                 id: "art-ghulam",
                 name: "Ustad Ghulam Nabi",
                 email: "ghulam.nabi@kani-viraasat.org",
-                region: "Kashmir",
-                bio: "National Awardee Pashmina Kani Weaver, Srinagar, Kashmir. Preserving the painstaking Mughal-era Kani weaving technique using wooden needle bobbins (kanis) and coded talim graph notations.",
+                region: "Srinagar, Kashmir",
+                bio: "4th-generation Master Weaver, Downtown Shehr-e-Khaas Cluster, Srinagar. Weaves GI-certified Pashmina Kani shawls using under-15-micron Changthangi mountain cashmere on traditional wooden looms guided by coded Talim verses.",
                 avatarUrl: "/images/artisans/ghulam-nabi.jpg",
                 role: "artisan"
               },
@@ -1163,8 +1163,8 @@ export default function Marketplace() {
                 id: "art-sudarshan",
                 name: "Padma Vibhushan Sudarshan Sahoo",
                 email: "sudarshan.sahoo@puri-viraasat.org",
-                region: "Odisha",
-                bio: "Padma Vibhushan 2021 & Shilp Guru 2003, Puri, Odisha. Legendary master sculptor creating monumental traditional Kalinga temple stones and wood sculptures according to classical Shilpa Shastras.",
+                region: "Puri, Odisha",
+                bio: "5th-generation Master Temple Sculptor, Raghurajpur Heritage Cluster, Puri, Odisha. Carves sacred monolithic sculptures from chlorite stone and seasoned native teak conforming strictly to classical 1,200-year-old Shilpa Shastras.",
                 avatarUrl: "/images/artisans/sudarshan-sahoo.jpg",
                 role: "artisan"
               }
@@ -1477,7 +1477,7 @@ export default function Marketplace() {
                   src={
                     (Array.isArray(quickViewProduct.images) && quickViewProduct.images[0]) ||
                     quickViewProduct.img ||
-                    "https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=800&q=80"
+                    "/images/products/clean/handcrafted-terracotta-diya.jpg"
                   }
                   alt={quickViewProduct.name}
                   fill

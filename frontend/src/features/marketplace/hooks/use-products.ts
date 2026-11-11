@@ -17,7 +17,7 @@ function mapRow(r: Record<string, unknown>): Product {
     createdAt: (r.created_at as string) || (r.createdAt as string),
     aiInsights: (r.ai_insights || r.aiInsights) as Product['aiInsights'],
     price: Number(r.price) || 0,
-    images: Array.isArray(r.images) && r.images.length > 0 ? (r.images as string[]) : ['https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=300'],
+    images: Array.isArray(r.images) && r.images.length > 0 ? (r.images as string[]) : ['/images/products/clean/handcrafted-terracotta-diya.jpg'],
   };
 }
 
