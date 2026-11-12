@@ -15,7 +15,7 @@ export interface AIServiceStatus {
 export async function getAIServiceStatus(): Promise<AIServiceStatus> {
   return {
     configured: isGeminiConfigured(),
-    model: 'Gemini 1.5 Flash',
-    provider: 'Google Genkit',
+    model: 'Gemini 3.5 Flash Vision',
+    provider: 'Google AI Studio',
   };
 }

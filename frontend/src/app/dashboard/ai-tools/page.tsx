@@ -54,10 +54,8 @@ import {
   SUPPORTED_LANGUAGES,
 } from '@/ai/languages';
 import { translateText } from '@/ai/flows/translate-text';
-import {
-  generateImageCulturalStory,
-  type StructuredCulturalStory,
-} from '@/ai/flows/image-cultural-story';
+import { generateImageCulturalStory } from '@/ai/flows/image-cultural-story';
+import type { StructuredCulturalStory } from '@/ai/types/cultural-story';
 import { getAIServiceStatus, type AIServiceStatus } from '@/ai/actions';
 import VoiceRecorder from '@/features/ai/components/voice-recorder';
 import { useLanguage } from '@/context/language-context';
@@ -136,7 +134,7 @@ export default function AIToolsPage() {
               <span>
                 Running in Smart Fallback mode — configure{' '}
                 <code className="font-mono font-semibold">GEMINI_API_KEY</code>{' '}
-                in environment variables to activate live AI inference.
+                in Vercel environment variables (Production) and redeploy to activate live AI inference.
               </span>
             </div>
           )}
@@ -896,7 +894,7 @@ function ImageStoryTab() {
         if (typeof window !== 'undefined') {
           const img = new window.Image();
           img.onload = () => {
-            const maxDim = 1200;
+            const maxDim = 1024; // Optimal dimension for AI vision and ultra-fast transfer (<250KB)
             let { width, height } = img;
             if (width > maxDim || height > maxDim) {
               if (width > height) {
@@ -913,7 +911,7 @@ function ImageStoryTab() {
             const ctx = canvas.getContext('2d');
             if (ctx) {
               ctx.drawImage(img, 0, 0, width, height);
-              const compressedUri = canvas.toDataURL('image/jpeg', 0.85);
+              const compressedUri = canvas.toDataURL('image/jpeg', 0.82);
               setImageDataUri(compressedUri);
             } else {
               setImageDataUri(rawDataUri);
@@ -990,12 +988,38 @@ function ImageStoryTab() {
     setIsAiGenerated(null);
 
     try {
-      const result = await generateImageCulturalStory({
-        imageDataUri,
-        craftContext: craftContext.trim() || undefined,
-        outputLanguage: storyLanguage,
-        requestId: reqId,
-      });
+      // Use direct API route with graceful fallback to Server Action
+      let result: any = null;
+      try {
+        const response = await fetch('/api/ai/cultural-story', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageDataUri,
+            craftContext: craftContext.trim() || undefined,
+            outputLanguage: storyLanguage,
+            requestId: reqId,
+          }),
+        });
+
+        if (response.ok) {
+          result = await response.json();
+        } else {
+          const errData = await response.json().catch(() => null);
+          result = errData || {
+            success: false,
+            error: `API returned HTTP ${response.status}. Please try again.`,
+          };
+        }
+      } catch (fetchErr) {
+        // Fallback to Server Action if client-side fetch fails
+        result = await generateImageCulturalStory({
+          imageDataUri,
+          craftContext: craftContext.trim() || undefined,
+          outputLanguage: storyLanguage,
+          requestId: reqId,
+        });
+      }
 
       // Guard against stale responses if user uploaded another image or initiated a new request
       if (activeRequestIdRef.current !== reqId) {
@@ -1012,23 +1036,24 @@ function ImageStoryTab() {
         });
       } else {
         const isIrrelevant = result.isHandicraft === false;
+        const noticeMsg = result.error || 'Could not analyze craft photo. Please check your connection or provide a craft hint.';
         toast({
           variant: 'destructive',
           title: isIrrelevant ? 'Non-Handicraft Image' : 'Analysis Notice',
-          description: result.error || 'Please upload a photo of an authentic traditional handmade Indian craft.',
+          description: noticeMsg,
         });
-        if (result.error) {
-          setStory(result.error);
-        }
+        setStory(noticeMsg);
       }
     } catch (error: any) {
       if (activeRequestIdRef.current !== reqId) return;
       console.error('Image analysis request failed:', error);
+      const errMsg = error?.message || 'Connection to AI service failed. Please check network connection and retry.';
       toast({
         variant: 'destructive',
         title: 'Analysis Notice',
-        description: 'Could not process the image. Please upload a clear photo of an authentic handcrafted item.',
+        description: errMsg,
       });
+      setStory(errMsg);
     } finally {
       if (activeRequestIdRef.current === reqId) {
         setIsLoading(false);
