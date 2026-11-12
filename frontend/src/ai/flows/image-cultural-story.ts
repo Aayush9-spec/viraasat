@@ -2,17 +2,43 @@
 
 /**
  * @fileOverview Multimodal AI flow to analyze an image of a handicraft and generate
- * an authentic, verified cultural story and historical past story of the craft using
- * Google Gemini 1.5 Flash Vision, with strict handicraft validation and comprehensive
- * archival fallbacks.
+ * an authentic, image-specific, evidence-grounded cultural story and visual analysis
+ * using Google Gemini Vision (gemini-3.5-flash), with strict handicraft validation,
+ * structured JSON output, and robust offline archival matching.
  */
 
-import { ai, isGeminiConfigured } from '@/ai/genkit';
+import { ai, isGeminiConfigured, getGeminiApiKey } from '@/ai/genkit';
 import { z } from 'genkit';
 import { getLanguageName } from '@/ai/languages';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
 const MAX_BASE64_LENGTH = 14 * 1024 * 1024; // ~10MB binary limit
+
+export const StructuredCulturalStorySchema = z.object({
+  identifiedObject: z.string().describe('Specific name and visual description of the identified item'),
+  craftCategory: z.string().describe('Craft category, e.g. Pottery, Textiles, Metalwork, Woodcraft, Painting, Jewelry'),
+  visualObservations: z.array(z.string()).describe('3-5 specific visual details directly observed in the photo'),
+  possibleMaterials: z.array(z.string()).describe('Materials observed or traditionally used'),
+  possibleTechniques: z.array(z.string()).describe('Craftsmanship techniques observed or traditional methods'),
+  possibleRegion: z.object({
+    name: z.string().describe('Likely Indian craft region or Unknown'),
+    confidence: z.enum(['high', 'medium', 'low']),
+    reason: z.string().describe('Explanation based strictly on visual motifs and evidence'),
+  }),
+  culturalStory: z.string().describe('Comprehensive cultural narrative in the target language'),
+  historicalContext: z.string().describe('Evidence-based historical roots and royal patronages'),
+  artisanProcess: z.string().describe('Step-by-step description of how master artisans handcraft this piece'),
+  culturalSignificance: z.string().describe('Symbolism, festive, and spiritual significance'),
+  giInformation: z.object({
+    possibleAssociation: z.string().nullable().describe('Possible GI craft match or null'),
+    verified: z.boolean().default(false),
+    explanation: z.string().describe('Statement that visual inspection alone cannot confirm GI status without physical provenance documentation'),
+  }),
+  confidence: z.enum(['high', 'medium', 'low']),
+  limitations: z.array(z.string()).describe('Known limitations of optical visual analysis'),
+});
+
+export type StructuredCulturalStory = z.infer<typeof StructuredCulturalStorySchema>;
 
 const ImageCulturalStoryInputSchema = z.object({
   imageDataUri: z
@@ -35,6 +61,7 @@ const ImageCulturalStoryInputSchema = z.object({
     .optional()
     .default('Hindi')
     .describe('Language in which to generate the cultural story analysis.'),
+  requestId: z.string().optional().describe('Unique client request ID to prevent stale race conditions.'),
 });
 
 export type ImageCulturalStoryInput = z.infer<
@@ -60,6 +87,8 @@ const ImageCulturalStoryOutputSchema = z.object({
     .describe('Whether the uploaded photo was authenticated as a traditional handmade Indian craft.'),
   craftTitle: z.string().optional(),
   error: z.string().optional(),
+  structured: StructuredCulturalStorySchema.optional(),
+  requestId: z.string().optional(),
 });
 
 export type ImageCulturalStoryOutput = z.infer<
@@ -86,72 +115,39 @@ function isExplicitNonHandicraftContext(context: string): boolean {
 }
 
 // ─── VERIFIED INDIAN HANDICRAFT HISTORICAL ARCHIVES ──────────────────────────
-// Detailed historical past stories and verified museum records for Indian GI crafts
+// Detailed historical records for verified Indian GI crafts when offline
 interface CraftArchiveEntry {
   id: string;
   names: string[];
   titleEn: string;
   titleHi: string;
-  getStory: (lang: string, context?: string) => string;
+  category: string;
+  region: string;
+  getStory: (lang: string) => string;
+  getStructured: (lang: string) => StructuredCulturalStory;
 }
 
 const CRAFT_ARCHIVE: CraftArchiveEntry[] = [
   {
-    id: 'banarasi-saree',
-    names: ['banarasi', 'banaras', 'varanasi', 'saree', 'sari', 'brocade', 'zari', 'katan', 'georgette silk', 'tussar silk', 'बनारसी', 'साड़ी'],
-    titleEn: 'Banarasi Handloom Silk Saree & Zari Brocade',
-    titleHi: 'बनारसी हथकरघा रेशम साड़ी एवं ज़री ब्रोकेड',
-    getStory: (lang: string) => {
-      if (lang === 'English') {
-        return `🏛️ **Heritage Identification (धरोहर पहचान)**:
-This creation is an authentic Banarasi Handloom Silk Saree, world-renowned for its opulent metallic Zari brocade and lustrous pure mulberry Katan silk. Distinctive visual hallmarks include the quintessential 'Jhallar' (an intricate upright leaf-fringe along the inner border) and opulent 'Kalga' (paisley) and floral arabesque motifs woven across the body and pallu.
-
-📜 **Ancient Past & Historical Story (प्राचीन इतिहास एवं उत्पत्ति कथा)**:
-The textile tradition of Varanasi is ancient, finding reverent mentions in the Rigveda and early Buddhist Pali canons, which speak of "Kaseyyaka"—the fabled cloth of Kashi woven with threads of gold worn by nobility and the Gautama Buddha himself. During the Mughal period (14th to 17th centuries), Emperor Akbar brought master weavers and artists from Persia to the holy city of Kashi. In Varanasi's ancient handloom quarters, Persian floral aesthetics seamlessly converged with sacred Hindu symbols (such as the Lotus, Bel, and Peacock). For over five centuries, master weaving families (predominantly the Ansari artisan community) have passed down this complex drawloom artistry from father to son.
-
-🧵 **Authentic Materials & Artisan Techniques (पारंपरिक सामग्री एवं शिल्प कला)**:
-Genuine Banarasi sarees utilize pure mulberry silk threads combined with electroplated gold and silver metallic Zari. Master weavers operate traditional pit looms using the laborious 'Kadwa' technique—where each floral motif is individually hand-threaded into the warp without any loose floats on the reverse side—or the delicate 'Fekwa' method. A single bridal heirloom requires two master weavers working in unison for 20 to 90 days.
-
-🪔 **Cultural, Sacred & Festive Significance (सांस्कृतिक एवं पारंपरिक महत्व)**:
-In Indian cultural traditions, a Banarasi saree represents the pinnacle of bridal trousseau (Solah Shringar) and auspicious dignity. Worn during sacred Vedic wedding rituals and major festivals like Diwali, its gold weave symbolizes spiritual prosperity, Lakshmi's grace, and timeless marital devotion.
-
-🇮🇳 **Artisan Community & Living Legacy (कारीगर परंपरा एवं संरक्षण)**:
-Protected under the Geographical Indication (GI) Act since 2009, authentic Varanasi handloom weaving safeguards the livelihood of over 100,000 artisan families across Varanasi, Chandauli, and Mirzapur. Preserving handloom Banarasi silk protects an irreplaceable living chapter of India's textile heritage against powerloom imitations.`;
-      }
-      return `🏛️ **धरोहर पहचान (Heritage Identification)**:
-यह कृति पारंपरिक 'बनारसी हथकरघा रेशम साड़ी' है, जो अपनी भव्य ज़री ब्रोकेड और शुद्ध कातान सिल्क के लिए विश्वविख्यात है। इसके पल्लू और किनारों पर विशिष्ट 'झालर' (पत्ती जैसी मनमोहक बॉर्डर) तथा पारंपरिक 'कल्गा' (अंबी/पैस्ले) एवं बेल-बूटे की बारीक बुनाई स्पष्ट रूप से पहचानी जा सकती है।
-
-📜 **प्राचीन इतिहास एवं उत्पत्ति कथा (Ancient Past & Historical Story)**:
-वाराणसी की वस्त्र बुनाई का इतिहास अत्यंत प्राचीन है। इसका उल्लेख ऋग्वेद तथा बौद्ध जातक कथाओं में मिलता है, जहाँ इसे "कासेय्यक" (काशी का स्वर्ण-वस्त्र) कहा गया है, जिसे प्राचीन काल में राजपरिवार और स्वयं भगवान बुद्ध धारण करते थे। 14वीं से 17वीं शताब्दी के मध्य मुग़ल काल में सम्राट अकबर के संरक्षण में फ़ारसी उस्ताद बुनकर काशी आए। यहाँ गंगा के तट पर फ़ारसी नक्काशी और प्राचीन भारतीय आध्यात्मिक प्रतीकों (कमल, शंख, मयूर) का ऐतिहासिक संगम हुआ। वाराणसी के पारंपरिक अंसारी बुनकर समुदाय ने इस विधा को पीढ़ी-दर-पीढ़ी जीवंत रखा है।
-
-🧵 **पारंपरिक सामग्री एवं शिल्प कला (Authentic Materials & Techniques)**:
-असली बनारसी साड़ी में शुद्ध मलबरी रेशम और सोने-चांदी के तारों से बनी ज़री का प्रयोग होता है। बुनकर पारंपरिक गड्ढा-करघे (Pit Loom) पर 'कड़वा' तकनीक (जहाँ प्रत्येक बूटे को अलग-अलग हाथ से गूंथा जाता है) या 'फेंकवा' तकनीक से बुनाई करते हैं। एक उत्कृष्ट साड़ी को पूरा करने में 20 दिन से लेकर 3 महीने तक का कठोर श्रम लगता है।
-
-🪔 **सांस्कृतिक एवं पारंपरिक महत्व (Cultural Significance)**:
-भारतीय परंपरा में बनारसी साड़ी वैवाहिक सोलह श्रृंगार, शुभ संस्कारों और दिवाली-दशहरा जैसे पावन पर्वों का अनिवार्य अंग है। इसका स्वर्ण आभायुक्त वस्त्र माता लक्ष्मी के आशीर्वाद, ऐश्वर्य और पारिवारिक प्रतिष्ठा का प्रतीक माना जाता है।
-
-🇮🇳 **कारीगर परंपरा एवं संरक्षण (Artisan Community & GI Status)**:
-वर्ष 2009 में इसे भारत सरकार द्वारा भौगोलिक उपदर्शन (GI Tag) प्रदान किया गया। वाराणसी, चंदौली और मिर्ज़ापुर के लाखों बुनकर परिवार इस अमूल्य धरोहर को जीवित रखे हुए हैं। हाथ से बुनी असली बनारसी साड़ी का चयन हमारे देश के बुनकरों की आजीविका और सांस्कृतिक अस्मिता का सच्चा सम्मान है।`;
-    },
-  },
-  {
     id: 'blue-pottery',
-    names: ['blue pottery', 'pottery', 'jaipur pottery', 'ceramic', 'vase', 'quartz', 'ब्लू पॉटरी', 'मिट्टी', 'बर्तन'],
+    names: ['blue pottery', 'pottery', 'jaipur pottery', 'ceramic', 'vase', 'urn', 'quartz', 'ब्लू पॉटरी', 'मिट्टी', 'बर्तन'],
     titleEn: 'Jaipur Blue Pottery (Glazed Quartz Ceramic)',
     titleHi: 'जयपुर ब्लू पॉटरी (क्वार्ट्ज अ-मृत्तिका शिल्प)',
+    category: 'Pottery & Ceramics',
+    region: 'Jaipur, Rajasthan',
     getStory: (lang: string) => {
       if (lang === 'English') {
         return `🏛️ **Heritage Identification (धरोहर पहचान)**:
-This artifact is a masterwork of iconic Jaipur Blue Pottery, celebrated for its vivid cobalt-blue and turquoise glaze, delicate floral arabesques, and clean translucent finish. 
+This artifact is a masterwork of Jaipur Blue Pottery, celebrated for its vivid cobalt-blue and turquoise glaze, delicate floral arabesques, and clean translucent finish.
 
 📜 **Ancient Past & Historical Story (प्राचीन इतिहास एवं उत्पत्ति कथा)**:
-Jaipur Blue Pottery traces its lineage to Turko-Persian glazed tile craftsmanship. It arrived in India during the Mughal era and was brought to Rajasthan in the early 19th century under the royal patronage of Maharaja Sawai Ram Singh II of Jaipur. Legendary master craftsman Kripal Singh Shekhawat famously revived and elevated the craft into a fine-art medium in the mid-20th century, establishing the traditional Jaipur blue and green palette recognized worldwide.
+Jaipur Blue Pottery traces its lineage to Turko-Persian glazed tile craftsmanship. It arrived in India during the Mughal era and was brought to Rajasthan in the early 19th century under the royal patronage of Maharaja Sawai Ram Singh II of Jaipur. Legendary master craftsman Kripal Singh Shekhawat famously revived and elevated the craft into a fine-art medium in the mid-20th century.
 
 🧵 **Authentic Materials & Artisan Techniques (पारंपरिक सामग्री एवं शिल्प कला)**:
-Remarkably, Jaipur Blue Pottery is the ONLY pottery tradition in the world that uses NO clay (clay-free pottery). Instead, artisans blend ground quartz stone powder, cullet (recycled glass), Fuller's earth (Multani Mitti), saji (natural soda), and Katira Gond (natural gum) into a pliable dough. The vessels are molded, hand-painted with cobalt oxide (royal blue) and copper oxide (turquoise green), coated with a glass glaze, and gently fired in wood-fired kilns at low temperatures (~800°C).
+Remarkably, Jaipur Blue Pottery is the ONLY pottery tradition in the world that uses NO clay (clay-free pottery). Instead, artisans blend ground quartz stone powder, cullet (recycled glass), Fuller's earth (Multani Mitti), saji (natural soda), and Katira Gond (natural gum). The vessels are hand-painted with cobalt oxide (royal blue) and copper oxide (turquoise green), coated with glass glaze, and fired in wood-fired kilns.
 
 🪔 **Cultural & Decorative Significance (सांस्कृतिक महत्व)**:
-Historically adorning the royal palaces of Amer and Jaipur City Palace, Blue Pottery symbolizes serene beauty and prosperity. It is an eco-friendly craft that does not crack, making it both a royal heirloom and a sustainable contemporary decor treasure.
+Historically adorning the royal palaces of Amer and Jaipur City Palace, Blue Pottery symbolizes serene beauty and prosperity. It is an eco-friendly craft that does not crack, making it both a royal heirloom and sustainable contemporary decor.
 
 🇮🇳 **Artisan Community & GI Heritage (धरोहर एवं संरक्षण)**:
 Awarded Geographical Indication (GI) status in 2008, Jaipur Blue Pottery supports clusters of traditional artisans around Kot Jewar and Sanganer in Rajasthan.`;
@@ -168,147 +164,312 @@ Awarded Geographical Indication (GI) status in 2008, Jaipur Blue Pottery support
 🪔 **सांस्कृतिक महत्व एवं GI टैग (Cultural Significance)**:
 वर्ष 2008 में इसे जीआई टैग (GI Tag) प्राप्त हुआ। यह पर्यावरण-अनुकूल कला राजस्थान के कोट जेवर और सांगानेर के कारीगरों की जीवंत विरासत है, जो महलों के वैभव को आधुनिक घरों तक पहुँचाती है।`;
     },
+    getStructured: (lang: string): StructuredCulturalStory => ({
+      identifiedObject: lang === 'English' ? 'Jaipur Blue Pottery Glazed Ceramic Vessel' : 'जयपुर ब्लू पॉटरी नक्काशीदार पात्र',
+      craftCategory: 'Pottery & Ceramics',
+      visualObservations: [
+        'Vivid cobalt blue and turquoise hand-painted floral motifs',
+        'Distinctive semi-translucent glossy quartz-glazed exterior',
+        'Curvilinear urn/vase silhouette characteristic of Jaipur workshops'
+      ],
+      possibleMaterials: [
+        'Ground quartz stone powder',
+        'Recycled glass cullet (Kanch)',
+        'Fuller earth (Multani Mitti)',
+        'Natural cobalt and copper mineral oxides'
+      ],
+      possibleTechniques: [
+        'Clay-free quartz dough molding',
+        'Freehand brushwork with natural mineral pigments',
+        'Low-temperature wood kiln firing (~800°C)'
+      ],
+      possibleRegion: {
+        name: 'Jaipur, Rajasthan',
+        confidence: 'high',
+        reason: 'Characteristic turquoise-cobalt glaze palette and clay-free quartz finish unique to Jaipur guilds.'
+      },
+      culturalStory: lang === 'English'
+        ? 'Jaipur Blue Pottery traces its roots to Turko-Persian glazed tile traditions brought to Rajasthan by Maharaja Sawai Ram Singh II in the 19th century.'
+        : 'जयपुर ब्लू पॉटरी की ऐतिहासिक जड़ें तुर्क-फ़ारसी चीनी मिट्टी शिल्प से जुड़ी हैं, जिसे 19वीं सदी में महाराजा सवाई राम सिंह द्वितीय ने राजस्थान में स्थापित किया।',
+      historicalContext: 'Flourished under 19th-century Jaipur royal patronage and revived by Shilp Guru Kripal Singh Shekhawat.',
+      artisanProcess: 'Quartz powder, glass, and Fuller earth are kneaded into dough, hand-molded, painted with cobalt oxides, and glazed.',
+      culturalSignificance: 'Symbolizes tranquility, prosperity, and royal Rajasthani architectural heritage.',
+      giInformation: {
+        possibleAssociation: 'Blue Pottery of Jaipur (GI Tag #2)',
+        verified: false,
+        explanation: 'Matches GI registered Blue Pottery of Jaipur specifications; physical verification required for certification.'
+      },
+      confidence: 'high',
+      limitations: ['Visual confirmation only; master artisan guild signature requires physical inspection.']
+    })
+  },
+  {
+    id: 'banarasi-saree',
+    names: ['banarasi', 'banaras', 'varanasi', 'saree', 'sari', 'brocade', 'zari', 'katan', 'बनारसी', 'साड़ी'],
+    titleEn: 'Banarasi Handloom Silk Saree & Zari Brocade',
+    titleHi: 'बनारसी हथकरघा रेशम साड़ी एवं ज़री ब्रोकेड',
+    category: 'Textiles & Handlooms',
+    region: 'Varanasi, Uttar Pradesh',
+    getStory: (lang: string) => {
+      if (lang === 'English') {
+        return `🏛️ **Heritage Identification (धरोहर पहचान)**:
+This creation is an authentic Banarasi Handloom Silk Saree, world-renowned for its opulent metallic Zari brocade and lustrous pure mulberry Katan silk.
+
+📜 **Ancient Past & Historical Story (प्राचीन इतिहास एवं उत्पत्ति कथा)**:
+The textile tradition of Varanasi is ancient, finding reverent mentions in the Rigveda and Buddhist Pali canons, which speak of "Kaseyyaka"—the fabled cloth of Kashi. During the Mughal period (14th to 17th centuries), Persian floral aesthetics converged with sacred Hindu symbols on traditional drawlooms.
+
+🧵 **Authentic Materials & Artisan Techniques (पारंपरिक सामग्री एवं शिल्प कला)**:
+Genuine Banarasi sarees utilize pure mulberry silk threads combined with electroplated gold and silver metallic Zari. Master weavers operate traditional pit looms using the laborious 'Kadwa' or 'Fekwa' methods.
+
+🪔 **Cultural, Sacred & Festive Significance (सांस्कृतिक एवं पारंपरिक महत्व)**:
+In Indian cultural traditions, a Banarasi saree represents the pinnacle of bridal trousseau (Solah Shringar) and auspicious dignity.
+
+🇮🇳 **Artisan Community & Living Legacy (कारीगर परंपरा एवं संरक्षण)**:
+Protected under the Geographical Indication (GI) Act since 2009, authentic Varanasi handloom weaving safeguards the livelihood of artisan families across Varanasi, Chandauli, and Mirzapur.`;
+      }
+      return `🏛️ **धरोहर पहचान (Heritage Identification)**:
+यह कृति पारंपरिक 'बनारसी हथकरघा रेशम साड़ी' है, जो अपनी भव्य ज़री ब्रोकेड और शुद्ध कातान सिल्क के लिए विश्वविख्यात है।
+
+📜 **प्राचीन इतिहास एवं उत्पत्ति कथा (Ancient Past & Historical Story)**:
+वाराणसी की वस्त्र बुनाई का इतिहास अत्यंत प्राचीन है। इसका उल्लेख ऋग्वेद तथा बौद्ध जातक कथाओं में मिलता है, जहाँ इसे "कासेय्यक" (काशी का स्वर्ण-वस्त्र) कहा गया है।
+
+🧵 **पारंपरिक सामग्री एवं शिल्प कला (Authentic Materials & Techniques)**:
+असली बनारसी साड़ी में शुद्ध मलबरी रेशम और सोने-चांदी के तारों से बनी ज़री का प्रयोग होता है। बुनकर पारंपरिक गड्ढा-करघे पर 'कड़वा' तकनीक से बुनाई करते हैं।
+
+🪔 **सांस्कृतिक एवं पारंपरिक महत्व (Cultural Significance)**:
+भारतीय परंपरा में बनारसी साड़ी वैवाहिक सोलह श्रृंगार, शुभ संस्कारों और दिवाली-दशहरा जैसे पावन पर्वों का अनिवार्य अंग है।
+
+🇮🇳 **कारीगर परंपरा एवं संरक्षण (Artisan Community & GI Status)**:
+वर्ष 2009 में इसे भारत सरकार द्वारा भौगोलिक उपदर्शन (GI Tag) प्रदान किया गया।`;
+    },
+    getStructured: (lang: string): StructuredCulturalStory => ({
+      identifiedObject: lang === 'English' ? 'Banarasi Handloom Silk Saree with Zari Brocade' : 'बनारसी हथकरघा रेशम साड़ी ज़री ब्रोकेड',
+      craftCategory: 'Textiles & Handlooms',
+      visualObservations: [
+        'Fine mulberry silk base with dense metallic warp/weft',
+        'Traditional floral Kalga / Paisley brocade motif',
+        'Distinctive Kadwa pit-loom borders'
+      ],
+      possibleMaterials: ['Pure mulberry Katan silk', 'Gold and silver metallic Zari'],
+      possibleTechniques: ['Kadwa handloom weaving', 'Fekwa jacquard / drawloom technique'],
+      possibleRegion: {
+        name: 'Varanasi, Uttar Pradesh',
+        confidence: 'high',
+        reason: 'Characteristic Zari brocade and Varanasi pit-loom weave.'
+      },
+      culturalStory: lang === 'English'
+        ? 'Ancient Kashi weaving mentioned in the Rigveda as Kaseyyaka, perfected over centuries by master Ansari weavers.'
+        : 'ऋग्वेद में वर्णित कासेय्यक की परंपरा, जिसे वाराणसी के पारंपरिक बुनकरों ने जीवित रखा है।',
+      historicalContext: 'Mughal and Gupta era patronage blending Persian motifs with sacred Hindu symbols.',
+      artisanProcess: 'Manual drawloom weaving requiring two artisans working 20-90 days per saree.',
+      culturalSignificance: 'Quintessential Indian bridal trousseau and sacred festive attire.',
+      giInformation: {
+        possibleAssociation: 'Banaras Brocades and Sarees (GI Tag #99)',
+        verified: false,
+        explanation: 'Visual features correspond with Banaras GI specifications; physical silk hallmark testing required.'
+      },
+      confidence: 'high',
+      limitations: ['Fabric purity and handloom vs powerloom verification requires tactile thread burn test.']
+    })
   },
   {
     id: 'dhokra-art',
-    names: ['dhokra', 'dokra', 'brass', 'metal', 'bell metal', 'lost wax', 'bastar', 'dancing girl', 'ढोकरा', 'पीतल', 'धातु'],
-    titleEn: 'Bastar & Bengal Dhokra (Lost-Wax Bell Metal Casting)',
-    titleHi: 'बस्तर एवं बंगाल ढोकरा शिल्प (प्राचीन लॉस्ट-वैक्स धातु कला)',
+    names: ['dhokra', 'dokra', 'brass', 'metal', 'bell metal', 'lost wax', 'bastar', 'dancing bull', 'ढोकरा', 'पीतल', 'धातु'],
+    titleEn: 'Bastar Dhokra (Lost-Wax Bell Metal Casting)',
+    titleHi: 'बस्तर ढोकरा शिल्प (प्राचीन लॉस्ट-वैक्स धातु कला)',
+    category: 'Metalwork & Sculptures',
+    region: 'Bastar, Chhattisgarh',
     getStory: (lang: string) => {
       if (lang === 'English') {
         return `🏛️ **Heritage Identification (धरोहर पहचान)**:
 This piece is an authentic Dhokra (Dokra) non-ferrous metal craft, distinguished by its primitive rustic contours, open-mesh wirework, and warm golden bell-metal alloy patina.
 
 📜 **Ancient Past & Historical Story (प्राचीन इतिहास एवं उत्पत्ति कथा)**:
-Dhokra is one of humanity's earliest metal-casting traditions, possessing an unbroken lineage exceeding 4,000 years. Its earliest renowned specimen is the prehistoric "Dancing Girl of Mohenjo-daro" (dating back to 2500 BCE in the Indus Valley Civilisation). Practiced by indigenous nomadic metalsmiths (the Ghadwa and Jhara tribes), the craft migrated across Central and Eastern India, deeply embedding itself in the tribal belts of Bastar (Chhattisgarh), West Bengal, and Odisha.
+Dhokra is one of humanity's earliest metal-casting traditions, with an unbroken lineage exceeding 4,000 years, tracing back to the prehistoric "Dancing Girl of Mohenjo-daro" (2500 BCE).
 
 🧵 **Authentic Materials & Artisan Techniques (पारंपरिक सामग्री एवं शिल्प कला)**:
-Dhokra utilizes the ancient 'Cire Perdue' (lost-wax) technique. Artisans hand-sculpt a core of local riverbed clay mixed with rice husk, wrap delicate hand-rolled pure beeswax threads around it to form elaborate surface details, and encase it in a secondary clay mold. Molten recycled brass/bell metal is poured into the kiln; the beeswax melts away and the molten metal permanently assumes its exact shape. Every single mold is broken after cooling, meaning NO TWO DHOKRA PIECES ARE EVER IDENTICAL.
+Dhokra utilizes the ancient 'Cire Perdue' (lost-wax) technique using natural forest beeswax threads coiled over a riverbed clay core. Molten bell metal (copper and tin alloy) fills the mold as the wax drains. Every mold is broken, so no two pieces are identical.
 
 🪔 **Cultural & Sacred Tribal Significance (सांस्कृतिक एवं जनजातीय महत्व)**:
-To the tribal communities of Bastar and Chota Nagpur, Dhokra is not merely decorative; it is deeply sacred. Artisans cast deities (Danteshwari Mata, Budha Deo), spirit guardians, bull totems, and auspicious lamps (Diyas) used in tribal marriage rites and harvest ceremonies.
+Artisans cast tribal deities, spirit guardians, bull totems, and auspicious lamps used in marriage and harvest rituals.
 
 🇮🇳 **Artisan Community & Heritage Preservation (धरोहर संरक्षण)**:
-Holding GI Tag protection, Bastar Dhokra sustains indigenous tribal families who keep the world's oldest living metallurgical art alive with zero factory molds or synthetic components.`;
+Holding GI Tag protection, Bastar Dhokra sustains indigenous tribal families of Chhattisgarh.`;
       }
       return `🏛️ **धरोहर पहचान (Heritage Identification)**:
-यह कृति बस्तर एवं बंगाल की विश्वप्रसिद्ध 'ढोकरा धातु शिल्प' (Dhokra Metal Craft) है, जो अपनी आदिम रेखाओं, बारीक मोम-तारों की जालीदार बुनावट और पीतल-कांसा की प्राकृतिक आभा से पहचानी जाती है।
+यह कृति बस्तर की विश्वप्रसिद्ध 'ढोकरा धातु शिल्प' है, जो अपनी आदिम रेखाओं, बारीक मोम-तारों की जालीदार बुनावट और कांसा-पीतल की आभा से पहचानी जाती है।
 
 📜 **प्राचीन इतिहास एवं उत्पत्ति कथा (Historical Past Story)**:
-ढोकरा शिल्प का इतिहास 4,000 वर्ष से भी अधिक पुराना है। इसका सबसे जीवंत प्रमाण सिंधु घाटी सभ्यता (2500 ईसा पूर्व) से प्राप्त 'मोहनजोदड़ो की नर्तकी' (Dancing Girl) है, जो इसी प्राचीन तकनीक से बनी थी। यह धातु कला की विश्व की प्राचीनतम जीवित परंपरा है। छत्तीसगढ़ के बस्तर के घड़वा समुदाय और बंगाल के कारीगरों ने जंगलों और नदियों के सान्निध्य में इस अमूल्य धरोहर को चार सहस्राब्दियों तक सुरक्षित रखा है।
+ढोकरा शिल्प का इतिहास 4,000 वर्ष से भी अधिक पुराना है। इसका प्रमाण सिंधु घाटी सभ्यता की 'मोहनजोदड़ो की नर्तकी' में मिलता है।
 
 🧵 **शिल्प विधि एवं सामग्री (Craftsmanship & Materials)**:
-ढोकरा निर्माण में 'लॉस्ट वैक्स' (भ्रष्ट मोम) विधि का प्रयोग होता है। नदी की चिकनी मिट्टी और धान की भूसी से पहले एक कच्चा ढांचा बनाया जाता है। उस पर प्राकृतिक मधुमक्खी के मोम के बारीक धागे लपेटकर आकृतियाँ उकेरी जाती हैं। फिर ऊपर से मिट्टी का लेप लगाकर भट्टी में तपाया जाता है। पिघला हुआ पीतल या कांसा डालने पर मोम पिघलकर बाहर निकल जाता है और धातु उसका स्थान ले लेती है। ठंडा होने पर सांचे को तोड़ दिया जाता है, जिससे विश्व में इस कला की प्रत्येक रचना अद्वितीय (Unique) होती है।
+ढोकरा निर्माण में 'लॉस्ट वैक्स' विधि का प्रयोग होता है। प्राकृतिक मधुमक्खी के मोम के बारीक धागों से आकृतियां बनाकर मिट्टी के सांचे में ढलाई की जाती है।
 
 🪔 **जनजातीय एवं सांस्कृतिक महत्व (Tribal & Cultural Significance)**:
-जनजातीय संस्कृति में ढोकरा देव-प्रतिमाओं (दंतेश्वरी माई, बूढ़ा देव), लोक नर्तकों, हाथियों और विवाह दीपों के निर्माण का पवित्र माध्यम है। इसे जीआई टैग (GI Tag) प्राप्त है, जो हमारे देश की प्राचीनतम धातु परंपरा का गौरव है।`;
+जनजातीय संस्कृति में ढोकरा देव-प्रतिमाओं, नर्तकों और पवित्र नंदी-बैलों के निर्माण का पवित्र माध्यम है।`;
     },
+    getStructured: (lang: string): StructuredCulturalStory => ({
+      identifiedObject: lang === 'English' ? 'Bastar Dhokra Lost-Wax Bell Metal Sculpture' : 'बस्तर ढोकरा लॉस्ट-वैक्स धातु शिल्प',
+      craftCategory: 'Metalwork & Sculptures',
+      visualObservations: [
+        'Hand-coiled wire-thread texture across the metal surface',
+        'Warm rustic golden-brass patina with intentional tribal raw finish',
+        'Distinctive hollow-core non-ferrous casting contours'
+      ],
+      possibleMaterials: ['Bell metal (copper-tin alloy)', 'Brass scrap', 'Natural forest beeswax', 'Riverbed alluvial clay'],
+      possibleTechniques: ['Cire perdue (lost-wax casting)', 'Hand-rolled wax wire coiling', 'Open hearth kiln firing'],
+      possibleRegion: {
+        name: 'Bastar, Chhattisgarh',
+        confidence: 'high',
+        reason: 'Characteristic tribal figurative style and lost-wax wire detailing typical of Bastar Ghadwa artisans.'
+      },
+      culturalStory: lang === 'English'
+        ? 'Living metallurgical lineage dating back 4,000 years to Mohenjo-daro, cast by indigenous tribal metalsmiths.'
+        : 'सिंधु घाटी की मोहनजोदड़ो नर्तकी से जुड़ी 4,000 वर्ष पुरानी धातु ढलाई परंपरा।',
+      historicalContext: 'Practiced by nomadic Ghadwa metalcasters across the tribal heartlands of central India.',
+      artisanProcess: 'Clay core is hand-wrapped with beeswax threads, encased in clay, and molten brass is poured in.',
+      culturalSignificance: 'Sacred tribal deities, auspicious totems, and ceremonial harvest lamps.',
+      giInformation: {
+        possibleAssociation: 'Bastar Dhokra (GI Tag #83)',
+        verified: false,
+        explanation: 'Stylistically aligns with Bastar Dhokra; official certification requires physical metallurgical testing.'
+      },
+      confidence: 'high',
+      limitations: ['Non-destructive visual analysis cannot determine precise metal alloy ratio.']
+    })
   },
   {
     id: 'pashmina',
     names: ['pashmina', 'cashmere', 'shawl', 'kashmiri', 'sozni', 'kani', 'पश्मीना', 'शॉल', 'कश्मीर'],
     titleEn: 'Kashmiri Handwoven Pashmina & Sozni Needlework',
     titleHi: 'कश्मीरी हथकरघा पश्मीना एवं सोज़नी सुईकारी',
+    category: 'Textiles & Handlooms',
+    region: 'Srinagar, Kashmir',
     getStory: (lang: string) => {
       if (lang === 'English') {
         return `🏛️ **Heritage Identification (धरोहर पहचान)**:
-This masterpiece is an authentic Kashmiri Handwoven Pashmina Shawl, celebrated globally as the 'Soft Gold' of fabrics. It features featherweight warmth, gossamer drape, and microscopic 'Sozni' needle embroidery displaying Paisley (Badam), Chinar leaf, and floral motifs.
+This masterpiece is an authentic Kashmiri Handwoven Pashmina Shawl, celebrated globally as the 'Soft Gold' of fabrics. It features featherweight warmth, gossamer drape, and microscopic 'Sozni' needle embroidery.
 
 📜 **Ancient Past & Historical Story (प्राचीन इतिहास एवं उत्पत्ति कथा)**:
-Kashmir's Pashmina heritage was institutionalized in the 15th century by the benevolent king of Kashmir, Sultan Zain-ul-Abidin (Badshah), and Persian Sufi mystic Mir Sayyid Ali Hamadani, who brought master craftsmen from Central Asia to teach the art of processing Changthangi goat wool. In the 18th and 19th centuries, Empress Joséphine of France popularized the Kashmiri shawl throughout European high society, cementing its reputation as an ultimate heirloom of global luxury.
+Kashmir's Pashmina heritage was institutionalized in the 15th century by Sultan Zain-ul-Abidin and Persian mystic Mir Sayyid Ali Hamadani. Empress Joséphine popularized the shawl throughout 18th-century European high society.
 
 🧵 **Authentic Materials & Artisan Techniques (पारंपरिक सामग्री एवं शिल्प कला)**:
-Pashmina wool is harvested exclusively from the underbelly fleece of the Changthangi goat (Capra hircus), thriving at altitudes exceeding 14,000 feet in Ladakh where winter temperatures plunge to -40°C. The fibers measure an astonishing 12-15 microns in diameter (six times finer than human hair). Kashmiri women hand-spin the delicate fiber on wooden 'Yender' (charkhas), after which master weavers weave the twill fabric on traditional wooden handlooms. The surface is then embroidered by master Sozni craftsmen using ultra-fine silk threads—a process requiring up to a full year for a single piece.
+Harvested exclusively from Changthangi mountain goats in Ladakh (fibers under 15 microns). Kashmiri women hand-spin the delicate fleece on wooden charkhas, master weavers weave it on handlooms, and Sozni artisans embroider fine silk patterns.
 
 🪔 **Cultural & Royal Significance (सांस्कृतिक महत्व)**:
-Historically given as royal 'Khilat' (robes of honor) by Mughal emperors, an authentic Pashmina is a cherished family heirloom passed down through generations.
+Historically given as royal 'Khilat' robes of honor by Mughal emperors, authentic Pashmina is a cherished family heirloom.
 
 🇮🇳 **GI Tag & Artisan Heritage (धरोहर संरक्षण)**:
-Protected by a strict GI Tag with purity testing (microscopic laser scanning), authentic hand-spun Pashmina protects tens of thousands of rural nomadic herders in Ladakh and artisan households across Srinagar and rural Kashmir.`;
+Protected by a strict GI Tag with laser purity testing, authentic hand-spun Pashmina protects nomadic herders and Kashmiri artisans.`;
       }
       return `🏛️ **धरोहर पहचान (Heritage Identification)**:
-यह कृति कश्मीर की विख्यात 'हथकरघा पश्मीना शॉल' है, जिसे विश्व भर में रेशमी कोमलता और गर्माहट के लिए 'सॉफ्ट गोल्ड' (स्वर्ण-तुल्य वस्त्र) कहा जाता है। इस पर पारंपरिक चिनार की पत्ती और बादाम (पैस्ले) की सूक्ष्म सोज़नी कशीदाकारी की गई है।
+यह कृति कश्मीर की विख्यात 'हथकरघा पश्मीना शॉल' है, जिसे रेशमी कोमलता और गर्माहट के लिए 'सॉफ्ट गोल्ड' कहा जाता है।
 
 📜 **प्राचीन इतिहास एवं उत्पत्ति कथा (Historical Past Story)**:
-पश्मीना का इतिहास 15वीं शताब्दी में कश्मीर के सुलतान ज़ैन-उल-आबिदीन और महान सूफी संत मीर सैय्यद अली हमदानी से प्रारंभ होता है, जिन्होंने लद्दाख की चांगथांगी बकरी के ऊन से वस्त्र निर्माण की विधा को कश्मीर में स्थापित किया। मुग़ल बादशाह बाबर, अकबर और जहाँगीर पश्मीना के अनन्य प्रशंसक थे। 18वीं सदी में नेपोलियन बोनापार्ट ने महारानी जोसेफिन को कश्मीरी शॉल भेंट की, जिसके बाद यह समूचे यूरोप के राजघरानों की सर्वप्रिय पोशाक बन गई।
+15वीं शताब्दी में सुलतान ज़ैन-उल-आबिदीन और मीर सैय्यद अली हमदानी ने लद्दाख की चांगथांगी बकरी के ऊन से वस्त्र निर्माण की परंपरा कश्मीर में स्थापित की।
 
 🧵 **शिल्प विधि एवं सामग्री (Craftsmanship & Materials)**:
-पश्मीना केवल लद्दाख के 14,000 फीट से ऊंचे चांगथांग पठार में रहने वाली पश्मीना बकरियों के नर्म अंतःरोम (Fleece) से प्राप्त होता है, जो मानव बाल से 6 गुना महीन (12-15 माइक्रोन) होता है। इसे कश्मीरी महिलाएं पारंपरिक चरखे (यिंदर) पर हाथ से कातती हैं और फिर लकड़ी के करघे पर बुना जाता है। इसके पश्चात उस्ताद कारीगर महीन सुई से महीनों की मेहनत से इस पर सोज़नी कढ़ाई करते हैं।
+लद्दाख के चांगथांग पठार (14,000 फीट) की बकरियों के 12-15 माइक्रोन महीन ऊन से हाथ द्वारा काती और लकड़ी के करघे पर बुनी जाती है।
 
 🪔 **सांस्कृतिक महत्व एवं GI टैग (Cultural Significance)**:
-भौगोलिक उपदर्शन (GI Tag) से प्रमाणित असली पश्मीना शॉल पीढ़ियों तक चलने वाली धरोहर है, जो लद्दाख के बंजारा चरवाहों और कश्मीर के हजारों दस्तकारों के जीवन की आधारशिला है।`;
+भौगोलिक उपदर्शन (GI Tag) से प्रमाणित असली पश्मीना शॉल पीढ़ियों तक चलने वाली शाही विरासत है।`;
     },
+    getStructured: (lang: string): StructuredCulturalStory => ({
+      identifiedObject: lang === 'English' ? 'Kashmiri Handwoven Pashmina Shawl with Sozni Needlework' : 'कश्मीरी हथकरघा पश्मीना शॉल सोज़नी कशीदाकारी',
+      craftCategory: 'Textiles & Handlooms',
+      visualObservations: [
+        'Ultra-fine gossamer weave with delicate natural matte finish',
+        'Microscopic Sozni needle embroidery portraying Paisley/Chinar motifs',
+        'Traditional hand-twisted open fringed borders'
+      ],
+      possibleMaterials: ['Changthangi mountain goat fleece (Cashmere)', 'Fine embroidery silk threads'],
+      possibleTechniques: ['Traditional wooden loom twill weave', 'Micro-needle Sozni hand embroidery'],
+      possibleRegion: {
+        name: 'Srinagar, Kashmir',
+        confidence: 'high',
+        reason: 'Characteristic fine Sozni motifs and gossamer weave typical of Kashmir valley guilds.'
+      },
+      culturalStory: lang === 'English'
+        ? 'Refined over six centuries from royal Mughal khilats to European high society.'
+        : '600 वर्षों की शाही विरासत जो मुग़ल दरबार से नेपोलियन काल तक प्रसिद्ध रही।',
+      historicalContext: 'Established by Sultan Zain-ul-Abidin and Mir Sayyid Ali Hamadani in the 15th century.',
+      artisanProcess: 'Hand-combed raw cashmere is spun on wooden charkhas and hand-embroidered over several months.',
+      culturalSignificance: 'Regal heirloom symbolizing timeless warmth, luxury, and cultural dignity.',
+      giInformation: {
+        possibleAssociation: 'Kashmir Pashmina (GI Tag #46)',
+        verified: false,
+        explanation: 'Visual appearance aligns with GI Kashmir Pashmina; fiber diameter laser testing required for official verification.'
+      },
+      confidence: 'high',
+      limitations: ['Micron fiber count (12-15μm) requires laboratory testing to confirm 100% pure Cashmere.']
+    })
   },
   {
     id: 'madhubani',
     names: ['madhubani', 'mithila', 'painting', 'folk art', 'bihar', 'मधुबनी', 'मिथिला', 'चित्रकला'],
     titleEn: 'Madhubani / Mithila Folk Painting of Bihar',
     titleHi: 'बिहार की पारंपरिक मधुबनी / मिथिला लोक चित्रकला',
+    category: 'Folk Art & Paintings',
+    region: 'Madhubani, Bihar',
     getStory: (lang: string) => {
       if (lang === 'English') {
         return `🏛️ **Heritage Identification (धरोहर पहचान)**:
-This artwork is a traditional Madhubani (Mithila) folk painting, instantly recognizable by its vibrant natural pigments, intricate double-line borders, geometric fillers, and expressive fish, peacock, and sacred deity motifs.
+This artwork is a traditional Madhubani (Mithila) folk painting, recognizable by its natural pigments, double-line borders, geometric fillers, and expressive fish, peacock, and sacred deity motifs.
 
 📜 **Ancient Past & Historical Story (प्राचीन इतिहास एवं उत्पत्ति कथा)**:
-Madhubani painting dates back to the ancient epic Ramayana. Oral history recounts that King Janaka of Mithila commissioned local women artists to paint the town and royal palaces to celebrate the divine marriage of his daughter, Princess Sita, to Lord Rama. For millennia, this sacred feminine art was preserved on the freshly plastered mud walls and floors of village courtyards during births, harvest festivals, and weddings. In the 1960s, during a severe regional drought, the All India Handicrafts Board encouraged the women of Madhubani to translate their courtyard murals onto handmade paper, unveiling this ancient art to the world.
+Mithila art traces its legendary genesis to King Janaka of Mithila, who commissioned local women to paint wedding murals for Princess Sita's marriage to Lord Rama in the Ramayana.
 
 🧵 **Authentic Materials & Artisan Techniques (पारंपरिक सामग्री एवं शिल्प कला)**:
-Traditionally created with bamboo twigs, nib pens, and matchsticks, Madhubani artists use 100% natural organic dyes: soot for black, turmeric for vibrant yellow, indigo for blue, aparajita flowers for purple, kusum flowers for red, and rice powder for white. No empty space is left unfilled—artists embellish backgrounds with patterns of birds, flowers, and cosmic geometry.
+Painted using natural pigments derived from Aparajita flowers (blue), turmeric (yellow), neem leaves, and lamp soot (black). Lines are drawn directly using split bamboo twigs and cotton-wrapped nibs.
 
-🪔 **Sacred Symbolism & Auspicious Roles (सांस्कृतिक महत्व)**:
-Central motifs like the 'Kohbar' represent matrimonial fertility, the Fish symbolizes good fortune and prosperity, the Peacock embodies divine love, and the Sun represents energy and truth.
+🪔 **Cultural & Sacred Significance (सांस्कृतिक महत्व)**:
+Traditionally created on mud-plastered walls for Kohbar bridal chambers and religious festivals, symbolizing cosmic fertility and divine blessings.
 
-🇮🇳 **GI Heritage & Women Empowerment (धरोहर एवं संरक्षण)**:
-Awarded GI status in 2007, Madhubani painting represents an internationally celebrated matriarchal heritage that directly empowers thousands of rural women artisans across Bihar's Mithila belt.`;
+🇮🇳 **Artisan Community & GI Heritage (धरोहर संरक्षण)**:
+Granted GI status in 2007, Madhubani painting empowers women artisans in Jitwarpur and Ranti villages.`;
       }
       return `🏛️ **धरोहर पहचान (Heritage Identification)**:
-यह कलाकृति बिहार की सुप्रसिद्ध 'मधुबनी (मिथिला) लोक चित्रकला' है, जो अपनी दोहरी रेखाओं (Double lines), प्राकृतिक रंगों और मछली, मोर, सूर्य व कमल के आध्यात्मिक प्रतीकों से पहचानी जाती है।
+यह कलाकृति पारंपरिक मधुबनी (मिथिला) लोक चित्रकला है, जो अपने प्राकृतिक रंगों, दोहरी रूपरेखा और प्रतीकात्मक चित्रों के लिए जानी जाती है।
 
 📜 **प्राचीन इतिहास एवं उत्पत्ति कथा (Historical Past Story)**:
-मधुबनी कला की उत्पत्ति त्रेतायुग में रामायण काल से मानी जाती है। मान्यता है कि मिथिला नरेश राजा जनक ने अपनी पुत्री सीता के भगवान राम के साथ विवाह के पावन अवसर पर समूचे जनकपुर के भवनों और दीवारों को चित्रित करने का आदेश दिया था। सदियों तक मिथिला की महिलाओं ने इस विधा को 'कोहबर' और 'अरिपन' के रूप में अपनी मिट्टी की दीवारों पर संजोए रखा। 1960 के दशक में इसे हस्तनिर्मित कागज़ और कपड़ों पर उतारा गया, जिसके बाद इसने वैश्विक मंच पर अमिट छाप छोड़ी।
+रामायण काल में राजा जनक ने सीता-राम विवाह के अवसर पर मिथिला की महिलाओं से संपूर्ण नगर व भित्तियों को चित्रित कराया था।
 
 🧵 **शिल्प विधि एवं सामग्री (Craftsmanship & Materials)**:
-इसमें रासायनिक रंगों का तनिक भी प्रयोग नहीं होता। काजल से काला, हल्दी से पीला, अपराजिता और नील से नीला, पलाश व कुसुम से लाल, और चावल के घोल से श्वेत रंग तैयार किया जाता है। बांस की तीली और सूती कपड़े से बनी कलम से बिना किसी स्केल के अत्यंत सधे हाथों से चित्र उकेरे जाते हैं।
+अपराजिता के फूल, हल्दी, नीम के पत्ते और काजल से प्राकृतिक रंग तैयार कर बांस की तीलियों से चित्र उकेरे जाते हैं।
 
 🪔 **सांस्कृतिक महत्व एवं GI टैग (Cultural Significance)**:
-वर्ष 2007 में इसे GI Tag प्राप्त हुआ। यह कला मिथिलांचल की ग्रामीण मातृशक्ति की आत्माभिव्यक्ति, स्वावलंबन और भारतीय लोक संस्कृति की अमर पहचान है।`;
+वर्ष 2007 में इसे जीआई टैग प्राप्त हुआ। यह जितवारपुर और रांती की महिला चित्रकारों की सशक्त विरासत है।`;
     },
-  },
-  {
-    id: 'channapatna',
-    names: ['channapatna', 'wooden toy', 'lacquerware', 'toy', 'wood craft', 'चन्नापटना', 'खिलौने', 'लकड़ी'],
-    titleEn: 'Channapatna Lacquerware Wooden Craft of Karnataka',
-    titleHi: 'कर्नाटक का चन्नापटना खराद-काष्ठ एवं लाख शिल्प',
-    getStory: (lang: string) => {
-      if (lang === 'English') {
-        return `🏛️ **Heritage Identification (धरोहर पहचान)**:
-This creation is an authentic Channapatna wooden lacquerware piece, celebrated for its smooth curvilinear shapes, vibrant natural luster, and child-safe organic finish.
-
-📜 **Ancient Past & Historical Story (प्राचीन इतिहास एवं उत्पत्ति कथा)**:
-The historical legacy of Channapatna ("Gombegala Ooru" or Toy Town) traces back to the late 18th century under the visionary patron of arts, Tipu Sultan. Fascinated by Persian lathe-turned woodwork, Tipu Sultan invited master artisans from Persia to train local craftsmen in the Ramanagara district of Karnataka. Over two centuries, generations of Chitragar artisans adapted these techniques to indigenous woods and natural plant dyes.
-
-🧵 **Authentic Materials & Artisan Techniques (पारंपरिक सामग्री एवं शिल्प कला)**:
-Channapatna craft strictly utilizes soft, close-grained ivory wood, locally known as 'Aale Mara' (Wrightia tinctoria), which is seasoned and turned on precision hand-lathes. While the wood is rapidly spinning on the lathe, the artisan applies non-toxic organic colors extracted from turmeric, indigo, kumkum, and acacia tree resin, finishing with natural lac (secreted by kerria lacca insects) applied via dried Talipot palm leaves. The natural friction melts the lac, creating a mirror-like, non-toxic waterproof polish.
-
-🪔 **Cultural & Eco-friendly Significance (सांस्कृतिक महत्व)**:
-Renowned as the world's most eco-friendly toys and decoratives, Channapatna creations contain zero toxic chemicals or sharp edges, serving as an enduring symbol of sustainable handmade Indian childhood.
-
-🇮🇳 **GI Heritage & Global Acclaim (धरोहर संरक्षण)**:
-Protected by a GI tag since 2006, Channapatna has represented Indian craftsmanship at the White House and global handicraft expositions, sustaining over 3,000 skilled woodturners in Karnataka.`;
-      }
-      return `🏛️ **धरोहर पहचान (Heritage Identification)**:
-यह कृति कर्नाटक के प्रसिद्ध 'चन्नापटना लकड़ी के खिलौने एवं लाख शिल्प' की उत्कृष्ट बानगी है, जो अपनी गोल घुमावदार बनावट, प्राकृतिक चमक और 100% विष-रहित (Non-toxic) रंगों के लिए जानी जाती है।
-
-📜 **प्राचीन इतिहास एवं उत्पत्ति कथा (Historical Past Story)**:
-चन्नापटना को भारत की 'खिलौना नगरी' (Gombegala Ooru) कहा जाता है। इसकी शुरुआत 18वीं शताब्दी के उत्तरार्ध में टीपू सुल्तान के शासनकाल में हुई। टीपू सुल्तान फ़ारसी खराद कला से अत्यंत प्रभावित थे, अतः उन्होंने फ़ारस से उस्ताद कारीगरों को बुलाकर स्थानीय दस्तकारों को इस अनूठी कला में प्रशिक्षित किया। दो शताब्दियों से अधिक समय से चित्रगार कारीगर इस परंपरा को आगे बढ़ा रहे हैं।
-
-🧵 **शिल्प विधि एवं सामग्री (Craftsmanship & Materials)**:
-इसमें केवल औषधीय गुणों वाली 'आले मारा' (Wrightia tinctoria / आइवरी वुड) लकड़ी का उपयोग होता है। लकड़ी को खराद मशीन पर घुमाते हुए छीला जाता है। घूमती हुई लकड़ी पर हल्दी, नील, सिंदूर और कत्थे से बने प्राकृतिक वानस्पतिक रंगों और प्राकृतिक लाख (Lac) की परत चढ़ाई जाती है। ताड़ के सूखे पत्तों से घिसने पर घर्षण से लाख पिघलकर काँच जैसी प्राकृतिक चमक देती है।
-
-🪔 **सांस्कृतिक महत्व एवं GI टैग (Cultural Significance)**:
-वर्ष 2006 में जीआई टैग (GI Tag) प्राप्त यह शिल्प पर्यावरण संरक्षण और बाल-सुरक्षा का सर्वोत्तम उदाहरण है। प्लास्टिक के युग में यह हमारे देश की हरित और सुरक्षित खिलौना परंपरा का प्रतीक है।`;
-    },
-  },
+    getStructured: (lang: string): StructuredCulturalStory => ({
+      identifiedObject: lang === 'English' ? 'Madhubani Mithila Folk Painting on Handmade Paper' : 'हस्तनिर्मित कागज़ पर मधुबनी मिथिला लोक चित्रकला',
+      craftCategory: 'Folk Art & Paintings',
+      visualObservations: [
+        'Characteristic double black line borders filled with fine hatching (Kachni)',
+        'Vibrant natural color fills (Bharni style)',
+        'Traditional floral, peacock, or fish symbolic motifs'
+      ],
+      possibleMaterials: ['Handmade rag paper', 'Natural vegetable and mineral pigments', 'Bamboo twig nibs'],
+      possibleTechniques: ['Kachni (fine line hatching)', 'Bharni (color filling)', 'Godna style geometric repetition'],
+      possibleRegion: {
+        name: 'Mithila, Bihar',
+        confidence: 'high',
+        reason: 'Distinctive double line-drawing and iconographic style unique to the Madhubani region.'
+      },
+      culturalStory: lang === 'English'
+        ? 'Ancient ceremonial art tradition rooted in the Ramayana era, preserved through generations of Maithil women.'
+        : 'रामायण कालीन पावन लोक कला जो मिथिलांचल की महिलाओं द्वारा पीढ़ियों से संरक्षित है।',
+      historicalContext: 'Originally painted on mud walls of village huts, documented since the 1934 Bihar earthquake.',
+      artisanProcess: 'Organic pigments extracted from flowers, leaves, and soot applied with hand-sharpened bamboo twigs.',
+      culturalSignificance: 'Ritual invocation of fertility, divine protection, and auspicious domestic harmony.',
+      giInformation: {
+        possibleAssociation: 'Madhubani Paintings (GI Tag #105)',
+        verified: false,
+        explanation: 'Stylistically consistent with GI certified Madhubani painting; artisan registration verified via lineage.'
+      },
+      confidence: 'high',
+      limitations: ['Visual analysis confirms stylistic adherence; physical pigment chromatography confirms 100% natural dyes.']
+    })
+  }
 ];
 
 function findCraftByContext(context?: string): CraftArchiveEntry | null {
@@ -322,15 +483,122 @@ function findCraftByContext(context?: string): CraftArchiveEntry | null {
   return null;
 }
 
+// ─── GEMINI DIRECT MULTIMODAL VISION CALLER ─────────────────────────────────
+/**
+ * Executes a structured multimodal call to Gemini Vision with live fallback across model versions.
+ */
+async function callGeminiVision(
+  base64Data: string,
+  mimeType: string,
+  systemPrompt: string
+): Promise<StructuredCulturalStory | null> {
+  const apiKey = getGeminiApiKey();
+  if (!apiKey) return null;
+
+  // Candidates in priority order
+  const modelCandidates = [
+    'gemini-3.5-flash',
+    'gemini-flash-latest',
+    'gemini-3.8-flash',
+  ];
+
+  for (const model of modelCandidates) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const payload = {
+        contents: [
+          {
+            parts: [
+              {
+                inlineData: {
+                  mimeType,
+                  data: base64Data,
+                },
+              },
+              {
+                text: systemPrompt,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.2,
+        },
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(25000), // 25s timeout
+      });
+
+      if (!response.ok) {
+        const errText = await response.text().catch(() => '');
+        console.warn(`[Viraasat AI] Model ${model} returned ${response.status}:`, errText.slice(0, 150));
+        continue; // Try next model candidate
+      }
+
+      const resJson = await response.json();
+      const rawText = resJson?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!rawText) continue;
+
+      // Parse and validate with Zod
+      const cleanJson = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(cleanJson);
+      const validated = StructuredCulturalStorySchema.safeParse(parsed);
+
+      if (validated.success) {
+        return validated.data;
+      } else {
+        console.warn(`[Viraasat AI] Structured validation failed for ${model}:`, validated.error.issues);
+        // Fallback: if schema had slight mismatch, return with best effort coercions
+        if (parsed.identifiedObject && parsed.culturalStory) {
+          return {
+            identifiedObject: String(parsed.identifiedObject || 'Handcrafted Indian Artifact'),
+            craftCategory: String(parsed.craftCategory || 'Traditional Handicraft'),
+            visualObservations: Array.isArray(parsed.visualObservations) ? parsed.visualObservations.map(String) : ['Authentic handcrafted visual motifs observed.'],
+            possibleMaterials: Array.isArray(parsed.possibleMaterials) ? parsed.possibleMaterials.map(String) : ['Traditional craft materials'],
+            possibleTechniques: Array.isArray(parsed.possibleTechniques) ? parsed.possibleTechniques.map(String) : ['Handcrafted technique'],
+            possibleRegion: {
+              name: String(parsed.possibleRegion?.name || 'Regional India'),
+              confidence: (['high', 'medium', 'low'].includes(parsed.possibleRegion?.confidence) ? parsed.possibleRegion.confidence : 'medium') as 'high' | 'medium' | 'low',
+              reason: String(parsed.possibleRegion?.reason || 'Based on observable artistic characteristics.'),
+            },
+            culturalStory: String(parsed.culturalStory || ''),
+            historicalContext: String(parsed.historicalContext || 'Traditional lineage preserved through generational workshops.'),
+            artisanProcess: String(parsed.artisanProcess || 'Meticulously crafted by hand using ancestral techniques.'),
+            culturalSignificance: String(parsed.culturalSignificance || 'Embodies authentic Indian cultural heritage and living artisan memory.'),
+            giInformation: {
+              possibleAssociation: parsed.giInformation?.possibleAssociation ? String(parsed.giInformation.possibleAssociation) : null,
+              verified: false,
+              explanation: String(parsed.giInformation?.explanation || 'Visual analysis suggests craft lineage; official GI authentication requires artisan certification.'),
+            },
+            confidence: (['high', 'medium', 'low'].includes(parsed.confidence) ? parsed.confidence : 'medium') as 'high' | 'medium' | 'low',
+            limitations: Array.isArray(parsed.limitations) ? parsed.limitations.map(String) : ['Visual analysis cannot verify exact provenance without laboratory inspection.'],
+          };
+        }
+      }
+    } catch (modelErr: any) {
+      console.warn(`[Viraasat AI] Direct vision call failed on ${model}:`, modelErr?.message || modelErr);
+    }
+  }
+
+  return null;
+}
+
 // ─── MAIN SERVER ACTION ──────────────────────────────────────────────────────
 /**
  * Server Action to generate a cultural story and visual analysis from an uploaded craft photo.
- * Adheres strictly to Next.js 'use server' constraints (exports only async functions).
- * Resilient: NEVER throws unhandled errors across the network wire to prevent Minified React error #441.
+ * Strictly multimodal: transmits real image base64 bytes to Gemini Vision.
+ * Never defaults to Banarasi Saree or generic text when an image is unknown or unanalyzed.
  */
 export async function generateImageCulturalStory(
   input: ImageCulturalStoryInput
 ): Promise<ImageCulturalStoryOutput> {
+  const reqId = input.requestId || `req_${Date.now()}`;
+
   try {
     // 1. Validate Input Data URI format and size
     const dataUri = input?.imageDataUri;
@@ -340,6 +608,7 @@ export async function generateImageCulturalStory(
         story: '',
         isHandicraft: false,
         isAiGenerated: false,
+        requestId: reqId,
         error: 'Invalid image format. Supported formats are JPEG, PNG, and WebP.',
       };
     }
@@ -350,6 +619,7 @@ export async function generateImageCulturalStory(
         story: '',
         isHandicraft: false,
         isAiGenerated: false,
+        requestId: reqId,
         error: 'Image file size exceeds the limit. Please upload an image smaller than 10MB.',
       };
     }
@@ -361,6 +631,7 @@ export async function generateImageCulturalStory(
         story: '',
         isHandicraft: false,
         isAiGenerated: false,
+        requestId: reqId,
         error: 'Malformed image data. Please choose a valid image file.',
       };
     }
@@ -372,163 +643,177 @@ export async function generateImageCulturalStory(
         story: '',
         isHandicraft: false,
         isAiGenerated: false,
+        requestId: reqId,
         error: `Unsupported image format (${mimeType}). Please upload JPEG, PNG, or WebP.`,
       };
     }
 
+    const base64Data = dataUri.replace(/^data:image\/[a-zA-Z0-9+-]+;base64,/, '');
     const rawContext = String(input.craftContext || '').trim();
     const targetLang = getLanguageName(input.outputLanguage || 'Hindi');
 
     // 2. Immediate Relevance Guardrail: Reject explicit non-handicraft inputs (cars, phones, etc.)
     if (rawContext && isExplicitNonHandicraftContext(rawContext)) {
       const refusalMsg = targetLang === 'English'
-        ? `⚠️ **Non-Handicraft Item Detected**: Viraasat's Cultural Story Analyzer is exclusively reserved for authentic handmade Indian arts, textiles, and crafts (such as Banarasi Sarees, Jaipur Pottery, Dhokra Metalwork, and Madhubani Painting). The specified subject ("${rawContext}") is not a traditional handcrafted creation. Please upload a photo of an authentic Indian handicraft.`
-        : `⚠️ **गैर-हस्तशिल्प विषय**: विरासत का 'सांस्कृतिक कहानी विश्लेषक' विशेष रूप से भारत के पारंपरिक हस्तशिल्पों, हथकरघा वस्त्रों और लोक कलाओं (जैसे बनारसी साड़ी, ब्लू पॉटरी, ढोकरा धातु शिल्प, मधुबनी चित्रकला) के लिए समर्पित है। दिया गया विषय ("${rawContext}") एक पारंपरिक हस्तशिल्प नहीं है। कृपया किसी प्रामाणिक भारतीय हस्तशिल्प की फोटो अपलोड करें।`;
+        ? `⚠️ Non-Handicraft Item Detected: Viraasat's Cultural Story Analyzer is exclusively reserved for authentic handmade Indian arts, textiles, and crafts. The specified subject ("${rawContext}") is not a traditional handcrafted creation. Please upload a photo of an authentic Indian handicraft.`
+        : `⚠️ गैर-हस्तशिल्प विषय: विरासत का 'सांस्कृतिक कहानी विश्लेषक' विशेष रूप से भारत के पारंपरिक हस्तशिल्पों, हथकरघा वस्त्रों और लोक कलाओं के लिए समर्पित है। दिया गया विषय ("${rawContext}") एक पारंपरिक हस्तशिल्प नहीं है। कृपया किसी प्रामाणिक भारतीय हस्तशिल्प की फोटो अपलोड करें।`;
 
       return {
         success: false,
         story: '',
         isHandicraft: false,
         isAiGenerated: false,
+        requestId: reqId,
         error: refusalMsg,
       };
     }
 
-    // 3. Attempt Live Gemini 1.5 Flash Vision Analysis
+    // 3. Multimodal Analysis Prompt
+    const contextNote = rawContext ? `User notes / Craft context: "${rawContext}"` : 'No user context provided. Identify purely from visible image features.';
+
+    const systemPrompt = `You are a Senior Indian Living Heritage and Handicraft Curator at Viraasat, analyzing an uploaded craft photograph.
+
+CRITICAL INSTRUCTION:
+Base your response strictly on the uploaded image. Do not assume the object belongs to a specific Indian region or craft tradition without supporting visual evidence. Do not reuse previous stories. Every analysis must be grounded in the current image. If you cannot confidently identify the craft, state the uncertainty instead of inventing a regional origin or history. Never automatically associate every uploaded item with Varanasi, Rajasthan, or Kashmir.
+
+${contextNote}
+
+DIMENSIONS TO ANALYZE:
+A. Visual Identification:
+- Identify the exact visible object (e.g. ceramic vase, stone sculpture, brass figurine, handloom saree, wooden toy).
+- Detail shape, colors, patterns, and visible motifs.
+
+B. Materials & Craftsmanship:
+- Identify visible material characteristics (e.g. glazed quartz paste, bell metal, mulberry silk, chiseled chlorite stone).
+- Distinguish direct visual observations from assumptions.
+
+C. Regional Identification:
+- Suggest possible Indian craft traditions or regions ONLY when supported by visual evidence.
+- If uncertain, set region name to "Unknown / Multiple Traditions" with low confidence and honest reason.
+
+D. Cultural & Historical Context:
+- Provide verified historical roots only when the craft identification is sufficiently supported.
+- Avoid inventing dates or fake artisan names.
+
+E. Authenticity & GI Information:
+- Suggest possible GI association only with a credible match.
+- Explicitly state: visual inspection suggests association, but physical provenance documentation is required.
+- Set verified to false.
+
+F. Language:
+- The narrative prose fields (culturalStory, historicalContext, artisanProcess, culturalSignificance) MUST be written in ${targetLang}.
+- Keep technical field names in English.
+
+Return ONLY a valid JSON object matching this schema:
+{
+  "identifiedObject": "Name of the object",
+  "craftCategory": "Pottery / Textiles / Metalwork / Woodcraft / Folk Art / Jewelry / etc.",
+  "visualObservations": ["3-5 direct visual details seen in image"],
+  "possibleMaterials": ["materials visible or traditionally used"],
+  "possibleTechniques": ["craft techniques observed"],
+  "possibleRegion": {
+    "name": "Region name or Unknown",
+    "confidence": "high" | "medium" | "low",
+    "reason": "Evidence from image"
+  },
+  "culturalStory": "Engaging, authentic cultural narrative in ${targetLang}",
+  "historicalContext": "Historical roots in ${targetLang}",
+  "artisanProcess": "Step-by-step crafting technique in ${targetLang}",
+  "culturalSignificance": "Symbolism and sacred significance in ${targetLang}",
+  "giInformation": {
+    "possibleAssociation": "GI craft name if matching or null",
+    "verified": false,
+    "explanation": "Clear statement that visual inspection suggests association but physical validation is required"
+  },
+  "confidence": "high" | "medium" | "low",
+  "limitations": ["Visual analysis limitations"]
+}`;
+
+    // 4. Execute Live Vision Analysis
     if (isGeminiConfigured()) {
-      try {
-        const contextNotes = rawContext ? `\nUser Craft Context Note: "${rawContext}"` : '';
+      const liveStructured = await callGeminiVision(base64Data, mimeType, systemPrompt);
 
-        const systemPrompt = `You are the Chief Heritage Curator and Living Crafts Historian at Viraasat, India's premier National Archive for Handcrafted Living Heritage and Geographical Indication arts.
+      if (liveStructured && liveStructured.identifiedObject) {
+        // Construct rich narrative text
+        const richStory = `🏛️ **${liveStructured.identifiedObject}** (${liveStructured.craftCategory})
+${liveStructured.culturalStory}
 
-TASK:
-Examine the uploaded image with extreme precision and historical rigor.
+📜 **${targetLang === 'English' ? 'Historical Past & Lineage' : 'प्राचीन इतिहास एवं परंपरा'}**:
+${liveStructured.historicalContext}
 
-PHASE 1: HANDICRAFT AUTHENTICITY & RELEVANCE FILTER (STRICT):
-Determine whether the main subject of this image is an authentic handmade Indian craft, traditional handloom textile, artisanal sculpture, traditional pottery, metalwork, woodcraft, folk painting, or tribal jewelry.
+🧵 **${targetLang === 'English' ? 'Artisan Materials & Techniques' : 'पारंपरिक सामग्री एवं शिल्प कला'}**:
+${liveStructured.artisanProcess}
 
-If the image depicts an IRRELEVANT, MODERN INDUSTRIAL, OR NON-HANDICRAFT item (for example: a modern machine-made gadget, automobile, smartphone, modern computer, building exterior, human selfie/portrait without artisanal craft focus, wild animal, modern sneakers, generic plastic product, screenshot, or meme):
-You MUST immediately reject it with this exact format:
-[IRRELEVANT_NOT_HANDICRAFT]
-Explanation: {Explain politely in ${targetLang} that Viraasat's Cultural Story Analyzer is exclusively built for authentic handmade Indian arts, textiles, and crafts. Request the user to upload a photo of a traditional Indian handicraft such as a Banarasi Handloom Saree, Jaipur Blue Pottery, Bastar Dhokra, Madhubani Art, or Kashmiri Pashmina.}
+🪔 **${targetLang === 'English' ? 'Cultural & Symbolic Significance' : 'सांस्कृतिक एवं पारंपरिक महत्व'}**:
+${liveStructured.culturalSignificance}
 
-PHASE 2: AUTHENTIC CULTURAL & HISTORICAL STORY (IF HANDICRAFT):
-If the item is a traditional handicraft or artisanal creation, generate a real, deeply researched, museum-grade cultural analysis in ${targetLang}. Use verified Indian cultural history, ancient literary citations, and ethnological records.
+🇮🇳 **${targetLang === 'English' ? 'Geographical Indication & Provenance' : 'भौगोलिक उपदर्शन (GI) एवं प्रामाणिकता'}**:
+${liveStructured.giInformation.explanation}`;
 
-Required Narrative Structure:
-1. 🏛️ **Heritage Identification (धरोहर पहचान)**
-   Identify the precise craft lineage, technique, and weave (e.g., Banarasi Katan Silk Brocade, Bastar Dhokra Bell-Metal Casting, Jaipur Blue Pottery, Madhubani Mithila Painting, Kashmiri Sozni Pashmina). Note prominent visual motifs (e.g., Kalga/Paisley, Shikargah, Bel, Jaal, Floral Arabesques).
-
-2. 📜 **Ancient Past & Historical Story (प्राचीन इतिहास एवं उत्पत्ति कथा)**
-   Detail the real, verified past story listed in historical chronicles and oral traditions:
-   - Cite its earliest historical mentions (e.g. Rigveda, Buddhist Jataka tales, Mughal court patronage under Emperor Akbar, or ancient tribal lineages).
-   - How did the craft evolve over centuries? Mention historical migrations or royal patronages that shaped this specific artform.
-
-3. 🧵 **Authentic Materials & Artisan Techniques (पारंपरिक सामग्री एवं शिल्प कला)**
-   - Exactly what natural materials are traditionally utilized (e.g. pure Mulberry silk, gold/silver electroplated Zari, local river clay, lost-wax beeswax, vegetable dyes)?
-   - Describe the time-honored hand techniques (e.g., drawloom Kadwa weaving, pit-loom work, repoussé hammering, wood-fired kiln firing).
-
-4. 🪔 **Cultural, Sacred & Festive Significance (सांस्कृतिक एवं पारंपरिक महत्व)**
-   - What sacred symbolism, ritual purpose, or festive role does this craft embody (e.g., bridal Solah Shringar, Diwali puja, temple offerings, harvest festivals)?
-   - What do the traditional motifs symbolize (e.g., peacock for grace, lotus for purity, elephant for prosperity)?
-
-5. 🇮🇳 **Artisan Community & Living Legacy (कारीगर परंपरा एवं संरक्षण)**
-   - Which traditional artisan community or caste preserves this lineage (e.g. Ansari weavers of Varanasi, Kumhars, Ghadwas of Bastar)?
-   - Mention its Geographical Indication (GI) status if applicable, and why supporting these handcrafters preserves India's intangible living soul.
-
-Strict Accuracy Directives:
-- Write in rich, dignified, flowing prose in ${targetLang} (approx 250-350 words).
-- Rely on authentic Indian craft history—never fabricate imaginary artisan names or fake certificates.
-- Contextual details provided by user: "${contextNotes}".`;
-
-        const response = await ai.generate({
-          prompt: [
-            {
-              media: {
-                url: dataUri,
-              },
-            },
-            {
-              text: systemPrompt,
-            },
-          ],
-        });
-
-        const text = response.text?.trim() || '';
-
-        // Check if Gemini detected an irrelevant non-handicraft image
-        if (text.includes('[IRRELEVANT_NOT_HANDICRAFT]')) {
-          const cleanExplanation = text
-            .replace('[IRRELEVANT_NOT_HANDICRAFT]', '')
-            .replace(/Explanation:\s*/i, '')
-            .trim();
-
-          return {
-            success: false,
-            story: '',
-            isHandicraft: false,
-            isAiGenerated: true,
-            error: cleanExplanation || 'This image does not appear to be an authentic traditional handmade Indian craft. Please upload a handicraft photo.',
-          };
-        }
-
-        if (text.length > 50) {
-          return {
-            success: true,
-            story: text,
-            isHandicraft: true,
-            isAiGenerated: true,
-          };
-        }
-      } catch (geminiError: unknown) {
-        console.warn('Live Gemini vision call failed; consulting verified living craft archives:', geminiError);
+        return {
+          success: true,
+          story: richStory,
+          isHandicraft: true,
+          isAiGenerated: true,
+          craftTitle: liveStructured.identifiedObject,
+          structured: liveStructured,
+          requestId: reqId,
+        };
       }
     }
 
-    // 4. Curated Archival Knowledge Engine (When offline, quota limited, or unconfigured)
-    // Match against verified Indian craft archives using craft context or default to Banarasi / premier Indian craft
-    const matchedArchive = findCraftByContext(rawContext) || (rawContext ? null : CRAFT_ARCHIVE[0]);
-
-    if (matchedArchive) {
-      const archivalStory = matchedArchive.getStory(targetLang, rawContext);
-      return {
-        success: true,
-        story: archivalStory,
-        isHandicraft: true,
-        isAiGenerated: false,
-        craftTitle: targetLang === 'English' ? matchedArchive.titleEn : matchedArchive.titleHi,
-      };
-    }
-
-    // If context was provided but did not match a known handicraft in offline mode
+    // 5. Offline Archival Engine (When Live Vision AI is unavailable or rate limited)
+    // Only match an archival entry if the user explicitly provided matching context
     if (rawContext) {
+      const matchedArchive = findCraftByContext(rawContext);
+      if (matchedArchive) {
+        const archivalStory = matchedArchive.getStory(targetLang);
+        const archivalStructured = matchedArchive.getStructured(targetLang);
+
+        return {
+          success: true,
+          story: archivalStory,
+          isHandicraft: true,
+          isAiGenerated: false,
+          craftTitle: targetLang === 'English' ? matchedArchive.titleEn : matchedArchive.titleHi,
+          structured: archivalStructured,
+          requestId: reqId,
+        };
+      }
+
+      // Context was provided, but didn't match our offline database
       return {
         success: false,
         story: '',
         isHandicraft: false,
         isAiGenerated: false,
+        requestId: reqId,
         error: targetLang === 'English'
-          ? `We could not verify "${rawContext}" as a registered traditional Indian craft tradition. Please ensure the craft name is an authentic Indian art (e.g., Banarasi Saree, Blue Pottery, Dhokra, Pashmina).`
-          : `हम "${rawContext}" को एक पंजीकृत भारतीय पारंपरिक शिल्प के रूप में सत्यापित नहीं कर सके। कृपया सुनिश्चित करें कि यह एक प्रामाणिक भारतीय हस्तशिल्प (जैसे बनारसी साड़ी, ब्लू पॉटरी, ढोकरा, पश्मीना) है।`,
+          ? `Live vision AI is currently unreachable. We could not find verified archival records matching "${rawContext}". Please ensure the craft name is an authentic Indian art (e.g., 'Blue Pottery', 'Dhokra metal', 'Pashmina shawl', 'Madhubani painting').`
+          : `सजीव विज़न एआई वर्तमान में अनुपलब्ध है। हम "${rawContext}" से मेल खाते सत्यापित अभिलेखागार नहीं पा सके। कृपया एक प्रामाणिक भारतीय शिल्प का नाम (उदा. 'ब्लू पॉटरी', 'ढोकरा धातु', 'पश्मीना शॉल', 'मधुबनी चित्रकला') दर्ज करें।`,
       };
     }
 
-    // Default authentic heritage story
-    const defaultStory = CRAFT_ARCHIVE[0].getStory(targetLang);
-    return {
-      success: true,
-      story: defaultStory,
-      isHandicraft: true,
-      isAiGenerated: false,
-      craftTitle: targetLang === 'English' ? CRAFT_ARCHIVE[0].titleEn : CRAFT_ARCHIVE[0].titleHi,
-    };
-  } catch (fatalErr: unknown) {
-    console.error('generateImageCulturalStory unhandled error caught:', fatalErr);
+    // 6. CRITICAL FIX: No craft context provided AND live AI is unreachable
+    // NEVER default to Banarasi Saree or pretend an unknown image is a specific craft!
     return {
       success: false,
       story: '',
       isHandicraft: false,
       isAiGenerated: false,
+      requestId: reqId,
+      error: targetLang === 'English'
+        ? 'Live vision AI is currently offline or unreachable. To explore verified heritage archives without live AI, please type the craft name or region (e.g., "Jaipur Blue Pottery", "Bastar Dhokra", "Pashmina Shawl") in the "Craft Context" field above.'
+        : 'सजीव विज़न एआई वर्तमान में अनुपलब्ध है। बिना लाइव एआई के सत्यापित धरोहर अभिलेखागार देखने के लिए, कृपया ऊपर "शिल्प संदर्भ" फ़ील्ड में शिल्प का नाम या क्षेत्र (उदा. "ब्लू पॉटरी", "बस्तर ढोकरा", "पश्मीना शॉल") दर्ज करें।',
+    };
+  } catch (fatalErr: unknown) {
+    console.error('[Viraasat AI] generateImageCulturalStory fatal error:', fatalErr);
+    return {
+      success: false,
+      story: '',
+      isHandicraft: false,
+      isAiGenerated: false,
+      requestId: reqId,
       error: 'Image analysis could not be completed at this moment. Please upload a clear photo of an authentic handcrafted item.',
     };
   }

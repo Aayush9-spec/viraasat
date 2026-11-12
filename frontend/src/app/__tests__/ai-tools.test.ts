@@ -102,5 +102,70 @@ describe('Viraasat AI Tools Production Suite', () => {
       expect(result.isHandicraft).toBe(false);
       expect(result.error).toMatch(/Non-Handicraft Item Detected/);
     });
+
+    it('does NOT default an unknown image to Banarasi Saree when craft context is absent', async () => {
+      const result = await generateImageCulturalStory({
+        imageDataUri: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBD...',
+        craftContext: '',
+        outputLanguage: 'Hindi',
+      });
+      expect(result).toBeDefined();
+      // Crucial fix verification: Must NEVER blindly substitute Banarasi saree on unknown images
+      if (!result.isAiGenerated) {
+        expect(result.story).not.toContain('बनारसी हथकरघा रेशम साड़ी');
+      }
+    });
+
+    it('correctly maps specific craft contexts to distinct heritage stories without cross-contamination', async () => {
+      const potteryResult = await generateImageCulturalStory({
+        imageDataUri: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBD...',
+        craftContext: 'Jaipur Blue Pottery urn',
+        outputLanguage: 'English',
+      });
+      expect(potteryResult.success).toBe(true);
+      expect(potteryResult.story.toLowerCase()).toContain('blue pottery');
+      expect(potteryResult.story).not.toContain('Banarasi Saree');
+
+      const dhokraResult = await generateImageCulturalStory({
+        imageDataUri: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBD...',
+        craftContext: 'Bastar Dhokra bell metal casting',
+        outputLanguage: 'English',
+      });
+      expect(dhokraResult.success).toBe(true);
+      expect(dhokraResult.story.toLowerCase()).toContain('dhokra');
+      expect(dhokraResult.story).not.toContain('Banarasi Saree');
+      expect(dhokraResult.story).not.toContain('Blue Pottery');
+    });
+
+    it('echoes back client requestId to prevent client-side race conditions', async () => {
+      const uniqueId = 'test-client-req-999';
+      const result = await generateImageCulturalStory({
+        imageDataUri: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBD...',
+        craftContext: 'Kashmiri Pashmina Shawl',
+        outputLanguage: 'English',
+        requestId: uniqueId,
+      });
+      expect(result.requestId).toBe(uniqueId);
+    });
+
+    it('returns structured object properties when archival match is formed', async () => {
+      const result = await generateImageCulturalStory({
+        imageDataUri: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBD...',
+        craftContext: 'Jaipur Blue Pottery',
+        outputLanguage: 'English',
+      });
+      expect(result.success).toBe(true);
+      if (result.structured) {
+        expect(result.structured).toHaveProperty('identifiedObject');
+        expect(result.structured).toHaveProperty('craftCategory');
+        expect(result.structured).toHaveProperty('visualObservations');
+        expect(Array.isArray(result.structured.visualObservations)).toBe(true);
+        expect(result.structured).toHaveProperty('possibleMaterials');
+        expect(result.structured).toHaveProperty('possibleTechniques');
+        expect(result.structured).toHaveProperty('possibleRegion');
+        expect(result.structured).toHaveProperty('giInformation');
+        expect(result.structured.giInformation.verified).toBe(false);
+      }
+    });
   });
 });

@@ -7,7 +7,7 @@ export async function GET() {
     status: configured ? 'active' : 'fallback',
     configured,
     provider: 'Google Genkit + Gemini',
-    model: 'gemini-1.5-flash',
+    model: 'gemini-3.5-flash',
     flows: ['description', 'translate', 'vision', 'chat'],
   });
 }

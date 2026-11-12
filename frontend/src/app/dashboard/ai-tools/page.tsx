@@ -36,6 +36,13 @@ import {
   ImageIcon,
   AlertTriangle,
   Zap,
+  RefreshCw,
+  MapPin,
+  Layers,
+  ShieldCheck,
+  CheckCircle2,
+  HelpCircle,
+  Info,
 } from 'lucide-react';
 
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
@@ -47,7 +54,10 @@ import {
   SUPPORTED_LANGUAGES,
 } from '@/ai/languages';
 import { translateText } from '@/ai/flows/translate-text';
-import { generateImageCulturalStory } from '@/ai/flows/image-cultural-story';
+import {
+  generateImageCulturalStory,
+  type StructuredCulturalStory,
+} from '@/ai/flows/image-cultural-story';
 import { getAIServiceStatus, type AIServiceStatus } from '@/ai/actions';
 import VoiceRecorder from '@/features/ai/components/voice-recorder';
 import { useLanguage } from '@/context/language-context';
@@ -844,10 +854,12 @@ function ImageStoryTab() {
   const [craftContext, setCraftContext] = useState('');
   const [storyLanguage, setStoryLanguage] = useState('Hindi');
   const [story, setStory] = useState('');
+  const [structuredResult, setStructuredResult] = useState<StructuredCulturalStory | null>(null);
   const [isAiGenerated, setIsAiGenerated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copiedStory, setCopiedStory] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const activeRequestIdRef = useRef<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const processFile = useCallback(
@@ -868,6 +880,12 @@ function ImageStoryTab() {
         });
         return;
       }
+
+      // Immediately invalidate any pending request and clear previous results on new image
+      activeRequestIdRef.current = '';
+      setStory('');
+      setStructuredResult(null);
+      setIsAiGenerated(null);
 
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -906,9 +924,6 @@ function ImageStoryTab() {
         } else {
           setImageDataUri(rawDataUri);
         }
-
-        setStory('');
-        setIsAiGenerated(null);
       };
       reader.readAsDataURL(file);
     },
@@ -938,11 +953,19 @@ function ImageStoryTab() {
   const handleDragLeave = () => setIsDragging(false);
 
   const clearImage = () => {
+    activeRequestIdRef.current = '';
     setImagePreview(null);
     setImageDataUri(null);
     setStory('');
+    setStructuredResult(null);
     setIsAiGenerated(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const clearOutput = () => {
+    setStory('');
+    setStructuredResult(null);
+    setIsAiGenerated(null);
   };
 
   const handleAnalyze = async () => {
@@ -955,22 +978,37 @@ function ImageStoryTab() {
       return;
     }
 
+    const reqId =
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `req_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    activeRequestIdRef.current = reqId;
+
     setIsLoading(true);
     setStory('');
+    setStructuredResult(null);
     setIsAiGenerated(null);
+
     try {
       const result = await generateImageCulturalStory({
         imageDataUri,
         craftContext: craftContext.trim() || undefined,
         outputLanguage: storyLanguage,
+        requestId: reqId,
       });
+
+      // Guard against stale responses if user uploaded another image or initiated a new request
+      if (activeRequestIdRef.current !== reqId) {
+        return;
+      }
 
       if (result.success && result.story) {
         setStory(result.story);
+        setStructuredResult(result.structured || null);
         setIsAiGenerated(result.isAiGenerated ?? true);
         toast({
-          title: '📷 ' + (result.isAiGenerated ? 'Gemini AI Cultural Story Generated!' : 'Living Heritage Story'),
-          description: result.craftTitle ? `Discovered history of ${result.craftTitle}` : 'Heritage analysis complete.',
+          title: '📷 ' + (result.isAiGenerated ? 'Gemini 3.5 Flash Vision Analysis' : 'Living Heritage Story'),
+          description: result.craftTitle ? `Discovered: ${result.craftTitle}` : 'Heritage analysis complete.',
         });
       } else {
         const isIrrelevant = result.isHandicraft === false;
@@ -984,6 +1022,7 @@ function ImageStoryTab() {
         }
       }
     } catch (error: any) {
+      if (activeRequestIdRef.current !== reqId) return;
       console.error('Image analysis request failed:', error);
       toast({
         variant: 'destructive',
@@ -991,7 +1030,9 @@ function ImageStoryTab() {
         description: 'Could not process the image. Please upload a clear photo of an authentic handcrafted item.',
       });
     } finally {
-      setIsLoading(false);
+      if (activeRequestIdRef.current === reqId) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -1004,7 +1045,7 @@ function ImageStoryTab() {
   };
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-2">
       {/* Upload Card */}
       <Card className="border-primary/10 shadow-lg">
         <CardHeader>
@@ -1032,19 +1073,20 @@ function ImageStoryTab() {
 
           {imagePreview ? (
             <div className="relative group">
-              <div className="aspect-square w-full max-h-72 overflow-hidden rounded-lg border border-border">
+              <div className="aspect-square w-full max-h-72 overflow-hidden rounded-lg border border-border bg-muted/20">
                 <Image
                   src={imagePreview}
                   alt="Uploaded craft"
                   width={512}
                   height={512}
                   unoptimized
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-102"
                 />
               </div>
               <button
                 type="button"
                 onClick={clearImage}
+                title="Remove image"
                 className="absolute top-2 right-2 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center border border-border shadow-sm hover:bg-destructive hover:text-destructive-foreground transition-colors"
               >
                 <X className="h-4 w-4" />
@@ -1073,12 +1115,12 @@ function ImageStoryTab() {
                   className={`h-6 w-6 ${isDragging ? 'text-primary' : 'text-muted-foreground/50'}`}
                 />
               </div>
-              <div className="text-center">
+              <div className="text-center px-4">
                 <p className="text-sm font-medium">
-                  {isDragging ? 'Drop your image here' : 'Click or drag & drop'}
+                  {isDragging ? 'Drop your image here' : 'Click or drag & drop a craft photo'}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  JPEG, PNG, or WebP (max 5MB)
+                  JPEG, PNG, or WebP (max 10MB)
                 </p>
               </div>
             </div>
@@ -1092,7 +1134,7 @@ function ImageStoryTab() {
               </label>
               <Input
                 id="ai-craft-context"
-                placeholder="e.g. Jaipur blue pottery, Dokra brass cast from Bastar, Kashmiri walnut wood..."
+                placeholder="e.g. Jaipur blue pottery, Bastar Dhokra brass, Kashmiri walnut wood..."
                 value={craftContext}
                 onChange={(e) => setCraftContext(e.target.value)}
                 className="text-xs bg-background"
@@ -1121,13 +1163,13 @@ function ImageStoryTab() {
           <Button
             onClick={handleAnalyze}
             disabled={isLoading || !imageDataUri}
-            className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white transition-all duration-300"
+            className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white transition-all duration-300 shadow-sm"
             size="lg"
           >
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Analyzing Craft with Gemini...
+                Analyzing Image with Gemini Vision...
               </>
             ) : (
               <>
@@ -1141,43 +1183,278 @@ function ImageStoryTab() {
 
       {/* Story Output Card */}
       <Card className="border-amber-500/10 shadow-lg flex flex-col">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-lg">Cultural Story</CardTitle>
+        <CardHeader className="pb-3 border-b border-border/40">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <CardTitle className="text-lg">Cultural Story & Heritage</CardTitle>
               {isAiGenerated !== null && (
-                <Badge variant={isAiGenerated ? 'default' : 'secondary'} className="text-[10px]">
-                  {isAiGenerated ? '✨ Gemini 1.5 Flash' : 'Fallback'}
+                <Badge
+                  variant={isAiGenerated ? 'default' : 'outline'}
+                  className={`text-[10px] gap-1 ${
+                    isAiGenerated
+                      ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30'
+                      : 'border-amber-600/30 text-amber-600 dark:text-amber-400'
+                  }`}
+                >
+                  {isAiGenerated ? (
+                    <>
+                      <Sparkles className="h-3 w-3" /> Gemini 3.5 Flash Vision
+                    </>
+                  ) : (
+                    <>
+                      <Layers className="h-3 w-3" /> Living Craft Archive
+                    </>
+                  )}
+                </Badge>
+              )}
+              {structuredResult?.confidence && (
+                <Badge
+                  variant="outline"
+                  className={`text-[10px] ${
+                    structuredResult.confidence === 'high'
+                      ? 'border-emerald-500/40 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
+                      : structuredResult.confidence === 'medium'
+                      ? 'border-amber-500/40 text-amber-600 dark:text-amber-400 bg-amber-500/10'
+                      : 'border-muted text-muted-foreground'
+                  }`}
+                >
+                  {structuredResult.confidence === 'high'
+                    ? 'High Match'
+                    : structuredResult.confidence === 'medium'
+                    ? 'Probable Match'
+                    : 'Estimated'}
                 </Badge>
               )}
             </div>
+
             {story && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopyStory}
-                className="gap-2"
-              >
-                {copiedStory ? (
-                  <Check className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-                {copiedStory ? 'Copied' : 'Copy'}
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleAnalyze}
+                  disabled={isLoading || !imageDataUri}
+                  title="Regenerate analysis"
+                  className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                  Retry
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearOutput}
+                  title="Clear analysis"
+                  className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive"
+                >
+                  <X className="h-3.5 w-3.5 mr-1" />
+                  Clear
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCopyStory}
+                  className="h-8 gap-1.5 text-xs"
+                >
+                  {copiedStory ? (
+                    <Check className="h-3.5 w-3.5 text-green-500" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
+                  {copiedStory ? 'Copied' : 'Copy'}
+                </Button>
+              </div>
             )}
           </div>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col">
+
+        <CardContent className="flex-1 flex flex-col pt-4">
           {isLoading ? (
-            <div className="space-y-3 py-6">
-              <div className="h-4 bg-muted rounded animate-pulse w-full" />
-              <div className="h-4 bg-muted rounded animate-pulse w-5/6" />
-              <div className="h-4 bg-muted rounded animate-pulse w-4/6" />
-              <div className="h-4 bg-muted rounded animate-pulse w-full" />
-              <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
-              <div className="h-4 bg-muted rounded animate-pulse w-5/6" />
-              <div className="h-4 bg-muted rounded animate-pulse w-2/3" />
+            <div className="space-y-4 py-8">
+              <div className="flex items-center justify-center gap-2 text-xs text-amber-600 dark:text-amber-400 font-medium animate-pulse">
+                <Sparkles className="h-4 w-4 animate-spin" />
+                Analyzing craft texture, motifs, and historical lineage with Gemini Vision...
+              </div>
+              <div className="space-y-2.5">
+                <div className="h-4 bg-muted rounded animate-pulse w-full" />
+                <div className="h-4 bg-muted rounded animate-pulse w-5/6" />
+                <div className="h-4 bg-muted rounded animate-pulse w-4/6" />
+                <div className="h-4 bg-muted rounded animate-pulse w-full" />
+                <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
+                <div className="h-4 bg-muted rounded animate-pulse w-5/6" />
+                <div className="h-4 bg-muted rounded animate-pulse w-2/3" />
+              </div>
+            </div>
+          ) : structuredResult ? (
+            <div className="space-y-5">
+              {/* Identification Header */}
+              <div className="rounded-lg border border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-orange-500/5 p-3.5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h4 className="text-base font-semibold font-serif text-foreground">
+                      {structuredResult.identifiedObject}
+                    </h4>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="secondary" className="text-[11px]">
+                        {structuredResult.craftCategory}
+                      </Badge>
+                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3 text-amber-600" />
+                        {structuredResult.possibleRegion.name}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Observed vs Estimated Cards */}
+              <div className="grid gap-3 sm:grid-cols-2">
+                {/* Visual Observations */}
+                <div className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                      Visual Observations
+                    </span>
+                    <Badge variant="outline" className="text-[10px] border-emerald-500/40 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
+                      Visually Observed
+                    </Badge>
+                  </div>
+                  <ul className="space-y-1 text-xs text-muted-foreground">
+                    {structuredResult.visualObservations.map((obs, idx) => (
+                      <li key={idx} className="flex items-start gap-1.5">
+                        <span className="text-amber-500 mt-0.5">•</span>
+                        <span>{obs}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Materials & Techniques */}
+                <div className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                      <Layers className="h-3.5 w-3.5 text-amber-500" />
+                      Materials & Techniques
+                    </span>
+                    <Badge variant="outline" className="text-[10px] border-amber-500/40 text-amber-600 dark:text-amber-400 bg-amber-500/10">
+                      AI-Estimated
+                    </Badge>
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider block mb-1">
+                        Materials
+                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {structuredResult.possibleMaterials.map((m, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-block text-[11px] px-2 py-0.5 rounded bg-background border border-border/60 text-foreground"
+                          >
+                            {m}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider block mb-1">
+                        Techniques
+                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {structuredResult.possibleTechniques.map((t, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-block text-[11px] px-2 py-0.5 rounded bg-background border border-border/60 text-foreground"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Regional Origin & Stylistic Lineage */}
+              <div className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 text-amber-600" />
+                    Regional Origin & Visual Rationale
+                  </span>
+                  <Badge variant="outline" className="text-[10px]">
+                    Confidence: {structuredResult.possibleRegion.confidence}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <span className="font-medium text-foreground">{structuredResult.possibleRegion.name}:</span>{' '}
+                  {structuredResult.possibleRegion.reason}
+                </p>
+              </div>
+
+              {/* GI Information Box */}
+              <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    Geographical Indication (GI) Status
+                  </span>
+                  <Badge variant="outline" className="text-[10px] border-amber-500/40 text-amber-600 dark:text-amber-400">
+                    Needs Verification
+                  </Badge>
+                </div>
+                {structuredResult.giInformation.possibleAssociation && (
+                  <p className="text-xs font-medium text-foreground">
+                    Potential Reference: {structuredResult.giInformation.possibleAssociation}
+                  </p>
+                )}
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  {structuredResult.giInformation.explanation}
+                </p>
+              </div>
+
+              {/* Cultural Story Narrative */}
+              <div className="space-y-2">
+                <span className="text-xs font-semibold text-foreground uppercase tracking-wider block">
+                  Cultural Narrative & History
+                </span>
+                <div className="rounded-lg p-3.5 bg-background border border-amber-500/10">
+                  <p className="text-xs leading-relaxed whitespace-pre-wrap font-sans text-foreground">
+                    {structuredResult.culturalStory}
+                  </p>
+                </div>
+              </div>
+
+              {/* Artisan Process & Symbolism */}
+              <div className="space-y-2">
+                <span className="text-xs font-semibold text-foreground uppercase tracking-wider block">
+                  Artisan Process & Symbolism
+                </span>
+                <div className="rounded-lg p-3 bg-muted/20 border border-border/60 space-y-2">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong className="text-foreground">Process:</strong> {structuredResult.artisanProcess}
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong className="text-foreground">Significance:</strong> {structuredResult.culturalSignificance}
+                  </p>
+                </div>
+              </div>
+
+              {/* Optical Inspection Limitations Notice */}
+              {structuredResult.limitations && structuredResult.limitations.length > 0 && (
+                <div className="rounded-md border border-muted-foreground/20 bg-muted/30 p-2.5 text-[11px] text-muted-foreground space-y-1">
+                  <div className="flex items-center gap-1 font-medium text-foreground/80">
+                    <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                    Optical Analysis Limitations
+                  </div>
+                  <ul className="list-disc list-inside space-y-0.5 pl-1">
+                    {structuredResult.limitations.map((lim, idx) => (
+                      <li key={idx}>{lim}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           ) : story ? (
             <div className="relative flex-1">
@@ -1197,7 +1474,7 @@ function ImageStoryTab() {
                 Upload a craft image to discover its cultural story
               </p>
               <p className="text-xs text-muted-foreground/70 mt-1 max-w-xs">
-                Gemini 1.5 Flash Vision identifies the craft, materials, region, and centuries-old cultural significance.
+                Gemini 3.5 Flash Vision identifies authentic Indian handicrafts, materials, regional lineage, and cultural significance directly from your photo.
               </p>
             </div>
           )}

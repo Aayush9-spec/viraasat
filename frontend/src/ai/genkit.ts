@@ -42,9 +42,9 @@ const resolvedApiKey = getGeminiApiKey();
 
 /**
  * Singleton Genkit AI instance with Google AI plugin.
- * Configured with gemini-1.5-flash for high performance, multimodal reasoning, and rich Indian language support.
+ * Configured with gemini-3.5-flash for high performance, multimodal reasoning, and rich Indian language support.
  */
 export const ai = genkit({
   plugins: [googleAI({ apiKey: resolvedApiKey })],
-  model: 'googleai/gemini-1.5-flash',
+  model: 'googleai/gemini-3.5-flash',
 });
