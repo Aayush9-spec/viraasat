@@ -52,3 +52,4 @@ export const ImageCulturalStoryOutputSchema = z.object({
 });
 
 export type ImageCulturalStoryOutput = z.infer<typeof ImageCulturalStoryOutputSchema>;
+

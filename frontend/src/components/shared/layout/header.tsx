@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles, ShoppingBag, Shield, Smartphone, ChevronDown, Gavel, Award, BookOpen, Users } from 'lucide-react';
+import { ShoppingCart, Menu, LogOut, User, LayoutDashboard, Package, Heart, Sparkles, ShoppingBag, Shield, Smartphone, ChevronDown, Gavel, BookOpen, Users } from 'lucide-react';
 import { useTranslation } from '@/core/hooks/use-translation';
 import { useCart } from '@/context/cart-context';
 import { useUserRole } from '@/features/auth/hooks/use-user-role';
@@ -143,19 +143,10 @@ export function Header() {
                 {t('nav.aboutUs') || 'About Us'}
               </Link>
 
-              {/* PSIT Showcase — Institutional Innovation */}
-              <Link
-                href="/psit"
-                className="text-foreground/80 hover:text-amber-700 dark:hover:text-amber-400 transition-colors hidden xl:flex items-center gap-1 font-semibold whitespace-nowrap px-1.5 py-0.5 rounded-md hover:bg-amber-500/10"
-              >
-                <Award className="w-3.5 h-3.5 text-amber-600" />
-                <span>{t('nav.psitShowcase') || 'PSIT Showcase'}</span>
-              </Link>
-
               {/* App Button — Mobile Native Client */}
               <Link
                 href="/download"
-                className="text-foreground/80 hover:text-primary transition-colors font-semibold hidden 2xl:flex items-center gap-1 whitespace-nowrap px-1.5 py-0.5 rounded-md hover:bg-primary/10"
+                className="text-foreground/80 hover:text-primary transition-colors font-semibold hidden xl:flex items-center gap-1 whitespace-nowrap px-1.5 py-0.5 rounded-md hover:bg-primary/10"
               >
                 <Smartphone className="w-3.5 h-3.5 text-[#C59B4B]" />
                 <span>{t('nav.app') || 'App'}</span>
@@ -196,15 +187,6 @@ export function Header() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-[#E8DCCB]/60 my-1" />
-                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg hover:bg-[#F3EDE2] dark:hover:bg-white/10">
-                    <Link href="/psit" className="flex items-center gap-2.5 py-2 text-xs">
-                      <Award className="w-4 h-4 text-amber-600" />
-                      <div>
-                        <div className="font-semibold">PSIT Showcase</div>
-                        <div className="text-[10px] text-muted-foreground">Institutional Innovation</div>
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer rounded-lg hover:bg-[#F3EDE2] dark:hover:bg-white/10">
                     <Link href="/download" className="flex items-center gap-2.5 py-2 text-xs">
                       <Smartphone className="w-4 h-4 text-[#701D24]" />
@@ -475,9 +457,6 @@ export function Header() {
                       <Link href="/#unique-art-auctions" className="text-lg font-medium hover:text-primary transition-colors flex items-center justify-between">
                         <span className="flex items-center gap-2"><Gavel className="w-5 h-5 text-[#C59B4B]" /> {t('nav.auctions') || 'Unique Art Auctions'}</span>
                         <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#701D24] text-[#FAF7F2] uppercase">Live</span>
-                      </Link>
-                      <Link href="/psit" className="text-lg font-medium hover:text-primary transition-colors">
-                        PSIT Showcase
                       </Link>
                       <Link href="/#heritage-crafts" className="text-lg font-medium hover:text-primary transition-colors">
                         {t('nav.heritageCrafts') || 'Heritage Crafts'}
